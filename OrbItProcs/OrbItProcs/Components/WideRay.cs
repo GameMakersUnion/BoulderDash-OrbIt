@@ -57,9 +57,6 @@ namespace OrbItProcs.Components
 
         public override void Initialize()
         {
-            object o = new object();
-            Type t = o.GetType();
-            //List<FieldInfo> fields = t.GetFields();
             
         }
 

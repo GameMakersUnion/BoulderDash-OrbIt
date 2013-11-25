@@ -41,6 +41,7 @@ namespace OrbItProcs {
         lasertimers,
         laser,
         wideray,
+        phaseorb,
         randcolor,
         movement,
         randvelchange,
@@ -57,6 +58,7 @@ namespace OrbItProcs {
         maxvel,
         linearpull,
         hueshifter,
+        lifetime,
 
     };
 
@@ -82,6 +84,7 @@ namespace OrbItProcs {
         public Texture2D colororbTexture;
         public Texture2D whitepixelTexture;
         public Texture2D white3pixelTexture;
+        public Texture2D whitecircleTexture;
         //Node node;
         
         int rightClickCount = 0;
@@ -142,6 +145,7 @@ namespace OrbItProcs {
             colororbTexture = Content.Load<Texture2D>("colororb");
             whitepixelTexture = Content.Load<Texture2D>("whitepixel");
             white3pixelTexture = Content.Load<Texture2D>("white3pixel");
+            whitecircleTexture = Content.Load<Texture2D>("whitecircle");
             font = Content.Load<SpriteFont>("Courier New");
 
             // TODO: Add your initialization logic here
@@ -278,21 +282,47 @@ namespace OrbItProcs {
 
             //Node newNode = new Node(room, userP);
 
-            
-
             newNode.name = "node" + Node.nodeCounter;
-
-            
-
 
             ui.UpdateNodeList(newNode);
 
             //newNode.comps[comp.gravity].multiplier = 1000000f;
-            Console.WriteLine(newNode.velocity);
+            //Console.WriteLine(newNode.velocity);
             room.nodes.Add(newNode);
             //Console.WriteLine(newNode.comps[comp.randinitialvel].multiplier);
             Console.WriteLine("Nodes: {0}", room.nodes.Count);
         }
+        
+        public void spawnNode(Dictionary<dynamic,dynamic> userProperties)
+        {
+
+            //Node newNode = new Node(room,userProperties);
+            Node newNode = new Node();
+
+            Node.cloneObject(room.defaultNode, newNode);
+            //newNode.position = new Vector2(worldMouseX, worldMouseY);
+            
+            newNode.acceptUserProps(userProperties);
+            //newNode.position = userProperties[node.position];
+            //Node newNode = new Node(room, userP);
+
+            if (newNode.comps.ContainsKey(comp.randinitialvel))
+            {
+                //hack
+                //newNode.comps[comp.randinitialvel].Initialize();
+            }
+
+            newNode.name = "node" + Node.nodeCounter;
+
+            ui.UpdateNodeList(newNode);
+
+            //newNode.comps[comp.gravity].multiplier = 1000000f;
+            //Console.WriteLine(newNode.velocity);
+            room.nodes.Add(newNode);
+            //Console.WriteLine(newNode.comps[comp.randinitialvel].multiplier);
+            Console.WriteLine("Nodes: {0}", room.nodes.Count);
+        }
+
         /*
         public void ProcessKeyboard()
         {

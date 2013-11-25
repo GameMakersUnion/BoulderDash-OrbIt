@@ -57,7 +57,7 @@ namespace OrbItProcs {
             { node.name,                        "node" },
             { node.lifetime,                    -1 },
             { node.collidable,                  true  },
-            { node.color,                       new Color(1,1,1) },
+            { node.color,                       new Color(255,255,255) },
             //{ comp.movement,                    true },
             
         };
@@ -87,7 +87,7 @@ namespace OrbItProcs {
         public float effectiveRadius = 100f;
         public float scale = 1f; // make property
         public string name = "node";
-        public Color color = new Color(1,1,1);
+        public Color color = new Color(255,255,255);
 
         public int sentinel = -10;
         public int sentinelp { get; set; }
@@ -262,16 +262,16 @@ namespace OrbItProcs {
                     storeInInstance(p, userProps);
                 */
 
-
+                // if the key is a node type, (and not a bool) we need to update the instance variable value
+                if (p is node)// && !(userProps[p] is bool))
+                    storeInInstance(p, userProps);
                 // if the key is a comp type, we need to add the component to comps dict
                 if (p is comp)
                 {
                     fetchComponent(p);
                     if (comps.ContainsKey(p)) comps[p].active = userProps[p];
                 }
-                // if the key is a node type, (and not a bool) we need to update the instance variable value
-                if (p is node)// && !(userProps[p] is bool))
-                    storeInInstance(p, userProps);
+                
             }
         }
 
@@ -323,17 +323,23 @@ namespace OrbItProcs {
             else if (c == comp.laser) component = new Laser(this);
             else if (c == comp.lasertimers) component = new LaserTimers(this);
             else if (c == comp.hueshifter) { component = new HueShifter(this); }
-            else if (c == comp.wideray) { component = new WideRay(this); } 
+            else if (c == comp.wideray) { component = new WideRay(this); }
+            else if (c == comp.phaseorb) { component = new PhaseOrb(this); }
+            else if (c == comp.lifetime) { component = new Lifetime(this); } 
             else
             {
                 //props.Remove(c); // remove bool from props dict ( so that we don't try to call things that aren't there)
                 return false; // component not found
             }
             // component.Initialize();  // is this still needed?
-            comps.Add(c, component);
-            //checkForComponentMethods(component);
+            if (!comps.ContainsKey(c))
+            {
+                comps.Add(c, component);
+                //checkForComponentMethods(component);
+            }
 
-            if (component.hasMethod("initialize")) component.Initialize();
+            //if (component.hasMethod("initialize")) component.Initialize();
+            if (comps[c].hasMethod("Initialize")) comps[c].Initialize();
 
             return true; // success
         }
@@ -432,39 +438,43 @@ namespace OrbItProcs {
 
             int cellReach = (int)(Radius * 2) / room.gridsystem.cellwidth * 2;
 
-            collisionList = room.gridsystem.retrieve(this, cellReach);
+            if (collidable) collisionList = room.gridsystem.retrieve(this, cellReach);
             HashSet<Node> hashlist = new HashSet<Node>();
             hashlist.UnionWith(returnObjectsFinal);//bad
             hashlist.UnionWith(collisionList);
             hashlist.Remove(this);
 
             //List<Node> gravList = room.gridsystem.retrieve(this, (int)(comps[comp.gravity].radius / room.gridsystem.cellwidth));
-            foreach (Node other in hashlist)
-            //foreach (Node other in room.nodes)
+            if (collidable || aOtherProps.Count > 0)
             {
-                // if both are collidable
-                //if (other != this && collidable && other.collidable && other.props[node.active])
-                if (collisionList.Contains(other) && collidable && other.collidable && other.props[node.active])
-                //if (collidable && other.collidable && other.props[node.active]) 
+                //Console.WriteLine("yep");
+                foreach (Node other in hashlist)
+                //foreach (Node other in room.nodes)
                 {
-                    if (Utils.checkCollision(this, other))
+                    // if both are collidable
+                    //if (other != this && collidable && other.collidable && other.props[node.active])
+                    if (collisionList.Contains(other) && collidable && other.collidable && other.props[node.active])
+                    //if (collidable && other.collidable && other.props[node.active]) 
                     {
-                        OnCollideInvoker();
-                        other.OnCollideInvoker();
-                        Utils.resolveCollision(this, other);
+                        if (Utils.checkCollision(this, other))
+                        {
+                            OnCollideInvoker();
+                            other.OnCollideInvoker();
+                            Utils.resolveCollision(this, other);
+                        }
                     }
-                }
-                if (returnObjectsFinal.Contains(other) && other.props[node.active] && true)
-                {
-                    // iterate over components that contain 'effectOthers' method (and only call that method)
-                    //if (other == room.game1.targetNode) Console.WriteLine("affecting target");
-                    foreach (comp c in aOtherProps)
+                    if (returnObjectsFinal.Contains(other) && other.props[node.active] && true)
                     {
-                        //if (props[c])
-                        //if (isCompActive(c)) // we don't need this because we're assuming that any components in the aOtherProps list is active.
+                        // iterate over components that contain 'effectOthers' method (and only call that method)
+                        //if (other == room.game1.targetNode) Console.WriteLine("affecting target");
+                        foreach (comp c in aOtherProps)
+                        {
+                            //if (props[c])
+                            //if (isCompActive(c)) // we don't need this because we're assuming that any components in the aOtherProps list is active.
                             comps[c].AffectOther(other);
-                        //a useless check except to make sure this isn't an error
+                            //a useless check except to make sure this isn't an error
                             //if (!isCompActive(c)) Console.WriteLine("a component that is not active is in the aOtherProps list.(bad)");
+                        }
                     }
                 }
             }

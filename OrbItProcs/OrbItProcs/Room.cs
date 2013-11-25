@@ -65,13 +65,14 @@ namespace OrbItProcs {
                     { comp.maxvel, true },
                     //{ comp.randvelchange, true },
                     { comp.randinitialvel, true },
-                    { comp.gravity, true },
+                    //{ comp.gravity, true },
                     //{ comp.linearpull, true },
-                    { comp.laser, true },
+                    //{ comp.laser, true },
                     //{ comp.wideray, true },
                     { comp.hueshifter, true },
                     //{ comp.transfer, true },
-                    { node.texture, game.whiteTexture }
+                    //{ comp.phaseorb, true },
+                    { node.texture, game.whitecircleTexture }
                 };
             defaultNode = new Node(this, userP);
             defaultNode.name = "DEFAULTNODE";

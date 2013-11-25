@@ -75,7 +75,8 @@ namespace OrbItProcs.Interface {
         int rightClickMax = 1;//
         public int sWidth = 1000;////
         public int sHeight = 600;////
-
+        bool isShiftDown = false;
+        public Vector2 spawnPos;
 
 
 
@@ -344,6 +345,20 @@ namespace OrbItProcs.Interface {
                 lstMain.ScrollTo(20);
             }
 
+            if (keybState.IsKeyDown(Keys.LeftShift))
+            {
+                if (!isShiftDown)
+                { 
+                    MouseState ms = Mouse.GetState();
+                    spawnPos = new Vector2(ms.X * room.mapzoom, ms.Y * room.mapzoom);
+                }
+                isShiftDown = true;
+            }
+            else
+            {
+                isShiftDown = false;
+            }
+
 
 
 
@@ -406,29 +421,72 @@ namespace OrbItProcs.Interface {
                 if (mouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Released)
                 {
                     //new node
-                    game.spawnNode(worldMouseX, worldMouseY);
+                    
+                        game.spawnNode(worldMouseX, worldMouseY);
+                    
 
                 }
                 // rapid placement of nodes
                 if (mouseState.RightButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
                 {
-
-                    if (rightClickCount > rightClickMax)
+                    if (isShiftDown)
                     {
-                        //new node(s)
-                        int rad = 100;
-                        for (int i = 0; i < 10; i++)
+                        rightClickCount++;
+                        if (rightClickCount % rightClickMax == 0)
                         {
-                            int rx = Utils.random.Next(rad * 2) - rad;
-                            int ry = Utils.random.Next(rad * 2) - rad;
-                            game.spawnNode(worldMouseX + rx, worldMouseY + ry);
-                        }
+                            //Vector2 positionToSpawn = new Vector2(game.sWidth, game.sHeight);
+                            Vector2 positionToSpawn = spawnPos;
+                            //positionToSpawn /= (game.room.mapzoom * 2);
+                            //positionToSpawn /= (2);
+                            Vector2 diff = new Vector2(mouseState.X, mouseState.Y);
+                            diff *= room.mapzoom;
+                            diff = diff - positionToSpawn;
+                            //diff.Normalize();
 
-                        rightClickCount = 0;
+                            //new node(s)
+                            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
+                                { node.position, positionToSpawn },
+                                { node.velocity, diff },
+                                { node.texture, game.whitecircleTexture },
+                                //{ node.radius, 12 },
+                                { node.collidable, false },
+                                { comp.randcolor, true },
+                                { comp.movement, true }, //this will default as 'true'
+                                //{ comp.randvelchange, true },
+                                { comp.randinitialvel, true },
+                                //{ comp.gravity, true },
+                                { comp.lifetime, true },
+                                //{ comp.transfer, true },
+                                //{ comp.lasertimers, true },
+                                //{ comp.laser, true },
+                                //{ comp.wideray, true },
+                                //{ comp.hueshifter, true },
+                                { comp.phaseorb, true },
+                            };
+
+                            game.spawnNode(userP);
+                            rightClickCount = 0;
+                        }
                     }
                     else
                     {
-                        rightClickCount++;
+                        if (rightClickCount > rightClickMax)
+                        {
+                            //new node(s)
+                            int rad = 100;
+                            for (int i = 0; i < 10; i++)
+                            {
+                                int rx = Utils.random.Next(rad * 2) - rad;
+                                int ry = Utils.random.Next(rad * 2) - rad;
+                                game.spawnNode(worldMouseX + rx, worldMouseY + ry);
+                            }
+
+                            rightClickCount = 0;
+                        }
+                        else
+                        {
+                            rightClickCount++;
+                        }
                     }
 
                 }

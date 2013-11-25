@@ -15,7 +15,7 @@ namespace OrbItProcs.Components
         };
         //public Node parent;
         //public bool active = true;
-        public float _multiplier = 4f;
+        public float _multiplier = 16f;
         
         public float multiplier
         {
@@ -53,12 +53,22 @@ namespace OrbItProcs.Components
         public override void Initialize()
         {
             //Utils.ensureContains(parentNode.props, defaultCompProps);
-            float x = ((float)Utils.random.NextDouble() * 100) - 50;
-            float y = ((float)Utils.random.NextDouble() * 100) - 50;
-            Vector2 vel = new Vector2(x, y);
-            vel.Normalize();
-            vel = vel * multiplier;
-            parent.velocity = vel;
+            if (parent.velocity.X != 0 && parent.velocity.Y != 0)
+            {
+                //Console.WriteLine("yeah");
+                parent.velocity.Normalize();
+                parent.velocity *= multiplier;
+                //Console.WriteLine(parent.velocity);
+            }
+            else
+            {
+                float x = ((float)Utils.random.NextDouble() * 100) - 50;
+                float y = ((float)Utils.random.NextDouble() * 100) - 50;
+                Vector2 vel = new Vector2(x, y);
+                vel.Normalize();
+                vel = vel * multiplier;
+                parent.velocity = vel;
+            }
         }
 
         public override bool hasMethod(string methodName)

@@ -120,9 +120,11 @@
     <Compile Include="Components\HueShifter.cs" />
     <Compile Include="Components\Laser.cs" />
     <Compile Include="Components\LaserTimers.cs" />
+    <Compile Include="Components\Lifetime.cs" />
     <Compile Include="Components\LinearPull.cs" />
     <Compile Include="Components\MaxVel.cs" />
     <Compile Include="Components\Movement.cs" />
+    <Compile Include="Components\PhaseOrb.cs" />
     <Compile Include="Components\RandColor.cs" />
     <Compile Include="Components\RandInitialVel.cs" />
     <Compile Include="Components\RandVelChange.cs" />

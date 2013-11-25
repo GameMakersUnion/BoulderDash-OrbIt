@@ -9,7 +9,7 @@ namespace OrbItProcs.Components
 {
     public class MaxVel : Component {
 
-        public float maxvel = 20f;
+        public float maxvel = 100f;
 
         public MaxVel(Node parent)
         {
