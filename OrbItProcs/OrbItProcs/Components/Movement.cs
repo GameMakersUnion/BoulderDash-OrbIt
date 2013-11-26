@@ -8,14 +8,11 @@ using System.Runtime.Serialization;
 namespace OrbItProcs.Components
 {
     public class Movement : Component {
-        static Dictionary<dynamic, dynamic> defaultCompProps = new Dictionary<dynamic, dynamic>() // make new movement enum later
-            {
-            //{ },
 
-        };
-        //public Node parent;
-        public bool pushable = true;
+        private bool _pushable = true;
+        public bool pushable { get { return _pushable; } set { _pushable = value; } }
 
+        public Movement() { com = comp.movement; }
         public Movement(Node parent)
         {
             this.parent = parent;
@@ -33,7 +30,6 @@ namespace OrbItProcs.Components
 
         public override void Initialize()
         {
-            //Utils.ensureContains(parentNode.props,defaultCompProps);
         }
 
         public override void AffectOther(Node other)
@@ -42,7 +38,6 @@ namespace OrbItProcs.Components
         }
         public override void AffectSelf()
         {
-            //do stuff (actually node; gravity doesn't have this method
             parent.position.X += parent.velocity.X;
             parent.position.Y += parent.velocity.Y;
             wallBounce();
@@ -59,8 +54,8 @@ namespace OrbItProcs.Components
             float screenx = parent.position.X / mapzoom;
             float screeny = parent.position.Y / mapzoom;
 
-            spritebatch.Draw(parent.texture, new Vector2(screenx, screeny), null, parent.color, 0, new Vector2(parent.texture.Width / 2, parent.texture.Height / 2), parent.scale, SpriteEffects.None, 0);
-            //spritebatch.Draw(parent.props[properties.core_texture], parent.props[properties.core_position], null, Color.White, 0, new Vector2(parent.props[properties.core_texture].Width / 2, parent.props[properties.core_texture].Height / 2), 1f, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(), new Vector2(screenx, screeny), null, parent.color, 0, parent.TextureCenter(), parent.scale, SpriteEffects.None, 0);
+            
         }
 
         public void wallBounce()

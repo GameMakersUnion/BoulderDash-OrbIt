@@ -16,6 +16,7 @@ using OrbItProcs;
 using OrbItProcs.Processes;
 
 using Component = OrbItProcs.Components.Component;
+using System.IO;
 
 namespace OrbItProcs.Interface {
     public class UserInterface {
@@ -43,16 +44,18 @@ namespace OrbItProcs.Interface {
         TabControl tbcMain;
         Label firstTitle;
         TextBox consoletextbox;
-        private ListBox lstMain;
+        public ListBox lstMain;
         private CheckBox chkTempNodes;
-        Button btnRemoveNode, btnRemoveAllNodes, btnAddComponent, btnDefaultNode;
+        Button btnRemoveNode, btnRemoveAllNodes, btnAddComponent, btnDefaultNode, btnApplyToAll, btnSaveNode;
         private List<String> strangs = new List<String>();
-        private TreeListBox lstComp;
+        public TreeListBox lstComp;
         private GroupPanel groupPanel;
         private TreeListItem activeTreeItem;
         private object parentObject;
         private Node editNode;
         // change to unicode characters
+
+        public List<Node> NodePresets = new List<Node>();
 
         #endregion
 
@@ -102,6 +105,31 @@ namespace OrbItProcs.Interface {
 
             //groupPanelChildren = new List<Control>();
             //panelControls = new Dictionary<string, Control>();
+
+            //room.serializer.Serialize(room.defaultNode, "Presets//Nodes//testDefaultNode3.xml");
+            
+            string filepath = "Presets//Nodes";
+            DirectoryInfo d = new DirectoryInfo(filepath);
+            //System.Console.WriteLine("name ::: " + d.FullName);
+            //*
+            foreach (FileInfo file in d.GetFiles("*.xml"))
+            {
+                string filename = file.Name;
+                //System.Console.WriteLine(filename);
+                //string path = file.FullName;
+                filename = "Presets//Nodes//" + filename;
+                NodePresets.Add((Node)room.serializer.Deserialize(filename));
+                
+            }
+            foreach (Node snode in NodePresets)
+            {
+                System.Console.WriteLine("Presetname: {0}", snode.name);
+
+            }
+            //*/
+            //NodePresets.Add((Node)room.serializer.Deserialize("testDefaultNode.xml"));
+            
+            System.Console.WriteLine(NodePresets[0].name);
 
             strangs.Add("first");
             strangs.Add("second");
@@ -264,8 +292,25 @@ namespace OrbItProcs.Interface {
             groupPanel.panelControls = new Dictionary<string, Control>();
             groupPanel.Text = "Property";
 
+            btnApplyToAll = new Button(manager);
+            btnApplyToAll.Init();
+            btnApplyToAll.Text = "Apply To All";
+            btnApplyToAll.Top = HeightCounter;
+            btnApplyToAll.Width = first.Width / 2 - LeftPadding;
+            btnApplyToAll.Height = 20; //HeightCounter += VertPadding + btnApplyToAll.Height;
+            btnApplyToAll.Left = LeftPadding;
+            btnApplyToAll.Parent = first;
+            btnApplyToAll.Click += new TomShane.Neoforce.Controls.EventHandler(btnApplyToAll_Click);
 
-
+            btnSaveNode = new Button(manager);
+            btnSaveNode.Init();
+            btnSaveNode.Text = "Save Node";
+            btnSaveNode.Top = HeightCounter;
+            btnSaveNode.Width = first.Width / 2 - LeftPadding;
+            btnSaveNode.Height = 20; HeightCounter += VertPadding + btnSaveNode.Height;
+            btnSaveNode.Left = LeftPadding + btnApplyToAll.Width;
+            btnSaveNode.Parent = first;
+            btnSaveNode.Click += new TomShane.Neoforce.Controls.EventHandler(btnSaveNode_Click);
 
 
             //==============================================================================================
@@ -447,7 +492,7 @@ namespace OrbItProcs.Interface {
                             Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
                                 { node.position, positionToSpawn },
                                 { node.velocity, diff },
-                                { node.texture, game.whitecircleTexture },
+                                { node.texture, textures.whitecircle },
                                 //{ node.radius, 12 },
                                 { node.collidable, false },
                                 { comp.randcolor, true },
@@ -556,7 +601,19 @@ namespace OrbItProcs.Interface {
             oldMouseState = mouseState;
         }
 
-        void applyToAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        void btnSaveNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            PopupWindow saveNodes = new PopupWindow(game, "saveNode");
+
+        }
+
+        void btnApplyToAll_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            applyToAllNodes_Click(sender, e);
+
+        }
+
+        void applyToAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
         {
             //MenuItem menuitem = (MenuItem)sender;
             TreeListItem item = (TreeListItem)lstComp.Items.ElementAt(lstComp.ItemIndex);
@@ -1067,7 +1124,7 @@ namespace OrbItProcs.Interface {
 
         void btnAddComponent_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            AddComponentWindow addComponentWindow = new AddComponentWindow(game);
+            PopupWindow addComponentWindow = new PopupWindow(game,"addComponent");
             // if it's open don't open again... (TODO)
         }
 

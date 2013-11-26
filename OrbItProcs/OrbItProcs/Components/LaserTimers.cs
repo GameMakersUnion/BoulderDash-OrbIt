@@ -17,7 +17,9 @@ namespace OrbItProcs.Components
         public List<Vector2> scalesVects;
         
         public int queuecount, scalingcounter;
-        public int timer, timer2, timerMax, collisionTimer, collisionTimerTemp;
+        public int timer, timer2, _timerMax, collisionTimer, collisionTimerTemp;
+        public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
+
         public double angle;
 
         public LaserTimers(Node parent)
@@ -143,9 +145,7 @@ namespace OrbItProcs.Components
             parent.scale = 1 / mapzoom;
             float screenx = parent.position.X / mapzoom;
             float screeny = parent.position.Y / mapzoom;
-            Vector2 center = Vector2.Zero;
-            center = new Vector2(parent.room.game1.whitepixelTexture.Width / 2, parent.room.game1.whitepixelTexture.Height / 2);
-            center = Vector2.One;
+            Vector2 center = new Vector2((float)getTexture().Width / 2f, (float)getTexture().Height / 2f);
             Vector2 scaling = Vector2.One;
             scaling = new Vector2(1, maxscale);
 
@@ -176,14 +176,15 @@ namespace OrbItProcs.Components
                 //{
                     scalesVects[count] = new Vector2(1, scales[count]);
                 //}
-                //spritebatch.Draw(parent.room.game1.whitepixelTexture, pos / mapzoom, null, Color.White, ang, center, scaling, SpriteEffects.None, 0);
-                spritebatch.Draw(parent.room.game1.whitepixelTexture, pos / mapzoom, null, col, ang, center, scalesVects[count], SpriteEffects.None, 0);
+                    //spritebatch.Draw(parent.room.game1.textureDict[textures.whitepixel], pos / mapzoom, null, Color.White, ang, center, scaling, SpriteEffects.None, 0);
+                spritebatch.Draw(parent.getTexture(textures.whitepixel), pos / mapzoom, null, col, ang, center, scalesVects[count], SpriteEffects.None, 0);
                 count++;
             }
-            //spritebatch.Draw(parent.room.game1.whitepixelTexture, new Vector2(screenx, screeny), null, Color.White, (float)angle, center, scaling, SpriteEffects.None, 0);
-            spritebatch.Draw(parent.room.game1.whitepixelTexture, new Vector2(screenx, screeny), null, Color.White, (float)angle, center, scalesVects[queuecount-1], SpriteEffects.None, 0);
+            //spritebatch.Draw(parent.room.game1.textureDict[textures.whitepixel], new Vector2(screenx, screeny), null, Color.White, (float)angle, center, scaling, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(textures.whitepixel), new Vector2(screenx, screeny), null, Color.White, (float)angle, center, scalesVects[queuecount - 1], SpriteEffects.None, 0);
             
             //test
+            /*
             Vector2 centerTexture = new Vector2(0.5f, 1);
             Vector2 start = new Vector2(200, 200);
 
@@ -196,11 +197,7 @@ namespace OrbItProcs.Components
             //len /= 3;
             Vector2 scalevect = new Vector2(len, 1);
             float testangle = (float)(Math.Atan2(diff.Y, diff.X));// + (Math.PI / 2));
-            spritebatch.Draw(parent.room.game1.colororbTexture, start/mapzoom, null, Color.White, 0f, new Vector2(25f, 25f),1/mapzoom,SpriteEffects.None,0);
-            spritebatch.Draw(parent.room.game1.colororbTexture, end/mapzoom, null, Color.White, 0f, new Vector2(25f, 25f), 1/mapzoom, SpriteEffects.None, 0);
-            spritebatch.Draw(parent.room.game1.colororbTexture, centerpoint, null, Color.White, 0f, new Vector2(25f, 25f), 1 / mapzoom, SpriteEffects.None, 0);
-            spritebatch.Draw(parent.room.game1.whitepixelTexture, centerpoint, null, Color.White, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
-            
+            */
             //spritebatch.Draw(parent.texture, new Vector2(screenx, screeny), null, Color.White, 0, new Vector2(parent.texture.Width / 2, parent.texture.Height / 2), parent.scale, SpriteEffects.None, 0);
             //spritebatch.Draw(parent.props[properties.core_texture], parent.props[properties.core_position], null, Color.White, 0, new Vector2(parent.props[properties.core_texture].Width / 2, parent.props[properties.core_texture].Height / 2), 1f, SpriteEffects.None, 0);
         }

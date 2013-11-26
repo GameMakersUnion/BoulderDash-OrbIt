@@ -9,40 +9,45 @@ namespace OrbItProcs.Components
 {
     public class Laser : Component
     {
-        public float r, g, b;
+        //private float r = 1f, g = 1f, b = 1f;
         public Queue<Vector2> positions;
-        //public Queue<Color> colors;
         public Color color;
         public Queue<float> angles;
-        public int queuecount;
-        public int timer, timerMax;
-        public double angle;
-        public HueShifter hshift;
+        public HueShifter hshift; // just so we can use the getColorsFromAngle method
 
+        private int _queuecount = 10;
+        public int queuecount { get { return _queuecount; } set { _queuecount = value; } }
+
+
+        private int timer = 0, _timerMax = 2;
+        public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
+
+        public double angle = 0;
+
+        public Laser() { com = comp.laser; }
         public Laser(Node parent)
         {
             this.parent = parent;
             parent.Collided += onCollision;
 
             this.com = comp.laser;
+            /*
             this.r = this.g = this.b = 1f;
-
             queuecount = 10;
             angle = 0;
             timer = 0;
             timerMax = 2;
-
+            */
             InitializeLists();
 
         }
 
-        public override void InitializeLists() //fix this elsewhere!
+        public override void InitializeLists()
         {
             positions = new Queue<Vector2>();
             angles = new Queue<float>();
             color = Utils.randomColor();
             hshift = new HueShifter(null);
-            //colors = new Queue<Color>();
 
         }
 
@@ -143,9 +148,9 @@ namespace OrbItProcs.Components
                 int[] collarr = hshift.getColorsFromAngle((testangle + (float)Math.PI) * (float)(180/Math.PI));
                 Color coll = new Color(collarr[0], collarr[1], collarr[2]);
                 
-                spritebatch.Draw(parent.room.game1.whitepixelTexture, centerpoint, null, new Color(1f, 1f, 1f, 255 / queuecount * i), testangle, centerTexture, scalevect, SpriteEffects.None, 0);
-                spritebatch.Draw(parent.room.game1.whitepixelTexture, centerpoint + diff, null, /*parent.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
-                spritebatch.Draw(parent.room.game1.whitepixelTexture, centerpoint - diff, null, /*parent.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+                spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint, null, new Color(1f, 1f, 1f, 255 / queuecount * i), testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+                spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint + diff, null, /*parent.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+                spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint - diff, null, /*parent.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
                 count++;
             }
             //spritebatch.Draw(parent.room.game1.whitepixelTexture, new Vector2(screenx, screeny), null, Color.White, (float)angle, center, scaling, SpriteEffects.None, 0);

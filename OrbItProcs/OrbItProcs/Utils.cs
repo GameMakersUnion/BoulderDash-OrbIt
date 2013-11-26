@@ -141,6 +141,7 @@ namespace OrbItProcs {
             //float orbimass = 1, orbjmass = 1;
             //float orbRadius = 25.0f; //integrate this into the orb class
             float distanceOrbs = (float)Vector2.Distance(o1.position, o2.position);
+            if (distanceOrbs < 10) distanceOrbs = 10; //prevent /0 error
             Vector2 normal = (o2.position - o1.position) / distanceOrbs;
             float pvalue = 2 * (o1.velocity.X * normal.X + o1.velocity.Y * normal.Y - o2.velocity.X * normal.X - o2.velocity.Y * normal.Y) / (o1.mass + o2.mass);
             //if (!test) 

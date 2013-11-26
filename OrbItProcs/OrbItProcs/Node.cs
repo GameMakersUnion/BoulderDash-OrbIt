@@ -64,7 +64,9 @@ namespace OrbItProcs {
 
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false;
         //public bool active = true;
-        public bool collidable = true;
+        public bool _collidable = true;
+        public bool collidable { get { return _collidable; } set { _collidable = value; } }
+
         
         private float radius = 25f;
         public float Radius
@@ -73,52 +75,49 @@ namespace OrbItProcs {
             set {
                 radius = value;
                 if (texture != null)
-                    scale = value / (texture.Width / 2);
+                    scale = value / (getTexture().Width / 2);
                 else
                     scale = value / (50 / 2);
             }
         }
-        public float mass = 10f;
+        public float _mass = 10f;
+        public float mass { get { return _mass; } set { _mass = value; } }
         
-        public float multiplier = 1f;
+        public float _multiplier = 1f;
+        public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
         public Vector2 position = new Vector2(0,0);
         public Vector2 velocity = new Vector2(0,0);
         public int lifetime = -1;
-        public float effectiveRadius = 100f;
-        public float scale = 1f; // make property
-        public string name = "node";
+        public float _effectiveRadius = 100f;
+        public float effectiveRadius { get { return _effectiveRadius; } set { _effectiveRadius = value; } }
+
+        public float _scale = 1f; // TODO: make the setter change the radius -e harely
+        public float scale { get { return _scale; } 
+            set { _scale = value; } 
+        }
+        
+        public string _name = "node";
+        public string name { get { return _name; } set { _name = value; } }
+
         public Color color = new Color(255,255,255);
 
-        public int sentinel = -10;
+        public int _sentinel = -10;
+        
         public int sentinelp { get; set; }
-        public Room room;
-        public Texture2D texture = null;
-        public float velMultiplier = 1f;
-        private Vector2 _vecttest = new Vector2(0, 0);
-        public Vector2 vecttest
-        {
-            get { return _vecttest; }
-            set
-            {
-                _vecttest = value;
-                //if (collidable) _vecttest = value;
-                //X = value.X;
-                //_vecttest.X = value.X;
-            }
-        }
 
-        public float vectX {
-            get {
-                return _vecttest.X;
-            }
-            set { _vecttest.X = value; }
-        }
+        public Room room = Program.getRoom();
+        public textures _texture = textures.whitecircle;
+        public textures texture { get { return _texture; } set { _texture = value; } }
+
+        public float _velMultiplier = 1f;
+        public float velMultiplier { get { return _velMultiplier; } set { _velMultiplier = value; } }
 
 
-        public Dictionary<dynamic, bool> props;
-        //{ get; set; }
+        public Dictionary<dynamic, bool> props = new Dictionary<dynamic, bool>();
+        public Dictionary<dynamic, bool> propsProperty { get { return props; } set { props = value; } }
     
-        public Dictionary<comp, dynamic> comps;
+        public Dictionary<comp, dynamic> comps = new Dictionary<comp, dynamic>();
+        public Dictionary<comp, dynamic> compsProperty { get { return comps; } set { comps = value; } }
         //public OrderedDictionary ocomps;
 
         public List<comp> aOtherProps = new List<comp>();
@@ -147,22 +146,13 @@ namespace OrbItProcs {
         public Node()
         {
             nodeCounter++;
-            props = new Dictionary<dynamic, bool>();
-            comps = new Dictionary<comp, dynamic>();
-            position = new Vector2(0, 0);
-            velocity = new Vector2(0, 0);
-            name = "";
+            room = Program.getRoom();
             
         }
 
         public Node(Room room1, Dictionary<dynamic, dynamic> userProps = null)
         {
-            nodeCounter++;
-            
-            props = new Dictionary<dynamic, bool>();
-            comps = new Dictionary<comp, dynamic>();
-            
-            
+            nodeCounter++;    
 
             // add the userProps to the props
             foreach (dynamic p in userProps.Keys)
@@ -202,12 +192,13 @@ namespace OrbItProcs {
                     
             }
             SortComponentLists();
-
-            if (radius != texture.Width / 2) changeRadius(radius);
-
-            room = room1;
+            //room = room1;
+            room = Program.getRoom();
+            if (room == null) Console.WriteLine("null");
+            if (Program.getGame() == null) Console.WriteLine("gnull");
             if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0,5);
             else name = name + nodeCounter;
+            
         }
 
         public override string ToString()
@@ -313,6 +304,7 @@ namespace OrbItProcs {
             //Console.WriteLine(c);
 
             if (c == comp.movement) component = new Movement(this);
+            else if (c == comp.collision) component = new Collision(this);
             else if (c == comp.gravity) component = new Gravity(this);
             else if (c == comp.transfer) component = new Transfer(this);
             else if (c == comp.randvelchange) component = new RandVelChange(this);
@@ -456,12 +448,13 @@ namespace OrbItProcs {
                     if (collisionList.Contains(other) && collidable && other.collidable && other.props[node.active])
                     //if (collidable && other.collidable && other.props[node.active]) 
                     {
-                        if (Utils.checkCollision(this, other))
-                        {
-                            OnCollideInvoker();
-                            other.OnCollideInvoker();
-                            Utils.resolveCollision(this, other);
-                        }
+                        //if (Utils.checkCollision(this, other))
+                        //{
+                        //    OnCollideInvoker();
+                        //    other.OnCollideInvoker();
+                        //    Utils.resolveCollision(this, other);
+                        //}
+                        //depreciated in version 17.4
                     }
                     if (returnObjectsFinal.Contains(other) && other.props[node.active] && true)
                     {
@@ -533,7 +526,20 @@ namespace OrbItProcs {
                 Collided(CollideArgs);
             }
         }
-        
+
+        public Texture2D getTexture()
+        {
+            return room.game1.textureDict[texture];
+        }
+        public Texture2D getTexture(textures t)
+        {
+            return room.game1.textureDict[t];
+        }
+        public Vector2 TextureCenter()
+        { 
+            Texture2D tx = room.game1.textureDict[texture];
+            return new Vector2(tx.Width / 2f, tx.Height / 2f); // TODO: maybe cast to floats to make sure it's the exact center.
+        }
         
         public void Draw(SpriteBatch spritebatch)
         {
@@ -564,7 +570,7 @@ namespace OrbItProcs {
         public void changeRadius(float newRadius)
         {
             radius = newRadius;
-            scale = radius / (texture.Width / 2);
+            scale = radius / (getTexture().Width / 2);
         }
         public float diameter()
         {
@@ -576,10 +582,11 @@ namespace OrbItProcs {
             //dynamic returnval;
             List<FieldInfo> fields = sourceNode.GetType().GetFields().ToList();
             List<PropertyInfo> properties = sourceNode.GetType().GetProperties().ToList();
-            foreach (PropertyInfo property in properties)
-            {
-                property.SetValue(destNode, property.GetValue(sourceNode, null), null);
-            }
+            //foreach (PropertyInfo property in properties)
+            //{
+            //    //if (property.Name.Equals("compsProp")) continue;
+            //    property.SetValue(destNode, property.GetValue(sourceNode, null), null);
+            //}
             foreach (FieldInfo field in fields)
             {
                 //Console.WriteLine("fieldtype: " + field.FieldType);
@@ -647,7 +654,7 @@ namespace OrbItProcs {
                 {
                     //this would be an object field
                     //Console.WriteLine(field.Name + " is an object of some kind.");
-                    if (field.Name.Equals("room") || field.Name.Equals("texture"))
+                    if (field.Name.Equals("room") || field.Name.Equals("_texture"))
                     {
                         field.SetValue(destNode, field.GetValue(sourceNode));
                     }

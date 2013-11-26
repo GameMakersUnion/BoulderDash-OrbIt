@@ -94,6 +94,9 @@
     <Reference Include="mscorlib">
       <Private>False</Private>
     </Reference>
+    <Reference Include="Polenter.SharpSerializer">
+      <HintPath>..\..\..\..\..\..\Gamedev\TomShane.Neoforce.Controls.XNA4\sharpSerializerDll\Polenter.SharpSerializer.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
@@ -115,6 +118,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\Collision.cs" />
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\Gravity.cs" />
     <Compile Include="Components\HueShifter.cs" />
@@ -132,7 +136,7 @@
     <Compile Include="Components\WideRay.cs" />
     <Compile Include="FrameRateCounter.cs" />
     <Compile Include="GridSystem.cs" />
-    <Compile Include="Interface\AddComponentWindow.cs" />
+    <Compile Include="Interface\PopupWindow.cs" />
     <Compile Include="Interface\InspectorItem.cs" />
     <Compile Include="Interface\TLITree.cs" />
     <Compile Include="Interface\TreeListItem.cs" />

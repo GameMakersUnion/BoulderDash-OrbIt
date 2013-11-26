@@ -33,7 +33,8 @@ namespace OrbItProcs.Components
 
         public int sentinel = -10;
         public Node parent;
-        public comp com;
+        public comp _com;
+        public comp com { get { return _com; } set { _com = value; } }
 
        public abstract void Initialize();
        public abstract void AffectOther(Node other);
@@ -44,6 +45,15 @@ namespace OrbItProcs.Components
        public virtual void InitializeLists()
        { 
        
+       }
+
+       public virtual Texture2D getTexture()
+       {
+           if (parent != null)
+           {
+               return parent.getTexture();
+           }
+           return null;
        }
 
        public static void CloneComponent(Component sourceComp, Component destComp)

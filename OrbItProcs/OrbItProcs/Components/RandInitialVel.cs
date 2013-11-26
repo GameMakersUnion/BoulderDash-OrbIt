@@ -8,14 +8,8 @@ using System.Runtime.Serialization;
 namespace OrbItProcs.Components
 {
     public class RandInitialVel : Component {
-        static Dictionary<dynamic, dynamic> defaultCompProps = new Dictionary<dynamic, dynamic>()
-        {
-            //{ properties.active,                true },
 
-        };
-        //public Node parent;
-        //public bool active = true;
-        public float _multiplier = 16f;
+        private float _multiplier = 16f;
         
         public float multiplier
         {
@@ -39,8 +33,8 @@ namespace OrbItProcs.Components
                 _multiplier = value;
             }
         }
-        
 
+        public RandInitialVel() { com = comp.randinitialvel; }
 
         public RandInitialVel(Node parent)
         {
@@ -83,7 +77,7 @@ namespace OrbItProcs.Components
 
         public override void AffectOther(Node other)
         {
-
+            
         }
         public override void AffectSelf()
         {
@@ -93,7 +87,7 @@ namespace OrbItProcs.Components
         {
             //it would be really cool to have some kind of blending effects so that every combination of components will look diff
             //spritebatch.Draw(parent.props[properties.core_texture], parent.props[properties.core_position], Color.White);
-            spritebatch.Draw(parent.texture, parent.position, null, Color.White, 0, new Vector2(parent.texture.Width / 2, parent.texture.Height / 2), 1f, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(), parent.position, null, Color.White, 0, parent.TextureCenter(), 1f, SpriteEffects.None, 0);
         }
 
     }

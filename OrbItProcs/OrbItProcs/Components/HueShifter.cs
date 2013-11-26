@@ -9,23 +9,26 @@ namespace OrbItProcs.Components
 {
     public class HueShifter : Component
     {
-        //public int r, g, b;
-        //public Color color;
-        public int timer, timerMax;
-        public int[] rgb;
-        public int inc, pos, sign;
-        public int angle;
+        private int timer = 0, _timerMax = 2;
+        public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
 
+        private int[] rgb = new int[3];
+        private int _inc = 30;
+        public int inc { get { return _inc; } set { _inc = value; } }
+
+        private int pos = 1, sign = 1;
+        private int angle = 0;
+
+        //public HueShifter() : this(Program.getRoom().defaultNode) { }
+        public HueShifter() { com = comp.hueshifter; }
 
         public HueShifter(Node parent)
         {
             this.parent = parent;
             this.com = comp.hueshifter;
-            //this.r = this.g = this.b = 255;
-
+            /*
             timer = 0;
             timerMax = 2;
-            InitializeLists();
             rgb = new int[3];
             rgb[0] = 255;
             rgb[1] = 0;
@@ -33,18 +36,10 @@ namespace OrbItProcs.Components
             pos = 1;
             inc = 30;
             sign = 1;
-
-
             angle = 0;
-
-            //Console.WriteLine("construct");
+            */
         }
 
-        public override void InitializeLists()
-        {
-            //color = new Color();
-
-        }
 
         public override bool hasMethod(string methodName)
         {

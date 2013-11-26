@@ -12,13 +12,19 @@ namespace OrbItProcs.Components
 
         //public Node parent;
         //public bool active = true;
-        public float multiplier = 0.1f;
-        public float radius = 300f;
+        private float _multiplier = 0.1f;
+        public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
+
+        private float _radius = 300f;
+        public float radius { get { return _radius; } set { _radius = value; } }
+
         public Node targetPuller;
 
         //in base class:
         //public Dictionary<properties, dynamic> compProps = new Dictionary<properties, dynamic>();
         //public Node parent;
+
+        public LinearPull() { com = comp.linearpull; }
         public LinearPull(Node parent)
         {
             //never be called
@@ -27,7 +33,6 @@ namespace OrbItProcs.Components
         }
         public LinearPull(Node parent, Node targetPuller)
         {
-            //never be called
             this.parent = parent;
             this.com = comp.linearpull;
             this.targetPuller = targetPuller;
@@ -35,8 +40,6 @@ namespace OrbItProcs.Components
 
         public override void Initialize()
         {
-            //Utils.ensureContains(parentNode.props,defaultCompProps);
-
         }
 
         public override bool hasMethod(string methodName)
@@ -99,7 +102,7 @@ namespace OrbItProcs.Components
         {
             //it would be really cool to have some kind of blending effects so that every combination of components will look diff
             //spritebatch.Draw(parent.props[properties.core_texture], parent.props[properties.core_position], Color.White);
-            spritebatch.Draw(parent.texture, parent.position, null, Color.White, 0, new Vector2(parent.texture.Width / 2, parent.texture.Height / 2), 1f, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(), parent.position, null, Color.White, 0, parent.TextureCenter(), 1f, SpriteEffects.None, 0);
 
         }
     }

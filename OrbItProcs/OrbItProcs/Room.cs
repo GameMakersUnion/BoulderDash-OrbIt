@@ -5,6 +5,7 @@ using System.Text;
 using C3.XNA;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Polenter.Serialization;
 
 using OrbItProcs.Components;
 using OrbItProcs.Processes;
@@ -35,11 +36,14 @@ namespace OrbItProcs {
         //public NodeList<Node> nodes = new NodeList<Node>();
         public int dtimerMax = 0, dtimerCount = 0;
 
+        public SharpSerializer serializer = new SharpSerializer();
+
         //public tree treeProp = tree.gridsystem;
 
         public Room()
         {
             setDefaultProperties();
+
 
         }
 
@@ -55,27 +59,6 @@ namespace OrbItProcs {
             // grid System
             gridsystem = new GridSystem(this, 40, 6);
             gridSystemLines = new List<Rectangle>();
-
-            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
-                    { node.position, new Vector2(0, 0) },
-                    //{ node.radius, 12 },
-                    { node.collidable, true },
-                    { comp.randcolor, true },
-                    { comp.movement, true }, //this will default as 'true'
-                    { comp.maxvel, true },
-                    //{ comp.randvelchange, true },
-                    { comp.randinitialvel, true },
-                    //{ comp.gravity, true },
-                    //{ comp.linearpull, true },
-                    //{ comp.laser, true },
-                    //{ comp.wideray, true },
-                    { comp.hueshifter, true },
-                    //{ comp.transfer, true },
-                    //{ comp.phaseorb, true },
-                    { node.texture, game.whitecircleTexture }
-                };
-            defaultNode = new Node(this, userP);
-            defaultNode.name = "DEFAULTNODE";
 
         }
 
@@ -107,7 +90,7 @@ namespace OrbItProcs {
                 {
                     gridsystem.insert(_node);
 
-                    _node.comps[comp.randcolor].randCol = Color.White;
+                    //_node.color = Color.White;
                 }
                 foreach (Node _node in nodes)
                 {
@@ -148,7 +131,7 @@ namespace OrbItProcs {
                 //addGridSystemLines(gridsystem);
 
 
-                colorEffectedNodes();
+                //colorEffectedNodes();
             }
             else
             {
@@ -166,15 +149,15 @@ namespace OrbItProcs {
 
                 foreach (Node _node in nodes)
                 {
-                    if (_node.comps[comp.randcolor].randCol != Color.Black)
+                    if (_node.color != Color.Black)
                     {
                         if (returnObjectsGridSystem.Contains(_node))
-                            _node.comps[comp.randcolor].randCol = Color.Purple;
+                            _node.color = Color.Purple;
                         else
-                            _node.comps[comp.randcolor].randCol = Color.White;
+                            _node.color = Color.White;
                     }
                 }
-                game1.targetNode.comps[comp.randcolor].randCol = Color.Red;
+                game1.targetNode.color = Color.Red;
             }
         }
 
@@ -199,8 +182,6 @@ namespace OrbItProcs {
             foreach (Node node in nodes)
             {
                 node.Draw(spritebatch);
-
-
             }
             int linecount = 0;
 

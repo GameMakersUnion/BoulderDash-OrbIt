@@ -9,8 +9,10 @@ namespace OrbItProcs.Components
 {
     public class MaxVel : Component {
 
-        public float maxvel = 100f;
+        private float _maxvel = 100f;
+        public float maxvel { get { return _maxvel; } set { _maxvel = value; } }
 
+        public MaxVel() { com = comp.movement; }
         public MaxVel(Node parent)
         {
             this.parent = parent;
@@ -53,7 +55,7 @@ namespace OrbItProcs.Components
             float screenx = parent.position.X / mapzoom;
             float screeny = parent.position.Y / mapzoom;
 
-            spritebatch.Draw(parent.texture, new Vector2(screenx, screeny), null, Color.White, 0, new Vector2(parent.texture.Width / 2, parent.texture.Height / 2), parent.scale, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(), new Vector2(screenx, screeny), null, Color.White, 0, parent.TextureCenter(), parent.scale, SpriteEffects.None, 0);
             //spritebatch.Draw(parent.props[properties.core_texture], parent.props[properties.core_position], null, Color.White, 0, new Vector2(parent.props[properties.core_texture].Width / 2, parent.props[properties.core_texture].Height / 2), 1f, SpriteEffects.None, 0);
         }
     }

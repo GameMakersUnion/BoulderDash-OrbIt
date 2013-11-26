@@ -4,27 +4,19 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-public enum grav { 
-    active, 
-    multiplier, 
-    radius 
-};
 
 namespace OrbItProcs.Components {
     public class Gravity : Component {
 
-        //public Node parent;
-        //public bool active = true;
-        public float multiplier = 200f;
-        public float radius = 300f;
+        private float _multiplier = 200f;
+        public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
+
+        private float _radius = 300f;
+        public float radius { get { return _radius; } set { _radius = value; } }
 
 
-        //in base class:
-        //public Dictionary<properties, dynamic> compProps = new Dictionary<properties, dynamic>();
-        //public Node parent;
         public Gravity(Node parent)
         {
-            //never be called
             this.parent = parent;
             this.com = comp.gravity;
         }
@@ -32,7 +24,6 @@ namespace OrbItProcs.Components {
 
         public override void Initialize()
         {
-            //Utils.ensureContains(parentNode.props,defaultCompProps);
 
         }
 
@@ -45,27 +36,16 @@ namespace OrbItProcs.Components {
             else return false;
         }
 
-        /*
-         * bool active = node.props[properties.grav_active] ?? defaultCompProps[properties.grav_active];
-            float multiplier = node.props[properties.grav_multiplier] ?? defaultCompProps[properties.grav_multiplier];
-            float radius = node.props[properties.grav_radius] ?? defaultCompProps[properties.grav_radius];
-         */
 
         public override void AffectOther(Node other)
         {
             if (!active)
             {
-                //can't prevent actually, but don't bother doing this check in every component: 
-                //it's only one frame that an inactive component will work (most likely)
-                //Console.WriteLine("This should have been removed from the delegates list.");
                 return;
             }
-
             //assuming other has been checked for 'active' from caller
-            //and assuming this has been checked: if (!(gameobject == this))
             float distVects = Vector2.Distance(other.position, parent.position);
 
-            //distVects = distVects - parent.Radius - other.Radius;
             // INSTEAD of checking all distances between all nodes (expensive; needs to take roots)
             // do this: find all nodes within the SQUARE (radius = width/2), then find distances to remove nodes in the corners of square
             if (distVects < radius)
@@ -97,8 +77,8 @@ namespace OrbItProcs.Components {
         public override void Draw(SpriteBatch spritebatch)
         {
             //it would be really cool to have some kind of blending effects so that every combination of components will look diff
-            //spritebatch.Draw(parent.props[properties.core_texture], parent.props[properties.core_position], Color.White);
-            spritebatch.Draw(parent.texture, parent.position, null, Color.White, 0, new Vector2(parent.texture.Width / 2, parent.texture.Height / 2), 1f, SpriteEffects.None, 0);
+            //spritebatch.Draw(parent.getTexture(), parent.props[properties.core_position], Color.White);
+            spritebatch.Draw(parent.getTexture(), parent.position, null, Color.White, 0, parent.TextureCenter(), 1f, SpriteEffects.None, 0);
 
         }
     }

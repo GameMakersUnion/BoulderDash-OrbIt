@@ -60,9 +60,18 @@ namespace OrbItProcs {
         linearpull,
         hueshifter,
         lifetime,
-
+        collision,
     };
 
+    public enum textures
+    {
+        blueorb,
+        whiteorb,
+        colororb,
+        whitecircle,
+        whitepixel,
+        
+    }
 
     public class Game1 : Application {
         //GraphicsDeviceManager graphics;
@@ -80,12 +89,8 @@ namespace OrbItProcs {
         MouseState oldMouseState;
         KeyboardState oldKeyBState;
         int oldMouseScrollValue = 0;
-        public Texture2D blueTexture;
-        public Texture2D whiteTexture;
-        public Texture2D colororbTexture;
-        public Texture2D whitepixelTexture;
-        public Texture2D white3pixelTexture;
-        public Texture2D whitecircleTexture;
+
+        public Dictionary<textures, Texture2D> textureDict;
         //Node node;
         
         int rightClickCount = 0;
@@ -141,22 +146,51 @@ namespace OrbItProcs {
         /// </summary>
         protected override void Initialize()
         {
-            blueTexture = Content.Load<Texture2D>("bluesphere");
-            whiteTexture = Content.Load<Texture2D>("whitesphere");
-            colororbTexture = Content.Load<Texture2D>("colororb");
-            whitepixelTexture = Content.Load<Texture2D>("whitepixel");
-            white3pixelTexture = Content.Load<Texture2D>("white3pixel");
-            whitecircleTexture = Content.Load<Texture2D>("whitecircle");
+            textureDict = new Dictionary<textures, Texture2D>();
+
+
+            textureDict.Add(textures.blueorb, Content.Load<Texture2D>("bluesphere"));
+            textureDict.Add(textures.whiteorb, Content.Load<Texture2D>("whitesphere"));
+            textureDict.Add(textures.colororb, Content.Load<Texture2D>("colororb"));
+            textureDict.Add(textures.whitepixel, Content.Load<Texture2D>("whitepixel"));
+            textureDict.Add(textures.whitecircle, Content.Load<Texture2D>("whitecircle"));
             font = Content.Load<SpriteFont>("Courier New");
+
+            Node n;
+            
 
             // TODO: Add your initialization logic here
             room = new Room(this);
+            //if (room == null) Console.WriteLine("rnull");
+            Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {
+                    { node.position, new Vector2(0, 0) },
+                    //{ node.radius, 12 },
+                    { node.collidable, true },
+                    { comp.randcolor, true },
+                    { comp.collision, true },
+                    { comp.movement, true }, //this will default as 'true'
+                    { comp.maxvel, true },
+                    //{ comp.randvelchange, true },
+                    { comp.randinitialvel, true },
+                    //{ comp.gravity, true },
+                    //{ comp.linearpull, true },
+                    //{ comp.laser, true },
+                    { comp.wideray, true },
+                    { comp.hueshifter, true },
+                    //{ comp.transfer, true },
+                    //{ comp.phaseorb, true },
+                    { node.texture, textures.whitecircle }
+                };
+            room.defaultNode = new Node(room, userPr);
+            room.defaultNode.name = "DEFAULTNODE";
+            
+
             //node = new Node(room);
             frameRateCounter = new FrameRateCounter(this);
             //manager.Initialize();
             base.Initialize();
 
-            
+            Console.WriteLine("why");
 
             ui = new UserInterface(this);
 
@@ -172,7 +206,7 @@ namespace OrbItProcs {
                     { comp.gravity, true },
                     
                     //{ comp.transfer, true },
-                    { node.texture, whiteTexture }
+                    { node.texture, textures.whiteorb }
                 };
             Node testnode = new Node(room, userP);
 
@@ -259,7 +293,7 @@ namespace OrbItProcs {
         {
             Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
                     { node.position, new Vector2(worldMouseX, worldMouseY) },
-                    { node.texture, whiteTexture },
+                    { node.texture, textures.whiteorb },
                     //{ node.radius, 12 },
                     //{ node.collidable, true },
                     { comp.randcolor, true },
