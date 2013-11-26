@@ -53,9 +53,10 @@ namespace OrbItProcs.Interface {
         private TreeListItem activeTreeItem;
         private object parentObject;
         private Node editNode;
+        public ListBox lstPresets;
         // change to unicode characters
 
-        public List<Node> NodePresets = new List<Node>();
+        public List<object> NodePresets = new List<object>();
 
         #endregion
 
@@ -129,7 +130,7 @@ namespace OrbItProcs.Interface {
             //*/
             //NodePresets.Add((Node)room.serializer.Deserialize("testDefaultNode.xml"));
             
-            System.Console.WriteLine(NodePresets[0].name);
+            System.Console.WriteLine(((Node)(NodePresets[0])).name);
 
             strangs.Add("first");
             strangs.Add("second");
@@ -180,6 +181,7 @@ namespace OrbItProcs.Interface {
 
             TabPage first = tbcMain.TabPages[0];
             TabPage second = tbcMain.TabPages[1];
+            TabPage third = tbcMain.TabPages[2];
 
             firstTitle = new Label(manager);
             firstTitle.Init();
@@ -359,6 +361,24 @@ namespace OrbItProcs.Interface {
             btnClear.Text = "Clear";
             btnClear.Click += new TomShane.Neoforce.Controls.EventHandler(btnClear_Click);
 
+
+            //==============================================================================================
+            //             THIRD TAB PAGE
+            //==============================================================================================
+            //third
+            HeightCounter = 0;
+            lstPresets = new ListBox(manager);
+            lstPresets.Init();
+            lstPresets.Parent = third;
+            lstPresets.Top = third.Top;
+            lstPresets.Left = LeftPadding;
+            lstPresets.Width = third.Width - LeftPadding * 2;
+            lstPresets.Height = third.Height / 4; HeightCounter += VertPadding + lstPresets.Height;
+            lstPresets.Anchor = Anchors.Top | Anchors.Left | Anchors.Bottom;
+            lstPresets.HideSelection = false;
+            lstPresets.ItemIndexChanged += new TomShane.Neoforce.Controls.EventHandler(lstPresets_ItemIndexChanged);
+            //lstMain.Click += new TomShane.Neoforce.Controls.EventHandler(lstMain_Click);
+            lstPresets.Items = NodePresets;
 
         }
 
@@ -1071,6 +1091,19 @@ namespace OrbItProcs.Interface {
             editNode = game.targetNode;
 
             lstComp.Items = TreeListItem.GenerateList((Node)listbox.Items.ElementAt(listbox.ItemIndex),"");
+
+        }
+
+        void lstPresets_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            ListBox listbox = (ListBox)sender;
+            //remove panelControl elements (from groupPanel at the bottom)
+            if (groupPanel.panelControls.Keys.Count > 0) return;
+            //System.Console.WriteLine("" + treebox.ItemIndex);
+            game.room.defaultNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
+            //editNode = game.targetNode;
+
+            //lstComp.Items = TreeListItem.GenerateList((Node)listbox.Items.ElementAt(listbox.ItemIndex), "");
 
         }
 
