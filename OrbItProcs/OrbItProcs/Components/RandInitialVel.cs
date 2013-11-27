@@ -20,7 +20,7 @@ namespace OrbItProcs.Components
                     if (_multiplier == 0 && value > 0)
                     {
                         _multiplier = value;
-                        Initialize();
+                        Initialize(parent);
                     }
                     else
                     {
@@ -38,15 +38,13 @@ namespace OrbItProcs.Components
 
         public RandInitialVel(Node parent)
         {
-            //never be called
             this.parent = parent;
             this.com = comp.randinitialvel;
-
         }
 
-        public override void Initialize()
+        public override void Initialize(Node parent)
         {
-            //Utils.ensureContains(parentNode.props, defaultCompProps);
+            this.parent = parent;
             if (parent.velocity.X != 0 && parent.velocity.Y != 0)
             {
                 //Console.WriteLine("yeah");

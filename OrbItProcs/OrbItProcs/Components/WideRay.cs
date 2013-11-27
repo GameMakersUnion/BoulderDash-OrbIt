@@ -22,7 +22,7 @@ namespace OrbItProcs.Components
         public float rayscale = 20;
         public int width = 3;
 
-        public WideRay() { com = comp.wideray; }
+        public WideRay() { com = comp.wideray; InitializeLists(); }
         public WideRay(Node parent)
         {
             this.parent = parent;
@@ -54,8 +54,9 @@ namespace OrbItProcs.Components
             else return false;
         }
 
-        public override void Initialize()
+        public override void Initialize(Node parent)
         {
+            this.parent = parent;
             
         }
 

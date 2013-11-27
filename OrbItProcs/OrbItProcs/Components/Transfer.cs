@@ -29,8 +29,9 @@ namespace OrbItProcs.Components
             else return false;
         }
 
-        public override void Initialize()
+        public override void Initialize(Node parent)
         {
+            this.parent = parent;
         }
 
         public override void AffectOther(Node other)

@@ -40,8 +40,9 @@ namespace OrbItProcs.Components
             */
         }
 
-        public override void Initialize()
+        public override void Initialize(Node parent)
         {
+            this.parent = parent;
             lifeleft = maxlife;
         }
 

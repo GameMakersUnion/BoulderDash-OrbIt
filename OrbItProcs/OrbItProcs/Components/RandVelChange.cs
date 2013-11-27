@@ -17,8 +17,9 @@ namespace OrbItProcs.Components
             this.com = comp.randvelchange;
         }
 
-        public override void Initialize()
+        public override void Initialize(Node parent)
         {
+            this.parent = parent;
         }
 
         public override bool hasMethod(string methodName)

@@ -24,7 +24,7 @@ namespace OrbItProcs.Components
 
         public double angle = 0;
 
-        public Laser() { com = comp.laser; }
+        public Laser() { com = comp.laser; InitializeLists(); }
         public Laser(Node parent)
         {
             this.parent = parent;
@@ -60,9 +60,10 @@ namespace OrbItProcs.Components
             else return false;
         }
 
-        public override void Initialize()
+        public override void Initialize(Node parent)
         {
-
+            this.parent = parent;
+            parent.Collided += onCollision;
         }
 
         public override void AffectOther(Node other)

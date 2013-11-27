@@ -14,12 +14,13 @@ namespace OrbItProcs.Components
         {
             this.parent = parent;
             this.com = comp.collision;
+
         }
 
 
-        public override void Initialize()
+        public override void Initialize(Node parent)
         {
-
+            this.parent = parent;
         }
 
         public override bool hasMethod(string methodName)

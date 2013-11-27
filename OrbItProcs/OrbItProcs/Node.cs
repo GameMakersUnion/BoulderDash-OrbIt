@@ -266,7 +266,6 @@ namespace OrbItProcs {
             }
         }
 
-        // make another method that will accept a component object?
         public void addComponent(comp c, bool active)
         {
             if (!fetchComponent(c))
@@ -291,7 +290,7 @@ namespace OrbItProcs {
             props.Add(component.com, active);
 
             //checkForComponentMethods(component);
-            if (component.hasMethod("initialize")) component.Initialize();
+            component.Initialize(this);
             //if (component.hasMethod("InitializeLists")) component.InitializeLists();
             SortComponentLists();
         }
@@ -301,37 +300,15 @@ namespace OrbItProcs {
         public bool fetchComponent(comp c)
         {
             Component component;
-            //Console.WriteLine(c);
 
-            if (c == comp.movement) component = new Movement(this);
-            else if (c == comp.collision) component = new Collision(this);
-            else if (c == comp.gravity) component = new Gravity(this);
-            else if (c == comp.transfer) component = new Transfer(this);
-            else if (c == comp.randvelchange) component = new RandVelChange(this);
-            else if (c == comp.randcolor) component = new RandColor(this);
-            else if (c == comp.randinitialvel) component = new RandInitialVel(this);
-            else if (c == comp.maxvel) component = new MaxVel(this);
-            else if (c == comp.linearpull) component = new LinearPull(this);
-            else if (c == comp.laser) component = new Laser(this);
-            else if (c == comp.lasertimers) component = new LaserTimers(this);
-            else if (c == comp.hueshifter) { component = new HueShifter(this); }
-            else if (c == comp.wideray) { component = new WideRay(this); }
-            else if (c == comp.phaseorb) { component = new PhaseOrb(this); }
-            else if (c == comp.lifetime) { component = new Lifetime(this); } 
-            else
-            {
-                //props.Remove(c); // remove bool from props dict ( so that we don't try to call things that aren't there)
-                return false; // component not found
-            }
-            // component.Initialize();  // is this still needed?
+            component = Game1.GenerateComponent(c);
+
+            component.Initialize(this);
+
             if (!comps.ContainsKey(c))
             {
                 comps.Add(c, component);
-                //checkForComponentMethods(component);
             }
-
-            //if (component.hasMethod("initialize")) component.Initialize();
-            if (comps[c].hasMethod("Initialize")) comps[c].Initialize();
 
             return true; // success
         }
@@ -619,7 +596,9 @@ namespace OrbItProcs {
                             destNode.addComponent(key, sourceNode.comps[key].active);
                             //cloneObject<Component>(dict[key], destNode.comps[key]);
                             Component.CloneComponent(dict[key], destNode.comps[key]);
-                            if (destNode.comps[key].hasMethod("initialize")) destNode.comps[key].Initialize();
+
+                            destNode.comps[key].Initialize(destNode);
+                            
 
                             //TODO: how can I check if there is a *non-empty* override of the onCollision method in this component
                             // and if so, add it to the node's Collided event...

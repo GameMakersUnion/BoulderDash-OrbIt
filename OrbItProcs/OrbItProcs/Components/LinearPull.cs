@@ -38,8 +38,9 @@ namespace OrbItProcs.Components
             this.targetPuller = targetPuller;
         }
 
-        public override void Initialize()
+        public override void Initialize(Node parent)
         {
+            this.parent = parent;
         }
 
         public override bool hasMethod(string methodName)

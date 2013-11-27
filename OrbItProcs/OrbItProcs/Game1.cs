@@ -17,20 +17,8 @@ using Component = OrbItProcs.Components.Component;
 using Console = System.Console;
 using sc = System.Console; // use this
 
-//core_active,
-//core_position,
-//core_velocity,
-//core_velMultiplier,
-//core_multiplier,
-//core_effectiveRadius,
-//core_radius,
-//core_mass,
-//core_scale,
-//core_collidable,
-//core_massive,
-//core_texture,
-
 using OrbItProcs.Interface;
+using OrbItProcs.Components;
 
 namespace OrbItProcs {
     /// <summary>
@@ -73,10 +61,70 @@ namespace OrbItProcs {
         
     }
 
+
     public class Game1 : Application {
         //GraphicsDeviceManager graphics;
         //Neoforce Manager
         //private Manager manager;
+
+        public static Dictionary<comp, Component> compObjects = new Dictionary<comp, Component>()
+        {
+            {comp.collision,        new Collision()           },
+            {comp.gravity,          new Gravity()           },
+            {comp.hueshifter,       new HueShifter()        },
+            {comp.laser,            new Laser()             },
+            {comp.lasertimers,      new LaserTimers()       },
+            {comp.lifetime,         new Lifetime()          },
+            {comp.linearpull,       new LinearPull()        },
+            {comp.maxvel,           new MaxVel()            },
+            //{comp.middle,           new MaxVel()            },
+            {comp.movement,         new Movement()          },
+            {comp.phaseorb,         new PhaseOrb()          },
+            {comp.randcolor,        new RandColor()         },
+            {comp.randinitialvel,   new RandInitialVel()    },
+            {comp.randvelchange,    new RandVelChange()     },
+            //{comp.repel,            new Repel()             },
+            //{comp.siphon,           new Siphon()            },
+            //{comp.slow,             new Slow()              }, 
+            {comp.transfer,         new Transfer()          },
+            //{comp.weird,            new Weird()             },
+            {comp.wideray,          new WideRay()           },
+        };
+        public static Dictionary<comp, Type> compTypes = new Dictionary<comp, Type>()
+        {
+            {comp.collision,        typeof(Collision)           },
+            {comp.gravity,          typeof(Gravity)           },
+            {comp.hueshifter,       typeof(HueShifter)        },
+            {comp.laser,            typeof(Laser)             },
+            {comp.lasertimers,      typeof(LaserTimers)       },
+            {comp.lifetime,         typeof(Lifetime)          },
+            {comp.linearpull,       typeof(LinearPull)        },
+            {comp.maxvel,           typeof(MaxVel)            },
+          //{comp.middle,           typeof(MaxVel)            },
+            {comp.movement,         typeof(Movement)          },
+            {comp.phaseorb,         typeof(PhaseOrb)          },
+            {comp.randcolor,        typeof(RandColor)         },
+            {comp.randinitialvel,   typeof(RandInitialVel)    },
+            {comp.randvelchange,    typeof(RandVelChange)     },
+          //{comp.repel,            typeof(Repel)             },
+          //{comp.siphon,           typeof(Siphon)            },
+          //{comp.slow,             typeof(Slow)              }, 
+            {comp.transfer,         typeof(Transfer)          },
+          //{comp.weird,            typeof(Weird)             },
+            {comp.wideray,          typeof(WideRay)           },
+        };
+
+        public static Component GenerateComponent(comp c)
+        {
+            //Component component = new Component();
+
+            //Component component = (Component) Activator.CreateInstance(compObjects[c].GetType());
+            Component component = (Component)Activator.CreateInstance(compTypes[c]);
+            Component.CloneComponent(compObjects[c], component);
+            return component;
+
+        }
+        
         public UserInterface ui;
         public Room room;
         SpriteBatch spriteBatch;
@@ -156,7 +204,8 @@ namespace OrbItProcs {
             textureDict.Add(textures.whitecircle, Content.Load<Texture2D>("whitecircle"));
             font = Content.Load<SpriteFont>("Courier New");
 
-            Node n;
+            
+            
             
 
             // TODO: Add your initialization logic here
@@ -172,10 +221,10 @@ namespace OrbItProcs {
                     { comp.maxvel, true },
                     //{ comp.randvelchange, true },
                     { comp.randinitialvel, true },
-                    //{ comp.gravity, true },
+                    { comp.gravity, true },
                     //{ comp.linearpull, true },
                     //{ comp.laser, true },
-                    { comp.wideray, true },
+                    //{ comp.wideray, true },
                     { comp.hueshifter, true },
                     //{ comp.transfer, true },
                     //{ comp.phaseorb, true },

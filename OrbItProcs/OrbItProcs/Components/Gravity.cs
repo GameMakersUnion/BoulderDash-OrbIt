@@ -14,6 +14,7 @@ namespace OrbItProcs.Components {
         private float _radius = 300f;
         public float radius { get { return _radius; } set { _radius = value; } }
 
+        public Gravity() { com = comp.gravity; }
 
         public Gravity(Node parent)
         {
@@ -22,9 +23,9 @@ namespace OrbItProcs.Components {
         }
 
 
-        public override void Initialize()
+        public override void Initialize(Node parent)
         {
-
+            this.parent = parent;
         }
 
         public override bool hasMethod(string methodName)

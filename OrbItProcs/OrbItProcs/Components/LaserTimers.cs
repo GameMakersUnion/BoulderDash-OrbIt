@@ -8,37 +8,39 @@ namespace OrbItProcs.Components
 {
     public class LaserTimers : Component {
         
-        public float maxscale, currentscale;
-        public float r, g, b;
+        private float _maxscale = 20, _currentscale = 1;
+        public float maxscale { get { return _maxscale; } set { _maxscale = value; } }
+        public float currentscale { get { return _currentscale; } set { _currentscale = value; } }
         public Queue<Vector2> positions;
         public Queue<float> angles;
         public List<int> collisionTimers;
         public List<float> scales;
         public List<Vector2> scalesVects;
         
-        public int queuecount, scalingcounter;
-        public int timer, timer2, _timerMax, collisionTimer, collisionTimerTemp;
+        private int _queuecount = 10, _scalingcounter = -1, _timerMax = 2;
+        public int queuecount { get { return _queuecount; } set { _queuecount = value; } }
+        public int scalingcounter { get { return _scalingcounter; } set { _scalingcounter = value; } }
+        private int timer = 0, timer2 = 0;
         public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
 
-        public double angle;
+        private double angle = 0;
+
+        public LaserTimers() { com = comp.lasertimers; InitializeLists(); }
 
         public LaserTimers(Node parent)
         {
             this.parent = parent;
             parent.Collided += onCollision;
+            this.com = comp.lasertimers;
 
-            this.com = comp.laser;
-            this.maxscale = 20;
-            this.currentscale = 1;
-            this.r = this.g = this.b = 1f;
+            //this.maxscale = 20;
+            //this.currentscale = 1;
             
-            queuecount = 10;
-            timer = timer2 = 0;
-            timerMax = 2;
-            angle = 0;
-            collisionTimer = 0;
-            collisionTimerTemp = 0;
-            scalingcounter = -1;
+            //queuecount = 10;
+            //timer = timer2 = 0;
+            //timerMax = 2;
+            //angle = 0;
+            //scalingcounter = -1;
 
             InitializeLists();
 
@@ -68,9 +70,9 @@ namespace OrbItProcs.Components
             else return false;
         }
 
-        public override void Initialize()
+        public override void Initialize(Node parent)
         {
-
+            this.parent = parent;
         }
 
         public override void AffectOther(Node other)

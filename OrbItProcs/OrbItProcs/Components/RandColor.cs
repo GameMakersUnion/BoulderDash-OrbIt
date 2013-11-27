@@ -29,8 +29,9 @@ namespace OrbItProcs.Components {
             else return false;
         }
 
-        public override void Initialize()
+        public override void Initialize(Node parent)
         {
+            this.parent = parent;
             if (parent != null)
             {
                 parent.color = new Color((float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255);

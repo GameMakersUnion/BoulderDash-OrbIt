@@ -11,7 +11,6 @@ using Component = OrbItProcs.Components.Component;
 namespace OrbItProcs.Components
 {
     public abstract class Component {
-
         public Dictionary<dynamic, dynamic> compProps = new Dictionary<dynamic, dynamic>();
 
         private bool _active = true;
@@ -36,7 +35,7 @@ namespace OrbItProcs.Components
         public comp _com;
         public comp com { get { return _com; } set { _com = value; } }
 
-       public abstract void Initialize();
+       public abstract void Initialize(Node parent);
        public abstract void AffectOther(Node other);
        public abstract void AffectSelf();
        public abstract void Draw(SpriteBatch spritebatch);
