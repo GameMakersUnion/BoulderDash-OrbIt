@@ -11,7 +11,22 @@ namespace OrbItProcs.Components
     {
 
 
-
+        public bool active
+        {
+            get
+            {
+                return _active;
+            }
+            set
+            {
+                _active = value;
+                if (value && parent != null) Initialize(parent);
+                if (parent != null && parent.comps.ContainsKey(com))
+                {
+                    parent.triggerSortLists();
+                }
+            }
+        }
 
         private int _maxlife = 100;
         public int maxlife { get { return _maxlife; } set { _maxlife = value; } }
@@ -26,34 +41,19 @@ namespace OrbItProcs.Components
         private bool _alive = true;
         public bool alive { get { return _alive; } set { _alive = value; } }
 
-        public Lifetime() { com = comp.lifetime; }
-
-        public Lifetime(Node parent)
+        public Lifetime() : this(null) { }
+        public Lifetime(Node parent = null)
         {
-            this.parent = parent;
-            this.com = comp.lifetime;
-            /*
-            maxlife = 100;
-            lifeleft = maxlife;
-            timer = 0;
-            timerMax = 1;
-            */
+            if (parent != null) this.parent = parent;
+            com = comp.lifetime; 
+            methods = mtypes.affectself; 
         }
+
 
         public override void Initialize(Node parent)
         {
             this.parent = parent;
             lifeleft = maxlife;
-        }
-
-        public override bool hasMethod(string methodName)
-        {
-            methodName = methodName.ToLower();
-            if (methodName.Equals("initialize")) return true;
-            if (methodName.Equals("affectother")) return false;
-            if (methodName.Equals("affectself")) return true;
-            if (methodName.Equals("draw")) return false;
-            else return false;
         }
 
         public override void AffectOther(Node other)
@@ -85,9 +85,6 @@ namespace OrbItProcs.Components
 
         public override void Draw(SpriteBatch spritebatch)
         {
-            //it would be really cool to have some kind of blending effects so that every combination of components will look diff
-            //spritebatch.Draw(parent.getTexture(), parent.props[properties.core_position], Color.White);
-            //spritebatch.Draw(parent.getTexture(), parent.position, null, Color.White, 0, new Vector2(parent.texture.Width / 2, parent.texture.Height / 2), 1f, SpriteEffects.None, 0);
         }
 
     }

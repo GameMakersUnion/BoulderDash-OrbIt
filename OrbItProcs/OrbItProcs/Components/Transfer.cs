@@ -12,21 +12,12 @@ namespace OrbItProcs.Components
         public float _radius = 25f;
         public float radius { get { return _radius; } set { _radius = value; } }
 
-        public Transfer() { com = comp.transfer; }
-        public Transfer(Node parent)
+        public Transfer() : this(null) { }
+        public Transfer(Node parent = null)
         {
-            this.parent = parent;
-            this.com = comp.transfer;
-
-        }
-
-        public override bool hasMethod(string methodName)
-        {
-            methodName = methodName.ToLower();
-            if (methodName.Equals("affectother")) return true;
-            if (methodName.Equals("affectself")) return false;
-            if (methodName.Equals("draw")) return true;
-            else return false;
+            if (parent != null) this.parent = parent;
+            com = comp.transfer; 
+            methods = mtypes.affectother; 
         }
 
         public override void Initialize(Node parent)
@@ -53,7 +44,6 @@ namespace OrbItProcs.Components
 
         public override void Draw(SpriteBatch spritebatch)
         {
-            spritebatch.Draw(parent.getTexture(), parent.position, null, Color.White, 0, parent.TextureCenter(), 1f, SpriteEffects.None, 0);
         }
     }
 }

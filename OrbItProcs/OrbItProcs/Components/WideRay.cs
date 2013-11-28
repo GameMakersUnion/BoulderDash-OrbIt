@@ -22,36 +22,20 @@ namespace OrbItProcs.Components
         public float rayscale = 20;
         public int width = 3;
 
-        public WideRay() { com = comp.wideray; InitializeLists(); }
-        public WideRay(Node parent)
+        public WideRay() : this(null) { }
+        public WideRay(Node parent = null)
         {
-            this.parent = parent;
-            this.com = comp.wideray;
-            /*
-            queuecount = 10;
-            angle = 0;
-            timer = 0;
-            timerMax = 1;
-            rayscale = 20;
-            width = 3;
-            */
-            InitializeLists();
-
+            if (parent != null) this.parent = parent;
+            com = comp.wideray;
+            methods = mtypes.affectself | mtypes.draw;
+            InitializeLists();  
         }
+
 
         public override void InitializeLists()
         {
             positions = new Queue<Vector2>();
             angles = new Queue<float>();
-        }
-
-        public override bool hasMethod(string methodName)
-        {
-            methodName = methodName.ToLower();
-            if (methodName.Equals("affectother")) return false;
-            if (methodName.Equals("affectself")) return true;
-            if (methodName.Equals("draw")) return true;
-            else return false;
         }
 
         public override void Initialize(Node parent)

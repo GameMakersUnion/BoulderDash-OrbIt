@@ -5,15 +5,28 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Reflection;
+using OrbItProcs.Processes;
+using OrbItProcs.Interface;
 
 using Component = OrbItProcs.Components.Component;
 
 namespace OrbItProcs.Components
 {
-    public abstract class Component {
-        public Dictionary<dynamic, dynamic> compProps = new Dictionary<dynamic, dynamic>();
+    [Flags]
+    public enum mtypes
+    {
+        none = 0x00,
+        initialize = 0x01,
+        affectother = 0x02,
+        affectself = 0x04,
+        draw = 0x08,
+        changereference = 0x10,
+    };
 
-        private bool _active = true;
+
+    public abstract class Component {
+
+        protected bool _active = false;
         public bool active
         {
             get
@@ -31,15 +44,26 @@ namespace OrbItProcs.Components
         }
 
         public int sentinel = -10;
-        public Node parent;
+        protected Node _parent;
+        public Node parent
+        {
+            get
+            {
+                return _parent;
+            }
+            set
+            {
+                _parent = value;
+            }
+        }
         public comp _com;
         public comp com { get { return _com; } set { _com = value; } }
+        public mtypes methods;
 
        public abstract void Initialize(Node parent);
        public abstract void AffectOther(Node other);
        public abstract void AffectSelf();
        public abstract void Draw(SpriteBatch spritebatch);
-       public abstract bool hasMethod(string methodName);
 
        public virtual void InitializeLists()
        { 
@@ -58,14 +82,44 @@ namespace OrbItProcs.Components
        public static void CloneComponent(Component sourceComp, Component destComp)
        {
            List<FieldInfo> fields = sourceComp.GetType().GetFields().ToList();
+           fields.AddRange(sourceComp.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance).ToList());
            List<PropertyInfo> properties = sourceComp.GetType().GetProperties().ToList();
            foreach (PropertyInfo property in properties)
            {
+               if (property.PropertyType == typeof(ModifierInfo)) continue;
+               
                property.SetValue(destComp, property.GetValue(sourceComp, null), null);
            }
            foreach (FieldInfo field in fields)
            {
                //Console.WriteLine("fieldtype: " + field.FieldType);
+               if (field.FieldType == typeof(ModifierInfo))
+               {
+                   Modifier mod = (Modifier) sourceComp;
+                   if (mod.modifierInfo == null)
+                   {
+                       field.SetValue(destComp, null);
+                       continue;
+                   }
+                   Dictionary<string, Tuple<FPInfo, object>> newFpInfos = new Dictionary<string, Tuple<FPInfo, object>>();
+                   foreach(string key in mod.modifierInfo.fpInfos.Keys)
+                   {
+                       FPInfo fpinfo = new FPInfo(mod.modifierInfo.fpInfos[key].Item1);
+                       
+                       newFpInfos.Add(key, new Tuple<FPInfo,object>(fpinfo,null) );
+                   }
+                   Dictionary<string, dynamic> newargs = new Dictionary<string, dynamic>();
+                   foreach(string key in mod.modifierInfo.args.Keys)
+                   {
+                       newargs.Add(key, mod.modifierInfo.args[key]); //by reference (for now)
+                   }
+
+
+                   ModifierInfo modInfo = new ModifierInfo(newFpInfos, newargs, mod.modifierInfo.modifierDelegate);
+                   field.SetValue(destComp, modInfo);
+
+               }
+
                if (field.FieldType.ToString().Contains("Dictionary"))
                {
                    //Console.WriteLine(field.Name + " is a dictionary.");
@@ -107,10 +161,11 @@ namespace OrbItProcs.Components
                    //field.SetValue(destComp, field.GetValue(sourceComp));
                }
 
-               destComp.InitializeLists();
+               
 
                //field.SetValue(newobj, field.GetValue(obj));
            }
+           destComp.InitializeLists();
        }
     }
 

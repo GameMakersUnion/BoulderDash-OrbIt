@@ -10,29 +10,42 @@ using Component = OrbItProcs.Components.Component;
 namespace OrbItProcs.Components {
     public class RandColor : Component {
 
-        //public Color randCol;
-        public RandColor() { com = comp.randcolor; }
-        public RandColor(Node parent)
+        new public bool active
         {
-            this.parent = parent;
-            this.com = comp.randcolor;
-            //randCol = Color.Blue;
-            //randCol = new Color((float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255);
+            get
+            {
+                return _active;
+            }
+            set
+            {
+                
+                _active = value;
+                if (value && parent != null)
+                {
+                    Initialize(parent);
+                }
+                if (parent != null && parent.comps.ContainsKey(com))
+                {
+                    parent.triggerSortLists();
+                }
+                
+            }
         }
 
-        public override bool hasMethod(string methodName)
+        //public Color randCol;
+
+        public RandColor() : this(null) { }
+        public RandColor(Node parent = null)
         {
-            methodName = methodName.ToLower();
-            if (methodName.Equals("affectother")) return false;
-            if (methodName.Equals("affectself")) return false;
-            if (methodName.Equals("draw")) return true;
-            else return false;
+            if (parent != null) this.parent = parent;
+            com = comp.randcolor; 
+            methods = mtypes.initialize; 
         }
 
         public override void Initialize(Node parent)
         {
             this.parent = parent;
-            if (parent != null)
+            if (active)
             {
                 parent.color = new Color((float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255);
             }
@@ -48,16 +61,6 @@ namespace OrbItProcs.Components {
 
         public override void Draw(SpriteBatch spritebatch)
         {
-
-            Room room = parent.room;
-            float mapzoom = room.mapzoom;
-
-            float tempScale = parent.scale / mapzoom;
-            float screenx = parent.position.X / mapzoom;
-            float screeny = parent.position.Y / mapzoom;
-
-            spritebatch.Draw(parent.getTexture(), new Vector2(screenx, screeny), null, parent.color, 0, parent.TextureCenter(), tempScale, SpriteEffects.None, 0);
-            
         }
 
         

@@ -149,7 +149,7 @@ namespace OrbItProcs.Interface {
             foreach (FieldInfo field in fieldInfos)
             {
                 TreeListItem item = new TreeListItem(n, field);
-                if (field.Name.Equals("sentinel")) break;
+                if (field.Name.Equals("_sentinel")) break;
                 list.Add(item);
             }
             

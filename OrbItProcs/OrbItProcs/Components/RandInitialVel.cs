@@ -9,6 +9,23 @@ namespace OrbItProcs.Components
 {
     public class RandInitialVel : Component {
 
+        public bool active
+        {
+            get
+            {
+                return _active;
+            }
+            set
+            {
+                _active = value;
+                if (value && parent != null) Initialize(parent);
+                if (parent != null && parent.comps.ContainsKey(com))
+                {
+                    parent.triggerSortLists();
+                }
+            }
+        }
+
         private float _multiplier = 16f;
         
         public float multiplier
@@ -34,43 +51,36 @@ namespace OrbItProcs.Components
             }
         }
 
-        public RandInitialVel() { com = comp.randinitialvel; }
-
-        public RandInitialVel(Node parent)
+        public RandInitialVel() : this(null) { }
+        public RandInitialVel(Node parent = null)
         {
-            this.parent = parent;
-            this.com = comp.randinitialvel;
+            if (parent != null) this.parent = parent;
+            com = comp.randinitialvel; 
+            methods = mtypes.initialize; 
         }
 
         public override void Initialize(Node parent)
         {
             this.parent = parent;
-            if (parent.velocity.X != 0 && parent.velocity.Y != 0)
+            if (active)
             {
-                //Console.WriteLine("yeah");
-                parent.velocity.Normalize();
-                parent.velocity *= multiplier;
-                //Console.WriteLine(parent.velocity);
+                if (parent.velocity.X != 0 && parent.velocity.Y != 0)
+                {
+                    //Console.WriteLine("yeah");
+                    parent.velocity.Normalize();
+                    parent.velocity *= multiplier;
+                    //Console.WriteLine(parent.velocity);
+                }
+                else
+                {
+                    float x = ((float)Utils.random.NextDouble() * 100) - 50;
+                    float y = ((float)Utils.random.NextDouble() * 100) - 50;
+                    Vector2 vel = new Vector2(x, y);
+                    vel.Normalize();
+                    vel = vel * multiplier;
+                    parent.velocity = vel;
+                }
             }
-            else
-            {
-                float x = ((float)Utils.random.NextDouble() * 100) - 50;
-                float y = ((float)Utils.random.NextDouble() * 100) - 50;
-                Vector2 vel = new Vector2(x, y);
-                vel.Normalize();
-                vel = vel * multiplier;
-                parent.velocity = vel;
-            }
-        }
-
-        public override bool hasMethod(string methodName)
-        {
-            methodName = methodName.ToLower();
-            if (methodName.Equals("initialize")) return true;
-            if (methodName.Equals("affectother")) return false;
-            if (methodName.Equals("affectself")) return false;
-            if (methodName.Equals("draw")) return true;
-            else return false;
         }
 
         public override void AffectOther(Node other)
@@ -83,9 +93,6 @@ namespace OrbItProcs.Components
 
         public override void Draw(SpriteBatch spritebatch)
         {
-            //it would be really cool to have some kind of blending effects so that every combination of components will look diff
-            //spritebatch.Draw(parent.props[properties.core_texture], parent.props[properties.core_position], Color.White);
-            spritebatch.Draw(parent.getTexture(), parent.position, null, Color.White, 0, parent.TextureCenter(), 1f, SpriteEffects.None, 0);
         }
 
     }

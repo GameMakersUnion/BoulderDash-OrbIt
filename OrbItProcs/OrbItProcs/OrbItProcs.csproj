@@ -118,6 +118,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\BasicDraw.cs" />
     <Compile Include="Components\Collision.cs" />
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\Gravity.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="Components\Lifetime.cs" />
     <Compile Include="Components\LinearPull.cs" />
     <Compile Include="Components\MaxVel.cs" />
+    <Compile Include="Components\Modifier.cs" />
     <Compile Include="Components\Movement.cs" />
     <Compile Include="Components\PhaseOrb.cs" />
     <Compile Include="Components\RandColor.cs" />
@@ -136,12 +138,14 @@
     <Compile Include="Components\WideRay.cs" />
     <Compile Include="FrameRateCounter.cs" />
     <Compile Include="GridSystem.cs" />
+    <Compile Include="Interface\FPInfo.cs" />
     <Compile Include="Interface\PopupWindow.cs" />
     <Compile Include="Interface\InspectorItem.cs" />
     <Compile Include="Interface\TLITree.cs" />
     <Compile Include="Interface\TreeListItem.cs" />
     <Compile Include="Interface\UserInterface.cs" />
     <Compile Include="Node.cs" />
+    <Compile Include="Processes\ModifierInfo.cs" />
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Processes\ProcessManager.cs" />
     <Compile Include="Processes\Procs.cs" />
@@ -153,8 +157,10 @@
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="donelist.txt" />
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
+    <Content Include="Issues.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OrbItProcsContent\OrbItProcsContent.contentproj">

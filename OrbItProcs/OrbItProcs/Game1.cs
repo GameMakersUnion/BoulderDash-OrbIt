@@ -19,6 +19,7 @@ using sc = System.Console; // use this
 
 using OrbItProcs.Interface;
 using OrbItProcs.Components;
+using OrbItProcs.Processes;
 
 namespace OrbItProcs {
     /// <summary>
@@ -27,28 +28,33 @@ namespace OrbItProcs {
     /// </summary>
 
     public enum comp {
-        lasertimers,
+
         laser,
         wideray,
         phaseorb,
-        randcolor,
         movement,
+        collision,
+        gravity,
+        randcolor,
         randvelchange,
         randinitialvel,
-        gravity,
-        repel,
-        middle,
-        slow,
         transfer,
-        siphon,
-        ghost,
-        chrono,
-        weird,
         maxvel,
+        modifier,
         linearpull,
         hueshifter,
         lifetime,
-        collision,
+        basicdraw,
+
+        //lasertimers,
+        //repel,
+        //middle,
+        //slow,
+        //siphon,
+        //ghost,
+        //chrono,
+        //weird,
+        
     };
 
     public enum textures
@@ -66,60 +72,41 @@ namespace OrbItProcs {
         //GraphicsDeviceManager graphics;
         //Neoforce Manager
         //private Manager manager;
-
+        //*
         public static Dictionary<comp, Component> compObjects = new Dictionary<comp, Component>()
         {
-            {comp.collision,        new Collision()           },
+            {comp.basicdraw,        new BasicDraw()         },
+            {comp.collision,        new Collision()         },
             {comp.gravity,          new Gravity()           },
             {comp.hueshifter,       new HueShifter()        },
             {comp.laser,            new Laser()             },
-            {comp.lasertimers,      new LaserTimers()       },
             {comp.lifetime,         new Lifetime()          },
             {comp.linearpull,       new LinearPull()        },
             {comp.maxvel,           new MaxVel()            },
-            //{comp.middle,           new MaxVel()            },
+            {comp.modifier,         new Modifier()          },
             {comp.movement,         new Movement()          },
             {comp.phaseorb,         new PhaseOrb()          },
             {comp.randcolor,        new RandColor()         },
             {comp.randinitialvel,   new RandInitialVel()    },
             {comp.randvelchange,    new RandVelChange()     },
-            //{comp.repel,            new Repel()             },
-            //{comp.siphon,           new Siphon()            },
-            //{comp.slow,             new Slow()              }, 
             {comp.transfer,         new Transfer()          },
-            //{comp.weird,            new Weird()             },
             {comp.wideray,          new WideRay()           },
+          //{comp.lasertimers,      new LaserTimers()       },
+          //{comp.middle,           new MaxVel()            },
+          //{comp.repel,            new Repel()             },
+          //{comp.siphon,           new Siphon()            },
+          //{comp.slow,             new Slow()              }, 
+          //{comp.weird,            new Weird()             },
         };
-        public static Dictionary<comp, Type> compTypes = new Dictionary<comp, Type>()
-        {
-            {comp.collision,        typeof(Collision)           },
-            {comp.gravity,          typeof(Gravity)           },
-            {comp.hueshifter,       typeof(HueShifter)        },
-            {comp.laser,            typeof(Laser)             },
-            {comp.lasertimers,      typeof(LaserTimers)       },
-            {comp.lifetime,         typeof(Lifetime)          },
-            {comp.linearpull,       typeof(LinearPull)        },
-            {comp.maxvel,           typeof(MaxVel)            },
-          //{comp.middle,           typeof(MaxVel)            },
-            {comp.movement,         typeof(Movement)          },
-            {comp.phaseorb,         typeof(PhaseOrb)          },
-            {comp.randcolor,        typeof(RandColor)         },
-            {comp.randinitialvel,   typeof(RandInitialVel)    },
-            {comp.randvelchange,    typeof(RandVelChange)     },
-          //{comp.repel,            typeof(Repel)             },
-          //{comp.siphon,           typeof(Siphon)            },
-          //{comp.slow,             typeof(Slow)              }, 
-            {comp.transfer,         typeof(Transfer)          },
-          //{comp.weird,            typeof(Weird)             },
-            {comp.wideray,          typeof(WideRay)           },
-        };
+
 
         public static Component GenerateComponent(comp c)
         {
             //Component component = new Component();
-
             //Component component = (Component) Activator.CreateInstance(compObjects[c].GetType());
-            Component component = (Component)Activator.CreateInstance(compTypes[c]);
+            object[] args = new object[]{ null };
+            Component component = (Component)Activator.CreateInstance(compObjects[c].GetType(),args);
+            
             Component.CloneComponent(compObjects[c], component);
             return component;
 
@@ -215,7 +202,7 @@ namespace OrbItProcs {
                     { node.position, new Vector2(0, 0) },
                     //{ node.radius, 12 },
                     { node.collidable, true },
-                    { comp.randcolor, true },
+                    { comp.basicdraw, true },
                     { comp.collision, true },
                     { comp.movement, true }, //this will default as 'true'
                     { comp.maxvel, true },
@@ -232,6 +219,51 @@ namespace OrbItProcs {
                 };
             room.defaultNode = new Node(room, userPr);
             room.defaultNode.name = "DEFAULTNODE";
+
+            //MODIFIER ADDITION
+            //*
+            room.defaultNode.addComponent(comp.modifier, true);
+
+            ModifierInfo modinfo = new ModifierInfo();
+            modinfo.fpInfos.Add("scale", new Tuple<FPInfo, object>(FPInfo.GetNew("scale",room.defaultNode), room.defaultNode));
+            modinfo.fpInfos.Add("position", new Tuple<FPInfo, object>(FPInfo.GetNew("position", room.defaultNode), room.defaultNode));
+
+            modinfo.args.Add("mod", 4.0f);
+            
+            /*
+            ModifierDelegate moddel = delegate(Dictionary<string, dynamic> args, ModifierInfo mi)
+            {
+                float scale = (float)mi.fpInfos["scale"].Item1.GetValue();
+                Vector2 position = (Vector2)mi.fpInfos["position"].Item1.GetValue();
+                scale = (position.X / 100) % (float)args["mod"];
+                mi.fpInfos["scale"].Item1.SetValue(scale);
+            };
+            //*/
+            ModifierDelegate moddel = delegate(Dictionary<string, dynamic> args, ModifierInfo mi)
+            {
+                float scale = (float)mi.fpInfos["scale"].Item1.GetValue();
+                Vector2 position = (Vector2)mi.fpInfos["position"].Item1.GetValue();
+                //int mod = (int)args["mod"];
+                int mod = 100;
+                scale = ((float)Math.Pow((double)(((int)position.X / 10) % mod) - (mod / 2),2)/2)/(mod*5)+0.5f;
+                //Console.WriteLine(scale);
+                mi.fpInfos["scale"].Item1.SetValue(scale);
+            };
+
+            modinfo.modifierDelegate += moddel;
+            room.defaultNode.comps[comp.modifier].modifierInfo = modinfo;
+            //*/
+            //MODIFIER ADDITION COMPLETE
+            
+            Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
+                    { node.position, new Vector2(0, 0) },
+                    { comp.basicdraw, true },
+                    { comp.hueshifter, true },
+                    { comp.phaseorb, false },
+                    { node.texture, textures.whitecircle }
+                };
+            room.targetNodeGraphic = new Node(room, userPropsTarget);
+            room.targetNodeGraphic.name = "TargetNodeGraphic";
             
 
             //node = new Node(room);
@@ -239,33 +271,20 @@ namespace OrbItProcs {
             //manager.Initialize();
             base.Initialize();
 
-            Console.WriteLine("why");
 
             ui = new UserInterface(this);
 
-            //testing
-            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
-                    { node.position, new Vector2(56, 76) },
-                    //{ node.radius, 12 },
-                    { node.collidable, true },
-                    { comp.randcolor, true },
-                    { comp.movement, true }, //this will default as 'true'
-                    //{ comp.randvelchange, true },
-                    //{ comp.randinitialvel, true },
-                    { comp.gravity, true },
-                    
-                    //{ comp.transfer, true },
-                    { node.texture, textures.whiteorb }
-                };
-            Node testnode = new Node(room, userP);
+            int b = 2;
+            testrefs(ref b);
+            //Console.WriteLine(b);
 
-
-            testnode.position.X = 4; // works
-            //testnode.vecttest.X = 5;
-            
-            // how can I directly modify the members of a certain property?
-            //testnode.vecttest = new Vector2(5, testnode.vecttest.Y);
         }
+
+        public void testrefs(ref int a)
+        {
+            a = 3;
+        }
+
 
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
@@ -345,7 +364,8 @@ namespace OrbItProcs {
                     { node.texture, textures.whiteorb },
                     //{ node.radius, 12 },
                     //{ node.collidable, true },
-                    { comp.randcolor, true },
+                    //{ comp.randcolor, true },
+                    { comp.basicdraw, true },
                     { comp.movement, true }, //this will default as 'true'
                     //{ comp.randvelchange, true },
                     { comp.randinitialvel, true },
@@ -359,15 +379,23 @@ namespace OrbItProcs {
                 };
 
             Node newNode = new Node();
+            if (ui.spawnerNode != null)
+            {
+                Node.cloneObject(ui.spawnerNode, newNode);
+
+            }
+            else
+            {
+                Node.cloneObject(room.defaultNode, newNode);
+            }
             
-            Node.cloneObject(room.defaultNode, newNode);
             newNode.position = new Vector2(worldMouseX, worldMouseY);
             //newNode.acceptUserProps(userP);
 
             //Node newNode = new Node(room, userP);
 
             newNode.name = "node" + Node.nodeCounter;
-
+            //if (newNode.comps.ContainsKey(comp.modifier)) newNode.comps[comp.modifier].UpdateReferences();
             ui.UpdateNodeList(newNode);
 
             //newNode.comps[comp.gravity].multiplier = 1000000f;
@@ -383,21 +411,24 @@ namespace OrbItProcs {
             //Node newNode = new Node(room,userProperties);
             Node newNode = new Node();
 
-            Node.cloneObject(room.defaultNode, newNode);
+            if (ui.spawnerNode != null)
+            {
+                Node.cloneObject(ui.spawnerNode, newNode);
+
+            }
+            else
+            {
+                Node.cloneObject(room.defaultNode, newNode);
+            }
+            
             //newNode.position = new Vector2(worldMouseX, worldMouseY);
             
             newNode.acceptUserProps(userProperties);
             //newNode.position = userProperties[node.position];
             //Node newNode = new Node(room, userP);
 
-            if (newNode.comps.ContainsKey(comp.randinitialvel))
-            {
-                //hack
-                //newNode.comps[comp.randinitialvel].Initialize();
-            }
-
             newNode.name = "node" + Node.nodeCounter;
-
+            //if (newNode.comps.ContainsKey(comp.modifier)) newNode.comps[comp.modifier].UpdateReferences();
             ui.UpdateNodeList(newNode);
 
             //newNode.comps[comp.gravity].multiplier = 1000000f;
@@ -528,7 +559,7 @@ namespace OrbItProcs {
                     {
                         Node n = (Node)room.nodes.ElementAt(i);
                         // find node that has been clicked, starting from the most recently placed nodes
-                        if (Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY)) < n.Radius * n.Radius)
+                        if (Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY)) < n.radius * n.radius)
                         {
                             //--
                             room.nodes.Remove(n);
@@ -553,7 +584,7 @@ namespace OrbItProcs {
                     {
                         Node n = (Node)room.nodes.ElementAt(i);
                         // find node that has been clicked, starting from the most recently placed nodes
-                        if (Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY)) < n.Radius * n.Radius)
+                        if (Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY)) < n.radius * n.radius)
                         {
                             targetNode = n;
                             found = true;

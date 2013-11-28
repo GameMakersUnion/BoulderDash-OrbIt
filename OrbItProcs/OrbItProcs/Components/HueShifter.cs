@@ -19,35 +19,12 @@ namespace OrbItProcs.Components
         private int pos = 1, sign = 1;
         private int angle = 0;
 
-        //public HueShifter() : this(Program.getRoom().defaultNode) { }
-        public HueShifter() { com = comp.hueshifter; }
-
-        public HueShifter(Node parent)
+        public HueShifter() : this(null) { }
+        public HueShifter(Node parent = null)
         {
-            this.parent = parent;
-            this.com = comp.hueshifter;
-            /*
-            timer = 0;
-            timerMax = 2;
-            rgb = new int[3];
-            rgb[0] = 255;
-            rgb[1] = 0;
-            rgb[2] = 0;
-            pos = 1;
-            inc = 30;
-            sign = 1;
-            angle = 0;
-            */
-        }
-
-
-        public override bool hasMethod(string methodName)
-        {
-            methodName = methodName.ToLower();
-            if (methodName.Equals("affectother")) return false;
-            if (methodName.Equals("affectself")) return true;
-            if (methodName.Equals("draw")) return true;
-            else return false;
+            if (parent != null) this.parent = parent;
+            com = comp.hueshifter; 
+            methods = mtypes.affectself; 
         }
 
         public override void Initialize(Node parent)

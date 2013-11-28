@@ -9,6 +9,24 @@ namespace OrbItProcs.Components
 {
     public class Laser : Component
     {
+        public bool active
+        {
+            get
+            {
+                return _active;
+            }
+            set
+            {
+                
+                _active = value;
+                if (!value && parent != null) parent.Collided -= onCollision;
+                if (parent != null && parent.comps.ContainsKey(com))
+                {
+                    parent.triggerSortLists();
+                }
+            }
+        }
+
         //private float r = 1f, g = 1f, b = 1f;
         public Queue<Vector2> positions;
         public Color color;
@@ -24,23 +42,19 @@ namespace OrbItProcs.Components
 
         public double angle = 0;
 
-        public Laser() { com = comp.laser; InitializeLists(); }
-        public Laser(Node parent)
+        public Laser() : this(null) { }
+        public Laser(Node parent = null)
         {
-            this.parent = parent;
-            parent.Collided += onCollision;
-
-            this.com = comp.laser;
-            /*
-            this.r = this.g = this.b = 1f;
-            queuecount = 10;
-            angle = 0;
-            timer = 0;
-            timerMax = 2;
-            */
-            InitializeLists();
-
+            if (parent != null)
+            {
+                this.parent = parent;
+                this.parent.Collided += onCollision;
+            }
+            com = comp.laser; 
+            methods = mtypes.affectself | mtypes.draw; 
+            InitializeLists(); 
         }
+
 
         public override void InitializeLists()
         {
@@ -49,15 +63,6 @@ namespace OrbItProcs.Components
             color = Utils.randomColor();
             hshift = new HueShifter(null);
 
-        }
-
-        public override bool hasMethod(string methodName)
-        {
-            methodName = methodName.ToLower();
-            if (methodName.Equals("affectother")) return false;
-            if (methodName.Equals("affectself")) return true;
-            if (methodName.Equals("draw")) return true;
-            else return false;
         }
 
         public override void Initialize(Node parent)
@@ -109,7 +114,6 @@ namespace OrbItProcs.Components
         public override void Draw(SpriteBatch spritebatch)
         {
             //it would be really cool to have some kind of blending effects so that every combination of components will look diff
-            //parent.scale = 1 / mapzoom;
             Room room = parent.room;
             float mapzoom = room.mapzoom;
             //Color col = new Color(0f, 0f, 0f);

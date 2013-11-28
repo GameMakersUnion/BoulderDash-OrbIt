@@ -120,7 +120,7 @@ namespace OrbItProcs {
         public static bool checkCollision(Node o1, Node o2)
         {
 
-            if (Vector2.DistanceSquared(o1.position, o2.position) <= ((o1.Radius + o2.Radius) * (o1.Radius + o2.Radius)) && o1.collidable && o2.collidable)
+            if (Vector2.DistanceSquared(o1.position, o2.position) <= ((o1.radius + o2.radius) * (o1.radius + o2.radius)) && o1.collidable && o2.collidable)
             {
                 return true;
             }
@@ -167,15 +167,15 @@ namespace OrbItProcs {
         {
             //float orbRadius = 25.0f; //integrate this into the orb class
             //if the orbs are still within colliding distance after moving away (fix radius variables)
-            //if (Vector2.DistanceSquared(o1.position + o1.velocity, o2.position + o2.velocity) <= ((o1.Radius * 2) * (o2.Radius * 2)))
-            if (Vector2.DistanceSquared(o1.position + o1.velocity, o2.position + o2.velocity) <= ((o1.Radius + o2.Radius) * (o1.Radius + o2.Radius)))
+            //if (Vector2.DistanceSquared(o1.position + o1.velocity, o2.position + o2.velocity) <= ((o1.radius * 2) * (o2.radius * 2)))
+            if (Vector2.DistanceSquared(o1.position + o1.velocity, o2.position + o2.velocity) <= ((o1.radius + o2.radius) * (o1.radius + o2.radius)))
             {
 
                 Vector2 difference = o1.position - o2.position; //get the vector between the two orbs
                 float length = Vector2.Distance(o1.position, o2.position);//get the length of that vector
                 difference = difference / length;//get the unit vector
                 //fix the below statement to get the radius' from the orb objects
-                length = (o1.Radius + o2.Radius) - length; //get the length that the two orbs must be moved away from eachother
+                length = (o1.radius + o2.radius) - length; //get the length that the two orbs must be moved away from eachother
                 difference = difference * length; // produce the vector from the length and the unit vector
                 if (o1.comps.ContainsKey(comp.movement) && o1.comps[comp.movement].pushable
                     && o2.comps.ContainsKey(comp.movement) && o2.comps[comp.movement].pushable)

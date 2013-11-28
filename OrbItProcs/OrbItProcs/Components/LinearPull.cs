@@ -9,9 +9,6 @@ namespace OrbItProcs.Components
 {
     public class LinearPull : Component
     {
-
-        //public Node parent;
-        //public bool active = true;
         private float _multiplier = 0.1f;
         public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
 
@@ -20,57 +17,36 @@ namespace OrbItProcs.Components
 
         public Node targetPuller;
 
-        //in base class:
-        //public Dictionary<properties, dynamic> compProps = new Dictionary<properties, dynamic>();
-        //public Node parent;
+        public LinearPull() : this(null) { }
+        public LinearPull(Node parent = null, Node targetPuller = null)
+        {
+            if (parent != null)
+            {
+                this.parent = parent;
+            }
+            if (targetPuller != null)
+            {
+                this.targetPuller = targetPuller;
+            }
+            com = comp.linearpull; 
+            methods = mtypes.affectother; 
+        }
 
-        public LinearPull() { com = comp.linearpull; }
-        public LinearPull(Node parent)
-        {
-            //never be called
-            this.parent = parent;
-            this.com = comp.linearpull;
-        }
-        public LinearPull(Node parent, Node targetPuller)
-        {
-            this.parent = parent;
-            this.com = comp.linearpull;
-            this.targetPuller = targetPuller;
-        }
 
         public override void Initialize(Node parent)
         {
             this.parent = parent;
         }
 
-        public override bool hasMethod(string methodName)
-        {
-            methodName = methodName.ToLower();
-            if (methodName.Equals("affectother")) return true;
-            if (methodName.Equals("affectself")) return false;
-            if (methodName.Equals("draw")) return true;
-            else return false;
-        }
-
-        /*
-         * bool active = node.props[properties.grav_active] ?? defaultCompProps[properties.grav_active];
-            float multiplier = node.props[properties.grav_multiplier] ?? defaultCompProps[properties.grav_multiplier];
-            float radius = node.props[properties.grav_radius] ?? defaultCompProps[properties.grav_radius];
-         */
 
         public override void AffectOther(Node other)
         {
-            if (!active)
-            {
-                //Console.WriteLine("This should have been removed from the delegates list.");
-                return;
-            }
 
             //assuming other has been checked for 'active' from caller
             //and assuming this has been checked: if (!(gameobject == this))
             float distVects = Vector2.Distance(other.position, parent.position);
 
-            //distVects = distVects - parent.Radius - other.Radius;
+            //distVects = distVects - parent.radius - other.radius;
             // INSTEAD of checking all distances between all nodes (expensive; needs to take roots)
             // do this: find all nodes within the SQUARE (radius = width/2), then find distances to remove nodes in the corners of square
             if (distVects < radius)
@@ -96,14 +72,10 @@ namespace OrbItProcs.Components
         }
         public override void AffectSelf()
         {
-            //do stuff (actually nope; gravity doesn't have this method)
         }
 
         public override void Draw(SpriteBatch spritebatch)
         {
-            //it would be really cool to have some kind of blending effects so that every combination of components will look diff
-            //spritebatch.Draw(parent.props[properties.core_texture], parent.props[properties.core_position], Color.White);
-            spritebatch.Draw(parent.getTexture(), parent.position, null, Color.White, 0, parent.TextureCenter(), 1f, SpriteEffects.None, 0);
 
         }
     }

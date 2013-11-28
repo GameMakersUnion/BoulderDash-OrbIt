@@ -62,54 +62,58 @@ namespace OrbItProcs {
             
         };
 
-        private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false;
+        private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;
         //public bool active = true;
-        public bool _collidable = true;
+        private bool _collidable = true;
         public bool collidable { get { return _collidable; } set { _collidable = value; } }
 
         
-        private float radius = 25f;
-        public float Radius
+        private float _radius = 25f;
+        public float radius
         {
-            get { return radius; }
+            get { return _radius; }
             set {
-                radius = value;
-                if (texture != null)
+                _radius = value;
+                if (getTexture() != null)
+                {
                     scale = value / (getTexture().Width / 2);
+                }
                 else
+                {
                     scale = value / (50 / 2);
+                }
             }
         }
-        public float _mass = 10f;
+        private float _mass = 10f;
         public float mass { get { return _mass; } set { _mass = value; } }
-        
-        public float _multiplier = 1f;
+
+        private float _multiplier = 1f;
         public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
         public Vector2 position = new Vector2(0,0);
         public Vector2 velocity = new Vector2(0,0);
         public int lifetime = -1;
-        public float _effectiveRadius = 100f;
+        private float _effectiveRadius = 100f;
         public float effectiveRadius { get { return _effectiveRadius; } set { _effectiveRadius = value; } }
 
-        public float _scale = 1f; // TODO: make the setter change the radius -e harely
+        private float _scale = 1f; // TODO: make the setter change the radius -e harely
         public float scale { get { return _scale; } 
             set { _scale = value; } 
         }
         
-        public string _name = "node";
+        private string _name = "node";
         public string name { get { return _name; } set { _name = value; } }
 
         public Color color = new Color(255,255,255);
 
         public int _sentinel = -10;
-        
-        public int sentinelp { get; set; }
+
+        public int sentinelp { get { return _sentinel; } set { _sentinel = value; } }
 
         public Room room = Program.getRoom();
-        public textures _texture = textures.whitecircle;
+        private textures _texture = textures.whitecircle;
         public textures texture { get { return _texture; } set { _texture = value; } }
 
-        public float _velMultiplier = 1f;
+        private float _velMultiplier = 1f;
         public float velMultiplier { get { return _velMultiplier; } set { _velMultiplier = value; } }
 
 
@@ -123,6 +127,8 @@ namespace OrbItProcs {
         public List<comp> aOtherProps = new List<comp>();
         public List<comp> aSelfProps = new List<comp>();
         public List<comp> drawProps = new List<comp>();
+
+        public List<comp> compsToRemove = new List<comp>();
 
         public void storeInInstance(node val, Dictionary<dynamic,dynamic> dict)
         {
@@ -163,8 +169,8 @@ namespace OrbItProcs {
                 // if the key is a comp type, we need to add the component to comps dict
                 if (p is comp)
                 {
-                    fetchComponent(p);
-                    if (comps.ContainsKey(p)) comps[p].active = userProps[p];
+                    fetchComponent(p, userProps[p] );
+                    //if (comps.ContainsKey(p)) comps[p].active = userProps[p];
                 }
                 // if the key is a node type, (and not a bool) we need to update the instance variable value
                 if (p is node)// && !(userProps[p] is bool))
@@ -179,7 +185,7 @@ namespace OrbItProcs {
 
                     if (p is comp)
                     {
-                        fetchComponent(p);
+                        fetchComponent(p, defaultProps[p]);
                         if (comps.ContainsKey(p)) comps[p].active = defaultProps[p];
                     }
                     else
@@ -187,9 +193,6 @@ namespace OrbItProcs {
                         props.Add(p, defaultProps[p]); // not adding comps to props anymore
                     }
                 }
-
-                //don't need to add non-bools to instance values: they've been set with the same values as defualt (upon definition)
-                    
             }
             SortComponentLists();
             //room = room1;
@@ -259,58 +262,120 @@ namespace OrbItProcs {
                 // if the key is a comp type, we need to add the component to comps dict
                 if (p is comp)
                 {
-                    fetchComponent(p);
+                    fetchComponent(p, userProps[p]);
                     if (comps.ContainsKey(p)) comps[p].active = userProps[p];
                 }
                 
             }
         }
 
-        public void addComponent(comp c, bool active)
+        public void addComponent(comp c, bool active, bool overwrite = false)
         {
-            if (!fetchComponent(c))
-                return; // component not found.
 
-            //if (!props.ContainsKey(c)) 
-            //    props.Add(c, active);
-
+            fetchComponent(c, active, overwrite);
+            
             SortComponentLists();
         }
-
-        //I believe this is unneccessary 
-        //public void checkForComponentMethods(Component component)
-
 
         public void addComponent(Component component, bool active)
-        { 
-            //if (comps.ContainsKey(component.com))
-            //component.active = active;                                      //move 'active' to base call Component and take comps out of props dict
+        {
             component.parent = this;
             comps.Add(component.com, component);
-            props.Add(component.com, active);
 
-            //checkForComponentMethods(component);
             component.Initialize(this);
-            //if (component.hasMethod("InitializeLists")) component.InitializeLists();
             SortComponentLists();
         }
 
 
 
-        public bool fetchComponent(comp c)
+        public bool fetchComponent(comp c, bool active, bool overwrite = false)
+        {
+
+            Component component = MakeComponent(c, active, this);
+            
+            if (overwrite)
+            {
+                if (comps.ContainsKey(c))
+                {
+                    comps.Remove(c);
+                }
+                comps.Add(c, component);
+            }
+            else
+            {
+                if (!comps.ContainsKey(c))
+                {
+                    comps.Add(c, component);
+                }
+            }
+
+            return true;
+        }
+
+        public Component MakeComponent(comp c, bool active, Node parent)
         {
             Component component;
 
             component = Game1.GenerateComponent(c);
+            component.parent = this;
+            component.active = active;
 
-            component.Initialize(this);
+            return component;
 
+        }
+
+        public void RemoveComponent(comp c)
+        {
             if (!comps.ContainsKey(c))
             {
-                comps.Add(c, component);
+                Console.WriteLine("Component already removed or doesn't exist.");
+                return;
+            }
+            comps[c].active = false;
+            compsToRemove.Add(c);
+            if (!room.nodes.Contains(this))
+            {
+                SortComponentLists();
+                RemoveComponentTriggered();
+            }
+            else
+            {
+                triggerSortLists();
+                triggerRemoveComponent = true;
+            }
+            
+
+        }
+
+        public void RemoveComponentTriggered()
+        {
+            List<comp> toremove = new List<comp>();
+            foreach (comp c in compsToRemove)
+            {
+                if (comps.ContainsKey(c))
+                {
+                    if (!drawProps.Contains(c) && !aSelfProps.Contains(c) && !aOtherProps.Contains(c))
+                    {
+                        //we should call a 'destroy component' method here, instead of just hoping it gets garabage collected
+                        comps.Remove(c);
+                        //compsToRemove.Remove(c);
+                        toremove.Add(c);
+                        triggerRemoveComponent = false;
+                        triggerSortLists();
+                    }
+                    else
+                    {
+                        triggerSortLists();
+                    }
+                }
+            }
+            int cc = toremove.Count;
+            for (int i = 0; i < cc; i++)
+            {
+                toremove.RemoveAt(0);
             }
 
-            return true; // success
+
         }
 
         public void SortComponentLists()
@@ -318,39 +383,7 @@ namespace OrbItProcs {
             SortComponentListsUpdate();
             SortComponentListsDraw();
 
-            /*
-            aOtherProps = new List<comp>();
-            aSelfProps = new List<comp>();
-            drawProps = new List<comp>();
-
-            var clist = comps.Keys.ToList();
-            clist.Sort();
-
-            foreach (comp c in clist)
-            {
-                if (props.ContainsKey(c) && props[c] && comps[c].hasMethod("affectother"))
-                {
-                    aOtherProps.Add(c);
-                }
-            }
-            foreach (comp c in clist)
-            {
-                if (props.ContainsKey(c) && props[c] && comps[c].hasMethod("affectself"))
-                {
-                    //compsASC.Add(asc[p]);
-                    aSelfProps.Add(c);
-                }
-            }
-            foreach (comp c in clist)
-            {
-                if (props.ContainsKey(c) && props[c] && comps[c].hasMethod("draw"))
-                {
-                    //compsDC.Add(dc[p]);
-                    drawProps.Add(c);
-                }
-            }
-            */
-
+            
             
         }
 
@@ -364,19 +397,33 @@ namespace OrbItProcs {
 
             foreach (comp c in clist)
             {
-                if (comps.ContainsKey(c) && isCompActive(c) && comps[c].hasMethod("affectother"))
+                if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.affectother) == mtypes.affectother))
                 {
                     aOtherProps.Add(c);
                 }
             }
             foreach (comp c in clist)
             {
-                if (comps.ContainsKey(c) && isCompActive(c) && comps[c].hasMethod("affectself"))
+                if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.affectself) == mtypes.affectself))
                 {
                     //compsASC.Add(asc[p]);
                     aSelfProps.Add(c);
                 }
             }
+
+            //remove comps from removelist
+            /*
+            foreach (comp c in compsToRemove)
+            {
+                if (comps.ContainsKey(c))
+                {
+                    if (!drawProps.Contains(c))
+                    {
+                        triggerRemoveComponent = true;
+                    }
+                }
+            }
+            */
         }
 
         public void SortComponentListsDraw()
@@ -388,12 +435,26 @@ namespace OrbItProcs {
 
             foreach (comp c in clist)
             {
-                if (comps.ContainsKey(c) && isCompActive(c) && comps[c].hasMethod("draw"))
+                if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.draw) == mtypes.draw))
                 {
                     //compsDC.Add(dc[p]);
                     drawProps.Add(c);
                 }
             }
+
+            //remove comps from removelist
+            /*
+            foreach (comp c in compsToRemove)
+            {
+                if (comps.ContainsKey(c))
+                {
+                    if (!aOtherProps.Contains(c) && !aSelfProps.Contains(c))
+                    {
+                        triggerRemoveComponent = true;
+                    }
+                }
+            }
+            */
         }
 
         
@@ -405,7 +466,7 @@ namespace OrbItProcs {
             List<Node> collisionList = new List<Node>();
             returnObjectsFinal = room.gridsystem.retrieve(this);
 
-            int cellReach = (int)(Radius * 2) / room.gridsystem.cellwidth * 2;
+            int cellReach = (int)(radius * 2) / room.gridsystem.cellwidth * 2;
 
             if (collidable) collisionList = room.gridsystem.retrieve(this, cellReach);
             HashSet<Node> hashlist = new HashSet<Node>();
@@ -414,36 +475,18 @@ namespace OrbItProcs {
             hashlist.Remove(this);
 
             //List<Node> gravList = room.gridsystem.retrieve(this, (int)(comps[comp.gravity].radius / room.gridsystem.cellwidth));
-            if (collidable || aOtherProps.Count > 0)
+            if (aOtherProps.Count > 0)
             {
                 //Console.WriteLine("yep");
                 foreach (Node other in hashlist)
                 //foreach (Node other in room.nodes)
                 {
-                    // if both are collidable
-                    //if (other != this && collidable && other.collidable && other.props[node.active])
-                    if (collisionList.Contains(other) && collidable && other.collidable && other.props[node.active])
-                    //if (collidable && other.collidable && other.props[node.active]) 
-                    {
-                        //if (Utils.checkCollision(this, other))
-                        //{
-                        //    OnCollideInvoker();
-                        //    other.OnCollideInvoker();
-                        //    Utils.resolveCollision(this, other);
-                        //}
-                        //depreciated in version 17.4
-                    }
                     if (returnObjectsFinal.Contains(other) && other.props[node.active] && true)
                     {
-                        // iterate over components that contain 'effectOthers' method (and only call that method)
-                        //if (other == room.game1.targetNode) Console.WriteLine("affecting target");
+                        // iterate over components that contain 'affectOther' method (and only call that method)
                         foreach (comp c in aOtherProps)
                         {
-                            //if (props[c])
-                            //if (isCompActive(c)) // we don't need this because we're assuming that any components in the aOtherProps list is active.
                             comps[c].AffectOther(other);
-                            //a useless check except to make sure this isn't an error
-                            //if (!isCompActive(c)) Console.WriteLine("a component that is not active is in the aOtherProps list.(bad)");
                         }
                     }
                 }
@@ -488,7 +531,32 @@ namespace OrbItProcs {
                 SortComponentListsUpdate();
                 triggerSortComponentsUpdate = false;
             }
+
+            if (triggerRemoveComponent)
+            {
+                RemoveComponentTriggered();
+            }
             
+        }
+
+        public void Draw(SpriteBatch spritebatch)
+        {
+            foreach (comp c in drawProps)
+            {
+                comps[c].Draw(spritebatch);
+                break; //only executes the most significant draw component
+            }
+
+            if (triggerSortComponentsDraw)
+            {
+                SortComponentListsDraw();
+                triggerSortComponentsDraw = false;
+            }
+
+            if (triggerRemoveComponent)
+            {
+                RemoveComponentTriggered();
+            }
         }
 
         public void OnCollidePublic()
@@ -518,31 +586,7 @@ namespace OrbItProcs {
             return new Vector2(tx.Width / 2f, tx.Height / 2f); // TODO: maybe cast to floats to make sure it's the exact center.
         }
         
-        public void Draw(SpriteBatch spritebatch)
-        {
-            //Console.WriteLine(drawProps.Count);
-            foreach (comp c in drawProps)
-            {
-                //if (props[c])
-                //{
-                    comps[c].Draw(spritebatch);
-                //useless check expect to check for errors
-                    //if (!isCompActive(c)) Console.WriteLine("a component that is not active is in the drawProps list.(bad)");
-                    return;
-                //}
-            }
-            /*foreach (DC del in compsDC)
-            {
-                del(this,spritebatch);
-                return;
-            }*/
-
-            if (triggerSortComponentsDraw)
-            {
-                SortComponentListsDraw();
-                triggerSortComponentsDraw = false;
-            }
-        }
+        
 
         public void changeRadius(float newRadius)
         {
@@ -558,12 +602,16 @@ namespace OrbItProcs {
         {
             //dynamic returnval;
             List<FieldInfo> fields = sourceNode.GetType().GetFields().ToList();
+            fields.AddRange(sourceNode.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance).ToList());
             List<PropertyInfo> properties = sourceNode.GetType().GetProperties().ToList();
-            //foreach (PropertyInfo property in properties)
-            //{
-            //    //if (property.Name.Equals("compsProp")) continue;
-            //    property.SetValue(destNode, property.GetValue(sourceNode, null), null);
-            //}
+            /*
+            foreach (PropertyInfo property in properties)
+            {
+                //if (property.Name.Equals("compsProp")) continue;
+                property.SetValue(destNode, property.GetValue(sourceNode, null), null);
+            
+            }
+            //*/
             foreach (FieldInfo field in fields)
             {
                 //Console.WriteLine("fieldtype: " + field.FieldType);

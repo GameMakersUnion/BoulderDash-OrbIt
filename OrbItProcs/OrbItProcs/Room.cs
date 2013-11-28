@@ -32,7 +32,7 @@ namespace OrbItProcs {
         public List<object> nodes = new List<object>();
         public Queue<object> nodesToAdd = new Queue<object>();
 
-        public Node defaultNode;
+        public Node defaultNode, targetNodeGraphic;
         //public NodeList<Node> nodes = new NodeList<Node>();
         public int dtimerMax = 0, dtimerCount = 0;
 
@@ -138,7 +138,18 @@ namespace OrbItProcs {
                 dtimerCount++;
             }
 
+            updateTargetNodeGraphic();
+
         }
+        public void updateTargetNodeGraphic()
+        {
+            if (game1.targetNode != null)
+            {
+                targetNodeGraphic.position = game1.targetNode.position;
+                targetNodeGraphic.scale = game1.targetNode.scale * 1.5f;
+            }
+        }
+
         // color the nodes that targetnode is affecting
         public void colorEffectedNodes()
         {
@@ -178,7 +189,10 @@ namespace OrbItProcs {
 
         public void Draw(SpriteBatch spritebatch)
         {
-
+            if (game1.targetNode != null)
+            {
+                targetNodeGraphic.Draw(spritebatch);
+            }
             foreach (Node node in nodes)
             {
                 node.Draw(spritebatch);
@@ -192,6 +206,7 @@ namespace OrbItProcs {
                 spritebatch.DrawLine(new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), Color.Purple);
                 linecount++;
             }   
+            
         } 
 
         public void setDefaultProperties()

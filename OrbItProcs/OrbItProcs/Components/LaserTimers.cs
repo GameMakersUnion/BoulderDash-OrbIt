@@ -25,26 +25,18 @@ namespace OrbItProcs.Components
 
         private double angle = 0;
 
-        public LaserTimers() { com = comp.lasertimers; InitializeLists(); }
-
-        public LaserTimers(Node parent)
+        public LaserTimers() : this(null) { }
+        public LaserTimers(Node parent = null)
         {
-            this.parent = parent;
-            parent.Collided += onCollision;
-            this.com = comp.lasertimers;
-
-            //this.maxscale = 20;
-            //this.currentscale = 1;
-            
-            //queuecount = 10;
-            //timer = timer2 = 0;
-            //timerMax = 2;
-            //angle = 0;
-            //scalingcounter = -1;
-
-            InitializeLists();
-
+            if (parent != null)
+            {
+                this.parent = parent;
+                this.parent.Collided += onCollision;
+            }
+            //com = comp.lasertimers; InitializeLists();
+            methods = mtypes.affectself | mtypes.draw;
         }
+
 
         public override void InitializeLists()
         {
@@ -59,15 +51,6 @@ namespace OrbItProcs.Components
                 scales.Add(maxscale);
                 scalesVects.Add(new Vector2(1, maxscale));
             }
-        }
-
-        public override bool hasMethod(string methodName)
-        {
-            methodName = methodName.ToLower();
-            if (methodName.Equals("affectother")) return false;
-            if (methodName.Equals("affectself")) return true;
-            if (methodName.Equals("draw")) return true;
-            else return false;
         }
 
         public override void Initialize(Node parent)
@@ -144,7 +127,6 @@ namespace OrbItProcs.Components
             Room room = parent.room;
             float mapzoom = room.mapzoom;
 
-            parent.scale = 1 / mapzoom;
             float screenx = parent.position.X / mapzoom;
             float screeny = parent.position.Y / mapzoom;
             Vector2 center = new Vector2((float)getTexture().Width / 2f, (float)getTexture().Height / 2f);
