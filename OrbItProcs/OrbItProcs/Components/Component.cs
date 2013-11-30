@@ -45,6 +45,8 @@ namespace OrbItProcs.Components
 
         public int sentinel = -10;
         protected Node _parent;
+        //*
+        [Polenter.Serialization.ExcludeFromSerialization]
         public Node parent
         {
             get
@@ -56,11 +58,13 @@ namespace OrbItProcs.Components
                 _parent = value;
             }
         }
+        //*/
         public comp _com;
         public comp com { get { return _com; } set { _com = value; } }
         public mtypes methods;
 
        public abstract void Initialize(Node parent);
+       public virtual void AfterCloning() { }
        public abstract void AffectOther(Node other);
        public abstract void AffectSelf();
        public abstract void Draw(SpriteBatch spritebatch);
@@ -87,7 +91,8 @@ namespace OrbItProcs.Components
            foreach (PropertyInfo property in properties)
            {
                if (property.PropertyType == typeof(ModifierInfo)) continue;
-               
+               if (property.PropertyType == typeof(Node)) continue;
+               //Console.WriteLine(destComp.GetType().ToString() + property.Name);
                property.SetValue(destComp, property.GetValue(sourceComp, null), null);
            }
            foreach (FieldInfo field in fields)
@@ -101,12 +106,14 @@ namespace OrbItProcs.Components
                        field.SetValue(destComp, null);
                        continue;
                    }
-                   Dictionary<string, Tuple<FPInfo, object>> newFpInfos = new Dictionary<string, Tuple<FPInfo, object>>();
+                   Dictionary<string, FPInfo> newFpInfos = new Dictionary<string, FPInfo>();
+                   Dictionary<string, object> newFpInfosObj = new Dictionary<string, object>();
                    foreach(string key in mod.modifierInfo.fpInfos.Keys)
                    {
-                       FPInfo fpinfo = new FPInfo(mod.modifierInfo.fpInfos[key].Item1);
+                       FPInfo fpinfo = new FPInfo(mod.modifierInfo.fpInfos[key]);
                        
-                       newFpInfos.Add(key, new Tuple<FPInfo,object>(fpinfo,null) );
+                       newFpInfos.Add(key, fpinfo);
+                       newFpInfosObj.Add(key, null);
                    }
                    Dictionary<string, dynamic> newargs = new Dictionary<string, dynamic>();
                    foreach(string key in mod.modifierInfo.args.Keys)
@@ -115,7 +122,7 @@ namespace OrbItProcs.Components
                    }
 
 
-                   ModifierInfo modInfo = new ModifierInfo(newFpInfos, newargs, mod.modifierInfo.modifierDelegate);
+                   ModifierInfo modInfo = new ModifierInfo(newFpInfos, newFpInfosObj, newargs, mod.modifierInfo.modifierDelegate);
                    field.SetValue(destComp, modInfo);
 
                }

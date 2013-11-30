@@ -28,9 +28,10 @@ namespace OrbItProcs.Components
         }
 
         //private float r = 1f, g = 1f, b = 1f;
-        public Queue<Vector2> positions;
+        //public Queue<Vector2> positions;
         public Color color;
-        public Queue<float> angles;
+        //public Queue<float> angles;
+        //public Queue<float> scales;
         public HueShifter hshift; // just so we can use the getColorsFromAngle method
 
         private int _queuecount = 10;
@@ -55,11 +56,20 @@ namespace OrbItProcs.Components
             InitializeLists(); 
         }
 
+        public override void AfterCloning()
+        {
+            if (!parent.comps.ContainsKey(comp.queuer)) parent.addComponent(comp.queuer, true);
+            //if (parent.comps.ContainsKey(comp.queuer)) 
+            parent.comps[comp.queuer].qs = parent.comps[comp.queuer].qs | queues.scale | queues.position;// | queues.angle;
+            //int i = 0;
+        }
+
 
         public override void InitializeLists()
         {
-            positions = new Queue<Vector2>();
-            angles = new Queue<float>();
+            //positions = new Queue<Vector2>();
+            //angles = new Queue<float>();
+            //scales = new Queue<float>();
             color = Utils.randomColor();
             hshift = new HueShifter(null);
 
@@ -77,6 +87,7 @@ namespace OrbItProcs.Components
         }
         public override void AffectSelf()
         {
+            /*
             angle = Math.Atan2(parent.velocity.Y, parent.velocity.X) + (Math.PI / 2);
 
             if (timer > timerMax)
@@ -86,13 +97,15 @@ namespace OrbItProcs.Components
                 {
                     positions.Enqueue(parent.position);
                     //colors.Enqueue(Utils.randomColor());
-                    //angles.Enqueue((float)angle);
+                    scales.Enqueue((float)parent.scale);
                 }
                 else
                 {
                     positions.Dequeue();
+                    scales.Dequeue();
                     //colors.Dequeue();
                     positions.Enqueue(parent.position);
+                    scales.Enqueue((float)parent.scale);
                     //colors.Enqueue(Utils.randomColor());
 
                     //angles.Dequeue();
@@ -101,14 +114,14 @@ namespace OrbItProcs.Components
                     Vector2 v0 = parent.position - positions.ElementAt(0);
                     Vector2 vq = parent.position - positions.ElementAt(8);
                     Console.WriteLine("Dif (0 p): {0}, Dif (count p): {1}", v0.Length(), vq.Length());
-                     */
+                    //---
                 }
             }
             else
             {
                 timer++;
             }
-
+            */
         }
 
         public override void Draw(SpriteBatch spritebatch)
@@ -118,8 +131,12 @@ namespace OrbItProcs.Components
             float mapzoom = room.mapzoom;
             //Color col = new Color(0f, 0f, 0f);
 
+            Queue<float> scales = parent.comps[comp.queuer].scales;
+            //Queue<float> angles = parent.comps[comp.queuer].angles;
+            Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
+
             Vector2 screenPos = parent.position / mapzoom;
-            Vector2 centerTexture = new Vector2(0.5f, 1);
+            Vector2 centerTexture = new Vector2(0.5f, 0.5f);
 
             Vector2 start = parent.position;
             Vector2 end = Vector2.Zero;
@@ -141,7 +158,7 @@ namespace OrbItProcs.Components
                 Vector2 centerpoint = (end + start) / 2;
                 centerpoint /= mapzoom;
                 float len = diff.Length();
-                Vector2 scalevect = new Vector2(len, 1);
+                Vector2 scalevect = new Vector2(len, scales.ElementAt(i-1) * 3);
                 float testangle = (float)(Math.Atan2(diff.Y, diff.X));// + (Math.PI / 2));
                 
                 diff.Normalize();

@@ -28,7 +28,6 @@ namespace OrbItProcs {
         texture,
         name,
         lifetime,
-        collidable,
         color,
     
     };
@@ -56,7 +55,6 @@ namespace OrbItProcs {
             { node.texture,                     null  },
             { node.name,                        "node" },
             { node.lifetime,                    -1 },
-            { node.collidable,                  true  },
             { node.color,                       new Color(255,255,255) },
             //{ comp.movement,                    true },
             
@@ -64,8 +62,6 @@ namespace OrbItProcs {
 
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;
         //public bool active = true;
-        private bool _collidable = true;
-        public bool collidable { get { return _collidable; } set { _collidable = value; } }
 
         
         private float _radius = 25f;
@@ -129,6 +125,7 @@ namespace OrbItProcs {
         public List<comp> drawProps = new List<comp>();
 
         public List<comp> compsToRemove = new List<comp>();
+        public List<comp> compsToAdd = new List<comp>();
 
         public void storeInInstance(node val, Dictionary<dynamic,dynamic> dict)
         {
@@ -144,7 +141,6 @@ namespace OrbItProcs {
             if (val == node.texture)            texture         = dict[val];
             if (val == node.name)               name            = dict[val];
             if (val == node.lifetime)           lifetime        = dict[val];
-            if (val == node.collidable)         collidable      = dict[val];
             if (val == node.color)              color           = dict[val];
 
         }
@@ -277,6 +273,15 @@ namespace OrbItProcs {
             SortComponentLists();
         }
 
+        public void addComponentSafe(comp c)
+        {
+            if (comps.ContainsKey(c)) { Console.WriteLine("AddComponentSafe didn't perform: key already exists."); return; }
+
+            compsToAdd.Add(c);
+            triggerRemoveComponent = true;
+
+        }
+
         public void addComponent(Component component, bool active)
         {
             component.parent = this;
@@ -350,6 +355,7 @@ namespace OrbItProcs {
         public void RemoveComponentTriggered()
         {
             List<comp> toremove = new List<comp>();
+            List<comp> toaddremove = new List<comp>();
             foreach (comp c in compsToRemove)
             {
                 if (comps.ContainsKey(c))
@@ -358,7 +364,6 @@ namespace OrbItProcs {
                     {
                         //we should call a 'destroy component' method here, instead of just hoping it gets garabage collected
                         comps.Remove(c);
-                        //compsToRemove.Remove(c);
                         toremove.Add(c);
                         triggerRemoveComponent = false;
                         triggerSortLists();
@@ -369,10 +374,22 @@ namespace OrbItProcs {
                     }
                 }
             }
+            foreach (comp c in compsToAdd)
+            {
+                if (comps.ContainsKey(c)) continue;
+
+                addComponent(c, true);
+                toaddremove.Add(c);
+            }
             int cc = toremove.Count;
             for (int i = 0; i < cc; i++)
             {
-                toremove.RemoveAt(0);
+                compsToRemove.Remove(toremove.ElementAt(0));
+            }
+            cc = toaddremove.Count;
+            for (int i = 0; i < cc; i++)
+            {
+                compsToAdd.Remove(toaddremove.ElementAt(0));
             }
 
 
@@ -468,7 +485,7 @@ namespace OrbItProcs {
 
             int cellReach = (int)(radius * 2) / room.gridsystem.cellwidth * 2;
 
-            if (collidable) collisionList = room.gridsystem.retrieve(this, cellReach);
+            if (comps.ContainsKey(comp.collision) && comps[comp.collision].active) collisionList = room.gridsystem.retrieve(this, cellReach);
             HashSet<Node> hashlist = new HashSet<Node>();
             hashlist.UnionWith(returnObjectsFinal);//bad
             hashlist.UnionWith(collisionList);
@@ -646,12 +663,28 @@ namespace OrbItProcs {
                             Component.CloneComponent(dict[key], destNode.comps[key]);
 
                             destNode.comps[key].Initialize(destNode);
-                            
+
+                            //MethodInfo mInfo = sourceNode.comps[key].GetType().GetMethod("InitializeLists");
+                            //if (mInfo != null &&
+                            //   mInfo.DeclaringType == sourceNode.comps[key].GetType()) Console.WriteLine(sourceNode.comps[key].GetType()+"initializelist exists");
+                            //else Console.WriteLine(sourceNode.comps[key].GetType()+"doesn't have initilizelists");
 
                             //TODO: how can I check if there is a *non-empty* override of the onCollision method in this component
                             // and if so, add it to the node's Collided event...
                         }
                         //Console.WriteLine(newNode.comps[comp.randinitialvel].multiplier);
+
+                        foreach (comp key in destNode.comps.Keys)
+                        {
+                            Component component = destNode.comps[key];
+                            MethodInfo mInfo = sourceNode.comps[key].GetType().GetMethod("AfterCloning");
+                            if (mInfo != null
+                                && mInfo.DeclaringType == sourceNode.comps[key].GetType())
+                            {
+                                component.AfterCloning();
+                            }
+
+                        }
                     }
                 }
                 else if ((field.FieldType.ToString().Equals("System.Int32"))

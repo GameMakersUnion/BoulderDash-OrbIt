@@ -14,6 +14,9 @@ namespace OrbItProcs.Components {
         private float _radius = 300f;
         public float radius { get { return _radius; } set { _radius = value; } }
 
+        private int _lowerbound = 20;
+        public int lowerbound { get { return _lowerbound; } set { _lowerbound = value; } }
+
         public Gravity() : this(null) { }
         public Gravity(Node parent = null)
         {
@@ -36,6 +39,9 @@ namespace OrbItProcs.Components {
             {
                 return;
             }
+
+            if (!other.comps.ContainsKey(comp.gravity)) return; //controversial: what the fuck do we do
+
             //assuming other has been checked for 'active' from caller
             float distVects = Vector2.Distance(other.position, parent.position);
 
@@ -44,7 +50,7 @@ namespace OrbItProcs.Components {
             if (distVects < radius)
             {
                 //Console.WriteLine("YEP");
-                if (distVects < 10) distVects = 10;
+                if (distVects < lowerbound) distVects = lowerbound;
                 //if (distVects < (parent.mass * 10)) distVects = (parent.mass * 10);
                 double angle = Math.Atan2((parent.position.Y - other.position.Y), (parent.position.X - other.position.X));
                 //float counterforce = 100 / distVects;
@@ -55,8 +61,17 @@ namespace OrbItProcs.Components {
                 float velX = (float)Math.Cos(angle) * gravForce;
                 float velY = (float)Math.Sin(angle) * gravForce;
                 Vector2 delta = new Vector2(velX, velY);
+                
+                /*
                 delta /= other.mass;
                 other.velocity += delta;
+                //*/
+                //*
+                delta /= 2;
+                other.velocity += delta / other.mass;
+                parent.velocity -= delta / parent.mass;
+                //*/
+
                 //other.velocity.X += velX;
                 //other.velocity.Y += velY;
                 //other.velocity /=  other.mass; //creates snakelike effect when put below increments

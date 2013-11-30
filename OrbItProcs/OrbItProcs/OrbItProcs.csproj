@@ -131,14 +131,16 @@
     <Compile Include="Components\Modifier.cs" />
     <Compile Include="Components\Movement.cs" />
     <Compile Include="Components\PhaseOrb.cs" />
+    <Compile Include="Components\Queuer.cs" />
     <Compile Include="Components\RandColor.cs" />
     <Compile Include="Components\RandInitialVel.cs" />
     <Compile Include="Components\RandVelChange.cs" />
     <Compile Include="Components\Transfer.cs" />
+    <Compile Include="Components\Tree.cs" />
     <Compile Include="Components\WideRay.cs" />
     <Compile Include="FrameRateCounter.cs" />
     <Compile Include="GridSystem.cs" />
-    <Compile Include="Interface\FPInfo.cs" />
+    <Compile Include="Processes\FPInfo.cs" />
     <Compile Include="Interface\PopupWindow.cs" />
     <Compile Include="Interface\InspectorItem.cs" />
     <Compile Include="Interface\TLITree.cs" />
@@ -149,6 +151,7 @@
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Processes\ProcessManager.cs" />
     <Compile Include="Processes\Procs.cs" />
+    <Compile Include="Processes\QueueInfo.cs" />
     <Compile Include="Processes\TripSpawnOnCollide.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />

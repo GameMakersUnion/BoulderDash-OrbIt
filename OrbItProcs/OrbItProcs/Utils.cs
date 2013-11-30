@@ -120,7 +120,7 @@ namespace OrbItProcs {
         public static bool checkCollision(Node o1, Node o2)
         {
 
-            if (Vector2.DistanceSquared(o1.position, o2.position) <= ((o1.radius + o2.radius) * (o1.radius + o2.radius)) && o1.collidable && o2.collidable)
+            if (Vector2.DistanceSquared(o1.position, o2.position) <= ((o1.radius + o2.radius) * (o1.radius + o2.radius)))
             {
                 return true;
             }

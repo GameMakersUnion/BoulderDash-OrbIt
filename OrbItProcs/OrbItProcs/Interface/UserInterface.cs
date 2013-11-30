@@ -127,10 +127,11 @@ namespace OrbItProcs.Interface {
             foreach (FileInfo file in d.GetFiles("*.xml"))
             {
                 string filename = file.Name;
-                //System.Console.WriteLine(filename);
+                System.Console.WriteLine(filename);
                 //string path = file.FullName;
                 filename = "Presets//Nodes//" + filename;
-                NodePresets.Add((Node)room.serializer.Deserialize(filename));
+                //NodePresets.Add((Node)room.serializer.Deserialize(filename));
+                NodePresets.Add(new Node());
                 presetFileInfos.Add(file);
                 
             }
@@ -557,21 +558,21 @@ namespace OrbItProcs.Interface {
                             Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
                                 { node.position, positionToSpawn },
                                 { node.velocity, diff },
-                                { node.texture, textures.whitecircle },
+                                //{ node.texture, textures.whitecircle },
                                 //{ node.radius, 12 },
-                                { node.collidable, false },
                                 { comp.randcolor, true },
-                                { comp.movement, true }, //this will default as 'true'
+                                { comp.movement, true },
                                 //{ comp.randvelchange, true },
                                 { comp.randinitialvel, true },
-                                //{ comp.gravity, true },
+                                //{ comp.gravity, false },
                                 { comp.lifetime, true },
                                 //{ comp.transfer, true },
                                 //{ comp.lasertimers, true },
                                 //{ comp.laser, true },
                                 //{ comp.wideray, true },
                                 //{ comp.hueshifter, true },
-                                { comp.phaseorb, true },
+                                //{ comp.phaseorb, true },
+                                //{ comp.collision, false },
                             };
 
                             game.spawnNode(userP);
@@ -1360,12 +1361,12 @@ namespace OrbItProcs.Interface {
             editNode = game.room.defaultNode;
             spawnerNode = editNode;
             lblEditNodeName.Text = editNode.name;
-            
         }
 
         void btnRemoveAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             game.room.RemoveAllNodes();
+            game.targetNode = null;
 
             if (editNode != game.room.defaultNode && !lstPresets.Items.Contains(editNode))
             {

@@ -14,7 +14,14 @@ using Component = OrbItProcs.Components.Component;
 
 namespace OrbItProcs {
 
-    public enum tree { none, quadtree, gridsplit, gridsystem, all };
+    public enum textures
+    {
+        blueorb,
+        whiteorb,
+        colororb,
+        whitecircle,
+        whitepixel,
+    }
 
     public class Room {
 
@@ -43,10 +50,7 @@ namespace OrbItProcs {
         public Room()
         {
             setDefaultProperties();
-
-
         }
-
 
         public Room(Game1 game)
         {

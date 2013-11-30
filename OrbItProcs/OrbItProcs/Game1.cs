@@ -28,10 +28,7 @@ namespace OrbItProcs {
     /// </summary>
 
     public enum comp {
-
-        laser,
-        wideray,
-        phaseorb,
+        queuer,
         movement,
         collision,
         gravity,
@@ -44,6 +41,12 @@ namespace OrbItProcs {
         linearpull,
         hueshifter,
         lifetime,
+        
+        //draw components
+        laser,
+        wideray,
+        phaseorb,
+        tree,
         basicdraw,
 
         //lasertimers,
@@ -54,62 +57,43 @@ namespace OrbItProcs {
         //ghost,
         //chrono,
         //weird,
-        
     };
 
-    public enum textures
-    {
-        blueorb,
-        whiteorb,
-        colororb,
-        whitecircle,
-        whitepixel,
-        
-    }
-
-
     public class Game1 : Application {
-        //GraphicsDeviceManager graphics;
-        //Neoforce Manager
-        //private Manager manager;
-        //*
-        public static Dictionary<comp, Component> compObjects = new Dictionary<comp, Component>()
+        
+        public static Dictionary<comp, Type> compTypes = new Dictionary<comp, Type>()
         {
-            {comp.basicdraw,        new BasicDraw()         },
-            {comp.collision,        new Collision()         },
-            {comp.gravity,          new Gravity()           },
-            {comp.hueshifter,       new HueShifter()        },
-            {comp.laser,            new Laser()             },
-            {comp.lifetime,         new Lifetime()          },
-            {comp.linearpull,       new LinearPull()        },
-            {comp.maxvel,           new MaxVel()            },
-            {comp.modifier,         new Modifier()          },
-            {comp.movement,         new Movement()          },
-            {comp.phaseorb,         new PhaseOrb()          },
-            {comp.randcolor,        new RandColor()         },
-            {comp.randinitialvel,   new RandInitialVel()    },
-            {comp.randvelchange,    new RandVelChange()     },
-            {comp.transfer,         new Transfer()          },
-            {comp.wideray,          new WideRay()           },
-          //{comp.lasertimers,      new LaserTimers()       },
-          //{comp.middle,           new MaxVel()            },
-          //{comp.repel,            new Repel()             },
-          //{comp.siphon,           new Siphon()            },
-          //{comp.slow,             new Slow()              }, 
-          //{comp.weird,            new Weird()             },
+            {comp.basicdraw,        typeof(BasicDraw)           },
+            {comp.collision,        typeof(Collision)           },
+            {comp.gravity,          typeof(Gravity)             },
+            {comp.hueshifter,       typeof(HueShifter)          },
+            {comp.laser,            typeof(Laser)               },
+            {comp.lifetime,         typeof(Lifetime)            },
+            {comp.linearpull,       typeof(LinearPull)          },
+            {comp.maxvel,           typeof(MaxVel)              },
+            {comp.modifier,         typeof(Modifier)            },
+            {comp.movement,         typeof(Movement)            },
+            {comp.phaseorb,         typeof(PhaseOrb)            },
+            {comp.queuer,           typeof(Queuer)              },
+            {comp.randcolor,        typeof(RandColor)           },
+            {comp.randinitialvel,   typeof(RandInitialVel)      },
+            {comp.randvelchange,    typeof(RandVelChange)       },
+            {comp.transfer,         typeof(Transfer)            },
+            {comp.tree,             typeof(Tree)                },
+            {comp.wideray,          typeof(WideRay)             },
+          //{comp.lasertimers,      typeof(LaserTimers)         },
+          //{comp.middle,           typeof(MaxVel)              },
+          //{comp.repel,            typeof(Repel)               },
+          //{comp.siphon,           typeof(Siphon)              },
+          //{comp.slow,             typeof(Slow)                }, 
+          //{comp.weird,            typeof(Weird)               },
         };
 
 
         public static Component GenerateComponent(comp c)
         {
-            //Component component = new Component();
-            //Component component = (Component) Activator.CreateInstance(compObjects[c].GetType());
-            object[] args = new object[]{ null };
-            Component component = (Component)Activator.CreateInstance(compObjects[c].GetType(),args);
-            
-            Component.CloneComponent(compObjects[c], component);
+            Component component = (Component)Activator.CreateInstance(compTypes[c]);
             return component;
-
         }
         
         public UserInterface ui;
@@ -138,18 +122,9 @@ namespace OrbItProcs {
         bool hovertargetting = false;
         public Node targetNode = null;
 
-        /*
-        Window window;
-        Button button;
-        TextBox textbox;
-        */
-
-        
-
         TimeSpan elapsedTime = new TimeSpan();
         TimeSpan targetElapsedTime = new TimeSpan(0, 0, 0, 0, 16);
-
-        
+        //GraphicsDeviceManager graphics;
 
         public Game1()
         {
@@ -191,8 +166,10 @@ namespace OrbItProcs {
             textureDict.Add(textures.whitecircle, Content.Load<Texture2D>("whitecircle"));
             font = Content.Load<SpriteFont>("Courier New");
 
-            
-            
+
+            dynamic test;
+            test = 1;
+            Console.WriteLine(test.GetType());
             
 
             // TODO: Add your initialization logic here
@@ -200,58 +177,75 @@ namespace OrbItProcs {
             //if (room == null) Console.WriteLine("rnull");
             Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {
                     { node.position, new Vector2(0, 0) },
+                    { node.texture, textures.whitecircle },
                     //{ node.radius, 12 },
-                    { node.collidable, true },
                     { comp.basicdraw, true },
-                    { comp.collision, true },
+                    { comp.collision, false },
                     { comp.movement, true }, //this will default as 'true'
                     { comp.maxvel, true },
                     //{ comp.randvelchange, true },
                     { comp.randinitialvel, true },
-                    { comp.gravity, true },
+                    { comp.gravity, false },
                     //{ comp.linearpull, true },
                     //{ comp.laser, true },
                     //{ comp.wideray, true },
-                    { comp.hueshifter, true },
+                    //{ comp.hueshifter, true },
                     //{ comp.transfer, true },
-                    //{ comp.phaseorb, true },
-                    { node.texture, textures.whitecircle }
+                    { comp.phaseorb, true },
+                    //{ comp.tree, true },
+                    { comp.queuer, true },
+                    
                 };
             room.defaultNode = new Node(room, userPr);
             room.defaultNode.name = "DEFAULTNODE";
 
             //MODIFIER ADDITION
             //*
-            room.defaultNode.addComponent(comp.modifier, true);
+
+            room.defaultNode.addComponent(comp.modifier, true); room.defaultNode.comps[comp.modifier].active = false;
+            
 
             ModifierInfo modinfo = new ModifierInfo();
-            modinfo.fpInfos.Add("scale", new Tuple<FPInfo, object>(FPInfo.GetNew("scale",room.defaultNode), room.defaultNode));
-            modinfo.fpInfos.Add("position", new Tuple<FPInfo, object>(FPInfo.GetNew("position", room.defaultNode), room.defaultNode));
+            //modinfo.fpInfos.Add("scale", new Tuple<FPInfo, object>(FPInfo.GetNew("scale",room.defaultNode), room.defaultNode));
+            //modinfo.fpInfos.Add("position", new Tuple<FPInfo, object>(FPInfo.GetNew("position", room.defaultNode), room.defaultNode));
+            modinfo.AddFPInfoFromString("scale", "scale", room.defaultNode);
+            modinfo.AddFPInfoFromString("position", "position", room.defaultNode);
+            //modinfo.AddFPInfoFromString("position", "velocity", room.defaultNode);
 
             modinfo.args.Add("mod", 4.0f);
             
+            //*
+            ModifierDelegate moddel = delegate(Dictionary<string, dynamic> args, ModifierInfo mi)
+            {
+                float scale = (float)mi.fpInfos["scale"].GetValue();
+                Vector2 position = (Vector2)mi.fpInfos["position"].GetValue();
+                scale = (position.X / 10) % (float)args["mod"];
+                mi.fpInfos["scale"].SetValue(scale);
+            };
+            //*/
             /*
             ModifierDelegate moddel = delegate(Dictionary<string, dynamic> args, ModifierInfo mi)
             {
-                float scale = (float)mi.fpInfos["scale"].Item1.GetValue();
-                Vector2 position = (Vector2)mi.fpInfos["position"].Item1.GetValue();
-                scale = (position.X / 100) % (float)args["mod"];
-                mi.fpInfos["scale"].Item1.SetValue(scale);
-            };
-            //*/
-            ModifierDelegate moddel = delegate(Dictionary<string, dynamic> args, ModifierInfo mi)
-            {
-                float scale = (float)mi.fpInfos["scale"].Item1.GetValue();
-                Vector2 position = (Vector2)mi.fpInfos["position"].Item1.GetValue();
+                float scale = (float)mi.fpInfos["scale"].GetValue();
+                Vector2 position = (Vector2)mi.fpInfos["position"].GetValue();
                 //int mod = (int)args["mod"];
                 int mod = 100;
-                scale = ((float)Math.Pow((double)(((int)position.X / 10) % mod) - (mod / 2),2)/2)/(mod*5)+0.5f;
-                //Console.WriteLine(scale);
-                mi.fpInfos["scale"].Item1.SetValue(scale);
-            };
+                //scale = ((float)Math.Pow((double)(((int)position.X / 10) % mod) - (mod / 2),2)/2)/(mod*5)+0.5f;
+                //scale = ((float)Math.Abs((double)(((int)position.X / 10) % mod) - (mod / 2)) / (mod * 5)) + 0.5f;
+                scale = (mod - (float)Math.Abs(((int)(position.X + position.Y) / 1) % (2 * mod) - mod)) / (mod / 5) + 0.5f;
 
+                //Console.WriteLine(scale);
+                mi.fpInfos["scale"].SetValue(scale);
+            };
+            //*/
             modinfo.modifierDelegate += moddel;
+
+            
+
+            //
             room.defaultNode.comps[comp.modifier].modifierInfo = modinfo;
+            //
+
             //*/
             //MODIFIER ADDITION COMPLETE
             
@@ -277,6 +271,10 @@ namespace OrbItProcs {
             int b = 2;
             testrefs(ref b);
             //Console.WriteLine(b);
+
+
+            
+
 
         }
 
@@ -363,7 +361,6 @@ namespace OrbItProcs {
                     { node.position, new Vector2(worldMouseX, worldMouseY) },
                     { node.texture, textures.whiteorb },
                     //{ node.radius, 12 },
-                    //{ node.collidable, true },
                     //{ comp.randcolor, true },
                     { comp.basicdraw, true },
                     { comp.movement, true }, //this will default as 'true'
