@@ -123,6 +123,7 @@ namespace OrbItProcs.Components
 
 
                    ModifierInfo modInfo = new ModifierInfo(newFpInfos, newFpInfosObj, newargs, mod.modifierInfo.modifierDelegate);
+                   modInfo.delegateName = mod.modifierInfo.delegateName;
                    field.SetValue(destComp, modInfo);
 
                }

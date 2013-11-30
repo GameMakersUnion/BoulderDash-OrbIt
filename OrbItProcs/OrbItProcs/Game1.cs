@@ -20,6 +20,7 @@ using sc = System.Console; // use this
 using OrbItProcs.Interface;
 using OrbItProcs.Components;
 using OrbItProcs.Processes;
+using System.IO;
 
 namespace OrbItProcs {
     /// <summary>
@@ -126,6 +127,15 @@ namespace OrbItProcs {
         TimeSpan targetElapsedTime = new TimeSpan(0, 0, 0, 0, 16);
         //GraphicsDeviceManager graphics;
 
+
+        /////////////////////
+        public List<object> NodePresets = new List<object>();
+        public List<FileInfo> presetFileInfos = new List<FileInfo>();
+
+
+        /////////////////////
+
+
         public Game1()
         {
             //graphics = new GraphicsDeviceManager(this);
@@ -208,13 +218,13 @@ namespace OrbItProcs {
             ModifierInfo modinfo = new ModifierInfo();
             //modinfo.fpInfos.Add("scale", new Tuple<FPInfo, object>(FPInfo.GetNew("scale",room.defaultNode), room.defaultNode));
             //modinfo.fpInfos.Add("position", new Tuple<FPInfo, object>(FPInfo.GetNew("position", room.defaultNode), room.defaultNode));
-            modinfo.AddFPInfoFromString("scale", "scale", room.defaultNode);
-            modinfo.AddFPInfoFromString("position", "position", room.defaultNode);
+            modinfo.AddFPInfoFromString("o1", "scale", room.defaultNode);
+            modinfo.AddFPInfoFromString("m1", "position", room.defaultNode);
             //modinfo.AddFPInfoFromString("position", "velocity", room.defaultNode);
 
             modinfo.args.Add("mod", 4.0f);
             
-            //*
+            /*
             ModifierDelegate moddel = delegate(Dictionary<string, dynamic> args, ModifierInfo mi)
             {
                 float scale = (float)mi.fpInfos["scale"].GetValue();
@@ -238,9 +248,12 @@ namespace OrbItProcs {
                 mi.fpInfos["scale"].SetValue(scale);
             };
             //*/
-            modinfo.modifierDelegate += moddel;
 
-            
+            //modinfo.modifierDelegate += DelegateManager.Mod;
+            //modinfo.modifierDelegate += DelegateManager.Triangle;
+            //modinfo.delegateName = "Mod";
+            //modinfo.delegateName = "Triangle";
+            modinfo.delegateName = "VelocityToOutput";
 
             //
             room.defaultNode.comps[comp.modifier].modifierInfo = modinfo;
@@ -276,6 +289,27 @@ namespace OrbItProcs {
             
 
 
+        }
+
+        public void InitializePresets()
+        {
+            string filepath = "Presets//Nodes";
+            DirectoryInfo d = new DirectoryInfo(filepath);
+            foreach (FileInfo file in d.GetFiles("*.xml"))
+            {
+                string filename = file.Name;
+                System.Console.WriteLine(filename);
+                //string path = file.FullName;
+                filename = "Presets//Nodes//" + filename;
+                //NodePresets.Add((Node)room.serializer.Deserialize(filename));
+                NodePresets.Add(new Node());
+                presetFileInfos.Add(file);
+
+            }
+            foreach (Node snode in NodePresets)
+            {
+                System.Console.WriteLine("Presetname: {0}", snode.name);
+            }
         }
 
         public void testrefs(ref int a)
@@ -393,7 +427,7 @@ namespace OrbItProcs {
 
             newNode.name = "node" + Node.nodeCounter;
             //if (newNode.comps.ContainsKey(comp.modifier)) newNode.comps[comp.modifier].UpdateReferences();
-            ui.UpdateNodeList(newNode);
+            ui.sidebar.UpdateNodeList(newNode);
 
             //newNode.comps[comp.gravity].multiplier = 1000000f;
             //Console.WriteLine(newNode.velocity);
@@ -426,7 +460,7 @@ namespace OrbItProcs {
 
             newNode.name = "node" + Node.nodeCounter;
             //if (newNode.comps.ContainsKey(comp.modifier)) newNode.comps[comp.modifier].UpdateReferences();
-            ui.UpdateNodeList(newNode);
+            ui.sidebar.UpdateNodeList(newNode);
 
             //newNode.comps[comp.gravity].multiplier = 1000000f;
             //Console.WriteLine(newNode.velocity);

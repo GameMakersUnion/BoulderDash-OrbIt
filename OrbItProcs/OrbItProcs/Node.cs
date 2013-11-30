@@ -677,9 +677,9 @@ namespace OrbItProcs {
                         foreach (comp key in destNode.comps.Keys)
                         {
                             Component component = destNode.comps[key];
-                            MethodInfo mInfo = sourceNode.comps[key].GetType().GetMethod("AfterCloning");
+                            MethodInfo mInfo = component.GetType().GetMethod("AfterCloning");
                             if (mInfo != null
-                                && mInfo.DeclaringType == sourceNode.comps[key].GetType())
+                                && mInfo.DeclaringType == component.GetType())
                             {
                                 component.AfterCloning();
                             }
