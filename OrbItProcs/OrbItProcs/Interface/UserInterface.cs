@@ -190,7 +190,7 @@ namespace OrbItProcs.Interface {
                         rightClickCount++;
                         if (rightClickCount % rightClickMax == 0)
                         {
-                            //Vector2 positionToSpawn = new Vector2(game.sWidth, game.sHeight);
+                            //Vector2 positionToSpawn = new Vector2(Game1.sWidth, Game1.sHeight);
                             Vector2 positionToSpawn = spawnPos;
                             //positionToSpawn /= (game.room.mapzoom * 2);
                             //positionToSpawn /= (2);

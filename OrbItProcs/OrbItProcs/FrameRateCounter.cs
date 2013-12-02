@@ -65,9 +65,9 @@ namespace OrbItProcs {
             string ups = string.Format("ups: {0}", updateRate);
             //spriteBatch.Begin();
 
-            spriteBatch.DrawString(spriteFont, fps, new Vector2(2, game.sHeight - 70), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            spriteBatch.DrawString(spriteFont, fps, new Vector2(2, Game1.sHeight - 70), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
             //spriteBatch.DrawString(spriteFont, fps, new Vector2(1, 1), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-            spriteBatch.DrawString(spriteFont, ups, new Vector2(2, game.sHeight - 40), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            spriteBatch.DrawString(spriteFont, ups, new Vector2(2, Game1.sHeight - 40), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
 
             //spriteBatch.End();
         }

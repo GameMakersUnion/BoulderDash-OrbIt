@@ -78,18 +78,18 @@ namespace OrbItProcs.Interface
             master.Init();
             master.Name = "Sidebar";
             master.Width = Width;
-            master.Height = game.sHeight;
+            master.Height = Game1.sHeight;
             master.Visible = true;
             master.Resizable = false; // If true, uncomment below
-            //master.MaximumHeight = game.sHeight; 
-            //master.MinimumHeight = game.sHeight;
+            //master.MaximumHeight = Game1.sHeight; 
+            //master.MinimumHeight = Game1.sHeight;
             //master.MaximumWidth = 300;
             //master.MinimumWidth = 200;
             master.Movable = false;
             master.Anchor = Anchors.Top | Anchors.Right | Anchors.Bottom;
             master.BorderVisible = false;
             master.Alpha = 255; //TODO : check necesity
-            master.SetPosition(game.sWidth - 200, 2);
+            master.SetPosition(Game1.sWidth - 200, 2);
             manager.Add(master);
             #endregion
 
@@ -101,7 +101,7 @@ namespace OrbItProcs.Interface
             tbcMain.Left = 0;
             tbcMain.Top = 0;
             tbcMain.Width = master.Width - 5;
-            tbcMain.Height = game.sWidth - 40; //TODO : WTF
+            tbcMain.Height = Game1.sWidth - 40; //TODO : WTF
             tbcMain.Anchor = Anchors.All;
             #endregion
 

@@ -103,8 +103,8 @@ namespace OrbItProcs {
         SpriteFont font;
         FrameRateCounter frameRateCounter;
 
-        public int sWidth = 1000;
-        public int sHeight = 600;
+        public static int sWidth = 1000;
+        public static int sHeight = 600;
 
         MouseState oldMouseState;
         KeyboardState oldKeyBState;
@@ -210,57 +210,23 @@ namespace OrbItProcs {
             room.defaultNode.name = "DEFAULTNODE";
 
             //MODIFIER ADDITION
-            //*
 
             room.defaultNode.addComponent(comp.modifier, true); room.defaultNode.comps[comp.modifier].active = false;
-            
-
             ModifierInfo modinfo = new ModifierInfo();
-            //modinfo.fpInfos.Add("scale", new Tuple<FPInfo, object>(FPInfo.GetNew("scale",room.defaultNode), room.defaultNode));
-            //modinfo.fpInfos.Add("position", new Tuple<FPInfo, object>(FPInfo.GetNew("position", room.defaultNode), room.defaultNode));
             modinfo.AddFPInfoFromString("o1", "scale", room.defaultNode);
             modinfo.AddFPInfoFromString("m1", "position", room.defaultNode);
-            //modinfo.AddFPInfoFromString("position", "velocity", room.defaultNode);
+            modinfo.AddFPInfoFromString("v1", "position", room.defaultNode);
 
             modinfo.args.Add("mod", 4.0f);
             
-            /*
-            ModifierDelegate moddel = delegate(Dictionary<string, dynamic> args, ModifierInfo mi)
-            {
-                float scale = (float)mi.fpInfos["scale"].GetValue();
-                Vector2 position = (Vector2)mi.fpInfos["position"].GetValue();
-                scale = (position.X / 10) % (float)args["mod"];
-                mi.fpInfos["scale"].SetValue(scale);
-            };
-            //*/
-            /*
-            ModifierDelegate moddel = delegate(Dictionary<string, dynamic> args, ModifierInfo mi)
-            {
-                float scale = (float)mi.fpInfos["scale"].GetValue();
-                Vector2 position = (Vector2)mi.fpInfos["position"].GetValue();
-                //int mod = (int)args["mod"];
-                int mod = 100;
-                //scale = ((float)Math.Pow((double)(((int)position.X / 10) % mod) - (mod / 2),2)/2)/(mod*5)+0.5f;
-                //scale = ((float)Math.Abs((double)(((int)position.X / 10) % mod) - (mod / 2)) / (mod * 5)) + 0.5f;
-                scale = (mod - (float)Math.Abs(((int)(position.X + position.Y) / 1) % (2 * mod) - mod)) / (mod / 5) + 0.5f;
-
-                //Console.WriteLine(scale);
-                mi.fpInfos["scale"].SetValue(scale);
-            };
-            //*/
-
-            //modinfo.modifierDelegate += DelegateManager.Mod;
-            //modinfo.modifierDelegate += DelegateManager.Triangle;
-            modinfo.delegateName = "Mod";
+            //modinfo.delegateName = "Mod";
             //modinfo.delegateName = "Triangle";
             //modinfo.delegateName = "VelocityToOutput";
+            modinfo.delegateName = "VectorSine";
 
-            //
             room.defaultNode.comps[comp.modifier].modifierInfo = modinfo;
-            //
 
-            //*/
-            //MODIFIER ADDITION COMPLETE
+
             
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
                     { node.position, new Vector2(0, 0) },

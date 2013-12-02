@@ -1,0 +1,64 @@
+﻿Nov28
+-addComponent now works
+-removeComponent now works (fucking buffers, triggers and shit)
+-updated contextmenu of lstComp items (based on type of item now)
+	-toggle component active status
+	-remove component
+	-apply to all
+-added contextmenu to presets
+	-can now remove presets (delete the file and remove the node from list)
+-when adding presets, they will be added to the live preset list
+-there is now a spawnerNode as well as an editNode to distinguish between these tasks, 
+and preventing defaultnode contamination
+
+-made a BasicDraw component, which handles the basic drawing of a node
+(this means that all components not relevant to drawing no longer have a draw method)
+-added TargetNodeGraphic, to display a graphic under the targetnode if it isn't null
+
+-changed every component so that there is only one constructor with a default parent parameter set to null,
+and a parameterless constructor that calls that constructor (for deserialization purposes)
+
+-removed all the 'hasMethod' methods from components
+-components now use a Flag system to discern which methods they have to be called by the node (mtype enum) (bit shit yo)
+-got rid of the compObject static dictionary with a trick (only need to update one when creating new components :D)
+
+-added FPInfo class. this encapsulates a FieldInfo OR PropertyInfo and makes the SetValue and GetValue take the same signature
+(this class still hasn't fully been used throughout the program where reflection is used, so a large refactor will be necessary)
+
+-added Modifier component, which takes members of objects (probably a node) and delegates to perform logic on these, which will change the values
+it is useful if you want to make one property be a function of another set of properties
+-added ModifierInfo class which manages the information that the Modifier component uses (this uses the FPInfo class)
+----------------------------
+Nov29
+-queuer component to manage all queues so that we don't recalculate values if we don't need to and to prevent rewriting queue code
+-old components now call from queuer component
+-added QueueInfo class to support dynamic addition and usage of queues
+-added falloff to the movement component, removing nodes that fall off screen (with smart checking of position of queue)
+-added the AfterCloning method to components that need special code executed not at construction, but after cloning
+-added lowerbound field of gravity component (acts as a lowerbound on the distance in the gravity calculation, which kills acute values)
+-now using fraps to record happenings
+-added the Tree component, which spawns new nodes with tree components at decreasing intervals
+-there is now a 'SafeAddComponent' method to support adding components at any time
+
+
+=======================================================TODO===============
+-make the function to initialize the FPInfos cleaner
+-make dictionary of ModifierDelegates, based on an enum (priority ordering)
+-make delegates all use default values (could base these values off the ModifierInfo values)
+-make modifier only store the enum value of the delegate so it doesn't have to hold the delegate (fix serialize bug?)
+-add slots to the modifier component to allow for affectothers, affectself, and draw delegates.
+-for affectother, 'other' will be added to the args dictionary where the delegate is called
+
+-make the format for the modifier delegates more dynamic
+	-instead of passing in modifierinfo dict keys as specific strings, use things like 'modifier1' and 'output2' to make it dynamic
+	-add in checks to use a modifier if given, but use a default value if not given
+	-use 
+
+-tempnodes as a palette for default nodes (as the counterpart to PresetNodes, you can add a temp node to presets if you like it)
+-somehow make the ModifierDelegates dynamic enough and still dev-friendly, and make their args editable during runtime
+-start phasing over to processes and keybinds
+-have a function to save FPInfos (the Info and optionally the specific object) into slots to be used as the input for modifiers
+	-this would allow one node's certain property to affect a bunch of other nodes other properties. whoa.
+
+-make the defaulter in modifier functions default to a supplied value in args instead of a magic number (which defaults to magic number if not found)
+-make a function that groups nodes that are 'stuck together' into one massive body to prevent game slowing down

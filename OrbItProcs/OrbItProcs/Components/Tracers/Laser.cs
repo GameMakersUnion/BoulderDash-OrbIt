@@ -176,7 +176,7 @@ namespace OrbItProcs.Components
             //test
             /*
             Vector2 start = new Vector2(200, 200);
-            Vector2 end = new Vector2(room.game.sWidth, room.game.sHeight);
+            Vector2 end = new Vector2(room.Game1.sWidth, room.Game1.sHeight);
 
             //Vector2 diff = (end - start) / mapzoom;
             Vector2 centerpoint = (end + start) / 2;
