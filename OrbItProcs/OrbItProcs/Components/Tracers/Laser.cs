@@ -27,12 +27,8 @@ namespace OrbItProcs.Components
             }
         }
 
-        //private float r = 1f, g = 1f, b = 1f;
-        //public Queue<Vector2> positions;
         public Color color;
-        //public Queue<float> angles;
-        //public Queue<float> scales;
-        public HueShifter hshift; // just so we can use the getColorsFromAngle method
+
 
         private int _queuecount = 10;
         public int queuecount { get { return _queuecount; } set { _queuecount = value; } }
@@ -71,7 +67,6 @@ namespace OrbItProcs.Components
             //angles = new Queue<float>();
             //scales = new Queue<float>();
             color = Utils.randomColor();
-            hshift = new HueShifter(null);
 
         }
 
@@ -167,7 +162,7 @@ namespace OrbItProcs.Components
                 //uncommet later when not using direction based color shit
                 //color = new Color(color.R, color.G, color.B, 255/queuecount * i);
                 //Console.WriteLine(testangle);
-                int[] collarr = hshift.getColorsFromAngle((testangle + (float)Math.PI) * (float)(180/Math.PI));
+                int[] collarr = HueShifter.getColorsFromAngle((testangle + (float)Math.PI) * (float)(180/Math.PI));
                 Color coll = new Color(collarr[0], collarr[1], collarr[2]);
                 
                 spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint, null, new Color(1f, 1f, 1f, 255 / queuecount * i), testangle, centerTexture, scalevect, SpriteEffects.None, 0);

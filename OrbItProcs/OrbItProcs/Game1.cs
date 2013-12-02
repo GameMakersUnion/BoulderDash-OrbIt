@@ -199,9 +199,9 @@ namespace OrbItProcs {
                     //{ comp.linearpull, true },
                     //{ comp.laser, true },
                     //{ comp.wideray, true },
-                    //{ comp.hueshifter, true },
+                    { comp.hueshifter, true },
                     //{ comp.transfer, true },
-                    { comp.phaseorb, true },
+                    { comp.phaseorb, false },
                     //{ comp.tree, true },
                     { comp.queuer, true },
                     
@@ -251,9 +251,9 @@ namespace OrbItProcs {
 
             //modinfo.modifierDelegate += DelegateManager.Mod;
             //modinfo.modifierDelegate += DelegateManager.Triangle;
-            //modinfo.delegateName = "Mod";
+            modinfo.delegateName = "Mod";
             //modinfo.delegateName = "Triangle";
-            modinfo.delegateName = "VelocityToOutput";
+            //modinfo.delegateName = "VelocityToOutput";
 
             //
             room.defaultNode.comps[comp.modifier].modifierInfo = modinfo;
@@ -270,8 +270,8 @@ namespace OrbItProcs {
                     { node.texture, textures.whitecircle }
                 };
             room.targetNodeGraphic = new Node(room, userPropsTarget);
+            //room.targetNodeGraphic.name = "TargetNodeGraphic";
             room.targetNodeGraphic.name = "TargetNodeGraphic";
-            
 
             //node = new Node(room);
             frameRateCounter = new FrameRateCounter(this);
