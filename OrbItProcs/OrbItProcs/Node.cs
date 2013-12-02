@@ -591,15 +591,15 @@ namespace OrbItProcs {
 
         public Texture2D getTexture()
         {
-            return room.game1.textureDict[texture];
+            return room.game.textureDict[texture];
         }
         public Texture2D getTexture(textures t)
         {
-            return room.game1.textureDict[t];
+            return room.game.textureDict[t];
         }
         public Vector2 TextureCenter()
         { 
-            Texture2D tx = room.game1.textureDict[texture];
+            Texture2D tx = room.game.textureDict[texture];
             return new Vector2(tx.Width / 2f, tx.Height / 2f); // TODO: maybe cast to floats to make sure it's the exact center.
         }
         

@@ -156,7 +156,7 @@ namespace OrbItProcs {
             //o1.velocity *= loss1;
             //o2.velocity *= loss2;
 
-            //if (game1.fixCollisionOn)
+            //if (game.fixCollisionOn)
             fixCollision(o1, o2);
 
 

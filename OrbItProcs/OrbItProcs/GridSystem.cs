@@ -39,8 +39,8 @@ namespace OrbItProcs {
         public GridSystem(Room room, int cellsX, int cellReach)
         {
             this.room = room;
-            this.gridwidth = room.game1.worldWidth;
-            this.gridheight = room.game1.worldHeight;
+            this.gridwidth = room.game.worldWidth;
+            this.gridheight = room.game.worldHeight;
             this.cellsX = cellsX;
             
             this.cellReach = cellReach;
@@ -61,7 +61,7 @@ namespace OrbItProcs {
         public void insert(Node node)
         {
             Tuple<int, int> indexs = getIndexs(node);
-            //if (node == room.game1.targetNode) Console.WriteLine("target indexs: {0} {1}",indexs.Item1,indexs.Item2);
+            //if (node == room.game.targetNode) Console.WriteLine("target indexs: {0} {1}",indexs.Item1,indexs.Item2);
             grid[indexs.Item1, indexs.Item2].Add(node);
 
         }

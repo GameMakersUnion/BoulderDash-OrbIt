@@ -433,7 +433,8 @@ namespace OrbItProcs {
             //Console.WriteLine(newNode.velocity);
             room.nodes.Add(newNode);
             //Console.WriteLine(newNode.comps[comp.randinitialvel].multiplier);
-            Console.WriteLine("Nodes: {0}", room.nodes.Count);
+            //Console.WriteLine("Nodes: {0}", room.nodes.Count);
+            ui.sidebar.UpdateNodesTitle();
         }
         
         public void spawnNode(Dictionary<dynamic,dynamic> userProperties)
@@ -460,13 +461,13 @@ namespace OrbItProcs {
 
             newNode.name = "node" + Node.nodeCounter;
             //if (newNode.comps.ContainsKey(comp.modifier)) newNode.comps[comp.modifier].UpdateReferences();
-            ui.sidebar.UpdateNodeList(newNode);
+            //ui.sidebar.UpdateNodeList(newNode);
 
             //newNode.comps[comp.gravity].multiplier = 1000000f;
             //Console.WriteLine(newNode.velocity);
             room.nodes.Add(newNode);
             //Console.WriteLine(newNode.comps[comp.randinitialvel].multiplier);
-            Console.WriteLine("Nodes: {0}", room.nodes.Count);
+            ui.sidebar.UpdateNodesTitle();
         }
 
         /*

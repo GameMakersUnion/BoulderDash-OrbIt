@@ -32,22 +32,11 @@ namespace OrbItProcs.Components
         {
             get { return _multiplier; }
             set {
+                _multiplier = value;
                 if (parent != null && parent.velocity != null)
                 {
-                    if (_multiplier == 0 && value > 0)
-                    {
-                        _multiplier = value;
-                        Initialize(parent);
-                    }
-                    else
-                    {
-                        //float m = value / _multiplier;
-                        //parent.velocity *= m;
-                        parent.velocity.Normalize();
-                        parent.velocity *= value;
-                    }
+                    ScaleVelocity();
                 }
-                _multiplier = value;
             }
         }
 
@@ -59,6 +48,15 @@ namespace OrbItProcs.Components
             methods = mtypes.initialize; 
         }
 
+        public void ScaleVelocity()
+        {
+            if (parent.velocity.X != 0 && parent.velocity.Y != 0)
+            {
+                parent.velocity.Normalize();
+                parent.velocity *= multiplier;
+            }
+        }
+
         public override void Initialize(Node parent)
         {
             this.parent = parent;
@@ -66,10 +64,7 @@ namespace OrbItProcs.Components
             {
                 if (parent.velocity.X != 0 && parent.velocity.Y != 0)
                 {
-                    //Console.WriteLine("yeah");
-                    parent.velocity.Normalize();
-                    parent.velocity *= multiplier;
-                    //Console.WriteLine(parent.velocity);
+                    ScaleVelocity();
                 }
                 else
                 {
@@ -80,6 +75,7 @@ namespace OrbItProcs.Components
                     vel = vel * multiplier;
                     parent.velocity = vel;
                 }
+                
             }
         }
 

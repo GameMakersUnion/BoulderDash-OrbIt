@@ -26,7 +26,7 @@ namespace OrbItProcs {
     public class Room {
 
 
-        public Game1 game1;
+        public Game1 game;
         public ProcessManager processManager;
         public float mapzoom;
 
@@ -58,7 +58,7 @@ namespace OrbItProcs {
 
             processManager = new ProcessManager(this);
             
-            game1 = game;
+            this.game = game;
 
             // grid System
             gridsystem = new GridSystem(this, 40, 6);
@@ -74,6 +74,7 @@ namespace OrbItProcs {
             {
                 nodes.Remove(nodes.ElementAt(0));
             }
+            game.ui.sidebar.UpdateNodesTitle();
         }
 
         public void Update(GameTime gametime)
@@ -113,23 +114,11 @@ namespace OrbItProcs {
                 }
                 //Console.WriteLine("Nodes: {0}\t Quadcount: {1}\t Gridcount: {2}\t Normal: {3}", nodes.Count, quadcounter,gridcounter,nodes.Count * nodes.Count);
 
-
-
-                //remove inActive gameobjects
-                /*
-                foreach (Node _node in nodes)
-                {
-                    if (!_node.props[node.active])
-                    {
-                        toRemove.Add(_node);
-                    }
-                
-                }
-                */
                 foreach (Node node in toRemove)
                 {
                     //Console.WriteLine("node removed. ------------------------------------");
                     nodes.Remove(node);
+                    game.ui.sidebar.UpdateNodesTitle();
                 }
 
                 //addGridSystemLines(gridsystem);
@@ -147,10 +136,10 @@ namespace OrbItProcs {
         }
         public void updateTargetNodeGraphic()
         {
-            if (game1.targetNode != null)
+            if (game.targetNode != null)
             {
-                targetNodeGraphic.position = game1.targetNode.position;
-                targetNodeGraphic.scale = game1.targetNode.scale * 1.5f;
+                targetNodeGraphic.position = game.targetNode.position;
+                targetNodeGraphic.scale = game.targetNode.scale * 1.5f;
             }
         }
 
@@ -158,9 +147,9 @@ namespace OrbItProcs {
         public void colorEffectedNodes()
         {
             // coloring the nodes
-            if (game1.targetNode != null)
+            if (game.targetNode != null)
             {
-                List<Node> returnObjectsGridSystem = gridsystem.retrieve(game1.targetNode);
+                List<Node> returnObjectsGridSystem = gridsystem.retrieve(game.targetNode);
 
                 foreach (Node _node in nodes)
                 {
@@ -172,7 +161,7 @@ namespace OrbItProcs {
                             _node.color = Color.White;
                     }
                 }
-                game1.targetNode.color = Color.Red;
+                game.targetNode.color = Color.Red;
             }
         }
 
@@ -182,18 +171,18 @@ namespace OrbItProcs {
             for (int i = 0; i <= gs.cellsX; i++)
             {
                 int x = i * gs.cellwidth;
-                gridSystemLines.Add(new Rectangle(x, 0, x, game1.worldHeight));
+                gridSystemLines.Add(new Rectangle(x, 0, x, game.worldHeight));
             }
             for (int i = 0; i <= gs.cellsY; i++)
             {
                 int y = i * gs.cellheight;
-                gridSystemLines.Add(new Rectangle(0, y, game1.worldWidth, y));
+                gridSystemLines.Add(new Rectangle(0, y, game.worldWidth, y));
             }
         }
 
         public void Draw(SpriteBatch spritebatch)
         {
-            if (game1.targetNode != null)
+            if (game.targetNode != null)
             {
                 targetNodeGraphic.Draw(spritebatch);
             }

@@ -25,13 +25,14 @@ namespace OrbItProcs.Interface
     {
         public Game1 game;
         public Room room;
+        public UserInterface ui;
 
         public int Width = 200;
         #region /// Neoforce Fields///
         private Manager manager;
         private Window master;
         TabControl tbcMain;
-        Label title1;
+        public Label title1;
         TextBox consoletextbox;
         public ListBox lstMain;
         private CheckBox chkTempNodes;
@@ -42,7 +43,7 @@ namespace OrbItProcs.Interface
         public GroupPanel groupPanel;
         private TreeListItem activeTreeItem;
         private object parentObject;
-        public Node editNode, spawnerNode;
+        //public Node ui.editNode, ui.spawnerNode;
         public ListBox lstPresets;
         public ComboBox cmbPresets;
         public MenuItem applyToAllNodesMenuItem;
@@ -60,10 +61,11 @@ namespace OrbItProcs.Interface
         private int VertPadding = 4;
         #endregion
 
-        public Sidebar(Game1 game)
+        public Sidebar(Game1 game, UserInterface ui)
         {
             this.game = game;
             this.room = game.room;
+            this.ui = ui;
             manager = game.Manager;
         }
 
@@ -116,6 +118,7 @@ namespace OrbItProcs.Interface
 
             title1.Top = HeightCounter;
             title1.Text = "Node List";
+            title1.Width = 130;
             title1.Left = first.Width / 2 - title1.Width / 2; //TODO : Center auto
             HeightCounter += VertPadding + title1.Height;
             title1.Anchor = Anchors.Left;
@@ -405,6 +408,11 @@ namespace OrbItProcs.Interface
 #endregion
         }
 
+        public void UpdateNodesTitle()
+        {
+            title1.Text = "Node List : " + room.nodes.Count;
+        }
+
         void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
         {
             //MenuItem menuitem = (MenuItem)sender;
@@ -516,8 +524,8 @@ namespace OrbItProcs.Interface
 
             Component component = (Component)((Node)item.obj).comps[item.component];
             component.active = false;
-            editNode.RemoveComponent(item.component);
-            if (!editNode.comps.ContainsKey(item.component))
+            ui.editNode.RemoveComponent(item.component);
+            if (!ui.editNode.comps.ContainsKey(item.component))
             {
                 lstComp.Items.RemoveAt(lstComp.ItemIndex);
             }
@@ -928,8 +936,8 @@ namespace OrbItProcs.Interface
             if (groupPanel.panelControls.Keys.Count > 0) DisableControls(groupPanel);
             //System.Console.WriteLine("" + treebox.ItemIndex);
             game.targetNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
-            editNode = game.targetNode;
-            lblEditNodeName.Text = editNode.name;
+            ui.editNode = game.targetNode;
+            lblEditNodeName.Text = ui.editNode.name;
 
             lstComp.Items = TreeListItem.GenerateList((Node)listbox.Items.ElementAt(listbox.ItemIndex), "");
 
@@ -942,12 +950,12 @@ namespace OrbItProcs.Interface
             if (groupPanel.panelControls.Keys.Count > 0) DisableControls(groupPanel);
             //System.Console.WriteLine("" + treebox.ItemIndex);
             //game.room.defaultNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
-            editNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
-            lblEditNodeName.Text = editNode.name;
-            spawnerNode = editNode;
-            //editNode = game.targetNode;
+            ui.editNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
+            lblEditNodeName.Text = ui.editNode.name;
+            ui.spawnerNode = ui.editNode;
+            //ui.editNode = game.targetNode;
 
-            lstComp.Items = TreeListItem.GenerateList(editNode, "");
+            lstComp.Items = TreeListItem.GenerateList(ui.editNode, "");
             if (cmbPresets.ItemIndex != lstPresets.ItemIndex)
             {
                 cmbPresets.ItemIndex = lstPresets.ItemIndex;
@@ -997,8 +1005,8 @@ namespace OrbItProcs.Interface
             ComboBox combobox = (ComboBox)sender;
             /*
             if (groupPanel.panelControls.Keys.Count > 0) DisableControls(groupPanel);
-            editNode = (Node)combobox.Items.ElementAt(combobox.ItemIndex);
-            lblEditNodeName.Text = editNode.name;
+            ui.editNode = (Node)combobox.Items.ElementAt(combobox.ItemIndex);
+            lblEditNodeName.Text = ui.editNode.name;
             */
             System.Console.WriteLine("num : {0}", cmbPresets.ItemIndex);
             if (combobox.ItemIndex != lstPresets.ItemIndex)
@@ -1085,9 +1093,9 @@ namespace OrbItProcs.Interface
         void btnDefaultNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             lstComp.Items = TreeListItem.GenerateList(game.room.defaultNode, "");
-            editNode = game.room.defaultNode;
-            spawnerNode = editNode;
-            lblEditNodeName.Text = editNode.name;
+            ui.editNode = game.room.defaultNode;
+            ui.spawnerNode = ui.editNode;
+            lblEditNodeName.Text = ui.editNode.name;
         }
 
         void btnRemoveAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
@@ -1095,10 +1103,10 @@ namespace OrbItProcs.Interface
             game.room.RemoveAllNodes();
             game.targetNode = null;
 
-            if (editNode != game.room.defaultNode && !lstPresets.Items.Contains(editNode))
+            if (ui.editNode != game.room.defaultNode && !lstPresets.Items.Contains(ui.editNode))
             {
                 lstComp.Items.Clear();
-                editNode = null;
+                ui.editNode = null;
             }
         }
 
@@ -1110,10 +1118,10 @@ namespace OrbItProcs.Interface
                 game.room.nodes.Remove(game.targetNode);
                 game.targetNode = null;
             }
-            if (editNode != game.room.defaultNode && !lstPresets.Items.Contains(editNode))
+            if (ui.editNode != game.room.defaultNode && !lstPresets.Items.Contains(ui.editNode))
             {
                 lstComp.Items.Clear();
-                editNode = null;
+                ui.editNode = null;
             }
             DisableControls(groupPanel);
         }

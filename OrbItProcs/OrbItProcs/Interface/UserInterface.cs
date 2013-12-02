@@ -60,15 +60,15 @@ namespace OrbItProcs.Interface {
         {
             this.game = game;
             this.room = game.room;
-            sidebar = new Sidebar(game);
-            sidebar.Initialize();
+            
 
             Initialize();
         }
 
         public void Initialize()
         {
-
+            sidebar = new Sidebar(game, this);
+            sidebar.Initialize();
         }
 
         
@@ -323,24 +323,5 @@ namespace OrbItProcs.Interface {
     }
 }
 /*
-    List<Y> listOfY = listOfX.Cast<Y>().ToList()
- * List<Y> listOfY = listOfX.Cast<Y>().ToList()
- * List<Y> listOfY = listOfX.Cast<Y>().ToList()
- * List<Y> listOfY = listOfX.Cast<Y>().ToList()
- * List<Y> listOfY = listOfX.Cast<Y>().ToList()
- * List<Y> listOfY = listOfX.Cast<Y>().ToList()
- * List<Y> listOfY = listOfX.Cast<Y>().ToList()
- * 
-*/
-
-/*
-textbox = new TextBox(manager);
-            textbox.Init();
-            textbox.Text = "textbox";
-            textbox.Width = 100;
-            textbox.Height = 20; HeightCounter += VertPadding + VertPadding + textbox.Height;
-            textbox.Top = 0;
-            textbox.Left = LeftPadding;
-            textbox.BackColor = Color.White;
-            textbox.Parent = first;
+    List<Y> listOfY = listOfX.Cast<Y>().ToList() 
 */

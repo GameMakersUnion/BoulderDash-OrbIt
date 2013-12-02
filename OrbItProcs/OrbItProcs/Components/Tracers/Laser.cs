@@ -175,13 +175,13 @@ namespace OrbItProcs.Components
                 spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint - diff, null, /*parent.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
                 count++;
             }
-            //spritebatch.Draw(parent.room.game1.whitepixelTexture, new Vector2(screenx, screeny), null, Color.White, (float)angle, center, scaling, SpriteEffects.None, 0);
-            //spritebatch.Draw(parent.room.game1.whitepixelTexture, screenPos, null, Color.White, (float)angle, center, scalesVects[queuecount - 1], SpriteEffects.None, 0);
+            //spritebatch.Draw(parent.room.game.whitepixelTexture, new Vector2(screenx, screeny), null, Color.White, (float)angle, center, scaling, SpriteEffects.None, 0);
+            //spritebatch.Draw(parent.room.game.whitepixelTexture, screenPos, null, Color.White, (float)angle, center, scalesVects[queuecount - 1], SpriteEffects.None, 0);
 
             //test
             /*
             Vector2 start = new Vector2(200, 200);
-            Vector2 end = new Vector2(room.game1.sWidth, room.game1.sHeight);
+            Vector2 end = new Vector2(room.game.sWidth, room.game.sHeight);
 
             //Vector2 diff = (end - start) / mapzoom;
             Vector2 centerpoint = (end + start) / 2;
@@ -190,10 +190,10 @@ namespace OrbItProcs.Components
 
             Vector2 scalevect = new Vector2(len, 1);
             float testangle = (float)(Math.Atan2(diff.Y, diff.X));// + (Math.PI / 2));
-            spritebatch.Draw(parent.room.game1.colororbTexture, start / mapzoom, null, Color.White, 0f, new Vector2(25f, 25f), 1 / mapzoom, SpriteEffects.None, 0);
-            spritebatch.Draw(parent.room.game1.colororbTexture, end / mapzoom, null, Color.White, 0f, new Vector2(25f, 25f), 1 / mapzoom, SpriteEffects.None, 0);
-            spritebatch.Draw(parent.room.game1.colororbTexture, centerpoint, null, Color.White, 0f, new Vector2(25f, 25f), 1 / mapzoom, SpriteEffects.None, 0);
-            spritebatch.Draw(parent.room.game1.whitepixelTexture, centerpoint, null, Color.White, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.room.game.colororbTexture, start / mapzoom, null, Color.White, 0f, new Vector2(25f, 25f), 1 / mapzoom, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.room.game.colororbTexture, end / mapzoom, null, Color.White, 0f, new Vector2(25f, 25f), 1 / mapzoom, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.room.game.colororbTexture, centerpoint, null, Color.White, 0f, new Vector2(25f, 25f), 1 / mapzoom, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.room.game.whitepixelTexture, centerpoint, null, Color.White, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
             */
             //spritebatch.Draw(parent.texture, new Vector2(screenx, screeny), null, Color.White, 0, new Vector2(parent.texture.Width / 2, parent.texture.Height / 2), parent.scale, SpriteEffects.None, 0);
             //spritebatch.Draw(parent.props[properties.core_texture], parent.props[properties.core_position], null, Color.White, 0, new Vector2(parent.props[properties.core_texture].Width / 2, parent.props[properties.core_texture].Height / 2), 1f, SpriteEffects.None, 0);

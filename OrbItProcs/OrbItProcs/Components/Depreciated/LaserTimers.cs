@@ -160,11 +160,11 @@ namespace OrbItProcs.Components
                 //{
                     scalesVects[count] = new Vector2(1, scales[count]);
                 //}
-                    //spritebatch.Draw(parent.room.game1.textureDict[textures.whitepixel], pos / mapzoom, null, Color.White, ang, center, scaling, SpriteEffects.None, 0);
+                    //spritebatch.Draw(parent.room.game.textureDict[textures.whitepixel], pos / mapzoom, null, Color.White, ang, center, scaling, SpriteEffects.None, 0);
                 spritebatch.Draw(parent.getTexture(textures.whitepixel), pos / mapzoom, null, col, ang, center, scalesVects[count], SpriteEffects.None, 0);
                 count++;
             }
-            //spritebatch.Draw(parent.room.game1.textureDict[textures.whitepixel], new Vector2(screenx, screeny), null, Color.White, (float)angle, center, scaling, SpriteEffects.None, 0);
+            //spritebatch.Draw(parent.room.game.textureDict[textures.whitepixel], new Vector2(screenx, screeny), null, Color.White, (float)angle, center, scaling, SpriteEffects.None, 0);
             spritebatch.Draw(parent.getTexture(textures.whitepixel), new Vector2(screenx, screeny), null, Color.White, (float)angle, center, scalesVects[queuecount - 1], SpriteEffects.None, 0);
             
             //test
@@ -172,7 +172,7 @@ namespace OrbItProcs.Components
             Vector2 centerTexture = new Vector2(0.5f, 1);
             Vector2 start = new Vector2(200, 200);
 
-            Vector2 end = new Vector2(room.game1.sWidth, room.game1.sHeight);
+            Vector2 end = new Vector2(room.game.sWidth, room.game.sHeight);
             Vector2 diff = (end - start) / mapzoom;
             Vector2 centerpoint = (end + start) / 2;
             centerpoint /= mapzoom;
