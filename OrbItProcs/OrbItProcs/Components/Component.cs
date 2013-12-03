@@ -98,33 +98,36 @@ namespace OrbItProcs.Components
            foreach (FieldInfo field in fields)
            {
                //Console.WriteLine("fieldtype: " + field.FieldType);
-               if (field.FieldType == typeof(ModifierInfo))
+               if (field.FieldType == typeof(Dictionary<string,ModifierInfo>))
                {
                    Modifier mod = (Modifier) sourceComp;
-                   if (mod.modifierInfo == null)
+
+                   Dictionary<string, ModifierInfo> newmodinfos = new Dictionary<string, ModifierInfo>();
+                   foreach (KeyValuePair<string, ModifierInfo> kvp in mod.modifierInfos)
                    {
-                       field.SetValue(destComp, null);
-                       continue;
-                   }
-                   Dictionary<string, FPInfo> newFpInfos = new Dictionary<string, FPInfo>();
-                   Dictionary<string, object> newFpInfosObj = new Dictionary<string, object>();
-                   foreach(string key in mod.modifierInfo.fpInfos.Keys)
-                   {
-                       FPInfo fpinfo = new FPInfo(mod.modifierInfo.fpInfos[key]);
-                       
-                       newFpInfos.Add(key, fpinfo);
-                       newFpInfosObj.Add(key, null);
-                   }
-                   Dictionary<string, dynamic> newargs = new Dictionary<string, dynamic>();
-                   foreach(string key in mod.modifierInfo.args.Keys)
-                   {
-                       newargs.Add(key, mod.modifierInfo.args[key]); //by reference (for now)
-                   }
+                       string key = kvp.Key;
+                       ModifierInfo modifierInfo = kvp.Value;
+                       Dictionary<string, FPInfo> newFpInfos = new Dictionary<string, FPInfo>();
+                       Dictionary<string, object> newFpInfosObj = new Dictionary<string, object>();
+                       foreach (string key2 in modifierInfo.fpInfos.Keys)
+                       {
+                           FPInfo fpinfo = new FPInfo(modifierInfo.fpInfos[key2]);
+
+                           newFpInfos.Add(key2, fpinfo);
+                           newFpInfosObj.Add(key2, null);
+                       }
+                       Dictionary<string, dynamic> newargs = new Dictionary<string, dynamic>();
+                       foreach (string key2 in modifierInfo.args.Keys)
+                       {
+                           newargs.Add(key2, modifierInfo.args[key2]); //by reference (for now)
+                       }
 
 
-                   ModifierInfo modInfo = new ModifierInfo(newFpInfos, newFpInfosObj, newargs, mod.modifierInfo.modifierDelegate);
-                   modInfo.delegateName = mod.modifierInfo.delegateName;
-                   field.SetValue(destComp, modInfo);
+                       ModifierInfo modInfo = new ModifierInfo(newFpInfos, newFpInfosObj, newargs, modifierInfo.modifierDelegate);
+                       modInfo.delegateName = modifierInfo.delegateName;
+                       newmodinfos.Add(key, modInfo);
+                   }
+                   field.SetValue(destComp, newmodinfos);
 
                }
 

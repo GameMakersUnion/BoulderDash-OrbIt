@@ -674,7 +674,7 @@ namespace OrbItProcs {
                         }
                         //Console.WriteLine(newNode.comps[comp.randinitialvel].multiplier);
 
-                        foreach (comp key in destNode.comps.Keys)
+                        foreach (comp key in destNode.comps.Keys.ToList())
                         {
                             Component component = destNode.comps[key];
                             MethodInfo mInfo = component.GetType().GetMethod("AfterCloning");

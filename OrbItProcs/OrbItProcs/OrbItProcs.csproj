@@ -137,6 +137,7 @@
     <Compile Include="Components\Movement\RandVelChange.cs" />
     <Compile Include="Components\Movement\Transfer.cs" />
     <Compile Include="Components\Meta\Tree.cs" />
+    <Compile Include="Components\Tracers\Waver.cs" />
     <Compile Include="Components\Tracers\WideRay.cs" />
     <Compile Include="FrameRateCounter.cs" />
     <Compile Include="GridSystem.cs" />

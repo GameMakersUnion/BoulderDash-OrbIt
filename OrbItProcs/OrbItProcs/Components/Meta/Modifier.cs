@@ -13,19 +13,13 @@ namespace OrbItProcs.Components
 {
     public class Modifier : Component
     {
-        /*
-        public Node parent
-        {
-            get { return _parent; }
-            set
-            {
-                _parent = value;
-                //UpdateReferences();
-            }
-        }
-        //*/
-        private ModifierInfo _modifierInfo = null;
-        public ModifierInfo modifierInfo { get { return _modifierInfo; } set { _modifierInfo = value;  } }
+        //public Node parent { get { return _parent; } set { _parent = value;//UpdateReferences(); } }
+
+        private Dictionary<string, ModifierInfo> _modifierInfos = new Dictionary<string, ModifierInfo>();
+        public Dictionary<string, ModifierInfo> modifierInfos { get { return _modifierInfos; } set { _modifierInfos = value; } }
+
+        //private ModifierInfo _modifierInfo = null;
+        //public ModifierInfo modifierInfo { get { return _modifierInfo; } set { _modifierInfo = value;  } }
 
         public Modifier() : this(null) { }
         public Modifier(Node parent = null)
@@ -37,16 +31,18 @@ namespace OrbItProcs.Components
 
         public void UpdateReferences()
         {
-            if (modifierInfo != null && parent != null)
+            if (parent != null)
             {
-                int count = 0;
-                for (int i = 0; i < modifierInfo.fpInfos.Keys.Count; i++)
+                foreach (ModifierInfo modifierInfo in modifierInfos.Values)
                 {
-                    if (i <= modifierInfo.fpInfos.Keys.Count)
+                    for (int i = 0; i < modifierInfo.fpInfos.Keys.Count; i++)
                     {
-                        //we need to fix this in the case that some objects being referenced aren't the parent node
-                        modifierInfo.fpInfos[modifierInfo.fpInfos.ElementAt(i).Key].ob = parent;
-                        modifierInfo.fpInfosObj[modifierInfo.fpInfosObj.ElementAt(i).Key] = parent;
+                        if (i <= modifierInfo.fpInfos.Keys.Count)
+                        {
+                            //we need to fix this in the case that some objects being referenced aren't the parent node
+                            modifierInfo.fpInfos[modifierInfo.fpInfos.ElementAt(i).Key].ob = parent;
+                            modifierInfo.fpInfosObj[modifierInfo.fpInfosObj.ElementAt(i).Key] = parent;
+                        }
                     }
                 }
             }
@@ -57,11 +53,12 @@ namespace OrbItProcs.Components
         public override void Initialize(Node parent)
         {
             this.parent = parent;
-            if (modifierInfo != null)
+            if (modifierInfos.Count > 0)
             {
                 UpdateReferences();
             }
         }
+        /*
         public void Initialize(Node parent, ModifierInfo modifierInfo)
         {
             this.parent = parent;
@@ -71,13 +68,14 @@ namespace OrbItProcs.Components
             }
             UpdateReferences();
         }
+        */
 
         public override void AffectOther(Node other)
         {
         }
         public override void AffectSelf()
         {
-            if (modifierInfo != null)
+            foreach (ModifierInfo modifierInfo in modifierInfos.Values)
             {
                 if (modifierInfo.delegateName != "")
                 {
@@ -87,11 +85,15 @@ namespace OrbItProcs.Components
                         object[] parameters = new object[2] { modifierInfo.args, modifierInfo };
 
                         meth.Invoke(null, parameters);
+                        //Console.WriteLine(modifierInfo.args["test"]);
                         return;
                     }
                 }
                 if (modifierInfo.modifierDelegate != null)
-                modifierInfo.modifierDelegate(modifierInfo.args, modifierInfo);
+                {
+                    modifierInfo.modifierDelegate(modifierInfo.args, modifierInfo);
+                    
+                }
             }
 
         }

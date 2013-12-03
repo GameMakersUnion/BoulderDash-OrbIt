@@ -44,6 +44,7 @@ namespace OrbItProcs {
         lifetime,
         
         //draw components
+        waver,
         laser,
         wideray,
         phaseorb,
@@ -81,6 +82,7 @@ namespace OrbItProcs {
             {comp.randvelchange,    typeof(RandVelChange)       },
             {comp.transfer,         typeof(Transfer)            },
             {comp.tree,             typeof(Tree)                },
+            {comp.waver,            typeof(Waver)               },
             {comp.wideray,          typeof(WideRay)             },
           //{comp.lasertimers,      typeof(LaserTimers)         },
           //{comp.middle,           typeof(MaxVel)              },
@@ -176,10 +178,7 @@ namespace OrbItProcs {
             textureDict.Add(textures.whitecircle, Content.Load<Texture2D>("whitecircle"));
             font = Content.Load<SpriteFont>("Courier New");
 
-
-            dynamic test;
-            test = 1;
-            Console.WriteLine(test.GetType());
+            
             
 
             // TODO: Add your initialization logic here
@@ -211,20 +210,23 @@ namespace OrbItProcs {
 
             //MODIFIER ADDITION
 
-            room.defaultNode.addComponent(comp.modifier, true); room.defaultNode.comps[comp.modifier].active = false;
+            room.defaultNode.addComponent(comp.modifier, true); //room.defaultNode.comps[comp.modifier].active = false;
             ModifierInfo modinfo = new ModifierInfo();
             modinfo.AddFPInfoFromString("o1", "scale", room.defaultNode);
             modinfo.AddFPInfoFromString("m1", "position", room.defaultNode);
             modinfo.AddFPInfoFromString("v1", "position", room.defaultNode);
 
             modinfo.args.Add("mod", 4.0f);
+            modinfo.args.Add("times", 3.0f);
+            modinfo.args.Add("test", 3.0f);
             
             //modinfo.delegateName = "Mod";
             //modinfo.delegateName = "Triangle";
             //modinfo.delegateName = "VelocityToOutput";
-            modinfo.delegateName = "VectorSine";
+            //modinfo.delegateName = "VectorSine";
+            modinfo.delegateName = "VectorSineComposite";
 
-            room.defaultNode.comps[comp.modifier].modifierInfo = modinfo;
+            //room.defaultNode.comps[comp.modifier].modifierInfos["sinecomposite"] = modinfo;
 
 
             
@@ -252,8 +254,14 @@ namespace OrbItProcs {
             //Console.WriteLine(b);
 
 
-            
-
+            float x = 0;
+            float inc = (float)(Math.PI * 2) / 100;
+            for (int i = 0; i < 100; i++)
+            {
+                x += inc;
+                float y = (float)Math.Sin(x);
+                //Console.WriteLine("{0}  :   {1}", x, y);
+            }
 
         }
 

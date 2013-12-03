@@ -61,7 +61,48 @@ namespace OrbItProcs.Processes
             mi.fpInfos["v1"].SetValue(vector);
 
         }
+        public static void VectorSineComposite(Dictionary<string, dynamic> args, ModifierInfo mi)
+        {
+            Vector2 vector = ((Vector2)mi.fpInfos["v1"].GetValue());
+            float timer = (Defaultered("m1", mi, -9999));
+            float amp = (Defaultered("amp", args, (Game1.sHeight / 5)));
+            float period = (Defaultered("period", args, (Game1.sWidth / 4)));
+            float vshift = (Defaultered("vshift", args, (Game1.sHeight / 2)));
+            int times = (int)(Defaultered("times", args, 2));
+            //float min = (Defaultered("min", args, 0.1f));
+            //float highest = (Defaultered("highest", args, 20f));
+            //float o1 = velocity.Length() / highest;
+            //o1 = o1 * (max - min) + min;
+            //vector.Y = (float)Math.Sin(vector.X / (period / (Math.PI * 2))) * amp + Game1.sHeight / 2;
+
+            //vector.Y = SineComposite(vector.X, amp, period, vshift, times);
+            //float test = args["test"];
+            //test++;
+            //args["test"] = test;
+            float x = timer;
+            if (x == -9999)
+            {
+                x = vector.X;
+            }
+
+            args["yval"] = SineComposite(x, amp, period, vshift, times);
+
+            mi.fpInfos["v1"].SetValue(vector);
+
+        }
         
+        public static float SineComposite(float x, float amp, float period, float vshift, int times)
+        {
+            period = (float)(Math.PI * 2) / period;
+            float y = 1;
+            for(int i = 0; i < times; i++)
+            {
+                y = y * (float)(Math.Sin(x * period / Math.Pow(2,i)));
+            }
+            y = y * amp + vshift;
+            return y;
+
+        }
 
         //failed generic experiment -- for now
         /*
@@ -122,9 +163,14 @@ namespace OrbItProcs.Processes
             if (mi.fpInfos.ContainsKey(id))
             {
                 var val = mi.fpInfos[id].GetValue();
-                if (val.GetType() == typeof(float) || val.GetType() == typeof(int))
+                if (val.GetType() == typeof(float))
                 {
-                    return (float) val;
+                    //Console.WriteLine(val.GetType());
+                    return (float)val;
+                }
+                else if (val.GetType() == typeof(int))
+                {
+                    return (int)val;
                 }
                 else if (val.GetType() == typeof(Vector2))
                 {

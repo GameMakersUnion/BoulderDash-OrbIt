@@ -34,7 +34,11 @@ namespace OrbItProcs.Components
         public int lifeleft { get { return _lifeleft; } set { _lifeleft = value; } }
 
 
-        private int timer = 0;
+        public bool _immortal = false;
+        public bool immortal { get { return _immortal; } set { _immortal = value; } }
+
+        private int _timer = 0;
+        public int timer { get { return _timer; } set { _timer = value; } }
         private int _timerMax = 1;
         public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
 
@@ -65,7 +69,7 @@ namespace OrbItProcs.Components
             
             if (++timer % timerMax == 0)
             {
-                if (lifeleft-- <= 0)
+                if (lifeleft-- <= 0 && !immortal)
                 {
                     Die();
                 }

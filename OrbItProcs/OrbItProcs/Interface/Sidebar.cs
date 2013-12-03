@@ -152,7 +152,7 @@ namespace OrbItProcs.Interface
 
             chkTempNodes.Checked = false; // TODO : Nessecary?
             chkTempNodes.Text = "Show TempNodes";
-            chkTempNodes.ToolTip.Text = "Enables or disables showing temp nodes in the list.";
+            chkTempNodes.ToolTip.Text = "Enables or disables \nshowing temp nodes \nin the list.";
             // TODO : IMPLEMENT: chkTempNodes.CheckedChanged += new TomShane.Neoforce.Controls.EventHandler(chkTempNodes_CheckedChanged);
             #endregion
 

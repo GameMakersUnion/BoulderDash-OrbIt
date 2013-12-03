@@ -43,8 +43,8 @@ namespace OrbItProcs.Components
         private int timer = 0, _timerMax = 1;
         public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
 
-        public List<QueueInfo> _customqueues = new List<QueueInfo>();
-        public List<QueueInfo> customqueues { get { return _customqueues; } set { _customqueues = value; } }
+        public Dictionary<string, QueueInfo> _customqueues = new Dictionary<string, QueueInfo>();
+        public Dictionary<string, QueueInfo> customqueues { get { return _customqueues; } set { _customqueues = value; } }
 
         public Queuer() : this(null) { }
         public Queuer(Node parent = null)
@@ -114,7 +114,7 @@ namespace OrbItProcs.Components
                 }
                 if ((qs & queues.customs) == queues.customs)
                 {
-                    foreach (QueueInfo qinfo in customqueues)
+                    foreach (QueueInfo qinfo in customqueues.Values)
                     {
                         qinfo.TriggerQueueify();
                     }
@@ -122,9 +122,12 @@ namespace OrbItProcs.Components
             }
         }
 
-        public void AddCustomQueue (QueueInfo queueinfo)
+        public void AddCustomQueue (string queuename, QueueInfo queueinfo)
         {
-            customqueues.Add(queueinfo);
+            if (!customqueues.ContainsKey(queuename))
+            {
+                customqueues.Add(queuename, queueinfo);
+            }
             qs = qs | queues.customs;
         }
 
