@@ -11,9 +11,64 @@ namespace OrbItProcs.Components
 {
     public class Waver : Component
     {
+        public bool _reflective = true;
+        public bool reflective { get { return _reflective; } set { _reflective = value; } }
         public Queue<Vector2> metapositions = new Queue<Vector2>();
+        public Queue<Vector2> reflectpositions = new Queue<Vector2>();
         public int _queuecount = 10;
         public int queuecount { get { return _queuecount; } set { _queuecount = value;  } }
+
+        public float _amp = 100;
+        public float amp
+        {
+            get { return _amp; } 
+            set 
+            {
+                _amp = value;
+                if (parent != null
+                    && parent.comps.ContainsKey(comp.modifier)
+                    && parent.comps[comp.modifier].modifierInfos.ContainsKey("waver")
+                    && parent.comps[comp.modifier].modifierInfos["waver"].args.ContainsKey("amp"))
+                {
+                    parent.comps[comp.modifier].modifierInfos["waver"].args["amp"] = value;
+                }
+            } 
+        }
+
+        public float _period = 10;
+        public float period
+        {
+            get { return _period; }
+            set
+            {
+                _period = value;
+                if (parent != null
+                    && parent.comps.ContainsKey(comp.modifier)
+                    && parent.comps[comp.modifier].modifierInfos.ContainsKey("waver")
+                    && parent.comps[comp.modifier].modifierInfos["waver"].args.ContainsKey("period"))
+                {
+                    parent.comps[comp.modifier].modifierInfos["waver"].args["period"] = value;
+                }
+            }
+        }
+
+        public float _composite = 1;
+        public float composite
+        {
+            get { return _composite; }
+            set
+            {
+                _composite = value;
+                if (parent != null
+                    && parent.comps.ContainsKey(comp.modifier)
+                    && parent.comps[comp.modifier].modifierInfos.ContainsKey("waver")
+                    && parent.comps[comp.modifier].modifierInfos["waver"].args.ContainsKey("composite"))
+                {
+                    parent.comps[comp.modifier].modifierInfos["waver"].args["composite"] = value;
+                }
+            }
+        }
+
 
         public Waver() : this(null) { }
         public Waver(Node parent = null)
@@ -50,9 +105,9 @@ namespace OrbItProcs.Components
             modinfo.AddFPInfoFromString("m1", "timer", parent.comps[comp.lifetime]);
 
             //modinfo.args.Add("mod", 4.0f);
-            modinfo.args.Add("amp", 30f);
-            modinfo.args.Add("period", 10f);
-            modinfo.args.Add("times", 1.0f);
+            modinfo.args.Add("amp", amp);
+            modinfo.args.Add("period", period);
+            modinfo.args.Add("composite", composite);
             modinfo.args.Add("vshift", 0.0f);
             modinfo.args.Add("yval", 0.0f);
 
@@ -71,7 +126,7 @@ namespace OrbItProcs.Components
         public override void InitializeLists()
         {
             metapositions = new Queue<Vector2>();
-
+            reflectpositions = new Queue<Vector2>();
         }
 
         public override void Initialize(Node parent)
@@ -95,13 +150,24 @@ namespace OrbItProcs.Components
             Vector2 metapos = new Vector2(parent.velocity.Y, -parent.velocity.X);
             metapos.Normalize();
             metapos *= yval;
-            metapos = parent.position + metapos;
+            Vector2 metaposfinal = parent.position + metapos;
+
 
             if (metapositions.Count > queuecount)
             {
                 metapositions.Dequeue();
             }
-            metapositions.Enqueue(metapos);
+            metapositions.Enqueue(metaposfinal);
+
+            if (reflective)
+            {
+                Vector2 reflectfinal = parent.position - metapos;
+                if (reflectpositions.Count > queuecount)
+                {
+                    reflectpositions.Dequeue();
+                }
+                reflectpositions.Enqueue(reflectfinal);
+            }
 
         }
 
@@ -119,7 +185,11 @@ namespace OrbItProcs.Components
                 spritebatch.Draw(parent.getTexture(), metapos / mapzoom, null, parent.color, 0, parent.TextureCenter(), parent.scale / mapzoom, SpriteEffects.None, 0);
                 count++;
             }
-
+            foreach (Vector2 relectpos in reflectpositions)
+            {
+                spritebatch.Draw(parent.getTexture(), relectpos / mapzoom, null, parent.color, 0, parent.TextureCenter(), parent.scale / mapzoom, SpriteEffects.None, 0);
+                count++;
+            }
 
             //spritebatch.Draw(parent.getTexture(), parent.position / mapzoom, null, parent.color, 0, parent.TextureCenter(), parent.scale / mapzoom, SpriteEffects.None, 0);
 

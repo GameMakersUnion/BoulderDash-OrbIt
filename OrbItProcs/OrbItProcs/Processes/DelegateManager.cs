@@ -68,7 +68,7 @@ namespace OrbItProcs.Processes
             float amp = (Defaultered("amp", args, (Game1.sHeight / 5)));
             float period = (Defaultered("period", args, (Game1.sWidth / 4)));
             float vshift = (Defaultered("vshift", args, (Game1.sHeight / 2)));
-            int times = (int)(Defaultered("times", args, 2));
+            int times = (int)(Defaultered("composite", args, 2));
             //float min = (Defaultered("min", args, 0.1f));
             //float highest = (Defaultered("highest", args, 20f));
             //float o1 = velocity.Length() / highest;

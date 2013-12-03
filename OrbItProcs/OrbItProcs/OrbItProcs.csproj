@@ -60,8 +60,9 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="C3.XNA.Primitives2D">
-      <HintPath>..\..\..\..\..\..\Devstuff\Primitives2D\bin\Debug\C3.XNA.Primitives2D.dll</HintPath>
+    <Reference Include="C3.XNA.Primitives2D, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Components\Includes\C3.XNA.Primitives2D.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
@@ -94,8 +95,9 @@
     <Reference Include="mscorlib">
       <Private>False</Private>
     </Reference>
-    <Reference Include="Polenter.SharpSerializer">
-      <HintPath>..\..\..\..\..\..\Gamedev\TomShane.Neoforce.Controls.XNA4\sharpSerializerDll\Polenter.SharpSerializer.dll</HintPath>
+    <Reference Include="Polenter.SharpSerializer, Version=2.18.0.0, Culture=neutral, PublicKeyToken=8f4f20011571ee5f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Components\Includes\Polenter.SharpSerializer.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Private>False</Private>
@@ -113,8 +115,9 @@
     <Reference Include="System.Net">
       <Private>False</Private>
     </Reference>
-    <Reference Include="TomShane.Neoforce.Controls">
-      <HintPath>..\..\..\..\..\..\Gamedev\TomShane.Neoforce.Controls.XNA4\Neoforce\Bin\TomShane.Neoforce.Controls.dll</HintPath>
+    <Reference Include="TomShane.Neoforce.Controls, Version=0.7.2407.1915, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Components\Includes\TomShane.Neoforce.Controls.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +166,9 @@
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Components\Includes\C3.XNA.Primitives2D.dll" />
+    <Content Include="Components\Includes\Polenter.SharpSerializer.dll" />
+    <Content Include="Components\Includes\TomShane.Neoforce.Controls.dll" />
     <Content Include="donelist.txt" />
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
