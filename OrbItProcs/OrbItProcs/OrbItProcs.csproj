@@ -122,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\Drawers\BasicDraw.cs" />
+    <Compile Include="Components\Flow.cs" />
     <Compile Include="Components\Movement\Collision.cs" />
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\Movement\Gravity.cs" />

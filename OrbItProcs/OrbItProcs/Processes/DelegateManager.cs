@@ -104,6 +104,18 @@ namespace OrbItProcs.Processes
 
         }
 
+
+        public static void ChangeArg(Node parent, string infoname, string argname, object value)
+        {
+            if (parent != null
+                    && parent.comps.ContainsKey(comp.modifier)
+                    && parent.comps[comp.modifier].modifierInfos.ContainsKey(infoname)
+                    && parent.comps[comp.modifier].modifierInfos[infoname].args.ContainsKey(argname))
+            {
+                parent.comps[comp.modifier].modifierInfos[infoname].args[argname] = value;
+            }
+        }
+
         //failed generic experiment -- for now
         /*
         public T SuppliedOrDefault<T>(string id, ModifierInfo mi, T defaultval)

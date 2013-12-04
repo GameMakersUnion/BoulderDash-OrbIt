@@ -25,15 +25,12 @@ namespace OrbItProcs.Components
             set 
             {
                 _amp = value;
-                if (parent != null
-                    && parent.comps.ContainsKey(comp.modifier)
-                    && parent.comps[comp.modifier].modifierInfos.ContainsKey("waver")
-                    && parent.comps[comp.modifier].modifierInfos["waver"].args.ContainsKey("amp"))
-                {
-                    parent.comps[comp.modifier].modifierInfos["waver"].args["amp"] = value;
-                }
+                DelegateManager.ChangeArg(parent, "waver", "amp", value);
+
             } 
         }
+
+        
 
         public float _period = 10;
         public float period
@@ -42,13 +39,7 @@ namespace OrbItProcs.Components
             set
             {
                 _period = value;
-                if (parent != null
-                    && parent.comps.ContainsKey(comp.modifier)
-                    && parent.comps[comp.modifier].modifierInfos.ContainsKey("waver")
-                    && parent.comps[comp.modifier].modifierInfos["waver"].args.ContainsKey("period"))
-                {
-                    parent.comps[comp.modifier].modifierInfos["waver"].args["period"] = value;
-                }
+                DelegateManager.ChangeArg(parent, "waver", "period", value);
             }
         }
 
@@ -59,13 +50,7 @@ namespace OrbItProcs.Components
             set
             {
                 _composite = value;
-                if (parent != null
-                    && parent.comps.ContainsKey(comp.modifier)
-                    && parent.comps[comp.modifier].modifierInfos.ContainsKey("waver")
-                    && parent.comps[comp.modifier].modifierInfos["waver"].args.ContainsKey("composite"))
-                {
-                    parent.comps[comp.modifier].modifierInfos["waver"].args["composite"] = value;
-                }
+                DelegateManager.ChangeArg(parent, "waver", "composite", value);
             }
         }
 

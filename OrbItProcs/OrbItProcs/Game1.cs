@@ -44,6 +44,7 @@ namespace OrbItProcs {
         lifetime,
         
         //draw components
+        flow,
         waver,
         laser,
         wideray,
@@ -59,6 +60,8 @@ namespace OrbItProcs {
         //ghost,
         //chrono,
         //weird,
+
+        
     };
 
     public class Game1 : Application {
@@ -67,6 +70,7 @@ namespace OrbItProcs {
         {
             {comp.basicdraw,        typeof(BasicDraw)           },
             {comp.collision,        typeof(Collision)           },
+            {comp.flow,             typeof(Flow)                },
             {comp.gravity,          typeof(Gravity)             },
             {comp.hueshifter,       typeof(HueShifter)          },
             {comp.laser,            typeof(Laser)               },
@@ -102,7 +106,7 @@ namespace OrbItProcs {
         public UserInterface ui;
         public Room room;
         SpriteBatch spriteBatch;
-        SpriteFont font;
+        public SpriteFont font;
         FrameRateCounter frameRateCounter;
 
         public static int sWidth = 1000;
@@ -187,10 +191,10 @@ namespace OrbItProcs {
             Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {
                     { node.position, new Vector2(0, 0) },
                     { node.texture, textures.whitecircle },
-                    //{ node.radius, 12 },
+                    { node.radius, 50 },
                     { comp.basicdraw, true },
                     { comp.collision, false },
-                    { comp.movement, true }, //this will default as 'true'
+                    { comp.movement, false }, //this will default as 'true'
                     { comp.maxvel, true },
                     //{ comp.randvelchange, true },
                     { comp.randinitialvel, true },
@@ -203,6 +207,7 @@ namespace OrbItProcs {
                     { comp.phaseorb, false },
                     //{ comp.tree, true },
                     { comp.queuer, true },
+                    { comp.flow, true },
                     
                 };
             room.defaultNode = new Node(room, userPr);
@@ -253,16 +258,14 @@ namespace OrbItProcs {
             testrefs(ref b);
             //Console.WriteLine(b);
 
+            String s = "hey";
+            teststr(s);
+            Console.WriteLine(s);
+        }
 
-            float x = 0;
-            float inc = (float)(Math.PI * 2) / 100;
-            for (int i = 0; i < 100; i++)
-            {
-                x += inc;
-                float y = (float)Math.Sin(x);
-                //Console.WriteLine("{0}  :   {1}", x, y);
-            }
-
+        public void teststr(String s)
+        {
+            s += "after";
         }
 
         public void InitializePresets()

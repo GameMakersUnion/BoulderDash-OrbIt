@@ -15,12 +15,14 @@ namespace OrbItProcs.Components
     [Flags]
     public enum mtypes
     {
-        none = 0x00,
-        initialize = 0x01,
-        affectother = 0x02,
-        affectself = 0x04,
-        draw = 0x08,
-        changereference = 0x10,
+        none = 0,
+        initialize = 1,
+        affectother = 2,
+        affectself = 4,
+        draw = 8,
+
+        changereference = 16,
+        minordraw = 32,
     };
 
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using System.Reflection;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs {
     public static class Utils {
@@ -115,6 +116,25 @@ namespace OrbItProcs {
                 else props[p] = props[p] ?? defProps[p];
             }
             
+        }
+
+        public static void DrawLine(SpriteBatch spritebatch, Vector2 start, Vector2 end, float thickness, Color color, Room room)
+        {
+            float mapzoom = room.mapzoom;
+            
+            Vector2 centerTexture = new Vector2(0.5f, 0.5f);
+            Vector2 diff = (end - start) / mapzoom;
+            Vector2 centerpoint = (end + start) / 2;
+            centerpoint /= mapzoom;
+            float len = diff.Length();
+            Vector2 scalevect = new Vector2(len, thickness);
+            float testangle = (float)(Math.Atan2(diff.Y, diff.X));// + (Math.PI / 2));
+
+            //diff.Normalize();
+            //diff = new Vector2(diff.Y, diff.X);
+
+            spritebatch.Draw(room.game.textureDict[textures.whitepixel], centerpoint, null, color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+
         }
 
         public static bool checkCollision(Node o1, Node o2)

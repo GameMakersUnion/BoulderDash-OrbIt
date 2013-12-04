@@ -489,23 +489,32 @@ namespace OrbItProcs {
             HashSet<Node> hashlist = new HashSet<Node>();
             hashlist.UnionWith(returnObjectsFinal);//bad
             hashlist.UnionWith(collisionList);
-            hashlist.Remove(this);
+            
 
-            //List<Node> gravList = room.gridsystem.retrieve(this, (int)(comps[comp.gravity].radius / room.gridsystem.cellwidth));
-            if (aOtherProps.Count > 0)
+            if (comps.ContainsKey(comp.flow) && comps[comp.flow].active)
             {
-                //Console.WriteLine("yep");
-                foreach (Node other in hashlist)
-                //foreach (Node other in room.nodes)
+                hashlist = new HashSet<Node>();
+                if (comps[comp.flow].activated)
                 {
-                    if (returnObjectsFinal.Contains(other) && other.props[node.active] && true)
+                    hashlist.UnionWith(comps[comp.flow].outgoing);
+                    //Console.WriteLine(hashlist.Count);
+                }
+            }
+            hashlist.Remove(this);
+            //List<Node> gravList = room.gridsystem.retrieve(this, (int)(comps[comp.gravity].radius / room.gridsystem.cellwidth));
+
+
+            foreach (Node other in hashlist)
+            {
+                if (other.props[node.active])
+                {
+                    // iterate over components that contain 'affectOther' method (and only call that method)
+                    foreach (comp c in aOtherProps)
                     {
-                        // iterate over components that contain 'affectOther' method (and only call that method)
-                        foreach (comp c in aOtherProps)
-                        {
-                            comps[c].AffectOther(other);
-                        }
+                        comps[c].AffectOther(other);
+                        //Console.Write(c.ToString());
                     }
+                    //Console.WriteLine(hashlist.Count);
                 }
             }
 
@@ -561,7 +570,8 @@ namespace OrbItProcs {
             foreach (comp c in drawProps)
             {
                 comps[c].Draw(spritebatch);
-                break; //only executes the most significant draw component
+                if (!comps[c].methods.HasFlag(mtypes.minordraw))
+                    break; //only executes the most significant draw component
             }
 
             if (triggerSortComponentsDraw)

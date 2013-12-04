@@ -37,7 +37,7 @@ namespace OrbItProcs.Components
         public override void Initialize(Node parent)
         {
             this.parent = parent;
-            movementmode = movemode.screenwrap;
+            movementmode = movemode.wallbounce;
         }
 
         public override void AffectOther(Node other)

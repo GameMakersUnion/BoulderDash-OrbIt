@@ -60,6 +60,7 @@ namespace OrbItProcs.Interface {
             }
             
             Initialize(windowType);
+            int a;
             
         }
 

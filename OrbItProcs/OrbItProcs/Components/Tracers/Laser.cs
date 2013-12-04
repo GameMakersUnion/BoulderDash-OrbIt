@@ -119,6 +119,8 @@ namespace OrbItProcs.Components
             */
         }
 
+        
+
         public override void Draw(SpriteBatch spritebatch)
         {
             //it would be really cool to have some kind of blending effects so that every combination of components will look diff

@@ -935,12 +935,23 @@ namespace OrbItProcs.Interface
             //remove panelControl elements (from groupPanel at the bottom)
             if (groupPanel.panelControls.Keys.Count > 0) DisableControls(groupPanel);
             //System.Console.WriteLine("" + treebox.ItemIndex);
+            /*
             game.targetNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
             ui.editNode = game.targetNode;
             lblEditNodeName.Text = ui.editNode.name;
 
             lstComp.Items = TreeListItem.GenerateList((Node)listbox.Items.ElementAt(listbox.ItemIndex), "");
+            */
+            SetTargetNode((Node)listbox.Items.ElementAt(listbox.ItemIndex));
 
+        }
+
+        public void SetTargetNode(Node target)
+        {
+            game.targetNode = target;
+            ui.editNode = target;
+            lblEditNodeName.Text = ui.editNode.name;
+            lstComp.Items = TreeListItem.GenerateList(target, "");
         }
 
         void lstPresets_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
