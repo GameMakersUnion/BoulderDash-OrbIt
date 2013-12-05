@@ -321,6 +321,7 @@ namespace OrbItProcs.Interface {
 
                     string filepath = "Presets//Nodes";
                     DirectoryInfo d = new DirectoryInfo(filepath);
+                    if (!d.Exists) d.Create();
                     List<FileInfo> filesWithName = d.GetFiles(activeNode.name + ".xml").ToList();
                     if (filesWithName.Count > 0) //we must be overwriting, therefore don't update the live presetList
                     {

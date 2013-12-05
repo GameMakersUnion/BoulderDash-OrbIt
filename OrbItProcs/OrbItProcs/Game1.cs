@@ -264,6 +264,7 @@ namespace OrbItProcs {
             String s = "hey";
             teststr(s);
             Console.WriteLine(s);
+            InitializePresets();
         }
 
         public void teststr(String s)
@@ -275,14 +276,16 @@ namespace OrbItProcs {
         {
             string filepath = "Presets//Nodes";
             DirectoryInfo d = new DirectoryInfo(filepath);
+            System.Console.WriteLine("Current Folder" + d);
             foreach (FileInfo file in d.GetFiles("*.xml"))
             {
+                System.Console.WriteLine("Current Files" + d);
                 string filename = file.Name;
                 System.Console.WriteLine(filename);
                 //string path = file.FullName;
                 filename = "Presets//Nodes//" + filename;
-                //NodePresets.Add((Node)room.serializer.Deserialize(filename));
-                NodePresets.Add(new Node());
+                NodePresets.Add((Node)room.serializer.Deserialize(filename));
+                //NodePresets.Add(new Node());
                 presetFileInfos.Add(file);
 
             }
