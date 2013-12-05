@@ -19,6 +19,7 @@ using Component = OrbItProcs.Components.Component;
 using System.IO;
 using EventHandler = TomShane.Neoforce.Controls.EventHandler;
 using EventArgs = TomShane.Neoforce.Controls.EventArgs;
+using System.Collections.ObjectModel;
 namespace OrbItProcs.Interface
 {
     public class Sidebar
@@ -38,9 +39,11 @@ namespace OrbItProcs.Interface
         private CheckBox chkTempNodes;
         Button btnRemoveNode, btnRemoveAllNodes, btnAddComponent, btnDefaultNode, btnApplyToAll, btnSaveNode;
         public TreeListBox lstComp;
+        public List<object> compLst { set { lstComp.Items.Clear(); foreach (object o in value) lstComp.Items.Add(o); } }
         public ContextMenu contextMenulstComp;
         public Label lblEditNodeName;
         public GroupPanel groupPanel;
+        public Dictionary<System.String, Control> panelControls;
         private TreeListItem activeTreeItem;
         private object parentObject;
         //public Node ui.editNode, ui.spawnerNode;
@@ -266,7 +269,6 @@ namespace OrbItProcs.Interface
             removeComponentMenuItem.Click += new TomShane.Neoforce.Controls.EventHandler(removeComponentMenuItem_Click);
             contextMenulstComp.Items.Add(applyToAllNodesMenuItem);
             #endregion
-            lstComp.ContextMenu = contextMenulstComp;
             #endregion
 
             #region  /// GroupPanel ///
@@ -280,7 +282,7 @@ namespace OrbItProcs.Interface
             groupPanel.Height = 115; HeightCounter += VertPadding + groupPanel.Height;
             groupPanel.Left = LeftPadding;
 
-            groupPanel.panelControls = new Dictionary<string, Control>();
+            panelControls = new Dictionary<string, Control>();
             groupPanel.Text = "Property";
             #endregion
 
@@ -410,6 +412,8 @@ namespace OrbItProcs.Interface
 
 #endregion
         }
+
+      
 
         void NodePresets_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
@@ -643,7 +647,7 @@ namespace OrbItProcs.Interface
         {
             if (activeTreeItem == treeItem) return;
 
-            if (grouppanel.panelControls.Keys.Count > 0) DisableControls(grouppanel);
+            if (panelControls.Keys.Count > 0) DisableControls(grouppanel);
 
             activeTreeItem = treeItem;
 
@@ -660,7 +664,7 @@ namespace OrbItProcs.Interface
                 chkbox.Text = treeItem.component + " (" + treeItem.node.isCompActive(treeItem.component) + ")";
                 chkbox.CheckedChanged += new TomShane.Neoforce.Controls.EventHandler(chkbox_CheckedChanged);
 
-                grouppanel.panelControls.Add("chkbox", chkbox);
+                panelControls.Add("chkbox", chkbox);
 
                 return;
             }
@@ -728,8 +732,8 @@ namespace OrbItProcs.Interface
                 btnModify.Click += new TomShane.Neoforce.Controls.EventHandler(btnModify_Click);
 
 
-                grouppanel.panelControls.Add("txtbox", txtbox);
-                grouppanel.panelControls.Add("btnModify", btnModify);
+                panelControls.Add("txtbox", txtbox);
+                panelControls.Add("btnModify", btnModify);
 
                 if (t.ToString().Equals("System.Int32") || t.ToString().Equals("System.Single"))
                 {
@@ -746,7 +750,7 @@ namespace OrbItProcs.Interface
                     trkMain.Range = val * 2;
                     trkMain.ValueChanged += new TomShane.Neoforce.Controls.EventHandler(trkMain_ValueChanged);
                     //trkMain.btnSlider.MouseUp += new TomShane.Neoforce.Controls.MouseEventHandler(trkMain_MouseUp);
-                    grouppanel.panelControls.Add("trkMain", trkMain);
+                    panelControls.Add("trkMain", trkMain);
                 }
 
             }
@@ -762,7 +766,7 @@ namespace OrbItProcs.Interface
                 chkbox.Checked = (bool)field.GetValue(parentObject);
                 chkbox.Text = field.Name + " (" + field.GetValue(parentObject) + ")";
                 chkbox.CheckedChanged += new TomShane.Neoforce.Controls.EventHandler(chkbox_CheckedChanged);
-                grouppanel.panelControls.Add("chkbox", chkbox);
+                panelControls.Add("chkbox", chkbox);
 
             }
             else if (t.ToString().Equals("Microsoft.Xna.Framework.Vector2"))
@@ -779,12 +783,12 @@ namespace OrbItProcs.Interface
 
         public void DisableControls(GroupPanel grouppanel)
         {
-            List<String> list = grouppanel.panelControls.Keys.ToList(); // for some reason this isn't updated if you click quickly
+            List<String> list = panelControls.Keys.ToList(); // for some reason this isn't updated if you click quickly
             //System.Console.WriteLine(list.Count);
             foreach (String key in list)
             {
-                grouppanel.Remove(grouppanel.panelControls[key]);
-                grouppanel.panelControls.Remove(key);
+                grouppanel.Remove(panelControls[key]);
+                panelControls.Remove(key);
             }
         }
 
@@ -792,7 +796,7 @@ namespace OrbItProcs.Interface
         {
             //TrackBar trkbar = (TrackBar)sender;
             //System.Console.WriteLine("yeah");
-            TrackBar trkbar = (TrackBar)groupPanel.panelControls["trkMain"];
+            TrackBar trkbar = (TrackBar)panelControls["trkMain"];
 
             if (trkbar.Value == trkbar.Range) trkbar.Range *= 2;
         }
@@ -817,12 +821,12 @@ namespace OrbItProcs.Interface
                     if (property.PropertyType.ToString().Equals("System.Int32"))
                     {
                         property.SetValue(parentObject, trkbar.Value, null);
-                        gp.panelControls["txtbox"].Text = "" + trkbar.Value;
+                        panelControls["txtbox"].Text = "" + trkbar.Value;
                     }
                     else if (property.PropertyType.ToString().Equals("System.Single"))
                     {
                         property.SetValue(parentObject, Convert.ToSingle(trkbar.Value), null);
-                        gp.panelControls["txtbox"].Text = "" + trkbar.Value;
+                        panelControls["txtbox"].Text = "" + trkbar.Value;
                         //field.SetValue(10.0f, parentObject);
 
                     }
@@ -836,12 +840,12 @@ namespace OrbItProcs.Interface
                     if (field.FieldType.ToString().Equals("System.Int32"))
                     {
                         field.SetValue(parentObject, trkbar.Value);
-                        gp.panelControls["txtbox"].Text = "" + trkbar.Value;
+                        panelControls["txtbox"].Text = "" + trkbar.Value;
                     }
                     else if (field.FieldType.Equals("System.Single"))
                     {
                         field.SetValue(parentObject, Convert.ToSingle(trkbar.Value));
-                        gp.panelControls["txtbox"].Text = "" + trkbar.Value;
+                        panelControls["txtbox"].Text = "" + trkbar.Value;
                         //field.SetValue(10.0f, parentObject);
 
                     }
@@ -918,7 +922,7 @@ namespace OrbItProcs.Interface
 
             if (t.ToString().Equals("System.Int32"))
             {
-                str = grouppanel.panelControls["txtbox"].Text.Trim();
+                str = panelControls["txtbox"].Text.Trim();
                 int integer;
                 if (str.Length < 1) return;
                 if (Int32.TryParse(str, out integer))
@@ -928,7 +932,7 @@ namespace OrbItProcs.Interface
             }
             if (t.ToString().Equals("System.Single"))
             {
-                str = grouppanel.panelControls["txtbox"].Text.Trim();
+                str = panelControls["txtbox"].Text.Trim();
                 float f;
                 if (str.Length < 1) return;
                 if (float.TryParse(str, out f))
@@ -938,7 +942,7 @@ namespace OrbItProcs.Interface
             }
             if (t.ToString().Equals("System.String"))
             {
-                str = grouppanel.panelControls["txtbox"].Text;
+                str = panelControls["txtbox"].Text;
                 if (str.Length < 1) return;
                 field.SetValue(parentObject, str);
                 return;
@@ -966,7 +970,7 @@ namespace OrbItProcs.Interface
         {
             ListBox listbox = (ListBox)sender;
             //remove panelControl elements (from groupPanel at the bottom)
-            if (groupPanel.panelControls.Keys.Count > 0) DisableControls(groupPanel);
+            if (panelControls.Keys.Count > 0) DisableControls(groupPanel);
             //System.Console.WriteLine("" + treebox.ItemIndex);
             /*
             game.targetNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
@@ -984,14 +988,14 @@ namespace OrbItProcs.Interface
             game.targetNode = target;
             ui.editNode = target;
             lblEditNodeName.Text = ui.editNode.name;
-            lstComp.Items = TreeListItem.GenerateList(target, "");
+            compLst = TreeListItem.GenerateList(target, "");
         }
 
         void lstPresets_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             ListBox listbox = (ListBox)sender;
             //remove panelControl elements (from groupPanel at the bottom)
-            if (groupPanel.panelControls.Keys.Count > 0) DisableControls(groupPanel);
+            if (panelControls.Keys.Count > 0) DisableControls(groupPanel);
             //System.Console.WriteLine("" + treebox.ItemIndex);
             //game.room.defaultNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
             ui.editNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
@@ -999,7 +1003,7 @@ namespace OrbItProcs.Interface
             ui.spawnerNode = ui.editNode;
             //ui.editNode = game.targetNode;
 
-            lstComp.Items = TreeListItem.GenerateList(ui.editNode, "");
+            compLst = TreeListItem.GenerateList(ui.editNode, "");
             if (cmbPresets.ItemIndex != lstPresets.ItemIndex)
             {
                 cmbPresets.ItemIndex = lstPresets.ItemIndex;
@@ -1048,7 +1052,7 @@ namespace OrbItProcs.Interface
 
             ComboBox combobox = (ComboBox)sender;
             /*
-            if (groupPanel.panelControls.Keys.Count > 0) DisableControls(groupPanel);
+            if (panelControls.Keys.Count > 0) DisableControls(groupPanel);
             ui.editNode = (Node)combobox.Items.ElementAt(combobox.ItemIndex);
             lblEditNodeName.Text = ui.editNode.name;
             */
@@ -1136,7 +1140,7 @@ namespace OrbItProcs.Interface
 
         void btnDefaultNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            lstComp.Items = TreeListItem.GenerateList(game.room.defaultNode, "");
+            compLst = TreeListItem.GenerateList(game.room.defaultNode, "");
             ui.editNode = game.room.defaultNode;
             ui.spawnerNode = ui.editNode;
             lblEditNodeName.Text = ui.editNode.name;

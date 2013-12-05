@@ -26,7 +26,6 @@ using System.Collections.ObjectModel;
 namespace OrbItProcs {
     /// <summary>
     /// This is the main type for your game
-    /// #MHDANTE WAS HERE.
     /// </summary>
 
     public enum comp {
@@ -66,9 +65,6 @@ namespace OrbItProcs {
     };
 
     public class Game1 : Application {
-
-        public string BestGameEver = "OrbIt";
-
         public static Dictionary<comp, Type> compTypes = new Dictionary<comp, Type>()
         {
             {comp.basicdraw,        typeof(BasicDraw)           },

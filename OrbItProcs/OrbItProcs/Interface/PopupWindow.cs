@@ -408,9 +408,9 @@ namespace OrbItProcs.Interface {
                 if (c)
                 {
                     game.ui.editNode.addComponent((comp)cbBox.Items.ElementAt(cbBox.ItemIndex), true, true);
-                    if (game.ui.sidebar.groupPanel.panelControls.Keys.Count > 0) game.ui.sidebar.DisableControls(game.ui.sidebar.groupPanel); //TODO
+                    if (game.ui.sidebar.panelControls.Keys.Count > 0) game.ui.sidebar.DisableControls(game.ui.sidebar.groupPanel); //TODO
 
-                    game.ui.sidebar.lstComp.Items = TreeListItem.GenerateList(game.ui.editNode, "");
+                    game.ui.sidebar.compLst = TreeListItem.GenerateList(game.ui.editNode, "");
                 }
             };
 
