@@ -11,6 +11,7 @@ using OrbItProcs.Components;
 using OrbItProcs.Processes;
 
 using Component = OrbItProcs.Components.Component;
+using System.Collections.ObjectModel;
 
 namespace OrbItProcs {
 
@@ -36,7 +37,8 @@ namespace OrbItProcs {
 
         public Dictionary<string, bool> PropertiesDict = new Dictionary<string, bool>();
 
-        public List<object> nodes = new List<object>();
+        public ObservableCollection<object> nodes = new ObservableCollection<object>();
+
         public Queue<object> nodesToAdd = new Queue<object>();
 
         public Node defaultNode, targetNodeGraphic;
@@ -74,7 +76,7 @@ namespace OrbItProcs {
             {
                 nodes.Remove(nodes.ElementAt(0));
             }
-            game.ui.sidebar.UpdateNodesTitle();
+            //game.ui.sidebar.UpdateNodesTitle();
         }
 
         public void Update(GameTime gametime)
@@ -118,7 +120,7 @@ namespace OrbItProcs {
                 {
                     //Console.WriteLine("node removed. ------------------------------------");
                     nodes.Remove(node);
-                    game.ui.sidebar.UpdateNodesTitle();
+                    //game.ui.sidebar.UpdateNodesTitle();
                 }
 
                 //addGridSystemLines(gridsystem);
