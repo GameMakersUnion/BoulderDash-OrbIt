@@ -66,7 +66,9 @@ namespace OrbItProcs {
     };
 
     public class Game1 : Application {
-        
+
+        public string BestGameEver = "OrbIt";
+
         public static Dictionary<comp, Type> compTypes = new Dictionary<comp, Type>()
         {
             {comp.basicdraw,        typeof(BasicDraw)           },
