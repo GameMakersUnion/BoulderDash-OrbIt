@@ -137,7 +137,8 @@ namespace OrbItProcs.Interface
 
             lstMain.HideSelection = false; // TODO WTF
             lstMain.ItemIndexChanged += new TomShane.Neoforce.Controls.EventHandler(lstMain_ItemIndexChanged);
-            lstMain.Items = room.nodes;
+            //lstMain.Items = room.nodes;
+            room.nodes.CollectionChanged += nodes_CollectionChanged;
             #endregion
 
             #region /// CheckBox ///
@@ -221,11 +222,13 @@ namespace OrbItProcs.Interface
             cmbPresets.Left = LeftPadding;
             cmbPresets.Top = HeightCounter; HeightCounter += VertPadding + cmbPresets.Height;
 
-            cmbPresets.Items = game.NodePresets;
+            //cmbPresets.Items = game.NodePresets;
+            game.NodePresets.CollectionChanged += NodePresets_CollectionChanged;
+
             cmbPresets.ItemIndexChanged += new TomShane.Neoforce.Controls.EventHandler(cmbPresets_ItemIndexChanged);
             #endregion
 
-            #region  /// Presets Dropdown ///
+            #region  /// Edit Node Name ///
             lblEditNodeName = new Label(manager);
             lblEditNodeName.Init();
             lblEditNodeName.Parent = first;
@@ -390,7 +393,7 @@ namespace OrbItProcs.Interface
             lstPresets.HideSelection = false;
             lstPresets.ItemIndexChanged += new TomShane.Neoforce.Controls.EventHandler(lstPresets_ItemIndexChanged);
             //lstMain.Click += new TomShane.Neoforce.Controls.EventHandler(lstMain_Click);
-            lstPresets.Items = game.NodePresets;
+            //lstPresets.Items = game.NodePresets;
             
             #region /// Presets ContextMenu ///
             presetContextMenu = new ContextMenu(manager);
@@ -408,9 +411,39 @@ namespace OrbItProcs.Interface
 #endregion
         }
 
-        public void UpdateNodesTitle()
+        void NodePresets_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+                foreach (object o in e.NewItems)
+                {
+                    cmbPresets.Items.Add(o);
+                    lstPresets.Items.Add(o);
+                }
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+                foreach (object o in e.OldItems)
+                {
+                    cmbPresets.Items.Remove(o);
+                    lstPresets.Items.Remove(o);
+                }
+
+        }
+
+        void nodes_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             title1.Text = "Node List : " + room.nodes.Count;
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+                foreach (object o in e.NewItems)
+                    lstMain.Items.Add(o);
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+                foreach (object o in e.OldItems)
+                    lstMain.Items.Remove(o);
+
+
+        }
+
+        public void UpdateNodesTitle()
+        {
+            
         }
 
         void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
@@ -712,7 +745,7 @@ namespace OrbItProcs.Interface
                     if (val == 0) val = 5;
                     trkMain.Range = val * 2;
                     trkMain.ValueChanged += new TomShane.Neoforce.Controls.EventHandler(trkMain_ValueChanged);
-                    trkMain.btnSlider.MouseUp += new TomShane.Neoforce.Controls.MouseEventHandler(trkMain_MouseUp);
+                    //trkMain.btnSlider.MouseUp += new TomShane.Neoforce.Controls.MouseEventHandler(trkMain_MouseUp);
                     grouppanel.panelControls.Add("trkMain", trkMain);
                 }
 
@@ -768,6 +801,9 @@ namespace OrbItProcs.Interface
         {
             TrackBar trkbar = (TrackBar)sender;
             GroupPanel gp = (GroupPanel)(trkbar.Parent.Parent);
+
+            
+
             if (gp.Parent == tbcMain.TabPages[0])
             {
                 TreeListItem item = (TreeListItem)lstComp.Items.ElementAt(lstComp.ItemIndex);
@@ -812,11 +848,8 @@ namespace OrbItProcs.Interface
 
                 }
 
-
-
-
-
             }
+            if (trkbar.Value == trkbar.Range) trkbar.Range *= 2;
         }
 
         void chkbox_CheckedChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
