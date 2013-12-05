@@ -21,6 +21,7 @@ using OrbItProcs.Interface;
 using OrbItProcs.Components;
 using OrbItProcs.Processes;
 using System.IO;
+using System.Collections.ObjectModel;
 
 namespace OrbItProcs {
     /// <summary>
@@ -135,7 +136,7 @@ namespace OrbItProcs {
 
 
         /////////////////////
-        public List<object> NodePresets = new List<object>();
+        public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
         public List<FileInfo> presetFileInfos = new List<FileInfo>();
 
 
@@ -411,7 +412,7 @@ namespace OrbItProcs {
             room.nodes.Add(newNode);
             //Console.WriteLine(newNode.comps[comp.randinitialvel].multiplier);
             //Console.WriteLine("Nodes: {0}", room.nodes.Count);
-            ui.sidebar.UpdateNodesTitle();
+            //ui.sidebar.UpdateNodesTitle();
         }
         
         public void spawnNode(Dictionary<dynamic,dynamic> userProperties)
@@ -444,7 +445,7 @@ namespace OrbItProcs {
             //Console.WriteLine(newNode.velocity);
             room.nodes.Add(newNode);
             //Console.WriteLine(newNode.comps[comp.randinitialvel].multiplier);
-            ui.sidebar.UpdateNodesTitle();
+            //ui.sidebar.UpdateNodesTitle();
         }
 
         /*

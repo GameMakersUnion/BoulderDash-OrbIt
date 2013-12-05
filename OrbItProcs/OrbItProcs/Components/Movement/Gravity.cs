@@ -17,12 +17,16 @@ namespace OrbItProcs.Components {
         private int _lowerbound = 20;
         public int lowerbound { get { return _lowerbound; } set { _lowerbound = value; } }
 
+        public bool _constant = false;
+        public bool constant { get { return _constant; } set { _constant = value; } }
+
         public Gravity() : this(null) { }
         public Gravity(Node parent = null)
         {
             if (parent != null) this.parent = parent;
             com = comp.gravity; 
-            methods = mtypes.affectother; 
+            methods = mtypes.affectother;
+            
         }
 
 
@@ -68,8 +72,20 @@ namespace OrbItProcs.Components {
                 //*/
                 //*
                 delta /= 2;
-                other.velocity += delta / other.mass;
-                parent.velocity -= delta / parent.mass;
+
+                if (constant)
+                {
+                    other.velocity = delta / other.mass;
+                    parent.velocity = -delta / parent.mass;
+                }
+                else
+                {
+                    other.velocity += delta / other.mass;
+                    parent.velocity -= delta / parent.mass;
+                }
+
+                
+                
                 //*/
 
                 //other.velocity.X += velX;
