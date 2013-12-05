@@ -21,24 +21,14 @@ using System.IO;
 namespace OrbItProcs.Interface {
     public class UserInterface {
 
-        #region /// Essentials ///
+        #region /// Fields ///
 
         public Game1 game;
         public Room room;
-
-        #endregion
-
-        #region /// Hardware Variables ///
-
         
         KeyboardState oldKeyBState;
         MouseState oldMouseState;
         
-
-        #endregion
-
-        #region /// ToBeRemoved ///
-
         string currentSelection = "placeNode";//
         int oldMouseScrollValue = 0;//
         bool hovertargetting = false;//
@@ -49,8 +39,6 @@ namespace OrbItProcs.Interface {
         bool isShiftDown = false;
         bool isTargeting = false;
         public Vector2 spawnPos;
-
-
 
         #endregion
 
@@ -63,21 +51,9 @@ namespace OrbItProcs.Interface {
             this.game = game;
             this.room = game.room;
             
-
-            Initialize();
-        }
-
-        public void Initialize()
-        {
-            sidebar = new Sidebar(game, this);
+            sidebar = new Sidebar(this);
             sidebar.Initialize();
-
-
-
         }
-
-        
-
 
         public void Update(GameTime gameTime)
         {
@@ -372,17 +348,5 @@ namespace OrbItProcs.Interface {
             oldMouseScrollValue = mouseState.ScrollWheelValue;
             oldMouseState = mouseState;
         }
-
-        //DEPRECIATED
-        //void btnSaveNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
-        //{
-        //    PopupWindow saveNodes = new PopupWindow(game, "saveNode");
-
-        //}
-
-
     }
 }
-/*
-    List<Y> listOfY = listOfX.Cast<Y>().ToList() 
-*/

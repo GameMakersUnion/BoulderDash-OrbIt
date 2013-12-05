@@ -147,11 +147,11 @@
     <Compile Include="GridSystem.cs" />
     <Compile Include="Interface\NeoForceOverrides\TreeListBox.cs" />
     <Compile Include="Interface\Sidebar.cs" />
+    <Compile Include="lists.cs" />
     <Compile Include="Processes\DelegateManager.cs" />
     <Compile Include="Processes\FPInfo.cs" />
     <Compile Include="Interface\PopupWindow.cs" />
     <Compile Include="Interface\InspectorItem.cs" />
-    <Compile Include="Interface\TLITree.cs" />
     <Compile Include="Interface\TreeListItem.cs" />
     <Compile Include="Interface\UserInterface.cs" />
     <Compile Include="Node.cs" />

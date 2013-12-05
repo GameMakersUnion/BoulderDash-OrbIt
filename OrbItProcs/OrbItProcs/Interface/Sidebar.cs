@@ -64,10 +64,10 @@ namespace OrbItProcs.Interface
         private int VertPadding = 4;
         #endregion
 
-        public Sidebar(Game1 game, UserInterface ui)
+        public Sidebar(UserInterface ui)
         {
-            this.game = game;
-            this.room = game.room;
+            this.game = ui.game;
+            this.room = ui.game.room;
             this.ui = ui;
             manager = game.Manager;
         }
@@ -310,7 +310,7 @@ namespace OrbItProcs.Interface
             btnSaveNode.Parent = first;
             //btnSaveNode.Click += new TomShane.Neoforce.Controls.EventHandler(btnSaveNode_Click);
             btnSaveNode.Click += delegate(object sender, EventArgs e) {
-                PopupWindow saveNodes = new PopupWindow(game, "saveNode");};
+                PopupWindow saveNodes = new PopupWindow(ui, PopupWindow.PopUpType.textBox);};
             #endregion
             #endregion
 
@@ -408,12 +408,7 @@ namespace OrbItProcs.Interface
             #endregion
             #endregion
 
-#region /// Menu items ///
-
-#endregion
         }
-
-      
 
         void NodePresets_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
@@ -443,11 +438,6 @@ namespace OrbItProcs.Interface
                     lstMain.Items.Remove(o);
 
 
-        }
-
-        public void UpdateNodesTitle()
-        {
-            
         }
 
         void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
@@ -1020,8 +1010,8 @@ namespace OrbItProcs.Interface
             System.Console.WriteLine("Deleting file: " + fileinfo.Name);
 
             string message = "Are you sure you want to delete the file: " + fileinfo.Name;
-            PopupWindow confirmDelete = new PopupWindow(game, "showMessage", message);
-            confirmDelegate deleteDel = delegate(bool del)
+            PopupWindow confirmDelete = new PopupWindow(ui, PopupWindow.PopUpType.prompt, message);
+            PopupWindow.confirmDelegate deleteDel = delegate(bool del)
             {
                 if (del)
                 {
@@ -1134,7 +1124,7 @@ namespace OrbItProcs.Interface
 
         void btnAddComponent_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            PopupWindow addComponentWindow = new PopupWindow(game, "addComponent");
+            PopupWindow addComponentWindow = new PopupWindow(ui, PopupWindow.PopUpType.dropDown);
             // if it's open don't open again... (TODO)
         }
 
@@ -1174,11 +1164,5 @@ namespace OrbItProcs.Interface
             DisableControls(groupPanel);
         }
 
-        public void UpdateNodeList(Node node)
-        {
-            //lstMain.Items.AddRange(
-            //lstMain.Items.Add(node);
-
-        }
     }
 }

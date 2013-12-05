@@ -24,9 +24,6 @@ using System.IO;
 using System.Collections.ObjectModel;
 
 namespace OrbItProcs {
-    /// <summary>
-    /// This is the main type for your game
-    /// </summary>
 
     public enum comp {
         queuer,
@@ -42,7 +39,7 @@ namespace OrbItProcs {
         linearpull,
         hueshifter,
         lifetime,
-        
+
         //draw components
         flow,
         waver,
@@ -60,13 +57,12 @@ namespace OrbItProcs {
         //ghost,
         //chrono,
         //weird,
-
-        
     };
 
-    public class Game1 : Application {
-        public static Dictionary<comp, Type> compTypes = new Dictionary<comp, Type>()
-        {
+    public class Game1 : Application
+    {
+        # region /// Comp to Type Dictionary ///
+        public static Dictionary<comp, Type> compTypes = new Dictionary<comp, Type>(){
             {comp.basicdraw,        typeof(BasicDraw)           },
             {comp.collision,        typeof(Collision)           },
             {comp.flow,             typeof(Flow)                },
@@ -94,7 +90,7 @@ namespace OrbItProcs {
           //{comp.slow,             typeof(Slow)                }, 
           //{comp.weird,            typeof(Weird)               },
         };
-
+        #endregion
 
         public static Component GenerateComponent(comp c)
         {
@@ -102,7 +98,7 @@ namespace OrbItProcs {
             return component;
         }
         
-        public UserInterface ui;
+        private UserInterface ui;
         public Room room;
         SpriteBatch spriteBatch;
         public SpriteFont font;
@@ -111,29 +107,18 @@ namespace OrbItProcs {
         public static int sWidth = 1000;
         public static int sHeight = 600;
 
-        MouseState oldMouseState;
-        KeyboardState oldKeyBState;
-        int oldMouseScrollValue = 0;
-
         public Dictionary<textures, Texture2D> textureDict;
         //Node node;
-        
-        int rightClickCount = 0;
-        int rightClickMax = 1;
 
         public int worldWidth = 1600;
         public int worldHeight = 960;
 
         string currentSelection = "placeNode";
-        bool hovertargetting = false;
         public Node targetNode = null;
 
         TimeSpan elapsedTime = new TimeSpan();
         TimeSpan targetElapsedTime = new TimeSpan(0, 0, 0, 0, 16);
-        //GraphicsDeviceManager graphics;
 
-
-        /////////////////////
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
         public List<FileInfo> presetFileInfos = new List<FileInfo>();
 
@@ -406,7 +391,6 @@ namespace OrbItProcs {
 
             newNode.name = "node" + Node.nodeCounter;
             //if (newNode.comps.ContainsKey(comp.modifier)) newNode.comps[comp.modifier].UpdateReferences();
-            ui.sidebar.UpdateNodeList(newNode);
 
             //newNode.comps[comp.gravity].multiplier = 1000000f;
             //Console.WriteLine(newNode.velocity);

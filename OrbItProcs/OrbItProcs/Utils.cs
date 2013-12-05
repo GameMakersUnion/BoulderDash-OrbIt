@@ -9,7 +9,20 @@ using Microsoft.Xna.Framework.Graphics;
 namespace OrbItProcs {
     public static class Utils {
 
-        
+        public static string wordWrap(this string message, int maxCharsPerLine)
+        {
+            int chars = 25;
+                for (int i = 1; i <= 4; i++)
+                    if (message.Length > chars * i)
+                        for (int j = chars * i; j > (chars * i) - chars; j--)
+                            if (message.ElementAt(j).Equals(' '))
+                            {
+                                message = message.Insert(j + 1, "\n");
+
+                                break;
+                            };
+                return message;
+        }
         /*
         public static void cloneObject<T>(T obj, T newobj) //they must be the same type
         {

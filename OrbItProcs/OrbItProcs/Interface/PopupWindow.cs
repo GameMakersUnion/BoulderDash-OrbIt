@@ -15,98 +15,66 @@ using System.Reflection;
 using OrbItProcs;
 using System.IO;
 
-namespace OrbItProcs.Interface {
+namespace OrbItProcs.Interface
+{
 
-    public delegate void confirmDelegate(bool confirm);
+    public class PopupWindow
+    {
+        public enum PopUpType { alert, prompt, textBox, dropDown };
+        public delegate void confirmDelegate(bool confirm);//, object answer = null);
 
-    public class PopupWindow {
-        public Manager manager;
-        public string windowtype;
-        public Game1 game;
-        public Dialog window;
-        public ComboBox cbBox;
-        public Button btnAdd, btnOk, btnCancel;
-        public Label lbl;
-        
-        public confirmDelegate exc;
-        public TextBox tbName;
-        public Button btnSave;
+        private PopUpType type;
+        private string message;
+        private confirmDelegate action;
 
-        Node activeNode;
+        private UserInterface ui;
+        private Manager manager;
+        private string windowtype;
+
+        private Dialog window;
+        private ComboBox cbBox;
+        private Button btnOk, btnCancel, btnSave;
+        private TextBox tbName;
 
         public int HeightCounter = 10;
         public int VertPadding = 10;
-        public string message;
 
-        public PopupWindow(Game1 game, string windowType, string message = "You shouldn't have come here!")
+        public PopupWindow(UserInterface ui, PopUpType windowType, string message = "You shouldn't have come here!")
         {
-            this.game = game;
-            this.manager = game.Manager;
-            this.windowtype = windowType;
+            this.ui = ui;
+            this.manager = ui.game.Manager;
+            this.type = windowType;
             this.message = message;
 
-            if (windowType.Equals("saveNode") || windowType.Equals("addComponent"))
+            if (windowType == PopUpType.textBox || windowType == PopUpType.dropDown)
             {
-                //System.Console.WriteLine("ya:" + game.ui.lstMain.ItemIndex);
-                
-                //if (game.ui.lstMain.ItemIndex == -1 || game.ui.lstMain.Items.Count < 1)
-                if (game.ui.editNode == null)
+                if (ui.editNode == null)
                 {
-                    PopupWindow nothingSelected = new PopupWindow(game, "showMessage", "You haven't selected a Node.");
+                    PopupWindow nothingSelected = new PopupWindow(ui, PopUpType.alert, "You haven't selected a Node.");
                     return;
                 }
-                //activeNode = (Node)game.ui.lstMain.Items.ElementAt(game.ui.lstMain.ItemIndex);
-                activeNode = game.ui.editNode;
             }
-            
+
             Initialize(windowType);
             int a;
-            
+
         }
 
-        public void Initialize(string windowType)
+        public void Initialize(PopUpType windowType)
         {
-            if (windowType.Equals("showMessage"))
+            if (windowType == PopUpType.alert)
             {
-                window = new Dialog(manager);
-
+            window = new Dialog(manager);
                 window.Init();
                 window.ShowModal();
-                //window.Caption.Text = "";
-                window.Caption.Height = 1;
-                window.Caption.Width = 1;
+                window.Caption.Height = 1;   //hack to remove caption
+                window.Caption.Width = 1;    //hack to remove caption
                 window.Description.Top = window.Caption.Top;
                 window.Description.Text = "";
                 window.Description.Height = 1000;
-                //if (window.Skin.Layers.ElementAt(0).Text.Font.Resource.MeasureString(message).X < window.Description.Width) for (int i = 0; i < message.Length; i++) if (message[(message.Length / 2 - (int)Math.Cos(Math.PI * i) * (i + 1) / 2)].Equals(" ")) { message.Insert((message.Length / 2 - (int)Math.Cos(Math.PI * i) * (i + 1) / 2), "\n"); break; }
-                //window.Caption.Width = (int)window.Skin.Layers.ElementAt(0).Text.Font.Resource.MeasureString(message).X;
-
-                int chars = 25;
-                for (int i = 1; i <= 4; i++)
-                {
-                    if (message.Length > chars * i)
-                    {
-                        for (int j = chars * i; j > (chars * i) -chars; j--)
-                        {
-                            if (message.ElementAt(j).Equals(' '))
-                            {
-                                message = message.Insert(j+1, "\n");
-                                
-                                break;
-                            }
-                        }
-                        //System.Console.WriteLine("{0} ::: {1}", message.Length, chars * i);
-                    }
-
-                    
-                }
-                
-                //System.Console.WriteLine("{0}", message);
+                message = message.wordWrap(25);
                 window.Description.Text = message;
-                //window.Description.Text = "adfsa\ndsafsa";
 
-                //window.TopPanel.Visible = true;
-                //window.Text = ;
                 window.Anchor = Anchors.None;
                 window.Width = 200;
                 //window.Passive = true;
@@ -116,7 +84,7 @@ namespace OrbItProcs.Interface {
                 window.Resizable = false;
                 window.Movable = false;
                 //window.Parent = sidebar;
-                
+
                 window.BorderVisible = true;
                 //window.MaximumHeight = Game1.sHeight;
                 //window.MinimumHeight = Game1.sHeight;
@@ -127,7 +95,7 @@ namespace OrbItProcs.Interface {
 
                 //window.FocusLost += new TomShane.Neoforce.Controls.EventHandler(window_FocusLost);
                 window.Closing += new WindowClosingEventHandler(window_FocusLost);
-                
+
                 window.StayOnTop = true;
 
                 manager.Add(window);
@@ -154,7 +122,7 @@ namespace OrbItProcs.Interface {
                 //btnCancel.Click += new TomShane.Neoforce.Controls.EventHandler();
 
             }
-            if (windowType.Equals("addComponent"))
+            if (windowType == PopUpType.dropDown)
             {
                 window = new Dialog(manager);
 
@@ -164,7 +132,7 @@ namespace OrbItProcs.Interface {
                 window.Caption.Width = 1;
                 window.Description.Top = window.Caption.Top;
 
-                window.Description.Text = "Add to component to:\n" + activeNode.name;
+                window.Description.Text = "Add to component to:\n" + ui.editNode.name;
                 //window.TopPanel.Visible = true;
                 window.Text = "Choose Component";
                 window.Width = 200;
@@ -199,11 +167,11 @@ namespace OrbItProcs.Interface {
                 cbBox.Left = 10;
                 cbBox.Top = HeightCounter; HeightCounter += VertPadding * 2 + cbBox.Height;
                 cbBox.Parent = window;
-                
+
                 //foreach (comp.)
                 foreach (comp c in Enum.GetValues(typeof(comp)))
                 {
-                    if (!game.ui.editNode.comps.ContainsKey(c))
+                    if (!ui.editNode.comps.ContainsKey(c))
                         cbBox.Items.Add(c);
                 }
 
@@ -228,7 +196,7 @@ namespace OrbItProcs.Interface {
                 btnCancel.Click += new TomShane.Neoforce.Controls.EventHandler(closeWindow);
 
             }
-            if (windowType.Equals("saveNode"))
+            if (windowType == PopUpType.textBox)
             {
                 window = new Dialog(manager);
 
@@ -269,7 +237,7 @@ namespace OrbItProcs.Interface {
                 tbName.Parent = window;
                 tbName.Top = HeightCounter;
                 HeightCounter += VertPadding * 2 + lblname.Height;
-                tbName.Text = activeNode.name;
+                tbName.Text = ui.editNode.name;
                 tbName.Left = VertPadding;
 
                 btnSave = new Button(manager);
@@ -281,7 +249,7 @@ namespace OrbItProcs.Interface {
                 btnSave.Left = VertPadding;
                 btnSave.Click += new TomShane.Neoforce.Controls.EventHandler(closeWindow);
                 btnSave.Click += new TomShane.Neoforce.Controls.EventHandler(btnSave_Click);
-                
+
 
                 btnCancel = new Button(manager);
                 btnCancel.Init();
@@ -294,10 +262,10 @@ namespace OrbItProcs.Interface {
 
             }
         }
-        
+
         public void addDelegate(confirmDelegate exec)
         {
-            exc = exec;
+            action = exec;
             Button btnCancel = new Button(manager);
             btnCancel.Init();
             btnCancel.Parent = window;
@@ -305,9 +273,9 @@ namespace OrbItProcs.Interface {
             btnCancel.Text = "Cancel";
             btnCancel.Left = btnOk.Width + VertPadding * 3;
             btnOk.Click += new TomShane.Neoforce.Controls.EventHandler(
-                delegate(object sender, TomShane.Neoforce.Controls.EventArgs e) { exc(true); });
+                delegate(object sender, TomShane.Neoforce.Controls.EventArgs e) { action(true); });
             btnCancel.Click += new TomShane.Neoforce.Controls.EventHandler(
-                delegate(object sender, TomShane.Neoforce.Controls.EventArgs e) { exc(false); });
+                delegate(object sender, TomShane.Neoforce.Controls.EventArgs e) { action(false); });
             btnCancel.Click += new TomShane.Neoforce.Controls.EventHandler(closeWindow);
         }
         void btnSave_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
@@ -317,38 +285,38 @@ namespace OrbItProcs.Interface {
                 if (c)
                 {
                     bool updatePresetList = true;
-                    activeNode.name = tbName.Text.Trim();
+                    ui.editNode.name = tbName.Text.Trim();
 
                     string filepath = "Presets//Nodes";
                     DirectoryInfo d = new DirectoryInfo(filepath);
                     if (!d.Exists) d.Create();
-                    List<FileInfo> filesWithName = d.GetFiles(activeNode.name + ".xml").ToList();
+                    List<FileInfo> filesWithName = d.GetFiles(ui.editNode.name + ".xml").ToList();
                     if (filesWithName.Count > 0) //we must be overwriting, therefore don't update the live presetList
                     {
-                        updatePresetList = false; 
+                        updatePresetList = false;
                     }
-                    
-                    string filename = "Presets//Nodes//" + activeNode.name + ".xml";
+
+                    string filename = "Presets//Nodes//" + ui.editNode.name + ".xml";
                     //System.Console.WriteLine("OUTRAGEOUS. TRULY OUTREAGEOUS.");
 
                     Node serializenode = new Node();
-                    Node.cloneObject(activeNode, serializenode);
+                    Node.cloneObject(ui.editNode, serializenode);
 
-                    game.room.serializer.Serialize(serializenode, filename);
+                    ui.room.serializer.Serialize(serializenode, filename);
 
-                    
-                    
+
+
                     //System.Console.WriteLine("name ::: " + d.FullName);
                     if (updatePresetList)
                     {
-                        foreach (FileInfo file in d.GetFiles(activeNode.name + ".xml"))
+                        foreach (FileInfo file in d.GetFiles(ui.editNode.name + ".xml"))
                         {
                             string fname = file.Name;
                             //System.Console.WriteLine(filename);
                             //string path = file.FullName;
                             fname = "Presets//Nodes//" + fname;
-                            game.NodePresets.Add((Node)game.room.serializer.Deserialize(fname));
-                            game.presetFileInfos.Add(file);
+                            ui.game.NodePresets.Add((Node)ui.room.serializer.Deserialize(fname));
+                            ui.game.presetFileInfos.Add(file);
                             break;
                         }
                     }
@@ -356,12 +324,12 @@ namespace OrbItProcs.Interface {
                 }
             };
 
-            foreach (Node preset in game.NodePresets)
+            foreach (Node preset in ui.game.NodePresets)
             {
                 if (preset.name == tbName.Text)
                 {
                     //copyname exists
-                    PopupWindow failure = new PopupWindow(game, "showMessage", "A preset already has that name\nOverwrite anyways?");
+                    PopupWindow failure = new PopupWindow(ui, PopUpType.prompt, "A preset already has that name\nOverwrite anyways?");
                     //failure.addDelegate(pass);
                     //List<int> li = new List<int>();
                     //li.ForEach()
@@ -393,13 +361,13 @@ namespace OrbItProcs.Interface {
         {
             if (cbBox.ItemIndex == -1)
             {
-                PopupWindow fail = new PopupWindow(game, "showMessage", "You haven't selected a component.");
+                PopupWindow fail = new PopupWindow(ui, PopUpType.alert, "You haven't selected a component.");
                 return;
             }
 
-            if (game.ui.editNode == null)
+            if (ui.editNode == null)
             {
-                PopupWindow fail = new PopupWindow(game, "showMessage", "EditNode is null.");
+                PopupWindow fail = new PopupWindow(ui, PopUpType.alert, "EditNode is null.");
                 return;
             }
 
@@ -407,16 +375,16 @@ namespace OrbItProcs.Interface {
             {
                 if (c)
                 {
-                    game.ui.editNode.addComponent((comp)cbBox.Items.ElementAt(cbBox.ItemIndex), true, true);
-                    if (game.ui.sidebar.panelControls.Keys.Count > 0) game.ui.sidebar.DisableControls(game.ui.sidebar.groupPanel); //TODO
+                    ui.editNode.addComponent((comp)cbBox.Items.ElementAt(cbBox.ItemIndex), true, true);
+                    if (ui.sidebar.panelControls.Keys.Count > 0) ui.sidebar.DisableControls(ui.sidebar.groupPanel); //TODO
 
-                    game.ui.sidebar.compLst = TreeListItem.GenerateList(game.ui.editNode, "");
+                    ui.sidebar.compLst = TreeListItem.GenerateList(ui.editNode, "");
                 }
             };
 
-            if (game.ui.editNode.comps.ContainsKey((comp)cbBox.Items.ElementAt(cbBox.ItemIndex)))
+            if (ui.editNode.comps.ContainsKey((comp)cbBox.Items.ElementAt(cbBox.ItemIndex)))
             {
-                PopupWindow fail = new PopupWindow(game, "showMessage", "The node already contains this component. Overwrite to default component?");
+                PopupWindow fail = new PopupWindow(ui, PopUpType.prompt, "The node already contains this component. Overwrite to default component?");
                 fail.addDelegate(overwriteComp);
                 return;
             }
