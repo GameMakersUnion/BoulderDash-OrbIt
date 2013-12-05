@@ -42,14 +42,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="bluesphere.png">
+    <Compile Include="Textures\bluesphere.png">
       <Name>bluesphere</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="colororb.png">
+    <Compile Include="Textures\colororb.png">
       <Name>colororb</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
@@ -63,28 +63,28 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="whitesphere.png">
+    <Compile Include="Textures\whitesphere.png">
       <Name>whitesphere</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="whitepixel.png">
+    <Compile Include="Textures\whitepixel.png">
       <Name>whitepixel</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="white3pixel.png">
+    <Compile Include="Textures\white3pixel.png">
       <Name>white3pixel</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="whitecircle.png">
+    <Compile Include="Textures\whitecircle.png">
       <Name>whitecircle</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>

@@ -175,11 +175,11 @@ namespace OrbItProcs {
             textureDict = new Dictionary<textures, Texture2D>();
 
 
-            textureDict.Add(textures.blueorb, Content.Load<Texture2D>("bluesphere"));
-            textureDict.Add(textures.whiteorb, Content.Load<Texture2D>("whitesphere"));
-            textureDict.Add(textures.colororb, Content.Load<Texture2D>("colororb"));
-            textureDict.Add(textures.whitepixel, Content.Load<Texture2D>("whitepixel"));
-            textureDict.Add(textures.whitecircle, Content.Load<Texture2D>("whitecircle"));
+            textureDict.Add(textures.blueorb, Content.Load<Texture2D>("Textures/bluesphere"));
+            textureDict.Add(textures.whiteorb, Content.Load<Texture2D>("Textures/whitesphere"));
+            textureDict.Add(textures.colororb, Content.Load<Texture2D>("Textures/colororb"));
+            textureDict.Add(textures.whitepixel, Content.Load<Texture2D>("Textures/whitepixel"));
+            textureDict.Add(textures.whitecircle, Content.Load<Texture2D>("Textures/whitecircle"));
             font = Content.Load<SpriteFont>("Courier New");
 
             
