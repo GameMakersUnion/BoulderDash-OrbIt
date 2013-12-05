@@ -167,13 +167,13 @@
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Components\Includes\C3.XNA.Primitives2D.dll" />
-    <Content Include="Components\Includes\Polenter.SharpSerializer.dll" />
-    <Content Include="Components\Includes\TomShane.Neoforce.Controls.dll" />
+    <Content Include="Includes\C3.XNA.Primitives2D.dll" />
+    <Content Include="Includes\Polenter.SharpSerializer.dll" />
     <Content Include="donelist.txt" />
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
     <Content Include="Issues.txt" />
+    <Content Include="Includes\TomShane.Neoforce.Controls.dll" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OrbItProcsContent\OrbItProcsContent.contentproj">
