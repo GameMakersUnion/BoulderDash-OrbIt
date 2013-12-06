@@ -5,17 +5,23 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using TomShane.Neoforce.Controls;
 using System.Reflection;
-
+using OrbItProcs.Processes;
+using OrbItProcs.Components;
+using Component = OrbItProcs.Components.Component;
 
 namespace OrbItProcs.Interface {
 
     public enum member_type {
+        none,
         field,
         property,
-        none,
+        dictentry,
+        unimplemented,
+        
     };
 
     public enum data_type {
+        none,
         integer,
         single,
         str,
@@ -23,92 +29,290 @@ namespace OrbItProcs.Interface {
         dict,
         list,
         obj,
-        none,
+        enm,
     };
 
 
     public class InspectorItem {
 
+        public static List<Type> ValidTypes = new List<Type>()
+        {
+            typeof(Node),
+            typeof(Component),
+            typeof(ModifierInfo),
+            typeof(Vector2),
+            typeof(Color),
+        };
+
         public treeitem itemtype;
         public int depth = 1;
-        public FieldInfo fieldInfo;
-        public PropertyInfo propertyInfo;
+        //public FieldInfo fieldInfo;
+        //public PropertyInfo propertyInfo;
+        public FPInfo fpinfo;
         public comp component;
-        public bool hasChildren = false;
+
         public bool extended = false;
         
         public List<object> children;
-        public int childCount = 0;
-        public dynamic key;
+        //public int childCount = 0;
+        public object key;
         public String prefix;
         public String whitespace = "";
 
         public object obj;
         public object parentobj;
+        //public object parentdictionary;
         public InspectorItem parentItem;
         public member_type membertype;
         public data_type datatype;
 
-        public InspectorItem(object parent, FieldInfo fieldInfo, InspectorItem parentItem)
+        //root item
+        public InspectorItem(object obj, string whitespace)
         {
-            this.parentobj = parent;
-            this.fieldInfo = fieldInfo;
-            this.membertype = member_type.field;
-            prefix = "=";
-
+            this.whitespace = whitespace;
+            this.obj = obj;
+            //this.fpinfo = new FPInfo(propertyInfo);
+            this.membertype = member_type.none;
             CheckItemType();
-
-
+            prefix = "=";
+            //System.Console.WriteLine(obj);
+            //children = GenerateList(obj, whitespace, this);
+            
         }
 
-
-        public void CheckItemType()
+        public void GenerateChildren()
         {
-            Type t = null;
-            if (fieldInfo != null)
+            if (ReferenceExists(parentItem, obj))
             {
-                t = fieldInfo.FieldType;
+                children = new List<object>();
+                return;
             }
-            else if (propertyInfo != null)
-            {
-                t = propertyInfo.PropertyType;
-            }
+            //System.Console.WriteLine(this);
+            children = GenerateList(obj, whitespace, this);
+        }
 
-            string n = t.ToString();
+        public bool ReferenceExists(InspectorItem parent, object reference)
+        {
+            if (parent == null)
+            {
+                return false;
+            }
+            if (parent.obj == reference)
+            {
+                return true;
+            }
+            return ReferenceExists(parent.parentItem, reference);
+        }
 
-            if (n.Equals("System.Int32"))
-            {
-                datatype = data_type.integer;
-            }
-            else if (n.Equals("System.Single"))
-            {
-                datatype = data_type.single;
-            }
-            else if (n.Equals("System.String"))
-            {
-                datatype = data_type.str;
-            }
-            else if (n.Equals("System.Boolean"))
-            {
-                datatype = data_type.boolean;
-            }
-            else if (n.Contains("Dictionary"))
-            {
-                System.Console.WriteLine("Dictionary found.");
-                datatype = data_type.dict;
+        public InspectorItem(object obj, PropertyInfo propertyInfo, InspectorItem parentItem, string whitespace)
+        {
+            this.whitespace = whitespace;
+            this.obj = obj;
+            this.parentItem = parentItem;
+            //this.fieldInfo = fieldInfo;
+            this.fpinfo = new FPInfo(propertyInfo);
+            this.membertype = member_type.property;
+            CheckItemType();
+            prefix = "=";
+            //System.Console.WriteLine(this);
+            //children = GenerateList(obj, whitespace, this);
 
-            }
-            else if (n.Contains("List"))
+        }
+        //a dictionary entry
+        public InspectorItem(InspectorItem parentItem, string whitespace, object key, object obj = null)
+        {
+            this.whitespace = whitespace;
+            this.parentItem = parentItem;
+            this.obj = obj;
+            this.fpinfo = null;
+            Type t = parentItem.obj.GetType();
+            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
             {
-                System.Console.WriteLine("List found.");
-                datatype = data_type.list;
-
+                membertype = member_type.dictentry;
+                this.key = key;
+                CheckItemType();
+                prefix = "=";
+                //System.Console.WriteLine(this);
+                //children = GenerateList(obj, whitespace, this);
             }
             else
             {
-                datatype = data_type.none; //support more types in the future
+                System.Console.WriteLine("Unexpected: InspectorItem with no obj refernce was not a dictionary entry");
+                membertype = member_type.unimplemented;
+            }
+        }
+        /*
+        public InspectorItem(object parent, FieldInfo fieldInfo, InspectorItem parentItem)
+        {
+            this.parentobj = parent;
+            //this.fieldInfo = fieldInfo;
+            this.fpinfo = new FPInfo(fieldInfo);
+            this.membertype = member_type.field;
+            prefix = "=";
+            //CheckItemType();
+        }
+        */
+        
+
+        public static List<object> GenerateList(object parent, String whiteSpace, InspectorItem parentItem = null)
+        {
+            List<object> list = new List<object>();
+            string space = "|" + whiteSpace;
+            //List<FieldInfo> fieldInfos = o.GetType().GetFields().ToList(); //just supporting properties for now
+            data_type dt = data_type.obj;
+            if (parentItem != null) dt = parentItem.datatype;
+
+            if (dt == data_type.list)
+            {
+                //do nothing for now
+            }
+            else if (dt == data_type.dict)
+            {
+                //dynamic dict = iitem.fpinfo.GetValue(iitem.parentItem);
+                dynamic dict = parent;
+                foreach (dynamic key in dict.Keys)
+                {
+                    //System.Console.WriteLine(key.ToString());
+                    InspectorItem iitem = new InspectorItem(parentItem, space, key, dict[key]);
+                    iitem.GenerateChildren();
+                    list.Add(iitem);
+                }
+            }
+            else if (dt == data_type.obj)
+            {
+                List<PropertyInfo> propertyInfos = parent.GetType().GetProperties().ToList();
+
+                foreach (PropertyInfo pinfo in propertyInfos)
+                {
+                    if (pinfo.PropertyType == typeof(Node)) continue; //don't infinitely recurse on nodes
+
+                    InspectorItem iitem = new InspectorItem(pinfo.GetValue(parent, null), pinfo, parentItem, space);
+                    iitem.GenerateChildren();
+                    list.Add(iitem);
+                }
+            }
+            //if it's just a normal primitive, it will return an empty list
+            
+
+            return list;
+        }
+
+        public override string ToString()
+        {
+            string result = whitespace + prefix;
+
+            if (membertype == member_type.dictentry)
+            {
+                if (obj.GetType().IsSubclassOf(typeof(Component)))
+                {
+                    Component component = (Component) obj;
+                    return result + key.ToString().ToUpper() + " : " + component.active;
+                }
+
+                return result + key + ":" + obj;
             }
 
+            if (fpinfo != null)
+            {
+                return result + fpinfo.Name() + " : " + fpinfo.GetValue(parentItem.obj);
+            }
+            if (obj == null)
+            {
+                return result + ": obj is null";
+            }
+
+            return result + obj + " (" + obj.GetType() + ")";
+            
+            
+            
+            //return result + obj.ToString();
+        }
+
+        public void ClickItem(TreeListBox treelistbox)
+        {
+            if (hasChildren())
+            {
+                if (extended)
+                {
+                    prefix = "+";
+                    foreach (InspectorItem subitem in children)
+                    {
+                        treelistbox.Items.Remove(subitem);
+                        //listComp.Items.Remove(subitem);
+                    }
+                }
+                else
+                {
+                    GenerateChildren();
+                    prefix = "-";
+                    int i = 1;
+                    foreach (InspectorItem subitem in children)
+                    {
+                        treelistbox.Items.Insert(treelistbox.ItemIndex + i++, subitem);
+                        //listComp.Items.Insert(listComp.ItemIndex + i++, subitem);
+                    }
+                }
+                extended = !extended;
+            }
+
+        }
+
+        public void CheckItemType()
+        {
+            //Type t = fpinfo.FPType();
+            Type t = obj.GetType();
+            data_type dt = data_type.none;
+
+            if (t == typeof(int))
+            {
+                dt = data_type.integer;
+            }
+            else if (t == typeof(float) && t == typeof(double))
+            {
+                dt = data_type.single;
+            }
+            else if (t == typeof(string))
+            {
+                dt = data_type.str;
+            }
+            else if (t == typeof(bool))
+            {
+                dt = data_type.boolean;
+            }
+            else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+            {
+                //System.Console.WriteLine("Dictionary found.");
+                dt = data_type.dict;
+
+                //Type keyType = t.GetGenericArguments()[0];
+                //Type valueType = t.GetGenericArguments()[1];
+            }
+            //might need to be more specific than List
+            else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                //System.Console.WriteLine("List found.");
+                dt = data_type.list;
+
+                //Type valueType = t.GetGenericArguments()[0];
+
+            }
+            else if (t.IsSubclassOf(typeof(Component)))
+            {
+                dt = data_type.obj;
+            }
+            else
+            {
+                foreach (Type type in ValidTypes)
+                {
+                    if (t == type)
+                    {
+                        dt = data_type.obj;
+                    }
+                }
+                //datatype = data_type.none; //support more types in the future
+            }
+
+            datatype = dt;
 
         }
 
@@ -122,146 +326,29 @@ namespace OrbItProcs.Interface {
                 return null;
             }
 
-            if (membertype == member_type.field)
-            {
-                result = fieldInfo.GetValue(parentobj);
-            }
-            else if (membertype == member_type.property)
-            {
-                result = propertyInfo.GetValue(parentobj, null);
-            }
+            result = fpinfo.GetValue(parentobj);
 
             return result;
-        
+
         }
-        
-        public static List<object> GenerateList(Component c, String whiteSpace)
+
+        public bool hasChildren()
         {
-            List<object> list = new List<object>();
-            List<FieldInfo> fieldInfos = c.GetType().GetFields().ToList();
-
-            List<PropertyInfo> propertyInfos = c.GetType().GetProperties().ToList();
-            //extend this to check for properties as well
-            foreach (PropertyInfo property in propertyInfos)
+            if (children != null)
             {
-                TreeListItem item = new TreeListItem(property, c);
-                item.whitespace = whiteSpace + " |-->";
-                item.prefix = "=";
-                list.Add(item);
+                return (children.Count > 0);
             }
-            foreach (FieldInfo field in fieldInfos)
-            {
-                TreeListItem item = new TreeListItem(field,c);
-                if (field.Name.Equals("sentinel")) break;
-                item.whitespace = whiteSpace + " |-->";
-                item.prefix = "=";
-                list.Add(item);
-            }
-            return list;
+            return false;
         }
 
-        public static List<object> GenerateList(Node n, String whiteSpace)
+        public int childCount()
         {
-            List<object> list = new List<object>();
-            List<FieldInfo> fieldInfos = n.GetType().GetFields().ToList();
-            List<PropertyInfo> propertyInfos = n.GetType().GetProperties().ToList();
-
-            foreach (comp c in Enum.GetValues(typeof(comp)))
+            if (children != null)
             {
-                if (n.props.ContainsKey(c))
-                {
-                    TreeListItem item = new TreeListItem(n, c, whiteSpace);
-                    item.whitespace = whiteSpace;
-                    list.Add(item);
-                }
+                return children.Count;
             }
-            foreach (PropertyInfo property in propertyInfos)
-            {
-                TreeListItem item = new TreeListItem(n, property);
-                //System.Console.WriteLine(property.PropertyType);
-                if (property.Name.Equals("sentinelp")) break;
-                list.Add(item);
-            }
-            foreach (FieldInfo field in fieldInfos)
-            {
-                TreeListItem item = new TreeListItem(n, field);
-                if (field.Name.Equals("sentinel")) break;
-                list.Add(item);
-            }
-            
-            return list;
+            return 0;
         }
 
-        public String getName()
-        {
-            String result = "";
-            if (this.fieldInfo != null)
-            {
-                result = fieldInfo.Name;
-            }
-            else if (this.propertyInfo != null)
-            {
-                result = propertyInfo.Name;
-            }
-            else
-            { 
-                // add in other cases such as dictionary or Objects
-            }
-
-
-            return result;
-        }
-
-        /*
-        public override String ToString()
-        {
-            String result = whitespace + prefix;
-
-            if (itemtype == treeitem.objfieldinfo)
-            {
-                if (obj == null) return "obj is null";
-            }
-            else if (itemtype == treeitem.objpropertyinfo)
-            {
-                if (obj == null) return "obj is null";
-            }
-            else if (node == null) return "node is null";
-
-            if (itemtype == treeitem.fieldinfo)
-            {
-                if (fieldInfo == null) return "fieldInfo is null";
-                result += "(F)" + fieldInfo.Name + " " + fieldInfo.GetValue(node);
-
-
-            }
-            else if (itemtype == treeitem.propertyinfo)
-            {
-                if (propertyInfo == null) return "propertyInfo is null";
-                result += "(P)" + propertyInfo.Name + " " + propertyInfo.GetValue(node,null);
-
-
-            }
-            else if (itemtype == treeitem.component)
-            {
-                if (!node.props.ContainsKey(component)) return "component not in node's properties dictionary";
-                if (!node.comps.ContainsKey(component)) return "component not in node's components dictionary";
-                result += "(C)" + component.ToString() + " " + node.props[component];
-            }
-            else if (itemtype == treeitem.objfieldinfo)
-            {
-                if (fieldInfo == null) return "fieldInfo is null";
-                if (obj == null) return "parent object is null";
-                result += "(F)" + fieldInfo.Name + " " + fieldInfo.GetValue(obj);
-            }
-            else if (itemtype == treeitem.objpropertyinfo)
-            {
-                if (propertyInfo == null) return "propertyInfo is null";
-                if (obj == null) return "parent object is null";
-                result += "(P)" + propertyInfo.Name + " " + propertyInfo.GetValue(obj,null);
-            }
-            return result;
-            //Todo: implement cases for treeitem.dictionary and treeitem.obj later
-        }
-        */
     }
 }

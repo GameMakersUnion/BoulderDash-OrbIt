@@ -15,8 +15,8 @@ namespace OrbItProcs.Components
 
         private float r1, g1, b1;
 
-        public Queue<Vector2> positions;
-        public Queue<float> scales;
+        private Queue<Vector2> positions;
+        private Queue<float> scales;
 
         private int _depth = 0;
         public int depth { get { return _depth; } set { _depth = value; } }

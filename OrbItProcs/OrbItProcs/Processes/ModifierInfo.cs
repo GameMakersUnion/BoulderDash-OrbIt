@@ -25,12 +25,13 @@ namespace OrbItProcs.Processes
         */
         private Dictionary<string, FPInfo> _fpInfos = new Dictionary<string, FPInfo>();
         public Dictionary<string, FPInfo> fpInfos { get { return _fpInfos; } set { _fpInfos = value; } }
-        public Dictionary<string, object> fpInfosObj = new Dictionary<string, object>();
-        //public Dictionary<string, object> fpInfosObj { get { return _fpInfosObj; }set { _fpInfosObj = value; } }
+        private Dictionary<string, object> _fpInfosObj = new Dictionary<string, object>();
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public Dictionary<string, object> fpInfosObj { get { return _fpInfosObj; }set { _fpInfosObj = value; } }
         //public List<string> idnames = new List<string>();
         
 
-        public Dictionary<string, dynamic> _args = new Dictionary<string, dynamic>();
+        private Dictionary<string, dynamic> _args = new Dictionary<string, dynamic>();
         public Dictionary<string, dynamic> args
         {
             get { return _args; }

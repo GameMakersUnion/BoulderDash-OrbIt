@@ -11,14 +11,14 @@ namespace OrbItProcs.Components
 {
     public class Waver : Component
     {
-        public bool _reflective = true;
+        private bool _reflective = true;
         public bool reflective { get { return _reflective; } set { _reflective = value; } }
-        public Queue<Vector2> metapositions = new Queue<Vector2>();
-        public Queue<Vector2> reflectpositions = new Queue<Vector2>();
-        public int _queuecount = 10;
+        private Queue<Vector2> metapositions = new Queue<Vector2>();
+        private Queue<Vector2> reflectpositions = new Queue<Vector2>();
+        private int _queuecount = 10;
         public int queuecount { get { return _queuecount; } set { _queuecount = value;  } }
 
-        public float _amp = 100;
+        private float _amp = 100;
         public float amp
         {
             get { return _amp; } 
@@ -30,9 +30,9 @@ namespace OrbItProcs.Components
             } 
         }
 
-        
 
-        public float _period = 10;
+
+        private float _period = 10;
         public float period
         {
             get { return _period; }
@@ -43,7 +43,7 @@ namespace OrbItProcs.Components
             }
         }
 
-        public float _composite = 1;
+        private float _composite = 1;
         public float composite
         {
             get { return _composite; }

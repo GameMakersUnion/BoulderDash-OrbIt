@@ -15,7 +15,7 @@ namespace OrbItProcs.Components
         private float _radius = 300f;
         public float radius { get { return _radius; } set { _radius = value; } }
 
-        public bool _constant = true;
+        private bool _constant = true;
         public bool constant { get { return _constant; } set { _constant = value; } }
 
         public Node targetPuller;

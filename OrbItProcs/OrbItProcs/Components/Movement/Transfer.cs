@@ -9,7 +9,7 @@ namespace OrbItProcs.Components
 {
     public class Transfer : Component{
 
-        public float _radius = 25f;
+        private float _radius = 25f;
         public float radius { get { return _radius; } set { _radius = value; } }
 
         public Transfer() : this(null) { }

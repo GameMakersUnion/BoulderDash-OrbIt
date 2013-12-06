@@ -34,7 +34,7 @@ namespace OrbItProcs.Components
         public int lifeleft { get { return _lifeleft; } set { _lifeleft = value; } }
 
 
-        public bool _immortal = false;
+        private bool _immortal = false;
         public bool immortal { get { return _immortal; } set { _immortal = value; } }
 
         private int _timer = 0;

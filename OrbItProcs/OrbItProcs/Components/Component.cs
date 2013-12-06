@@ -61,9 +61,12 @@ namespace OrbItProcs.Components
             }
         }
         //*/
-        public comp _com;
-        public comp com { get { return _com; } set { _com = value; } }
-        public mtypes methods;
+        //flag as not editable in treelistbox
+        private comp _com;
+        public comp com { get { return _com; } protected set { _com = value; } }
+        private mtypes _methods;
+        //flag as not editable in treelistbox
+        public mtypes methods { get { return _methods; } protected set { _methods = value; } }
 
        public abstract void Initialize(Node parent);
        public virtual void AfterCloning() { }
@@ -83,6 +86,8 @@ namespace OrbItProcs.Components
                return parent.getTexture();
            }
            return null;
+
+           
        }
 
        public static void CloneComponent(Component sourceComp, Component destComp)

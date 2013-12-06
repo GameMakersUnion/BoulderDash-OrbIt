@@ -17,7 +17,7 @@ namespace OrbItProcs.Components {
         private int _lowerbound = 20;
         public int lowerbound { get { return _lowerbound; } set { _lowerbound = value; } }
 
-        public bool _constant = false;
+        private bool _constant = false;
         public bool constant { get { return _constant; } set { _constant = value; } }
 
         public Gravity() : this(null) { }

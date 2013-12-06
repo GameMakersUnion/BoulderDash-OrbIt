@@ -192,6 +192,7 @@ namespace OrbItProcs {
                     //{ comp.tree, true },
                     { comp.queuer, true },
                     { comp.flow, true },
+                    //{ comp.waver, true },
                     
                 };
             room.defaultNode = new Node(room, userPr);
@@ -215,7 +216,7 @@ namespace OrbItProcs {
             //modinfo.delegateName = "VectorSine";
             modinfo.delegateName = "VectorSineComposite";
 
-            //room.defaultNode.comps[comp.modifier].modifierInfos["sinecomposite"] = modinfo;
+            room.defaultNode.comps[comp.modifier].modifierInfos["sinecomposite"] = modinfo;
 
 
             

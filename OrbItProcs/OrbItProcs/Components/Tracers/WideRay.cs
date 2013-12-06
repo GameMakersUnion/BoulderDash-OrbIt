@@ -19,9 +19,9 @@ namespace OrbItProcs.Components
         private int timer = 0, _timerMax = 1;
         public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
 
-        public double angle = 0;
-        public float rayscale = 20;
-        public int width = 3;
+        private double angle = 0;
+        private float rayscale = 20;
+        private int width = 3;
 
         public WideRay() : this(null) { }
         public WideRay(Node parent = null)

@@ -27,7 +27,7 @@ namespace OrbItProcs.Components
             }
         }
 
-        public Color color;
+        private Color color;
 
 
         private int _queuecount = 10;
@@ -37,7 +37,7 @@ namespace OrbItProcs.Components
         private int timer = 0, _timerMax = 2;
         public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
 
-        public double angle = 0;
+        private double angle = 0;
 
         public Laser() : this(null) { }
         public Laser(Node parent = null)

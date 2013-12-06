@@ -22,12 +22,12 @@ namespace OrbItProcs.Components
 
     public class Queuer : Component
     {
-        public queues _qs = queues.none;
+        private queues _qs = queues.none;
         public queues qs { get { return _qs; } set { _qs = value; } }
 
-        public Queue<Vector2> positions;
-        public Queue<float> angles;
-        public Queue<float> scales;
+        private Queue<Vector2> positions;
+        private Queue<float> angles;
+        private Queue<float> scales;
         private int _queuecount = 10;
         public int queuecount { get { return _queuecount; }
             set
@@ -43,7 +43,7 @@ namespace OrbItProcs.Components
         private int timer = 0, _timerMax = 1;
         public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
 
-        public Dictionary<string, QueueInfo> _customqueues = new Dictionary<string, QueueInfo>();
+        private Dictionary<string, QueueInfo> _customqueues = new Dictionary<string, QueueInfo>();
         public Dictionary<string, QueueInfo> customqueues { get { return _customqueues; } set { _customqueues = value; } }
 
         public Queuer() : this(null) { }

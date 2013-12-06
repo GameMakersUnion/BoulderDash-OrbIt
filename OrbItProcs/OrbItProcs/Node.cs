@@ -284,6 +284,8 @@ namespace OrbItProcs {
 
         public void addComponent(Component component, bool active)
         {
+            //component.com = comp.flow;
+            //component.GetType().GetProperty("com").GetSetMethod().IsPublic; //foreach (Enegry e in Lol) Air.Say("Ahoohoohoo");
             component.parent = this;
             comps.Add(component.com, component);
 

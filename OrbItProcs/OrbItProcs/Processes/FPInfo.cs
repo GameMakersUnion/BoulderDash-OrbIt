@@ -8,10 +8,10 @@ namespace OrbItProcs.Processes
 {
     public class FPInfo
     {
-        private FieldInfo fieldInfo;
-        //public FieldInfo fieldInfo { get { return _fieldInfo; } set { _fieldInfo = value; } }
-        private PropertyInfo propertyInfo;
-        //public PropertyInfo propertyInfo { get { return _propertyInfo; } set { _propertyInfo = value; } }
+        private FieldInfo _fieldInfo;
+        public FieldInfo fieldInfo { get { return _fieldInfo; } set { _fieldInfo = value; } }
+        private PropertyInfo _propertyInfo;
+        public PropertyInfo propertyInfo { get { return _propertyInfo; } set { _propertyInfo = value; } }
         public object ob;
         public string fieldname { get; set; }
 
@@ -123,6 +123,58 @@ namespace OrbItProcs.Processes
                 {
                     return fieldInfo.GetValue(obj);
                 }
+            }
+            return null;
+        }
+
+        //calls a method with no parameters on either fieldinfo or propertyinfo object
+        public object CallMethod(string methodname)
+        {
+            //if (ob == null) return;
+            try
+            {
+                if (propertyInfo != null)
+                {
+
+                    return propertyInfo.GetType().GetMethod(methodname).Invoke(propertyInfo, null);
+                }
+                else if (fieldInfo != null)
+                {
+                    return fieldInfo.GetType().GetMethod(methodname).Invoke(fieldInfo, null);
+                }
+                return null;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("FPInfo exception: {0}", e.Message);
+                return null;
+            }
+        }
+
+        public string Name()
+        {
+            if (propertyInfo != null)
+            {
+
+                return propertyInfo.Name;
+            }
+            else if (fieldInfo != null)
+            {
+                return fieldInfo.Name;
+            }
+            return "nameless";
+        }
+
+        public Type FPType()
+        {
+            if (propertyInfo != null)
+            {
+
+                return propertyInfo.PropertyType;
+            }
+            else if (fieldInfo != null)
+            {
+                return fieldInfo.FieldType;
             }
             return null;
         }
