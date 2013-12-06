@@ -354,9 +354,7 @@ namespace OrbItProcs
             {
                 foreach (string file in Directory.GetFiles(filepath, name + ".xml"))
                 {
-                    string fname = file;
-                    fname = "Presets//Nodes//" + fname;
-                    ui.game.NodePresets.Add((Node)ui.room.serializer.Deserialize(fname));
+                    ui.game.NodePresets.Add((Node)ui.room.serializer.Deserialize(file));
                     break;
                 }
             }

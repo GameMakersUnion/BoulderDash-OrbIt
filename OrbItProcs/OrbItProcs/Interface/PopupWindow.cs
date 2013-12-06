@@ -97,7 +97,6 @@ namespace OrbItProcs.Interface
                 tbName.Top = btnOk.Top;
                 btnOk.Top = tbName.Top + tbName.Height;
 
-
                 tbName.TextChanged += delegate {answer = tbName.Text;};
             }
 
@@ -125,52 +124,9 @@ namespace OrbItProcs.Interface
             confirmed = true; action(true, answer); 
         }
 
-        void negatory(object sender, WindowClosedEventArgs e)
+        private void negatory(object sender, WindowClosedEventArgs e)
         {
             if (confirmed  == false) action(false, answer);
-        }
-
-        
-        void btnSave_Click(object sender, TomShane.Neoforce.Controls.EventArgs e){
-            throw new NotImplementedException();
-            //pass(true);
-
-        }
-
-
-
-        void btnAddComponent_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
-        {
-            if (cbBox.ItemIndex == -1)
-            {
-                PopupWindow fail = new PopupWindow(ui, PopUpType.alert, "You haven't selected a component.");
-                return;
-            }
-
-            if (ui.editNode == null)
-            {
-                PopupWindow fail = new PopupWindow(ui, PopUpType.alert, "EditNode is null.");
-                return;
-            }
-
-            ConfirmDelegate overwriteComp = delegate(bool c, object a)
-            {
-                if (c)
-                {
-                    ui.editNode.addComponent((comp)cbBox.Items.ElementAt(cbBox.ItemIndex), true, true);
-                    if (ui.sidebar.panelControls.Keys.Count > 0) ui.sidebar.DisableControls(ui.sidebar.groupPanel); //TODO
-
-                    ui.sidebar.compLst = TreeListItem.GenerateList(ui.editNode, "");
-                }
-            };
-
-            if (ui.editNode.comps.ContainsKey((comp)cbBox.Items.ElementAt(cbBox.ItemIndex)))
-            {
-                PopupWindow fail = new PopupWindow(ui, PopUpType.prompt, "The node already contains this component. Overwrite to default component?");
-                //TODO fail.addDelegate(overwriteComp);
-                return;
-            }
-            overwriteComp(true);
         }
     }
 
