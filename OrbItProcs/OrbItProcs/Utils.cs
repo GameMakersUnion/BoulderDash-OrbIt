@@ -25,6 +25,8 @@ namespace OrbItProcs {
         }
 
         public static bool In<T>(this T x, params T[] args) {return args.Contains(x);}
+
+        public static object selected(this TomShane.Neoforce.Controls.ListBox c) { return c.Items.ElementAt(c.ItemIndex); }
         /*
         public static void cloneObject<T>(T obj, T newobj) //they must be the same type
         {

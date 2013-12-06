@@ -108,8 +108,8 @@ namespace OrbItProcs
 
         public static int sWidth = 1000;
         public static int sHeight = 600;
-        private static string filepath = "Presets//Nodes";
-        DirectoryInfo d = new DirectoryInfo(filepath);
+        public static string filepath = "Presets//Nodes/";
+
         public Dictionary<textures, Texture2D> textureDict;
         //Node node;
 
@@ -123,7 +123,7 @@ namespace OrbItProcs
         TimeSpan targetElapsedTime = new TimeSpan(0, 0, 0, 0, 16);
 
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
-        public List<FileInfo> presetFileInfos = new List<FileInfo>();
+        //public List<FileInfo> presetFileInfos = new List<FileInfo>();
 
 
         /////////////////////
@@ -229,26 +229,18 @@ namespace OrbItProcs
         public void InitializePresets()
         {
 
-            System.Console.WriteLine("Current Folder" + d);
-            foreach (FileInfo file in d.GetFiles("*.xml"))
+            System.Console.WriteLine("Current Folder" + filepath);
+            foreach (string file in Directory.GetFiles(filepath,"*.xml"))
             {
-                System.Console.WriteLine("Current Files" + d);
-                string filename = file.Name;
-                System.Console.WriteLine(filename);
-                //string path = file.FullName;
-                filename = "Presets//Nodes//" + filename;
-                NodePresets.Add((Node)room.serializer.Deserialize(filename));
-                //NodePresets.Add(new Node());
-                presetFileInfos.Add(file);
-
+                System.Console.WriteLine("Current Files" + filepath);
+                System.Console.WriteLine(file);
+                NodePresets.Add((Node)room.serializer.Deserialize(file));
             }
             foreach (Node snode in NodePresets)
             {
                 System.Console.WriteLine("Presetname: {0}", snode.name);
             }
         }
-
-
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
@@ -349,9 +341,7 @@ namespace OrbItProcs
             bool updatePresetList = true;
             name = name.Trim();
             ui.editNode.name = name;
-            DirectoryInfo d = new DirectoryInfo(filepath);
-            if (!d.Exists) d.Create();
-            List<FileInfo> filesWithName = d.GetFiles(name + ".xml").ToList();
+            List<string> filesWithName = Directory.GetFiles(filepath, name + ".xml").ToList();
             if (filesWithName.Count > 0) //we must be overwriting, therefore don't update the live presetList
                 updatePresetList = false;
 
@@ -362,12 +352,11 @@ namespace OrbItProcs
             room.serializer.Serialize(serializenode, filename);
             if (updatePresetList)
             {
-                foreach (FileInfo file in d.GetFiles(ui.editNode.name + ".xml"))
+                foreach (string file in Directory.GetFiles(filepath, name + ".xml"))
                 {
-                    string fname = file.Name;
+                    string fname = file;
                     fname = "Presets//Nodes//" + fname;
                     ui.game.NodePresets.Add((Node)ui.room.serializer.Deserialize(fname));
-                    ui.game.presetFileInfos.Add(file);
                     break;
                 }
             }
@@ -420,6 +409,13 @@ namespace OrbItProcs
             Manager.EndDraw();
 
 
+        }
+
+        internal void deletePreset(Node p)
+        {
+            System.Console.WriteLine("Deleting file: " + p);
+            File.Delete(Game1.filepath + p.name + ".xml");
+            NodePresets.Remove(p);
         }
     }
 }

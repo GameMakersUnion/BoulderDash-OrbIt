@@ -1017,35 +1017,16 @@ namespace OrbItProcs.Interface
         void deletePresetMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
 
-            FileInfo fileinfo = game.presetFileInfos.ElementAt(lstPresets.ItemIndex);
-            System.Console.WriteLine("Deleting file: " + fileinfo.Name);
-
-            string message = "Are you sure you want to delete the file: " + fileinfo.Name;
-            PopupWindow confirmDelete = new PopupWindow(ui, PopupWindow.PopUpType.prompt, message);
-            PopupWindow.ConfirmDelegate deleteDel = delegate(bool del, object ans)
+            String presetName = ((Node)lstPresets.selected()).name + ".xml";
+            string message = "Are you sure you want to delete this preset file? : " + presetName;
+            new PopupWindow(ui, PopupWindow.PopUpType.prompt, message , action:
+            delegate(bool del, object ans)
             {
                 if (del)
                 {
-                    fileinfo.Delete();
-                    game.presetFileInfos.Remove(fileinfo);
-                    lstPresets.Items.RemoveAt(lstPresets.ItemIndex);
+                    game.deletePreset((Node)lstPresets.selected());
                 }
-            };
-            //confirmDelete.addDelegate(deleteDel);
-
-            //System.Console.WriteLine("name ::: " + d.FullName);
-            /*
-            foreach (FileInfo file in d.GetFiles("*.xml"))
-            {
-                string filename = file.Name;
-                //System.Console.WriteLine(filename);
-                //string path = file.FullName;
-                filename = "Presets//Nodes//" + filename;
-                NodePresets.Add((Node)room.serializer.Deserialize(filename));
-                presetFileInfos.Add(file);
-
-            }
-            //*/
+            });
         }
 
         void cmbPresets_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
