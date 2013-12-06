@@ -23,9 +23,11 @@ using OrbItProcs.Processes;
 using System.IO;
 using System.Collections.ObjectModel;
 
-namespace OrbItProcs {
+namespace OrbItProcs
+{
 
-    public enum comp {
+    public enum comp
+    {
         queuer,
         movement,
         collision,
@@ -106,6 +108,7 @@ namespace OrbItProcs {
 
         public static int sWidth = 1000;
         public static int sHeight = 600;
+        public static string filepath = "Presets//Nodes/";
 
         public Dictionary<textures, Texture2D> textureDict;
         //Node node;
@@ -120,7 +123,7 @@ namespace OrbItProcs {
         TimeSpan targetElapsedTime = new TimeSpan(0, 0, 0, 0, 16);
 
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
-        public List<FileInfo> presetFileInfos = new List<FileInfo>();
+        //public List<FileInfo> presetFileInfos = new List<FileInfo>();
 
 
         /////////////////////
@@ -128,16 +131,12 @@ namespace OrbItProcs {
 
         public Game1()
         {
-            //graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            //Components.Add(new FrameRateCounter(this));
             IsMouseVisible = true;
             IsFixedTimeStep = false;
-            //TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 50);
             
             Graphics.PreferredBackBufferWidth = sWidth;
             Graphics.PreferredBackBufferHeight = sHeight;
-            //Graphics.SynchronizeWithVerticalRetrace = false;
 
             ClearBackground = true;
             BackgroundColor = Color.White;
@@ -148,30 +147,19 @@ namespace OrbItProcs {
             
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
-            textureDict = new Dictionary<textures, Texture2D>();
-
-
-            textureDict.Add(textures.blueorb, Content.Load<Texture2D>("Textures/bluesphere"));
-            textureDict.Add(textures.whiteorb, Content.Load<Texture2D>("Textures/whitesphere"));
-            textureDict.Add(textures.colororb, Content.Load<Texture2D>("Textures/colororb"));
-            textureDict.Add(textures.whitepixel, Content.Load<Texture2D>("Textures/whitepixel"));
-            textureDict.Add(textures.whitecircle, Content.Load<Texture2D>("Textures/whitecircle"));
+            textureDict = new Dictionary<textures, Texture2D>(){
+            {textures.blueorb, Content.Load<Texture2D>("Textures/bluesphere"        )},
+            {textures.whiteorb, Content.Load<Texture2D>("Textures/whitesphere"      )},
+            {textures.colororb, Content.Load<Texture2D>("Textures/colororb"         )},
+            {textures.whitepixel, Content.Load<Texture2D>("Textures/whitepixel"     )},
+            {textures.whitecircle, Content.Load<Texture2D>("Textures/whitecircle"   )}};
             font = Content.Load<SpriteFont>("Courier New");
 
-            
-            
-
-            // TODO: Add your initialization logic here
             room = new Room(this);
-            //if (room == null) Console.WriteLine("rnull");
+
+            #region ///Default User props///
             Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {
                     { node.position, new Vector2(0, 0) },
                     { node.texture, textures.whitecircle },
@@ -195,6 +183,8 @@ namespace OrbItProcs {
                     //{ comp.waver, true },
                     
                 };
+            #endregion
+
             room.defaultNode = new Node(room, userPr);
             room.defaultNode.name = "DEFAULTNODE";
 
@@ -228,74 +218,35 @@ namespace OrbItProcs {
                     { node.texture, textures.whitecircle }
                 };
             room.targetNodeGraphic = new Node(room, userPropsTarget);
-            //room.targetNodeGraphic.name = "TargetNodeGraphic";
             room.targetNodeGraphic.name = "TargetNodeGraphic";
 
-            //node = new Node(room);
             frameRateCounter = new FrameRateCounter(this);
-            //manager.Initialize();
             base.Initialize();
 
 
             ui = new UserInterface(this);
-
-            int b = 2;
-            testrefs(ref b);
-            //Console.WriteLine(b);
-
-            String s = "hey";
-            teststr(s);
-            Console.WriteLine(s);
             InitializePresets();
-        }
-
-        public void teststr(String s)
-        {
-            s += "after";
         }
 
         public void InitializePresets()
         {
-            string filepath = "Presets//Nodes";
-            DirectoryInfo d = new DirectoryInfo(filepath);
-            System.Console.WriteLine("Current Folder" + d);
-            foreach (FileInfo file in d.GetFiles("*.xml"))
-            {
-                System.Console.WriteLine("Current Files" + d);
-                string filename = file.Name;
-                System.Console.WriteLine(filename);
-                //string path = file.FullName;
-                filename = "Presets//Nodes//" + filename;
-                NodePresets.Add((Node)room.serializer.Deserialize(filename));
-                //NodePresets.Add(new Node());
-                presetFileInfos.Add(file);
 
+            System.Console.WriteLine("Current Folder" + filepath);
+            foreach (string file in Directory.GetFiles(filepath,"*.xml"))
+            {
+                System.Console.WriteLine("Current Files" + filepath);
+                System.Console.WriteLine(file);
+                NodePresets.Add((Node)room.serializer.Deserialize(file));
             }
             foreach (Node snode in NodePresets)
             {
                 System.Console.WriteLine("Presetname: {0}", snode.name);
             }
         }
-
-        public void testrefs(ref int a)
-        {
-            a = 3;
-        }
-
-
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            
-
-            
-
             // TODO: use this.Content to load your game content here
         }
 
@@ -308,9 +259,6 @@ namespace OrbItProcs {
             // TODO: Unload any non ContentManager content here
         }
 
-        
-
-
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -320,8 +268,6 @@ namespace OrbItProcs {
         {
             
             base.Update(gameTime);
-            //frameRateCounter.Update(gameTime);
-
             if (!IsFixedTimeStep)
             {
                 elapsedTime += gameTime.ElapsedGameTime;
@@ -338,20 +284,12 @@ namespace OrbItProcs {
 
             ui.Update(gameTime);
 
-            //ProcessKeyboard();
-            //ProcessMouse();
-
-            
-
             if (!currentSelection.Equals("pause"))
                 room.Update(gameTime);
             else
             {
                 room.colorEffectedNodes();
             }
-
-            
-            
         }
 
         public void spawnNode(int worldMouseX, int worldMouseY)
@@ -400,215 +338,55 @@ namespace OrbItProcs {
             //Console.WriteLine("Nodes: {0}", room.nodes.Count);
             //ui.sidebar.UpdateNodesTitle();
         }
-        
-        public void spawnNode(Dictionary<dynamic,dynamic> userProperties)
+        public void saveNode(Node node, string name)
         {
+            bool updatePresetList = true;
+            name = name.Trim();
+            ui.editNode.name = name;
+            List<string> filesWithName = Directory.GetFiles(filepath, name + ".xml").ToList();
+            if (filesWithName.Count > 0) //we must be overwriting, therefore don't update the live presetList
+                updatePresetList = false;
 
-            //Node newNode = new Node(room,userProperties);
+            string filename = "Presets//Nodes//" + name + ".xml";
+            Node serializenode = new Node();
+            Node.cloneObject(ui.editNode, serializenode);
+
+            room.serializer.Serialize(serializenode, filename);
+            if (updatePresetList)
+            {
+                foreach (string file in Directory.GetFiles(filepath, name + ".xml"))
+            {
+                    ui.game.NodePresets.Add((Node)ui.room.serializer.Deserialize(file));
+                    break;
+            }
+        }
+            foreach (Node preset in ui.game.NodePresets)
+        {
+                if (preset.name == name)
+            {
+                    //copyname exists
+                    PopupWindow failure = new PopupWindow(ui, PopupWindow.PopUpType.prompt, "A preset already has that name\nOverwrite anyways?");
+            
+                return;
+                    }
+                    }
+
+                }
+        public void spawnNode(Dictionary<dynamic, dynamic> userProperties)
+            {
             Node newNode = new Node();
-
             if (ui.spawnerNode != null)
-            {
+                {
                 Node.cloneObject(ui.spawnerNode, newNode);
-
-            }
-            else
-            {
-                Node.cloneObject(room.defaultNode, newNode);
-            }
-            
-            //newNode.position = new Vector2(worldMouseX, worldMouseY);
-            
-            newNode.acceptUserProps(userProperties);
-            //newNode.position = userProperties[node.position];
-            //Node newNode = new Node(room, userP);
-
-            newNode.name = "node" + Node.nodeCounter;
-            //if (newNode.comps.ContainsKey(comp.modifier)) newNode.comps[comp.modifier].UpdateReferences();
-            //ui.sidebar.UpdateNodeList(newNode);
-
-            //newNode.comps[comp.gravity].multiplier = 1000000f;
-            //Console.WriteLine(newNode.velocity);
-            room.nodes.Add(newNode);
-            //Console.WriteLine(newNode.comps[comp.randinitialvel].multiplier);
-            //ui.sidebar.UpdateNodesTitle();
-        }
-
-        /*
-        public void ProcessKeyboard()
-        {
-            KeyboardState keybState = Keyboard.GetState();
-
-            if (keybState.IsKeyDown(Keys.Y))
-            {
-                hovertargetting = true;
-            }
-            else
-                hovertargetting = false;
-
-            if (keybState.IsKeyDown(Keys.D1))
-                currentSelection = "placeNode";
-            if (keybState.IsKeyDown(Keys.T))
-                currentSelection = "targeting";
-            if (keybState.IsKeyDown(Keys.W) && !oldKeyBState.IsKeyDown(Keys.W))
-            {
-                ui.lstMain.ScrollTo(20);
-            }
-            
-            
-
-
-            if (keybState.IsKeyDown(Keys.F) && currentSelection.Equals("pause") && !oldKeyBState.IsKeyDown(Keys.F))
-                currentSelection = "placeNode";
-            else if (keybState.IsKeyDown(Keys.F) && !oldKeyBState.IsKeyDown(Keys.F))
-                currentSelection = "pause";
-            
-            oldKeyBState = Keyboard.GetState();
-        }
-
-        
-
-        public void ProcessMouse()
-        {
-            MouseState mouseState = Mouse.GetState();
-            //ignore mouse clicks outside window
-            if (mouseState.X >= sWidth || mouseState.X < 0 || mouseState.Y >= sHeight || mouseState.Y < 0)
-                return;
-
-            //make sure clicks inside the ui are ignored by game logic
-            if (mouseState.X >= sWidth - ui.window.Width - 5)
-            {
-                if (mouseState.Y > ui.lstMain.Top + 24 && mouseState.Y < ui.lstMain.Top + ui.lstMain.Height + 24)
-                {
-                    if (mouseState.ScrollWheelValue < oldMouseState.ScrollWheelValue)
-                    {
-                        //ui.lstMain.
-                        ui.lstMain_ChangeScrollPosition(4);
-
-                    }
-                    else if (mouseState.ScrollWheelValue > oldMouseState.ScrollWheelValue)
-                    {
-                        ui.lstMain_ChangeScrollPosition(-4);
-                    }
-                }
-                if (mouseState.Y > ui.lstComp.Top + 24 && mouseState.Y < ui.lstComp.Top + ui.lstComp.Height + 24)
-                {
-                    if (mouseState.ScrollWheelValue < oldMouseState.ScrollWheelValue)
-                    {
-                        //ui.lstMain.
-                        ui.lstComp_ChangeScrollPosition(4);
-
-                    }
-                    else if (mouseState.ScrollWheelValue > oldMouseState.ScrollWheelValue)
-                    {
-                        ui.lstComp_ChangeScrollPosition(-4);
-                    }
-
-
-                }
-
-                oldMouseState = mouseState;
-                return;
-            }
-
-            int worldMouseX = (int)(mouseState.X * room.mapzoom);
-            int worldMouseY = (int)(mouseState.Y * room.mapzoom);
-
-            if (currentSelection.Equals("placeNode"))
-            {
-                if (mouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Released)
-                {
-                    //new node
-                    spawnNode(worldMouseX, worldMouseY);
-                    
-                }
-                // rapid placement of nodes
-                if (mouseState.RightButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
-                {
-
-                    if (rightClickCount > rightClickMax)
-                    {
-                        //new node(s)
-                        int rad = 100;
-                        for (int i = 0; i < 10; i++)
-                        {
-                            int rx = Utils.random.Next(rad * 2) - rad;
-                            int ry = Utils.random.Next(rad * 2) - rad;
-                            spawnNode(worldMouseX + rx, worldMouseY + ry);
-                        }
-
-                        rightClickCount = 0;
                     }
                     else
                     {
-                        rightClickCount++;
+                Node.cloneObject(room.defaultNode, newNode);
                     }
-
-                }
-            }
-            else if (currentSelection.Equals("targeting"))
-            {
-                if (mouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Released)
-                {
-                    bool found = false;
-                    for (int i = room.nodes.Count-1; i >= 0; i--)
-                    {
-                        Node n = (Node)room.nodes.ElementAt(i);
-                        // find node that has been clicked, starting from the most recently placed nodes
-                        if (Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY)) < n.radius * n.radius)
-                        {
-                            //--
-                            room.nodes.Remove(n);
-                            break;
-                            //--
-                            targetNode = n;
-                            found = true;
-                            break;
+            newNode.acceptUserProps(userProperties);
+            newNode.name = "node" + Node.nodeCounter;
+            room.nodes.Add(newNode);
                         }
-                    }
-                    if (!found) targetNode = null;
-                }
-            }
-
-
-            if (hovertargetting)
-            {
-                if (true || mouseState.LeftButton == ButtonState.Pressed)
-                {
-                    bool found = false;
-                    for (int i = room.nodes.Count - 1; i >= 0; i--)
-                    {
-                        Node n = (Node)room.nodes.ElementAt(i);
-                        // find node that has been clicked, starting from the most recently placed nodes
-                        if (Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY)) < n.radius * n.radius)
-                        {
-                            targetNode = n;
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) targetNode = null;
-                }
-            }
-
-            if (mouseState.RightButton == ButtonState.Released && oldMouseState.RightButton == ButtonState.Pressed)
-            {
-                rightClickCount = 0;
-            }
-
-            if (mouseState.ScrollWheelValue < oldMouseScrollValue)
-            {
-                room.mapzoom += 0.2f;
-            }
-            else if (mouseState.ScrollWheelValue > oldMouseScrollValue)
-            {
-                room.mapzoom -= 0.2f;
-            }
-
-            oldMouseScrollValue = mouseState.ScrollWheelValue;
-            oldMouseState = mouseState;
-        }
-        */
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -618,15 +396,9 @@ namespace OrbItProcs {
         {
             
             Manager.BeginDraw(gameTime);
-
-            //Manager.Draw(gameTime);
-
             base.Draw(gameTime);
-
             GraphicsDevice.Clear(Color.Black);
-
             spriteBatch.Begin();
-
             room.Draw(spriteBatch);
             frameRateCounter.Draw(spriteBatch, font);
 
@@ -637,6 +409,13 @@ namespace OrbItProcs {
             Manager.EndDraw();
 
 
+        }
+
+        internal void deletePreset(Node p)
+        {
+            System.Console.WriteLine("Deleting file: " + p);
+            File.Delete(Game1.filepath + p.name + ".xml");
+            NodePresets.Remove(p);
         }
     }
 }
