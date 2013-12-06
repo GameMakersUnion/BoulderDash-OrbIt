@@ -31,7 +31,7 @@ namespace OrbItProcs.Interface
         public int Width = 200;
         #region /// Neoforce Fields///
         private Manager manager;
-        private Window master;
+        public Window master;
         TabControl tbcMain;
         public Label title1;
         TextBox consoletextbox;
@@ -309,8 +309,9 @@ namespace OrbItProcs.Interface
             btnSaveNode.Left = LeftPadding + btnApplyToAll.Width;
             btnSaveNode.Parent = first;
             //btnSaveNode.Click += new TomShane.Neoforce.Controls.EventHandler(btnSaveNode_Click);
-            btnSaveNode.Click += delegate(object sender, EventArgs e) {
-                PopupWindow saveNodes = new PopupWindow(ui, PopupWindow.PopUpType.textBox);};
+
+            btnSaveNode.Click += btnSaveNode_Click;
+                
             #endregion
             #endregion
 
@@ -408,6 +409,18 @@ namespace OrbItProcs.Interface
             #endregion
             #endregion
 
+        }
+
+        void btnSaveNode_Click(object sender, EventArgs e)
+        {
+                if (ui.editNode == null)
+                    new PopupWindow(ui, PopupWindow.PopUpType.alert, "You haven't selected a Node.");
+                else
+                    new PopupWindow(ui,
+                                    PopupWindow.PopUpType.textBox,
+                                    "Pick a preset name",
+                                    "Name preset",
+                                    delegate(bool c, object input){if (c) ui.game.saveNode(ui.editNode,(string)input);});
         }
 
         void NodePresets_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -1003,15 +1016,13 @@ namespace OrbItProcs.Interface
 
         void deletePresetMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            //string filepath = "Presets//Nodes";
-            //DirectoryInfo d = new DirectoryInfo(filepath);
 
             FileInfo fileinfo = game.presetFileInfos.ElementAt(lstPresets.ItemIndex);
             System.Console.WriteLine("Deleting file: " + fileinfo.Name);
 
             string message = "Are you sure you want to delete the file: " + fileinfo.Name;
             PopupWindow confirmDelete = new PopupWindow(ui, PopupWindow.PopUpType.prompt, message);
-            PopupWindow.confirmDelegate deleteDel = delegate(bool del)
+            PopupWindow.ConfirmDelegate deleteDel = delegate(bool del, object ans)
             {
                 if (del)
                 {
@@ -1020,7 +1031,7 @@ namespace OrbItProcs.Interface
                     lstPresets.Items.RemoveAt(lstPresets.ItemIndex);
                 }
             };
-            confirmDelete.addDelegate(deleteDel);
+            //confirmDelete.addDelegate(deleteDel);
 
             //System.Console.WriteLine("name ::: " + d.FullName);
             /*
@@ -1124,7 +1135,17 @@ namespace OrbItProcs.Interface
 
         void btnAddComponent_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            PopupWindow addComponentWindow = new PopupWindow(ui, PopupWindow.PopUpType.dropDown);
+            if (ui.editNode == null)
+                new PopupWindow(ui, PopupWindow.PopUpType.alert, "You haven't selected a Node.");
+            else
+                new PopupWindow(
+                    ui,
+                    PopupWindow.PopUpType.dropDown,
+                    "Add component to: " + ui.editNode.name,
+                    "Choose Component",
+                    list: Enum.GetValues(typeof(comp)).Cast<comp>().Where(c => !ui.editNode.comps.ContainsKey(c))
+                );
+
             // if it's open don't open again... (TODO)
         }
 
