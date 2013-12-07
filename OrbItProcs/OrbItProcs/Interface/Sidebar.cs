@@ -450,7 +450,7 @@ namespace OrbItProcs.Interface
             }
         }
 
-        void btnSaveNode_Click(object sender, EventArgs e)
+        void NodePresets_Sync(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (((ObservableCollection<Object>)sender).Count() < 1) presetContextMenu.Enabled = false;
             else presetContextMenu.Enabled = true;
@@ -472,6 +472,7 @@ namespace OrbItProcs.Interface
                 PopUp.Text(ui, "Pick a preset name", "Name preset",
                                 delegate(bool c, object input) { if (c) ui.game.saveNode(ui.editNode, (string)input); });
         }
+
         //TODO: transfer to InspectorItem system
         /*void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
         {

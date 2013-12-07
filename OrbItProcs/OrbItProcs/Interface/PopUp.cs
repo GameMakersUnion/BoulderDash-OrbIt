@@ -107,11 +107,11 @@ namespace OrbItProcs
         public static void Toast(UserInterface ui, string message = "", string title = "Hey! Listen!")
         {makePopup(ui, PopUpType.alert, message, title);}
         public static void Prompt(UserInterface ui, string message = "", string title = "Hey! Listen!",ConfirmDelegate action = null)
-        {makePopup(ui, PopUpType.alert, message, title, action);}
+        {makePopup(ui, PopUpType.prompt, message, title, action);}
         public static void Select(UserInterface ui, string message = "", string title = "Hey! Listen!",ConfirmDelegate action = null, IEnumerable list = null)
-        {makePopup(ui, PopUpType.alert, message, title, action, list);}
+        {makePopup(ui, PopUpType.dropDown, message, title, action, list);}
         public static void Text(UserInterface ui, string message = "", string title = "Hey! Listen!",ConfirmDelegate action = null)
-        { makePopup(ui, PopUpType.alert, message, title, action); }
+        { makePopup(ui, PopUpType.textBox, message, title, action); }
         
     }
 
