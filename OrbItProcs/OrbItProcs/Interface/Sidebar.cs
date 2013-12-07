@@ -20,10 +20,12 @@ using System.IO;
 using EventHandler = TomShane.Neoforce.Controls.EventHandler;
 using EventArgs = TomShane.Neoforce.Controls.EventArgs;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 namespace OrbItProcs.Interface
 {
     public class Sidebar
     {
+        EventHandler NotImplemented;
         public Game1 game;
         public Room room;
         public UserInterface ui;
@@ -70,6 +72,10 @@ namespace OrbItProcs.Interface
             this.game = ui.game;
             this.room = ui.game.room;
             this.ui = ui;
+            NotImplemented = delegate { 
+                PopUp.Toast(ui, "Not Implemented. Take a hike.");
+                //throw new NotImplementedException();
+            };
             manager = game.Manager;
         }
 
@@ -140,9 +146,9 @@ namespace OrbItProcs.Interface
             lstMain.Anchor = Anchors.Top | Anchors.Left | Anchors.Bottom;
 
             lstMain.HideSelection = false; // TODO WTF
-            lstMain.ItemIndexChanged += new TomShane.Neoforce.Controls.EventHandler(lstMain_ItemIndexChanged);
+            lstMain.ItemIndexChanged += lstMain_ItemIndexChanged;
             //lstMain.Items = room.nodes;
-            room.nodes.CollectionChanged += nodes_CollectionChanged;
+            room.nodes.CollectionChanged += nodes_Sync;
             #endregion
 
             #region /// CheckBox ///
@@ -158,7 +164,7 @@ namespace OrbItProcs.Interface
             chkTempNodes.Checked = false; // TODO : Nessecary?
             chkTempNodes.Text = "Show TempNodes";
             chkTempNodes.ToolTip.Text = "Enables or disables \nshowing temp nodes \nin the list.";
-            // TODO : IMPLEMENT: chkTempNodes.CheckedChanged += new TomShane.Neoforce.Controls.EventHandler(chkTempNodes_CheckedChanged);
+            // TODO : IMPLEMENT: chkTempNodes.CheckedChanged += chkTempNodes_CheckedChanged);
             #endregion
 
             #region  /// Remove Node Button ///
@@ -172,7 +178,7 @@ namespace OrbItProcs.Interface
             btnRemoveNode.Left = LeftPadding;
 
             btnRemoveNode.Text = "Remove Node";
-            btnRemoveNode.Click += new TomShane.Neoforce.Controls.EventHandler(btnRemoveNode_Click);
+            btnRemoveNode.Click += btnRemoveNode_Click;
             #endregion
 
             #region  /// Remove All Nodes Button ///
@@ -187,7 +193,7 @@ namespace OrbItProcs.Interface
             btnRemoveAllNodes.Left = LeftPadding + btnRemoveNode.Width;
 
             btnRemoveAllNodes.Text = "Remove All";
-            btnRemoveAllNodes.Click += new TomShane.Neoforce.Controls.EventHandler(btnRemoveAllNodes_Click);
+            btnRemoveAllNodes.Click += btnRemoveAllNodes_Click;
             #endregion
 
             #region  /// Add Componenet ///
@@ -201,7 +207,7 @@ namespace OrbItProcs.Interface
             btnAddComponent.Left = LeftPadding;
 
             btnAddComponent.Text = "Add Component";
-            btnAddComponent.Click += new TomShane.Neoforce.Controls.EventHandler(btnAddComponent_Click);
+            btnAddComponent.Click += btnAddComponent_Click;
             #endregion
 
             #region  /// Default Node ///
@@ -215,9 +221,9 @@ namespace OrbItProcs.Interface
             btnDefaultNode.Left = LeftPadding + btnRemoveNode.Width;
 
             btnDefaultNode.Text = "Default Node";
-            btnDefaultNode.Click += new TomShane.Neoforce.Controls.EventHandler(btnDefaultNode_Click);
+            btnDefaultNode.Click += btnDefaultNode_Click;
             #endregion
-
+            
             #region  /// Presets Dropdown ///
             cmbPresets = new ComboBox(manager);
             cmbPresets.Init();
@@ -226,7 +232,7 @@ namespace OrbItProcs.Interface
             cmbPresets.Width = 160;
             cmbPresets.Left = LeftPadding;
             cmbPresets.Top = HeightCounter; HeightCounter += VertPadding + cmbPresets.Height;
-            game.NodePresets.CollectionChanged += NodePresets_CollectionChanged;
+            game.NodePresets.CollectionChanged += NodePresets_Sync;
             cmbPresets.ItemIndexChanged += cmbPresets_ItemIndexChanged;
 
             #endregion
@@ -257,17 +263,22 @@ namespace OrbItProcs.Interface
             lstComp.Anchor = Anchors.Top | Anchors.Left | Anchors.Bottom;
 
             lstComp.HideSelection = false;
-            lstComp.ItemIndexChanged += new TomShane.Neoforce.Controls.EventHandler(lstComp_ItemIndexChanged);
-            lstComp.Click += new TomShane.Neoforce.Controls.EventHandler(lstComp_Click);
+            lstComp.ItemIndexChanged += lstComp_ItemIndexChanged;
+            lstComp.Click += lstComp_Click;
             #region  /// Context Menu ///
             contextMenulstComp = new ContextMenu(manager);
             applyToAllNodesMenuItem = new MenuItem("Apply to all Nodes");
-            applyToAllNodesMenuItem.Click += new TomShane.Neoforce.Controls.EventHandler(applyToAllNodesMenuItem_Click);
+            //applyToAllNodesMenuItem.Click += applyToAllNodesMenuItem_Click;
+            applyToAllNodesMenuItem.Click += NotImplemented;
             toggleComponentMenuItem = new MenuItem("Toggle Component");
-            toggleComponentMenuItem.Click += new TomShane.Neoforce.Controls.EventHandler(toggleComponentMenuItem_Click);
+            toggleComponentMenuItem.Click += NotImplemented;
+            //toggleComponentMenuItem.Click += toggleComponentMenuItem_Click;
             removeComponentMenuItem = new MenuItem("Remove Component");
-            removeComponentMenuItem.Click += new TomShane.Neoforce.Controls.EventHandler(removeComponentMenuItem_Click);
+            removeComponentMenuItem.Click += NotImplemented;
+            //removeComponentMenuItem.Click += removeComponentMenuItem_Click;
             contextMenulstComp.Items.Add(applyToAllNodesMenuItem);
+
+            
             #endregion
             #endregion
 
@@ -296,7 +307,9 @@ namespace OrbItProcs.Interface
             btnApplyToAll.Width = first.Width / 2 - LeftPadding;
             btnApplyToAll.Height = 20; //HeightCounter += VertPadding + btnApplyToAll.Height;
             btnApplyToAll.Left = LeftPadding;
-            btnApplyToAll.Click += new TomShane.Neoforce.Controls.EventHandler(applyToAllNodesMenuItem_Click); //TODO ??
+            //btnApplyToAll.Click += applyToAllNodesMenuItem_Click; //TODO ??
+            btnApplyToAll.Click += NotImplemented; //TODO ??
+
             #endregion
 
             #region  /// Save as Template ///
@@ -344,7 +357,7 @@ namespace OrbItProcs.Interface
             consoletextbox.Height = consoletextbox.Height + 3;
 
             consoletextbox.ToolTip.Text = "Enter a command, and push enter";
-            consoletextbox.KeyUp += new KeyEventHandler(consoletextbox_KeyUp);
+            consoletextbox.KeyUp += new KeyEventHandler(consolePressed);
             #endregion
 
             #region  /// Enter Button ///
@@ -357,7 +370,7 @@ namespace OrbItProcs.Interface
             btnEnter.Width = (second.Width - LeftPadding * 2) / 2;
 
             btnEnter.Text = "Enter";
-            btnEnter.Click += new TomShane.Neoforce.Controls.EventHandler(btnEnter_Click);
+            btnEnter.Click += consolePressed;
             #endregion
 
             #region  /// Clear ///
@@ -370,7 +383,7 @@ namespace OrbItProcs.Interface
             btnClear.Width = (second.Width - LeftPadding * 2) / 2;
 
             btnClear.Text = "Clear";
-            btnClear.Click += new TomShane.Neoforce.Controls.EventHandler(btnClear_Click);
+            btnClear.Click += btnClear_Click;
             #endregion
 
             #endregion
@@ -398,7 +411,7 @@ namespace OrbItProcs.Interface
             #region /// Presets ContextMenu ///
             presetContextMenu = new ContextMenu(manager);
             deletePresetMenuItem = new MenuItem("Delete Preset");
-            deletePresetMenuItem.Click += new TomShane.Neoforce.Controls.EventHandler(deletePresetMenuItem_Click);
+            deletePresetMenuItem.Click += deletePresetMenuItem_Click;
             presetContextMenu.Items.Add(deletePresetMenuItem);
             presetContextMenu.Enabled = false;
             #endregion
@@ -408,63 +421,36 @@ namespace OrbItProcs.Interface
             #endregion
             #endregion
 
-
-            //compLst = InspectorItem.GenerateList(game.room.defaultNode, "");
             InspectorItem root = new InspectorItem(game.room.defaultNode, "");
             root.GenerateChildren();
             compLst = root.children;
         }
 
-        void btnSaveNode_Click(object sender, EventArgs e)
+        void NodePresets_Sync(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-                if (ui.editNode == null)
-                    new PopupWindow(ui, PopupWindow.PopUpType.alert, "You haven't selected a Node.");
-                else
-                    new PopupWindow(ui,
-                                    PopupWindow.PopUpType.textBox,
-                                    "Pick a preset name",
-                                    "Name preset",
-                                    delegate(bool c, object input){if (c) ui.game.saveNode(ui.editNode,(string)input);});
+            if (((ObservableCollection<Object>)sender).Count() < 1) presetContextMenu.Enabled = false;
+            else presetContextMenu.Enabled = true;
+            cmbPresets.Items.syncOC(e);
+            lstPresets.Items.syncOC(e);
         }
 
-        void NodePresets_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (((ObservableCollection<Object>)sender).Count() < 1)
-                presetContextMenu.Enabled = false;
-            else
-                presetContextMenu.Enabled = true;
-
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-                foreach (object o in e.NewItems)
-                {
-                    cmbPresets.Items.Add(o);
-                    lstPresets.Items.Add(o);
-                }
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-                foreach (object o in e.OldItems)
-                {
-                    cmbPresets.Items.Remove(o);
-                    lstPresets.Items.Remove(o);
-                }
-
-        }
-
-        void nodes_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        void nodes_Sync(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             title1.Text = "Node List : " + room.nodes.Count;
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-                foreach (object o in e.NewItems)
-                    lstMain.Items.Add(o);
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-                foreach (object o in e.OldItems)
-                    lstMain.Items.Remove(o);
-
-
+            lstMain.Items.syncOC(e);
         }
 
-        void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
+        void btnSaveNode_Click(object sender, EventArgs e)
         {
-            //MenuItem menuitem = (MenuItem)sender;
+            if (ui.editNode == null)
+                PopUp.Toast(ui, "You haven't selected a Node.");
+            else
+                PopUp.Text(ui, "Pick a preset name", "Name preset",
+                                delegate(bool c, object input) { if (c) ui.game.saveNode(ui.editNode, (string)input); });
+        }
+
+        /*void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
+        {
             TreeListItem item = (TreeListItem)lstComp.Items.ElementAt(lstComp.ItemIndex);
             if (item.itemtype == treeitem.propertyinfo)
             {
@@ -486,12 +472,7 @@ namespace OrbItProcs.Interface
                 foreach (Node node in game.room.nodes)
                 {
                     comp c = item.component;
-                    /*
-                    if (node.props.ContainsKey(c))
-                    {
-                        node.props[c] = item.node.props[c];
-                    }
-                     */
+
                     if (node.comps.ContainsKey(c))
                     {
                         node.setCompActive(c, item.node.isCompActive(c));
@@ -592,24 +573,12 @@ namespace OrbItProcs.Interface
             }
             lstComp.Items.Remove(item);
         }
-
-        void consoletextbox_KeyUp(object sender, TomShane.Neoforce.Controls.EventArgs e)
+*/
+        
+        void consolePressed(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            KeyEventArgs ke = (KeyEventArgs)e;
-            if (ke.Key == Keys.Enter)
-            {
-                //TextBox textbox = (TextBox)sender;
+            if (sender is Button || (sender is TextBox && (((KeyEventArgs)e).Key == Keys.Enter))) 
                 ProcessConsoleCommand(consoletextbox.Text);
-            }
-        }
-
-        void btnEnter_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
-        {
-            //consoletextbox.Text = "";
-
-            ProcessConsoleCommand(consoletextbox.Text);
-
-
         }
 
         public void ProcessConsoleCommand(String text)
@@ -618,23 +587,93 @@ namespace OrbItProcs.Interface
 
             if (text.Equals(""))
             {
+                PopUp.Toast(ui, "No Command Provided");
                 consoletextbox.Text = "";
                 return;
             }
-            String[] args = text.Split(' ');
+            object currentObj = game.room;
+
+
+
+            List<String> args = text.Split(' ').ToList();
+            String methodname;
+            if (args.Count > 0)
+            {
+                methodname = args.ElementAt(0);
+                args.RemoveAt(0);
+            }
+            else
+            {
+                PopUp.Toast(ui, "No Command Provided");
+                return;
+            }
+
+            MethodInfo methinfo = currentObj.GetType().GetMethod(methodname);
+
+            if (methinfo == null || methinfo.IsPrivate)
+            {
+                PopUp.Toast(ui, "Invalid method specification.");
+                return;
+            }
+
+            ParameterInfo[] paraminfos = methinfo.GetParameters();
+            
+            int paramNum = paraminfos.Length;
+            object[] finalargs = new object[paramNum];
+
+            for(int i = 0; i < paramNum; i++)
+            {
+
+                Type ptype = paraminfos[i].ParameterType;
+                if (i >= args.Count)
+                {
+                    if (paraminfos[i].IsOptional)
+                    {
+                        //Missing missing;
+                        finalargs[i] = Type.Missing;
+                        continue;
+                    }
+                    PopUp.Toast(ui, "Parameter Inconsistenc[ies].");
+                    return;
+                }
+                try
+                {
+                  finalargs[i] = TypeDescriptor.GetConverter(ptype).ConvertFromInvariantString(args[i]);
+                }
+                catch (Exception e)
+                {
+                    PopUp.Toast(ui, "Casting exception: " + e.Message);
+                    return;
+                }
+
+            }
+            if (methinfo.IsStatic) currentObj = null;
+            try
+            {
+                methinfo.Invoke(currentObj, finalargs);
+            }
+            catch (Exception e)
+            {
+                PopUp.Toast(ui, "Invoking exception: " + e.Message);
+                return;
+            }
+
+            /*
             if (args[0].Equals("gridsystem") || args[0].Equals("gs"))
             {
-                //System.Console.WriteLine("first!");
-                if (args.Length == 1)
-                    game.room.gridsystem = new GridSystem(game.room, 20, 5);
-                else if (args.Length == 2)
-                    //game.room.gridsystem = new GridSystem(
-                    game.room.gridsystem = new GridSystem(game.room, game.room.gridsystem.cellsX, Convert.ToInt32(args[1]));
-                else if (args.Length == 3)
-                    game.room.gridsystem = new GridSystem(game.room, Convert.ToInt32(args[1]), Convert.ToInt32(args[2]));
+                for (int i = 1; i < args.Length; i++) 
+                    //System.Console.WriteLine("first!");
+                    if (args.Length == 1)
+                        game.room.gridsystem = new GridSystem(game.room, 20, 5);
+                    else if (args.Length == 2)
+                        //game.room.gridsystem = new GridSystem(
+                        game.room.gridsystem = new GridSystem(game.room, game.room.gridsystem.cellsX, Convert.ToInt32(args[1]));
+                    else if (args.Length == 3)
+                        game.room.gridsystem = new GridSystem(game.room, Convert.ToInt32(args[1]), Convert.ToInt32(args[2]));
                 //game.room.gridsystem = new GridSystem(game.room, game.worldWidth, game.worldHeight, Convert.ToInt32(args[1]), Convert.ToInt32(args[1]), Convert.ToInt32(args[2]));
 
             }
+            */
         }
 
         void btnClear_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
@@ -676,7 +715,7 @@ namespace OrbItProcs.Interface
                 chkbox.Width = 120;
                 chkbox.Checked = (bool)treeItem.node.isCompActive(treeItem.component);
                 chkbox.Text = treeItem.component + " (" + treeItem.node.isCompActive(treeItem.component) + ")";
-                chkbox.CheckedChanged += new TomShane.Neoforce.Controls.EventHandler(chkbox_CheckedChanged);
+                chkbox.CheckedChanged += chkbox_CheckedChanged;
 
                 panelControls.Add("chkbox", chkbox);
 
@@ -743,7 +782,7 @@ namespace OrbItProcs.Interface
                 btnModify.Top = 10;
                 btnModify.Width = 80;
                 btnModify.Text = "Modify";
-                btnModify.Click += new TomShane.Neoforce.Controls.EventHandler(btnModify_Click);
+                btnModify.Click += btnModify_Click;
 
 
                 panelControls.Add("txtbox", txtbox);
@@ -762,7 +801,7 @@ namespace OrbItProcs.Interface
                     trkMain.Value = val;
                     if (val == 0) val = 5;
                     trkMain.Range = val * 2;
-                    trkMain.ValueChanged += new TomShane.Neoforce.Controls.EventHandler(trkMain_ValueChanged);
+                    trkMain.ValueChanged += trkMain_ValueChanged;
                     //trkMain.btnSlider.MouseUp += new TomShane.Neoforce.Controls.MouseEventHandler(trkMain_MouseUp);
                     panelControls.Add("trkMain", trkMain);
                 }
@@ -779,7 +818,7 @@ namespace OrbItProcs.Interface
                 chkbox.Width = 120;
                 chkbox.Checked = (bool)field.GetValue(parentObject);
                 chkbox.Text = field.Name + " (" + field.GetValue(parentObject) + ")";
-                chkbox.CheckedChanged += new TomShane.Neoforce.Controls.EventHandler(chkbox_CheckedChanged);
+                chkbox.CheckedChanged += chkbox_CheckedChanged;
                 panelControls.Add("chkbox", chkbox);
 
             }
@@ -1034,7 +1073,7 @@ namespace OrbItProcs.Interface
 
             String presetName = ((Node)lstPresets.selected()).name + ".xml";
             string message = "Are you sure you want to delete this preset file? : " + presetName;
-            new PopupWindow(ui, PopupWindow.PopUpType.prompt, message , action:
+            PopUp.Prompt(ui, message , action:
             delegate(bool del, object ans)
             {
                 if (del)
@@ -1115,18 +1154,19 @@ namespace OrbItProcs.Interface
         void btnAddComponent_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             if (ui.editNode == null)
-                new PopupWindow(ui, PopupWindow.PopUpType.alert, "You haven't selected a Node.");
+                 PopUp.Toast(ui, "You haven't selected a Node.");
             else
-                new PopupWindow(
+                PopUp.Select(
                     ui,
-                    PopupWindow.PopUpType.dropDown,
                     "Add component to: " + ui.editNode.name,
                     "Choose Component",
-                    list: Enum.GetValues(typeof(comp)).Cast<comp>().Where(c => !ui.editNode.comps.ContainsKey(c))
+                    addComponent,
+                    Enum.GetValues(typeof(comp)).Cast<comp>().Where(c => !ui.editNode.comps.ContainsKey(c))
                 );
+        }
 
             // if it's open don't open again... (TODO)
-        }
+
 
         void btnDefaultNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
@@ -1167,40 +1207,19 @@ namespace OrbItProcs.Interface
             }
             DisableControls(groupPanel);
         }
-
-        //void btnAddComponent_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
-        //{
-        //    if (cbBox.ItemIndex == -1)
-        //    {
-        //        PopupWindow fail = new PopupWindow(ui, PopUpType.alert, "You haven't selected a component.");
-        //        return;
-        //    }
-
-        //    if (ui.editNode == null)
-        //    {
-        //        PopupWindow fail = new PopupWindow(ui, PopUpType.alert, "EditNode is null.");
-        //        return;
-        //    }
-
-        //    ConfirmDelegate overwriteComp = delegate(bool c, object a)
-        //    {
-        //        if (c)
-        //        {
-        //            ui.editNode.addComponent((comp)cbBox.Items.ElementAt(cbBox.ItemIndex), true, true);
-        //            if (ui.sidebar.panelControls.Keys.Count > 0) ui.sidebar.DisableControls(ui.sidebar.groupPanel); //TODO
-
-        //            ui.sidebar.compLst = TreeListItem.GenerateList(ui.editNode, "");
-        //        }
-        //    };
-
-        //    if (ui.editNode.comps.ContainsKey((comp)cbBox.Items.ElementAt(cbBox.ItemIndex)))
-        //    {
-        //        PopupWindow fail = new PopupWindow(ui, PopUpType.prompt, "The node already contains this component. Overwrite to default component?");
-        //        //TODO fail.addDelegate(overwriteComp);
-        //        return;
-        //    }
-        //    overwriteComp(true);
-        //}
-
+        void addComponent(bool c, object ans)
+        {
+            if (c)
+            {
+                if (ans == null)  PopUp.Toast(ui, "You didn't select a component.");
+                bool writeable = true;
+                if (ui.editNode.comps.ContainsKey((comp)ans))
+                    PopUp.Prompt(ui,
+                        "The node already contains this component. Overwrite to default component?",
+                        action: delegate(bool k, object a) { writeable = k; });
+                if (writeable) ui.editNode.addComponent((comp)ans, true, true);
+            }
+        }
+        
     }
 }

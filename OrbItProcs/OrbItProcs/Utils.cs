@@ -27,6 +27,16 @@ namespace OrbItProcs {
         public static bool In<T>(this T x, params T[] args) {return args.Contains(x);}
 
         public static object selected(this TomShane.Neoforce.Controls.ListBox c) { return c.Items.ElementAt(c.ItemIndex); }
+
+        public static void syncOC(this ICollection<object> lst, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+                foreach (object o in e.NewItems)
+                    lst.Add(o);
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+                foreach (object o in e.OldItems)
+                    lst.Remove(o);
+        }
         /*
         public static void cloneObject<T>(T obj, T newobj) //they must be the same type
         {
