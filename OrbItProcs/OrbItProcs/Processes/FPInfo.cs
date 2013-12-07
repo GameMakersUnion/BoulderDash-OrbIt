@@ -9,50 +9,63 @@ namespace OrbItProcs.Processes
     public class FPInfo
     {
         private FieldInfo _fieldInfo;
+        [Polenter.Serialization.ExcludeFromSerialization]
         public FieldInfo fieldInfo { get { return _fieldInfo; } set { _fieldInfo = value; } }
+
         private PropertyInfo _propertyInfo;
+        [Polenter.Serialization.ExcludeFromSerialization]
         public PropertyInfo propertyInfo { get { return _propertyInfo; } set { _propertyInfo = value; } }
+        //[Polenter.Serialization.ExcludeFromSerialization]
         public object ob;
-        public string fieldname { get; set; }
 
+        public string Name { get; set; }
 
-        public FPInfo ()
-        {
-
-        }
+        public FPInfo () { /*serializeationiantiszeatned;*/ }
         public FPInfo (FieldInfo fieldInfo)
         {
             this.fieldInfo = fieldInfo;
+            Name = fieldInfo.Name;
         }
         public FPInfo (PropertyInfo propertyInfo)
         {
             this.propertyInfo = propertyInfo;
+            Name = propertyInfo.Name;
         }
         public FPInfo(FieldInfo fieldInfo, PropertyInfo propertyInfo) //for copying component use
         {
-            this.fieldInfo = fieldInfo;
             this.propertyInfo = propertyInfo;
-            ob = null;
+            this.fieldInfo = fieldInfo;
+            if (propertyInfo != null) Name = propertyInfo.Name;
+            else if (fieldInfo != null) Name = fieldInfo.Name;
+            else Name = "error_Name_1";
+            //ob = null;
         }
         public FPInfo(FPInfo old) //for copying component use
         {
-            this.fieldInfo = old.fieldInfo;
             this.propertyInfo = old.propertyInfo;
-            ob = null;
+            this.fieldInfo = old.fieldInfo;
+            if (propertyInfo != null) Name = propertyInfo.Name;
+            else if (fieldInfo != null) Name = fieldInfo.Name;
+            else Name = "error_Name_2";
+
+            //ob = null;
         }
         public FPInfo (string name, object obj)
         {
             ob = obj;
             propertyInfo = obj.GetType().GetProperty(name);
+            Name = name;
             if (propertyInfo == null)
             {
                 fieldInfo = obj.GetType().GetField(name);
                 if (fieldInfo == null)
                 {
                     Console.WriteLine("member was not found.");
+                    name = "error_Name_3";
 
                 }
             }
+            
         }
 
         public static FPInfo GetNew(string name, object obj)
@@ -150,7 +163,7 @@ namespace OrbItProcs.Processes
                 return null;
             }
         }
-
+        /*
         public string Name()
         {
             if (propertyInfo != null)
@@ -164,7 +177,7 @@ namespace OrbItProcs.Processes
             }
             return "nameless";
         }
-
+        */
         public Type FPType()
         {
             if (propertyInfo != null)

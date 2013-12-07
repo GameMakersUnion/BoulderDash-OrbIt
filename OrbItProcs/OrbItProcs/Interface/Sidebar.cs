@@ -39,11 +39,11 @@ namespace OrbItProcs.Interface
         private CheckBox chkTempNodes;
         Button btnRemoveNode, btnRemoveAllNodes, btnAddComponent, btnDefaultNode, btnApplyToAll, btnSaveNode;
         public TreeListBox lstComp;
-        public List<object> compLst { set { lstComp.Items.Clear(); foreach (object o in value) lstComp.Items.Add(o); } }
+        //public List<object> compLst { set { lstComp.Items.Clear(); foreach (object o in value) lstComp.Items.Add(o); } }
         public ContextMenu contextMenulstComp;
         public Label lblEditNodeName;
         public GroupPanel groupPanel;
-        public Dictionary<System.String, Control> panelControls;
+        public Dictionary<string, Control> panelControls;
         //private TreeListItem activeTreeItem;
         private InspectorItem activeInspectorItem;
         private object parentObject;
@@ -55,6 +55,8 @@ namespace OrbItProcs.Interface
         public MenuItem removeComponentMenuItem;
         public ContextMenu presetContextMenu;
         public MenuItem deletePresetMenuItem;
+
+        public PropertyEditPanel propertyEditPanel;
         #endregion
 
         #region /// Layout Fields///
@@ -286,6 +288,10 @@ namespace OrbItProcs.Interface
             groupPanel.Text = "Property";
             #endregion
 
+            #region  /// PropertyEditPanel ///
+            propertyEditPanel = new PropertyEditPanel(groupPanel, this);
+            #endregion
+
             #region  /// Apply to All ///
             btnApplyToAll = new Button(manager);
             btnApplyToAll.Init();
@@ -410,9 +416,25 @@ namespace OrbItProcs.Interface
 
 
             //compLst = InspectorItem.GenerateList(game.room.defaultNode, "");
-            InspectorItem root = new InspectorItem(game.room.defaultNode, "");
-            root.GenerateChildren();
-            compLst = root.children;
+            //InspectorItem root = new InspectorItem(game.room.defaultNode, "");
+            //root.GenerateChildren();
+            //compLst = root.children;
+            ResetTreeListBox(lstComp, room.defaultNode);
+        }
+
+        public void ResetTreeListBox(TreeListBox treelistbox, object rootobj)
+        {
+            InspectorItem rootitem = new InspectorItem(treelistbox.Items, rootobj, "");
+            rootitem.GenerateChildren();
+
+            foreach (object o in treelistbox.Items.ToList())
+            {
+                treelistbox.Items.Remove(o);
+            }
+            foreach (object o in rootitem.children.ToList())
+            {
+                treelistbox.Items.Add(o);
+            }
         }
 
         void btnSaveNode_Click(object sender, EventArgs e)
@@ -461,7 +483,7 @@ namespace OrbItProcs.Interface
 
 
         }
-
+        //TODO: transfer to InspectorItem system
         void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
         {
             //MenuItem menuitem = (MenuItem)sender;
@@ -548,7 +570,7 @@ namespace OrbItProcs.Interface
             }
 
         }
-
+        //TODO: transfer to InspectorItem system
         void toggleComponentMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             TreeListItem item = (TreeListItem)lstComp.Items.ElementAt(lstComp.ItemIndex);
@@ -654,7 +676,7 @@ namespace OrbItProcs.Interface
                 consoletextbox.Text = "";
             }
         }
-
+        /*
         public void UpdateGroupPanel(InspectorItem inspectorItem, GroupPanel grouppanel)
         {
             if (activeInspectorItem == inspectorItem) return;
@@ -805,7 +827,8 @@ namespace OrbItProcs.Interface
                 panelControls.Remove(key);
             }
         }
-
+        */
+        /*
         void trkMain_MouseUp(object sender, TomShane.Neoforce.Controls.MouseEventArgs e)
         {
             //TrackBar trkbar = (TrackBar)sender;
@@ -963,7 +986,7 @@ namespace OrbItProcs.Interface
             }
 
         }
-
+        */
         public void lstMain_ChangeScrollPosition(int change)
         {
             if (lstMainScrollPosition + change < 0) lstMainScrollPosition = 0;
@@ -984,7 +1007,10 @@ namespace OrbItProcs.Interface
         {
             ListBox listbox = (ListBox)sender;
             //remove panelControl elements (from groupPanel at the bottom)
-            if (panelControls.Keys.Count > 0) DisableControls(groupPanel);
+            if (panelControls.Keys.Count > 0) //DisableControls(groupPanel);
+            {
+                propertyEditPanel.DisableControls();
+            }
             //System.Console.WriteLine("" + treebox.ItemIndex);
             /*
             game.targetNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
@@ -999,21 +1025,28 @@ namespace OrbItProcs.Interface
 
         public void SetTargetNode(Node target)
         {
+            //if (game.targetNode == target) return;
             game.targetNode = target;
             ui.editNode = target;
             lblEditNodeName.Text = ui.editNode.name;
             //compLst = TreeListItem.GenerateList(target, "");
-            InspectorItem root = new InspectorItem(game.targetNode, "");
-            root.GenerateChildren();
-            compLst = root.children;
+            //InspectorItem root = new InspectorItem(lstComp.Items, game.targetNode, "");
+            //root.GenerateChildren();
+            //compLst = root.children;
             //compLst = roo
+
+            ResetTreeListBox(lstComp, game.targetNode);
+
         }
 
         void lstPresets_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             ListBox listbox = (ListBox)sender;
             //remove panelControl elements (from groupPanel at the bottom)
-            if (panelControls.Keys.Count > 0) DisableControls(groupPanel);
+            if (propertyEditPanel.panelControls.Keys.Count > 0) //DisableControls(groupPanel);
+            {
+                propertyEditPanel.DisableControls();
+            }
             //System.Console.WriteLine("" + treebox.ItemIndex);
             //game.room.defaultNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
             ui.editNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
@@ -1021,7 +1054,9 @@ namespace OrbItProcs.Interface
             ui.spawnerNode = ui.editNode;
             //ui.editNode = game.targetNode;
 
-            compLst = TreeListItem.GenerateList(ui.editNode, "");
+            //compLst = TreeListItem.GenerateList(ui.editNode, "");
+            ResetTreeListBox(lstComp, ui.editNode);
+
             if (cmbPresets.ItemIndex != lstPresets.ItemIndex)
             {
                 cmbPresets.ItemIndex = lstPresets.ItemIndex;
@@ -1083,7 +1118,7 @@ namespace OrbItProcs.Interface
                 InspectorItem litem = (InspectorItem)listComp.Items.ElementAt(listComp.ItemIndex);
 
 
-                if (litem.obj.GetType().IsSubclassOf(typeof(Component)))
+                if (litem.obj is Component)
                 {
                     contextMenulstComp.Items.Add(toggleComponentMenuItem);
                     contextMenulstComp.Items.Add(removeComponentMenuItem);
@@ -1100,8 +1135,10 @@ namespace OrbItProcs.Interface
 
                 if (listComp.ItemIndex < 0) return;
                 InspectorItem item = (InspectorItem)listComp.Items.ElementAt(listComp.ItemIndex);
-                item.ClickItem(listComp);
+                item.ClickItem(listComp.ItemIndex);
 
+                if (activeInspectorItem != item)
+                    propertyEditPanel.UpdatePanel(item);
                 //UpdateGroupPanel(item, groupPanel); //todo: update this.
             }
         }
@@ -1130,14 +1167,17 @@ namespace OrbItProcs.Interface
 
         void btnDefaultNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            InspectorItem item = new InspectorItem(game.targetNode, "");
-            item.GenerateChildren();
-            compLst = item.children;
+            //InspectorItem item = new InspectorItem(game.targetNode, "");
+            //item.GenerateChildren();
+            //compLst = item.children;
+            
 
             //compLst = TreeListItem.GenerateList(game.room.defaultNode, "");
             ui.editNode = game.room.defaultNode;
             ui.spawnerNode = ui.editNode;
             lblEditNodeName.Text = ui.editNode.name;
+
+            ResetTreeListBox(lstComp, room.defaultNode);
         }
 
         void btnRemoveAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
@@ -1165,7 +1205,8 @@ namespace OrbItProcs.Interface
                 lstComp.Items.Clear();
                 ui.editNode = null;
             }
-            DisableControls(groupPanel);
+            //DisableControls(groupPanel);
+            propertyEditPanel.DisableControls();
         }
 
         //void btnAddComponent_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)

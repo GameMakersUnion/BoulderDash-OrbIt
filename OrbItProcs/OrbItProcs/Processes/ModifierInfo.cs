@@ -91,7 +91,7 @@ namespace OrbItProcs.Processes
             fpInfosObj = new Dictionary<string, object>();
             foreach(string key in fpInfos.Keys)
             {
-                fpInfos[key] = new FPInfo(fpInfos[key].fieldname, obj);
+                fpInfos[key] = new FPInfo(fpInfos[key].Name, obj);
                 fpInfosObj.Add(key, obj);
             }
         }

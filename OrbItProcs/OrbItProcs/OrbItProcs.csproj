@@ -146,6 +146,7 @@
     <Compile Include="FrameRateCounter.cs" />
     <Compile Include="GridSystem.cs" />
     <Compile Include="Interface\NeoForceOverrides\TreeListBox.cs" />
+    <Compile Include="Interface\PropertyEditPanel.cs" />
     <Compile Include="Interface\Sidebar.cs" />
     <Compile Include="lists.cs" />
     <Compile Include="Processes\DelegateManager.cs" />

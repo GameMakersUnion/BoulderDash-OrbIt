@@ -8,6 +8,7 @@ using System.Reflection;
 using OrbItProcs.Processes;
 using OrbItProcs.Components;
 using Component = OrbItProcs.Components.Component;
+using System.Collections.ObjectModel;
 
 namespace OrbItProcs.Interface {
 
@@ -43,6 +44,16 @@ namespace OrbItProcs.Interface {
             typeof(Vector2),
             typeof(Color),
         };
+        public static List<Type> PanelTypes = new List<Type>()
+        {
+            typeof(int),
+            typeof(float),
+            typeof(double),
+            typeof(string),
+            typeof(bool),
+            typeof(Enum),
+        };
+
 
         public treeitem itemtype;
         public int depth = 1;
@@ -54,6 +65,7 @@ namespace OrbItProcs.Interface {
         public bool extended = false;
         
         public List<object> children;
+        
         //public int childCount = 0;
         public object key;
         public String prefix;
@@ -66,51 +78,31 @@ namespace OrbItProcs.Interface {
         public member_type membertype;
         public data_type datatype;
 
+        public IList<object> masterList;
+
         //root item
-        public InspectorItem(object obj, string whitespace)
+        public InspectorItem(IList<object> masterList, object obj, string whitespace)
         {
             this.whitespace = whitespace;
             this.obj = obj;
+            this.masterList = masterList; 
             //this.fpinfo = new FPInfo(propertyInfo);
             this.membertype = member_type.none;
             CheckItemType();
             prefix = "=";
             //System.Console.WriteLine(obj);
-            //children = GenerateList(obj, whitespace, this);
+            //children = GenerateList(obj, whitespace, this); 
             
         }
 
-        public void GenerateChildren()
-        {
-            if (ReferenceExists(parentItem, obj))
-            {
-                children = new List<object>();
-                return;
-            }
-            //System.Console.WriteLine(this);
-            children = GenerateList(obj, whitespace, this);
-        }
-
-        public bool ReferenceExists(InspectorItem parent, object reference)
-        {
-            if (parent == null)
-            {
-                return false;
-            }
-            if (parent.obj == reference)
-            {
-                return true;
-            }
-            return ReferenceExists(parent.parentItem, reference);
-        }
-
-        public InspectorItem(object obj, PropertyInfo propertyInfo, InspectorItem parentItem, string whitespace)
+        public InspectorItem(IList<object> masterList, object obj, PropertyInfo propertyInfo, InspectorItem parentItem, string whitespace)
         {
             this.whitespace = whitespace;
             this.obj = obj;
             this.parentItem = parentItem;
             //this.fieldInfo = fieldInfo;
             this.fpinfo = new FPInfo(propertyInfo);
+            this.masterList = masterList; 
             this.membertype = member_type.property;
             CheckItemType();
             prefix = "=";
@@ -119,11 +111,12 @@ namespace OrbItProcs.Interface {
 
         }
         //a dictionary entry
-        public InspectorItem(InspectorItem parentItem, string whitespace, object key, object obj = null)
+        public InspectorItem(IList<object> masterList, InspectorItem parentItem, string whitespace, object key, object obj = null)
         {
             this.whitespace = whitespace;
             this.parentItem = parentItem;
             this.obj = obj;
+            this.masterList = masterList; 
             this.fpinfo = null;
             Type t = parentItem.obj.GetType();
             if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
@@ -152,7 +145,32 @@ namespace OrbItProcs.Interface {
             //CheckItemType();
         }
         */
+
         
+
+        public bool ReferenceExists(InspectorItem parent, object reference)
+        {
+            if (parent == null)
+            {
+                return false;
+            }
+            if (parent.obj == reference)
+            {
+                return true;
+            }
+            return ReferenceExists(parent.parentItem, reference);
+        }
+
+        public void GenerateChildren()
+        {
+            if (ReferenceExists(parentItem, obj))
+            {
+                children = new List<object>();
+                return;
+            }
+            //System.Console.WriteLine(this);
+            children = GenerateList(obj, whitespace, this);
+        }
 
         public static List<object> GenerateList(object parent, String whiteSpace, InspectorItem parentItem = null)
         {
@@ -173,7 +191,7 @@ namespace OrbItProcs.Interface {
                 foreach (dynamic key in dict.Keys)
                 {
                     //System.Console.WriteLine(key.ToString());
-                    InspectorItem iitem = new InspectorItem(parentItem, space, key, dict[key]);
+                    InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, space, key, dict[key]);
                     iitem.GenerateChildren();
                     list.Add(iitem);
                 }
@@ -186,14 +204,12 @@ namespace OrbItProcs.Interface {
                 {
                     if (pinfo.PropertyType == typeof(Node)) continue; //don't infinitely recurse on nodes
 
-                    InspectorItem iitem = new InspectorItem(pinfo.GetValue(parent, null), pinfo, parentItem, space);
+                    InspectorItem iitem = new InspectorItem(parentItem.masterList, pinfo.GetValue(parent, null), pinfo, parentItem, space);
                     iitem.GenerateChildren();
                     list.Add(iitem);
                 }
             }
             //if it's just a normal primitive, it will return an empty list
-            
-
             return list;
         }
 
@@ -214,7 +230,7 @@ namespace OrbItProcs.Interface {
 
             if (fpinfo != null)
             {
-                return result + fpinfo.Name() + " : " + fpinfo.GetValue(parentItem.obj);
+                return result + fpinfo.Name + " : " + fpinfo.GetValue(parentItem.obj);
             }
             if (obj == null)
             {
@@ -228,7 +244,20 @@ namespace OrbItProcs.Interface {
             //return result + obj.ToString();
         }
 
-        public void ClickItem(TreeListBox treelistbox)
+        public string Name()
+        {
+            if (membertype == member_type.dictentry)
+            {
+                return key.ToString();
+            }
+            if (fpinfo != null)
+            {
+                return fpinfo.Name;
+            }
+            return "error_Name_99";
+        }
+
+        public void ClickItem(int position)
         {
             if (hasChildren())
             {
@@ -237,7 +266,7 @@ namespace OrbItProcs.Interface {
                     prefix = "+";
                     foreach (InspectorItem subitem in children)
                     {
-                        treelistbox.Items.Remove(subitem);
+                        masterList.Remove(subitem);
                         //listComp.Items.Remove(subitem);
                     }
                 }
@@ -248,7 +277,7 @@ namespace OrbItProcs.Interface {
                     int i = 1;
                     foreach (InspectorItem subitem in children)
                     {
-                        treelistbox.Items.Insert(treelistbox.ItemIndex + i++, subitem);
+                        masterList.Insert(position + i++, subitem);
                         //listComp.Items.Insert(listComp.ItemIndex + i++, subitem);
                     }
                 }
@@ -260,26 +289,26 @@ namespace OrbItProcs.Interface {
         public void CheckItemType()
         {
             //Type t = fpinfo.FPType();
-            Type t = obj.GetType();
+            //Type t = obj.GetType();
             data_type dt = data_type.none;
 
-            if (t == typeof(int))
+            if (obj is int)
             {
                 dt = data_type.integer;
             }
-            else if (t == typeof(float) && t == typeof(double))
+            else if (obj is Single)
             {
                 dt = data_type.single;
             }
-            else if (t == typeof(string))
+            else if (obj is String)
             {
                 dt = data_type.str;
             }
-            else if (t == typeof(bool))
+            else if (obj is bool)
             {
                 dt = data_type.boolean;
             }
-            else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+            else if (obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(Dictionary<,>))
             {
                 //System.Console.WriteLine("Dictionary found.");
                 dt = data_type.dict;
@@ -288,7 +317,7 @@ namespace OrbItProcs.Interface {
                 //Type valueType = t.GetGenericArguments()[1];
             }
             //might need to be more specific than List
-            else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(List<>))
+            else if (obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(List<>))
             {
                 //System.Console.WriteLine("List found.");
                 dt = data_type.list;
@@ -296,7 +325,7 @@ namespace OrbItProcs.Interface {
                 //Type valueType = t.GetGenericArguments()[0];
 
             }
-            else if (t.IsSubclassOf(typeof(Component)))
+            else if (obj is Component)
             {
                 dt = data_type.obj;
             }
@@ -304,7 +333,7 @@ namespace OrbItProcs.Interface {
             {
                 foreach (Type type in ValidTypes)
                 {
-                    if (t == type)
+                    if (obj.GetType() == type)
                     {
                         dt = data_type.obj;
                     }
@@ -330,6 +359,43 @@ namespace OrbItProcs.Interface {
 
             return result;
 
+        }
+
+        public void SetValue(object value)
+        {
+            //if (HasPanelElements()) //must be primitive or enum
+
+            if (membertype == member_type.dictentry)
+            {
+                dynamic dict = parentItem.obj;
+                dict[key] = value;
+            }
+            else if (fpinfo != null)
+            {
+                fpinfo.SetValue(value, parentItem.obj);
+            }
+            else
+            {
+                System.Console.WriteLine("Error while SetValue() in InspectorItem.");
+            }
+
+        }
+
+        public bool HasPanelElements()
+        {
+            Type itemtype = obj.GetType();
+            foreach (Type type in PanelTypes)
+            {
+                if (itemtype == type)
+                {
+                    return true;
+                }
+                if (itemtype.IsSubclassOf(type))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool hasChildren()
