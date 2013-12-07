@@ -12,44 +12,29 @@ using Microsoft.Xna.Framework.Media;
 using TomShane.Neoforce.Controls;
 using System.Reflection;
 
-using OrbItProcs;
+using OrbItProcs.Interface;
 using System.IO;
 using System.Collections;
 
-namespace OrbItProcs.Interface
+namespace OrbItProcs
 {
 
-    public class PopupWindow
+    public static class PopUp
     {
-        public enum PopUpType { alert, prompt, textBox, dropDown };
+        private enum PopUpType { alert, prompt, textBox, dropDown };
         public delegate void ConfirmDelegate(bool confirm, object answer = null);
-        public const int MAX_CHARS_PER_LINE = 25;
+        private const int MAX_CHARS_PER_LINE = 25;
+        private static int VertPadding = 10;
 
-        private UserInterface ui;
-        private PopUpType type;
-        private string message;
-        private ConfirmDelegate action = delegate(bool c, object a){};
-
-        private Manager manager;
-        private Dialog window;
-        private ComboBox cbBox;
-        private Button btnOk, btnCancel;
-        private TextBox tbName;
-
-        private int VertPadding = 10;
-
-        private bool confirmed = false;
-        private object answer;
-
-        public PopupWindow(UserInterface ui, PopUpType windowType, string message = "", string title = "Hey! Listen!",ConfirmDelegate action = null, IEnumerable list = null)
+        private static void makePopup(UserInterface ui, PopUpType windowType, string message = "", string title = "Hey! Listen!",ConfirmDelegate action = null, IEnumerable list = null)
         {
-            this.ui = ui;
-            this.action = action ?? this.action;
-            this.manager = ui.game.Manager;
-            this.type = windowType;
-            this.message = message.wordWrap(MAX_CHARS_PER_LINE);
+            bool confirmed = false;
+            object answer = null;
+            action = action ?? delegate(bool c, object a){};
+            Manager manager = ui.game.Manager;
+            message = message.wordWrap(MAX_CHARS_PER_LINE);
 
-            window = new Dialog(manager);
+            Dialog window = new Dialog(manager);
             window.Text = title;
             window.Init();
             window.ShowModal();
@@ -59,7 +44,7 @@ namespace OrbItProcs.Interface
             window.Width = 200;
             window.SetPosition(Game1.sWidth - 210, Game1.sHeight / 4);
 
-            btnOk = new Button(manager);
+            Button btnOk = new Button(manager);
             btnOk.Top = window.Description.Top + window.Description.Height;
             btnOk.Anchor = Anchors.Top;
             btnOk.Parent = window;
@@ -77,7 +62,7 @@ namespace OrbItProcs.Interface
 
             if (windowType == PopUpType.dropDown)
             {
-                cbBox = new ComboBox(manager);
+                ComboBox cbBox = new ComboBox(manager);
                 cbBox.Init();
                 cbBox.Parent = window;
                 cbBox.Width = window.Width - VertPadding * 2;
@@ -89,7 +74,7 @@ namespace OrbItProcs.Interface
             }
             if (windowType == PopUpType.textBox)
             {
-                tbName = new TextBox(manager);
+                TextBox tbName = new TextBox(manager);
                 tbName.Init();
                 tbName.Parent = window;
                 tbName.Width = window.Width - VertPadding * 2;
@@ -102,9 +87,9 @@ namespace OrbItProcs.Interface
 
             if (windowType.In(PopUpType.prompt, PopUpType.textBox, PopUpType.dropDown))
             {
-                btnOk.Click += affirmative;
+                btnOk.Click += delegate { confirmed = true; action(true, answer); };
 
-                btnCancel = new Button(manager);
+                Button btnCancel = new Button(manager);
                 btnCancel.Init();
                 btnCancel.Parent = window;
                 btnCancel.Top = btnOk.Top;
@@ -113,21 +98,21 @@ namespace OrbItProcs.Interface
                 btnCancel.Click += delegate { window.Close(); };
 
             }
-            window.Closed += negatory;
+            window.Closed += delegate { if (confirmed == false) action(false, answer); };
             window.Height = (btnOk.Top) + 70;
             manager.Add(window);
 
         }
 
-        private void affirmative(object sender, TomShane.Neoforce.Controls.EventArgs e)
-        {
-            confirmed = true; action(true, answer); 
-        }
-
-        private void negatory(object sender, WindowClosedEventArgs e)
-        {
-            if (confirmed  == false) action(false, answer);
-        }
+        public static void Toast(UserInterface ui, string message = "", string title = "Hey! Listen!")
+        {makePopup(ui, PopUpType.alert, message, title);}
+        public static void Prompt(UserInterface ui, string message = "", string title = "Hey! Listen!",ConfirmDelegate action = null)
+        {makePopup(ui, PopUpType.alert, message, title, action);}
+        public static void Select(UserInterface ui, string message = "", string title = "Hey! Listen!",ConfirmDelegate action = null, IEnumerable list = null)
+        {makePopup(ui, PopUpType.alert, message, title, action, list);}
+        public static void Text(UserInterface ui, string message = "", string title = "Hey! Listen!",ConfirmDelegate action = null)
+        { makePopup(ui, PopUpType.alert, message, title, action); }
+        
     }
 
 }
