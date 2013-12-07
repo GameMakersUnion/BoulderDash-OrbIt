@@ -112,7 +112,7 @@ namespace OrbItProcs
         {makePopup(ui, PopUpType.dropDown, message, title, action, list);}
         public static void Text(UserInterface ui, string message = "", string title = "Hey! Listen!",ConfirmDelegate action = null)
         { makePopup(ui, PopUpType.textBox, message, title, action); }
-        
+
     }
 
 }

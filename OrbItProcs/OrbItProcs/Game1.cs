@@ -361,11 +361,11 @@ namespace OrbItProcs
             }
             foreach (Node preset in ui.game.NodePresets)
                 if (preset.name == name)
-                    {
+            {
                     
                      PopUp.Toast(ui,"Node was overridden");
             
-                
+            
                     }
                     }
 
