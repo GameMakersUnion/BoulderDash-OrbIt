@@ -149,6 +149,7 @@ namespace OrbItProcs
 
         protected override void Initialize()
         {
+            if (!Directory.Exists(filepath)) Directory.CreateDirectory(filepath);
             textureDict = new Dictionary<textures, Texture2D>(){
             {textures.blueorb, Content.Load<Texture2D>("Textures/bluesphere"        )},
             {textures.whiteorb, Content.Load<Texture2D>("Textures/whitesphere"      )},
@@ -165,21 +166,21 @@ namespace OrbItProcs
                     { node.texture, textures.whitecircle },
                     { node.radius, 50 },
                     { comp.basicdraw, true },
-                    { comp.collision, false },
-                    { comp.movement, false }, //this will default as 'true'
-                    { comp.maxvel, true },
+                    //{ comp.collision, false },
+                    { comp.movement, true },
+                    //{ comp.maxvel, true },
                     //{ comp.randvelchange, true },
-                    { comp.randinitialvel, true },
-                    { comp.gravity, false },
+                    //{ comp.randinitialvel, true },
+                    //{ comp.gravity, false },
                     //{ comp.linearpull, true },
                     //{ comp.laser, true },
                     //{ comp.wideray, true },
-                    { comp.hueshifter, true },
+                    //{ comp.hueshifter, true },
                     //{ comp.transfer, true },
-                    { comp.phaseorb, false },
+                    //{ comp.phaseorb, false },
                     //{ comp.tree, true },
-                    { comp.queuer, true },
-                    { comp.flow, true },
+                    //{ comp.queuer, true },
+                    //{ comp.flow, true },
                     //{ comp.waver, true },
                     
                 };
@@ -188,7 +189,7 @@ namespace OrbItProcs
             room.defaultNode = new Node(room, userPr);
             room.defaultNode.name = "DEFAULTNODE";
 
-            //MODIFIER ADDITION
+            /*MODIFIER ADDITION
 
             room.defaultNode.addComponent(comp.modifier, true); //room.defaultNode.comps[comp.modifier].active = false;
             ModifierInfo modinfo = new ModifierInfo();
@@ -207,7 +208,7 @@ namespace OrbItProcs
             modinfo.delegateName = "VectorSineComposite";
 
             room.defaultNode.comps[comp.modifier].modifierInfos["sinecomposite"] = modinfo;
-
+            */
 
             
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
@@ -302,14 +303,14 @@ namespace OrbItProcs
                     { comp.basicdraw, true },
                     { comp.movement, true }, //this will default as 'true'
                     //{ comp.randvelchange, true },
-                    { comp.randinitialvel, true },
+                    //{ comp.randinitialvel, true },
                     //{ comp.gravity, true },
                     
                     //{ comp.transfer, true },
                     //{ comp.lasertimers, true },
                     //{ comp.laser, true },
-                    { comp.wideray, true },
-                    { comp.hueshifter, true },
+                    //{ comp.wideray, true },
+                    //{ comp.hueshifter, true },
                 };
 
             Node newNode = new Node();
@@ -353,25 +354,21 @@ namespace OrbItProcs
 
             room.serializer.Serialize(serializenode, filename);
             if (updatePresetList)
-            {
                 foreach (string file in Directory.GetFiles(filepath, name + ".xml"))
             {
                     ui.game.NodePresets.Add((Node)ui.room.serializer.Deserialize(file));
                     break;
             }
-        }
             foreach (Node preset in ui.game.NodePresets)
-        {
                 if (preset.name == name)
-            {
-                    //copyname exists
-                    PopupWindow failure = new PopupWindow(ui, PopupWindow.PopUpType.prompt, "A preset already has that name\nOverwrite anyways?");
+                    {
+                        throw new NotImplementedException();
+                     //PopupWindow.Prompt(ui,"A preset already has that name\nOverwrite anyways?");
             
-                return;
+                
                     }
                     }
 
-                }
         public void spawnNode(Dictionary<dynamic, dynamic> userProperties)
             {
             Node newNode = new Node();

@@ -136,6 +136,7 @@ namespace OrbItProcs {
             updateTargetNodeGraphic();
 
         }
+
         public void updateTargetNodeGraphic()
         {
             if (game.targetNode != null)
@@ -220,6 +221,11 @@ namespace OrbItProcs {
             PropertiesDict.Add("bulletsOn", false);
             PropertiesDict.Add("enemiesOn", false);
             PropertiesDict.Add("friction", false);
+        }
+
+        public void test(int a, float f, string s = " Ok")
+        {
+            Console.WriteLine(a*a + " " + f + " " + s);
         }
     }
 }
