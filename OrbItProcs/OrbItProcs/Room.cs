@@ -81,6 +81,7 @@ namespace OrbItProcs {
 
         public void Update(GameTime gametime)
         {
+            if (defaultNode == null) defaultNode = null;
 
             if (dtimerCount > dtimerMax)
             {

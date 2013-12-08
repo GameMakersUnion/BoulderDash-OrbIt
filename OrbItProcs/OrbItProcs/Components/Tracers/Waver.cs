@@ -26,7 +26,6 @@ namespace OrbItProcs.Components
             {
                 _amp = value;
                 DelegateManager.ChangeArg(parent, "waver", "amp", value);
-
             } 
         }
 
@@ -61,8 +60,6 @@ namespace OrbItProcs.Components
             if (parent != null)
             {
                 this.parent = parent;
-
-
             }
             com = comp.waver;
             methods = mtypes.affectself | mtypes.draw;
@@ -130,7 +127,11 @@ namespace OrbItProcs.Components
             if (parent.comps[comp.modifier].modifierInfos["waver"].args.ContainsKey("yval"))
             {
                 yval = parent.comps[comp.modifier].modifierInfos["waver"].args["yval"];
+
+                
             }
+
+            //if (yval == 0) Console.WriteLine("hm");
 
             Vector2 metapos = new Vector2(parent.velocity.Y, -parent.velocity.X);
             metapos.Normalize();
@@ -168,8 +169,12 @@ namespace OrbItProcs.Components
             foreach (Vector2 metapos in metapositions)
             {
                 spritebatch.Draw(parent.getTexture(), metapos / mapzoom, null, parent.color, 0, parent.TextureCenter(), parent.scale / mapzoom, SpriteEffects.None, 0);
+
+                //if (metapos == reflectpositions.ElementAt(count)) Console.WriteLine("YEA");
                 count++;
+                
             }
+            count = 0;
             foreach (Vector2 relectpos in reflectpositions)
             {
                 spritebatch.Draw(parent.getTexture(), relectpos / mapzoom, null, parent.color, 0, parent.TextureCenter(), parent.scale / mapzoom, SpriteEffects.None, 0);

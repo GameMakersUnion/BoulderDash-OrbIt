@@ -427,12 +427,6 @@ namespace OrbItProcs.Interface
             #endregion
             #endregion
 
-
-
-            //compLst = InspectorItem.GenerateList(game.room.defaultNode, "");
-            //InspectorItem root = new InspectorItem(game.room.defaultNode, "");
-            //root.GenerateChildren();
-            //compLst = root.children;
             ResetTreeListBox(lstComp, room.defaultNode);
         }
 
@@ -449,7 +443,7 @@ namespace OrbItProcs.Interface
             {
                 treelistbox.Items.Add(o);
             }
-
+            ui.editNode = (Node)rootobj;
 
         }
 
@@ -465,7 +459,7 @@ namespace OrbItProcs.Interface
         {
             title1.Text = "Node List : " + room.nodes.Count;
             lstMain.Items.syncOC(e);
-                }
+        }
 
         void btnSaveNode_Click(object sender, EventArgs e)
         {

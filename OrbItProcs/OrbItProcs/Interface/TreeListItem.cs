@@ -214,13 +214,13 @@ namespace OrbItProcs.Interface {
             else if (itemtype == treeitem.objfieldinfo)
             {
                 if (fieldInfo == null) return "fieldInfo is null";
-                if (obj == null) return "parent object is null";
+                if (obj == null) return "parent object is nulltt";
                 result += "(F)" + fieldInfo.Name + " " + fieldInfo.GetValue(obj);
             }
             else if (itemtype == treeitem.objpropertyinfo)
             {
                 if (propertyInfo == null) return "propertyInfo is null";
-                if (obj == null) return "parent object is null";
+                if (obj == null) return "parent object is nullttt";
                 result += "(P)" + propertyInfo.Name + " " + propertyInfo.GetValue(obj,null);
             }
             return result;

@@ -170,7 +170,7 @@ namespace OrbItProcs
                     { comp.movement, true },
                     //{ comp.maxvel, true },
                     //{ comp.randvelchange, true },
-                    //{ comp.randinitialvel, true },
+                    { comp.randinitialvel, true },
                     //{ comp.gravity, false },
                     //{ comp.linearpull, true },
                     //{ comp.laser, true },
@@ -181,7 +181,7 @@ namespace OrbItProcs
                     //{ comp.tree, true },
                     //{ comp.queuer, true },
                     //{ comp.flow, true },
-                    //{ comp.waver, true },
+                    { comp.waver, true },
                     
                 };
             #endregion
@@ -189,9 +189,9 @@ namespace OrbItProcs
             room.defaultNode = new Node(room, userPr);
             room.defaultNode.name = "DEFAULTNODE";
 
-            /*MODIFIER ADDITION
+            //MODIFIER ADDITION
 
-            room.defaultNode.addComponent(comp.modifier, true); //room.defaultNode.comps[comp.modifier].active = false;
+            //room.defaultNode.addComponent(comp.modifier, true); //room.defaultNode.comps[comp.modifier].active = false;
             ModifierInfo modinfo = new ModifierInfo();
             modinfo.AddFPInfoFromString("o1", "scale", room.defaultNode);
             modinfo.AddFPInfoFromString("m1", "position", room.defaultNode);
@@ -207,8 +207,8 @@ namespace OrbItProcs
             //modinfo.delegateName = "VectorSine";
             modinfo.delegateName = "VectorSineComposite";
 
-            room.defaultNode.comps[comp.modifier].modifierInfos["sinecomposite"] = modinfo;
-            */
+            //room.defaultNode.comps[comp.modifier].modifierInfos["sinecomposite"] = modinfo;
+            
 
             
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {

@@ -18,25 +18,37 @@ namespace OrbItProcs.Processes
         //[Polenter.Serialization.ExcludeFromSerialization]
         public object ob;
 
+        public string DeclaringTypeName { get; set; }
+
         public string Name { get; set; }
 
         public FPInfo () { /*serializeationiantiszeatned;*/ }
         public FPInfo (FieldInfo fieldInfo)
         {
             this.fieldInfo = fieldInfo;
+            this.DeclaringTypeName = this.fieldInfo.DeclaringType.ToString();
             Name = fieldInfo.Name;
         }
         public FPInfo (PropertyInfo propertyInfo)
         {
             this.propertyInfo = propertyInfo;
+            this.DeclaringTypeName = this.propertyInfo.DeclaringType.ToString();
             Name = propertyInfo.Name;
         }
         public FPInfo(FieldInfo fieldInfo, PropertyInfo propertyInfo) //for copying component use
         {
             this.propertyInfo = propertyInfo;
             this.fieldInfo = fieldInfo;
-            if (propertyInfo != null) Name = propertyInfo.Name;
-            else if (fieldInfo != null) Name = fieldInfo.Name;
+            if (propertyInfo != null) 
+            {
+                this.DeclaringTypeName = this.propertyInfo.DeclaringType.ToString();
+                Name = propertyInfo.Name;
+            }
+            else if (fieldInfo != null)
+            {
+                this.DeclaringTypeName = this.fieldInfo.DeclaringType.ToString();
+                Name = fieldInfo.Name;
+            }
             else Name = "error_Name_1";
             //ob = null;
         }
@@ -44,8 +56,36 @@ namespace OrbItProcs.Processes
         {
             this.propertyInfo = old.propertyInfo;
             this.fieldInfo = old.fieldInfo;
-            if (propertyInfo != null) Name = propertyInfo.Name;
-            else if (fieldInfo != null) Name = fieldInfo.Name;
+
+            if (propertyInfo != null)
+            {
+                Name = propertyInfo.Name;
+                DeclaringTypeName = propertyInfo.DeclaringType.ToString();
+            }
+            else if (fieldInfo != null)
+            {
+                Name = fieldInfo.Name;
+                DeclaringTypeName = fieldInfo.DeclaringType.ToString();
+            }
+            else if (old.DeclaringTypeName != null)
+            {
+                //PropertyInfo pi = old.DeclaringTypeName.GetProperty(old.Name);
+                PropertyInfo pi = Type.GetType(old.DeclaringTypeName).GetProperty(old.Name);
+                if (pi != null)
+                {
+                    this.propertyInfo = pi;
+                    Name = old.Name;
+                    return;
+                }
+                //FieldInfo fi = old.DeclaringTypeName.GetField(old.Name);
+                FieldInfo fi = Type.GetType(old.DeclaringTypeName).GetField(old.Name);
+                if (fi != null)
+                {
+                    this.fieldInfo = fi;
+                    Name = old.Name;
+                    return;
+                }
+            }
             else Name = "error_Name_2";
 
             //ob = null;
@@ -54,6 +94,7 @@ namespace OrbItProcs.Processes
         {
             ob = obj;
             propertyInfo = obj.GetType().GetProperty(name);
+            DeclaringTypeName = obj.GetType().ToString();
             Name = name;
             if (propertyInfo == null)
             {
@@ -62,6 +103,7 @@ namespace OrbItProcs.Processes
                 {
                     Console.WriteLine("member was not found.");
                     name = "error_Name_3";
+                    DeclaringTypeName = null;
 
                 }
             }

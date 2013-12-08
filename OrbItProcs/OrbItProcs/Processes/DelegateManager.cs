@@ -100,6 +100,7 @@ namespace OrbItProcs.Processes
                 y = y * (float)(Math.Sin(x * period / Math.Pow(2,i)));
             }
             y = y * amp + vshift;
+            //Console.WriteLine(y);
             return y;
 
         }

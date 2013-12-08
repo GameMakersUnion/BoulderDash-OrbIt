@@ -349,13 +349,20 @@ namespace OrbItProcs.Interface {
         {
             object result = null;
 
-            if (parentobj == null)
+            if (membertype == member_type.dictentry)
+            {
+                dynamic dict = parentItem.obj;
+                dynamic KEY = key;
+                return dict[KEY];
+            }
+
+            if (fpinfo == null)
             {
                 System.Console.WriteLine("parent object is null");
                 return null;
             }
 
-            result = fpinfo.GetValue(parentobj);
+            result = fpinfo.GetValue(parentItem.obj);
 
             return result;
 
@@ -367,8 +374,35 @@ namespace OrbItProcs.Interface {
 
             if (membertype == member_type.dictentry)
             {
+                
+                
+                //holy shit that's dynamic.
                 dynamic dict = parentItem.obj;
-                dict[key] = value;
+                dynamic KEY = key;
+                dynamic VALUE = value;
+
+
+
+                if (!dict.GetType().IsGenericType || dict.GetType().GetGenericTypeDefinition() != typeof(Dictionary<,>))
+                {
+                    System.Console.WriteLine("Error: The parentItem wasn't a dictionary.");
+                    return;
+                }
+                Type keytype = dict.GetType().GetGenericArguments()[0];
+                Type valuetype = dict.GetType().GetGenericArguments()[1];
+                if ((KEY.GetType() != keytype && !KEY.GetType().IsSubclassOf(keytype)) && keytype != typeof(object))
+                {
+                    System.Console.WriteLine("Error: The key type didn't match the parent dictionary. ({0} != {1})", KEY.GetType(), keytype);
+                    return;
+                }
+                if ((VALUE.GetType() != valuetype && !VALUE.GetType().IsSubclassOf(valuetype)) && valuetype != typeof(object))
+                {
+                    System.Console.WriteLine("Error: The value type didn't match the parent dictionary. ({0} != {1})", VALUE.GetType(), valuetype);
+                    return;
+                }
+                dict[KEY] = VALUE;
+                obj = VALUE;
+
             }
             else if (fpinfo != null)
             {

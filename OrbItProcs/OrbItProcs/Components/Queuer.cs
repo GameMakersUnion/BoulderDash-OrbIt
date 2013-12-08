@@ -25,9 +25,9 @@ namespace OrbItProcs.Components
         private queues _qs = queues.none;
         public queues qs { get { return _qs; } set { _qs = value; } }
 
-        private Queue<Vector2> positions;
-        private Queue<float> angles;
-        private Queue<float> scales;
+        public Queue<Vector2> positions;
+        public Queue<float> angles;
+        public Queue<float> scales;
         private int _queuecount = 10;
         public int queuecount { get { return _queuecount; }
             set
