@@ -427,7 +427,7 @@ namespace OrbItProcs.Interface
             #endregion
             #endregion
 
-<<<<<<< HEAD
+
 
             //compLst = InspectorItem.GenerateList(game.room.defaultNode, "");
             //InspectorItem root = new InspectorItem(game.room.defaultNode, "");
@@ -449,11 +449,8 @@ namespace OrbItProcs.Interface
             {
                 treelistbox.Items.Add(o);
             }
-=======
-            InspectorItem root = new InspectorItem(game.room.defaultNode, "");
-            root.GenerateChildren();
-            compLst = root.children;
->>>>>>> origin/mhd
+
+
         }
 
         void NodePresets_Sync(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
