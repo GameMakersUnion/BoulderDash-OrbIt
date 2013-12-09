@@ -348,6 +348,7 @@ namespace OrbItProcs.Interface {
 
         public void RemoveChildren()
         {
+            if (masterList == null) return;
             foreach (InspectorItem subitem in children.ToList())
             {
                 masterList.Remove(subitem);
@@ -385,10 +386,13 @@ namespace OrbItProcs.Interface {
                     GenerateChildren();
                     prefix = "-";
                     int i = 1;
-                    foreach (InspectorItem subitem in children)
+                    if (masterList != null)
                     {
-                        masterList.Insert(position + i++, subitem);
-                        //listComp.Items.Insert(listComp.ItemIndex + i++, subitem);
+                        foreach (InspectorItem subitem in children)
+                        {
+                            masterList.Insert(position + i++, subitem);
+                            //listComp.Items.Insert(listComp.ItemIndex + i++, subitem);
+                        }
                     }
                 }
                 extended = !extended;
@@ -453,6 +457,18 @@ namespace OrbItProcs.Interface {
 
             datatype = dt;
 
+        }
+
+        public bool IsPanelType()
+        {
+            foreach (Type type in PanelTypes)
+            {
+                if (obj.GetType() == type)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public object GetValue()

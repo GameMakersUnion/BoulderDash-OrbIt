@@ -63,7 +63,7 @@ namespace OrbItProcs {
             this.game = game;
 
             // grid System
-            gridsystem = new GridSystem(this, 40, 6);
+            gridsystem = new GridSystem(this, 40, 40);
             gridSystemLines = new List<Rectangle>();
 
         }

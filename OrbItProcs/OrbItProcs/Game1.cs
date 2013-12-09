@@ -29,6 +29,7 @@ namespace OrbItProcs
     public enum comp
     {
         queuer,
+        linearpull,
         movement,
         collision,
         gravity,
@@ -38,7 +39,7 @@ namespace OrbItProcs
         transfer,
         maxvel,
         modifier,
-        linearpull,
+        
         hueshifter,
         lifetime,
 
@@ -406,6 +407,7 @@ namespace OrbItProcs
             base.Draw(gameTime);
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
+            
             room.Draw(spriteBatch);
             frameRateCounter.Draw(spriteBatch, font);
 

@@ -289,8 +289,8 @@ namespace OrbItProcs.Interface
             #region  /// Context Menu ///
             contextMenulstComp = new ContextMenu(manager);
             applyToAllNodesMenuItem = new MenuItem("Apply to all Nodes");
-            //applyToAllNodesMenuItem.Click += applyToAllNodesMenuItem_Click;
-            applyToAllNodesMenuItem.Click += NotImplemented;
+            applyToAllNodesMenuItem.Click += applyToAllNodesMenuItem_Click;
+            //applyToAllNodesMenuItem.Click += NotImplemented;
             toggleComponentMenuItem = new MenuItem("Toggle Component");
             //toggleComponentMenuItem.Click += NotImplemented;
             toggleComponentMenuItem.Click += toggleComponentMenuItem_Click;
@@ -333,8 +333,8 @@ namespace OrbItProcs.Interface
             btnApplyToAll.Width = first.Width / 2 - LeftPadding;
             btnApplyToAll.Height = 20; //HeightCounter += VertPadding + btnApplyToAll.Height;
             btnApplyToAll.Left = LeftPadding;
-            //btnApplyToAll.Click += applyToAllNodesMenuItem_Click; //TODO ??
-            btnApplyToAll.Click += NotImplemented; //TODO ??
+            btnApplyToAll.Click += applyToAllNodesMenuItem_Click; //TODO ??
+            //btnApplyToAll.Click += NotImplemented; //TODO ??
 
             #endregion
 
@@ -529,90 +529,96 @@ namespace OrbItProcs.Interface
                                 delegate(bool c, object input) { if (c) ui.game.saveNode(ui.editNode, (string)input); });
         }
 
-        //TODO: transfer to InspectorItem system
-        /*void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
+        void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
         {
-            TreeListItem item = (TreeListItem)lstComp.Items.ElementAt(lstComp.ItemIndex);
-            if (item.itemtype == treeitem.propertyinfo)
-            {
-                foreach (Node node in game.room.nodes)
-                {
-                    item.propertyInfo.SetValue(node, item.propertyInfo.GetValue(item.node, null), null); // make this object compliant
+            List<InspectorItem> itemspath = new List<InspectorItem>();
+            InspectorItem item = (InspectorItem)lstComp.Items.ElementAt(lstComp.ItemIndex);
+            object value = item.GetValue();
 
-                }
-            }
-            else if (item.itemtype == treeitem.fieldinfo)
-            {
-                foreach (Node node in game.room.nodes)
-                {
-                    item.fieldInfo.SetValue(node, item.fieldInfo.GetValue(item.obj));
-                }
-            }
-            else if (item.itemtype == treeitem.component)
-            {
-                foreach (Node node in game.room.nodes)
-                {
-                    comp c = item.component;
+            BuildItemsPath(item, itemspath);
 
-                    if (node.comps.ContainsKey(c))
+            foreach (Node n in room.nodes.ToList())
+            {
+                if (n == itemspath.ElementAt(0).obj) continue;
+                InspectorItem temp = new InspectorItem(null, n, "");
+                int count = 0;
+                foreach (InspectorItem pathitem in itemspath)
+                {
+                    if (temp.obj.GetType() != pathitem.obj.GetType())
                     {
-                        node.setCompActive(c, item.node.isCompActive(c));
+                        Console.WriteLine("The paths did not match while applying to all. {0} != {1}", temp.obj.GetType(), pathitem.obj.GetType());
+                        break;
                     }
-                }
-            }
-            else if (item.itemtype == treeitem.objfieldinfo)
-            {
-                foreach (Node node in game.room.nodes)
-                {
-                    if (item.obj is Component)
+                    if (count == itemspath.Count - 1) //last item
                     {
-                        Component c = (Component)item.obj;
-                        comp compname;
-                        foreach (comp key in c.parent.comps.Keys)
+                        if (pathitem.membertype == member_type.dictentry)
                         {
-                            if (c.parent.comps[key] == c)
+                            
+                            dynamic dict = temp.parentItem.obj;
+                            dynamic key = pathitem.key;
+                            if (dict[key] is Component)
                             {
-                                compname = key;
-                                if (node.comps.ContainsKey(compname))
-                                {
-                                    item.fieldInfo.SetValue(node.comps[compname], item.fieldInfo.GetValue(item.obj));
-                                }
-                                break;
+                                dict[key].active = ((Component)value).active;
                             }
-                        }
+                            else if (temp.IsPanelType())
+                            {
+                                dict[key] = value;
+                            }
+                            
+                            //Console.WriteLine("Successfully writted dict entry.");
 
-                    }
-                }
-            }
-            else if (item.itemtype == treeitem.objpropertyinfo)
-            {
-                foreach (Node node in game.room.nodes)
-                {
-                    if (item.obj is Component)
-                    {
-                        Component c = (Component)item.obj;
-                        comp compname;
-                        foreach (comp key in c.parent.comps.Keys)
+                        }
+                        else
                         {
-                            if (c.parent.comps[key] == c)
+                            if (value is Component)
                             {
-                                compname = key;
-                                if (node.comps.ContainsKey(compname))
-                                {
-                                    item.propertyInfo.SetValue(node.comps[compname], item.propertyInfo.GetValue(item.obj, null), null);
-                                }
-                                break;
+                                ((Component)temp.obj).active = ((Component)value).active;
                             }
+                            else if (temp.IsPanelType())
+                            {
+                                temp.fpinfo.SetValue(value, temp.parentItem.obj);
+                            }
+                            
+                            //Console.WriteLine("Successfully writted property. {0} -> {1}", value, temp.parentItem.obj);
                         }
-
                     }
+                    else
+                    {
+                        InspectorItem next = itemspath.ElementAt(count+1);
+                        if (next.membertype == member_type.dictentry)
+                        {
+                            dynamic dict = temp.obj;
+                            dynamic key = next.key;
+                            temp = new InspectorItem(null, temp, "", key, dict[key]);
+                        }
+                        else
+                        {
+                            temp = new InspectorItem(null, next.fpinfo.GetValue(temp.obj), next.fpinfo.propertyInfo, temp, "");
+                        }
+                    }
+                    count++;
                 }
             }
-
         }
-        */
+
+        public void BuildItemsPath(InspectorItem item, List<InspectorItem> itemspath)
+        {
+            InspectorItem temp = item;
+            itemspath.Insert(0, temp);
+            while (temp.parentItem != null)
+            {
+                temp = temp.parentItem;
+                itemspath.Insert(0, temp);
+            }
+            /*
+            foreach (InspectorItem i in itemspath)
+            {
+                Console.WriteLine(i.obj.GetType());
+            }
+            */
+        }
+
         
-        //TODO: transfer to InspectorItem system
         void toggleComponentMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             InspectorItem item = (InspectorItem)lstComp.Items.ElementAt(lstComp.ItemIndex);

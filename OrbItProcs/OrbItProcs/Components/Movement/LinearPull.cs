@@ -9,13 +9,13 @@ namespace OrbItProcs.Components
 {
     public class LinearPull : Component
     {
-        private float _multiplier = 0.1f;
+        private float _multiplier = 20f;
         public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
 
-        private float _radius = 300f;
+        private float _radius = 1300f;
         public float radius { get { return _radius; } set { _radius = value; } }
 
-        private bool _constant = true;
+        private bool _constant = false;
         public bool constant { get { return _constant; } set { _constant = value; } }
 
         public Node targetPuller;
@@ -58,7 +58,10 @@ namespace OrbItProcs.Components
                 if (constant)
                     other.velocity = delta;
                 else
+                {
+                    //Console.WriteLine(delta);
                     other.velocity += delta;
+                }
 
             }
         }
