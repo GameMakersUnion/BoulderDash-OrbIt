@@ -13,10 +13,10 @@ namespace OrbItProcs {
         public int cellwidth, cellheight;
         public int gridwidth, gridheight;
         public List<Node>[,] grid;
-        public int cellReach = 2;
+        public int cellReach { get; set; }
 
         //obsolete constructor
-        public GridSystem(Room room, int gridwidth, int gridheight, int cellsX, int cellsY, int cellReach)
+        public GridSystem(Room room, int gridwidth, int gridheight, int cellsX, int cellsY, int cellReach = 4)
         {
             this.room = room;
             this.gridwidth = gridwidth;
@@ -36,7 +36,7 @@ namespace OrbItProcs {
             }
         }
 
-        public GridSystem(Room room, int cellsX, int cellReach)
+        public GridSystem(Room room, int cellsX, int cellReach = 4)
         {
             this.room = room;
             this.gridwidth = room.game.worldWidth;

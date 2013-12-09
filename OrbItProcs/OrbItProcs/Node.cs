@@ -112,12 +112,12 @@ namespace OrbItProcs {
         private float _velMultiplier = 1f;
         public float velMultiplier { get { return _velMultiplier; } set { _velMultiplier = value; } }
 
+        public Dictionary<comp, dynamic> _comps = new Dictionary<comp, dynamic>();
+        public Dictionary<comp, dynamic> comps { get { return _comps; } set { _comps = value; } }
 
-        public Dictionary<dynamic, bool> props = new Dictionary<dynamic, bool>();
-        public Dictionary<dynamic, bool> propsProperty { get { return props; } set { props = value; } }
-    
-        public Dictionary<comp, dynamic> comps = new Dictionary<comp, dynamic>();
-        public Dictionary<comp, dynamic> compsProperty { get { return comps; } set { comps = value; } }
+        public Dictionary<dynamic, bool> _props = new Dictionary<dynamic, bool>();
+        public Dictionary<dynamic, bool> props { get { return _props; } set { _props = value; } }
+
         //public OrderedDictionary ocomps;
 
         public List<comp> aOtherProps = new List<comp>();

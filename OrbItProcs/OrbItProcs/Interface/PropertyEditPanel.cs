@@ -18,7 +18,7 @@ namespace OrbItProcs.Interface
 
 
         private int HeightCounter = 0;
-        private int LeftPadding = 10;
+        private int LeftPadding = 5;
         private bool triggerResizeSlider = true;
 
         public PropertyEditPanel(GroupPanel grouppanel, Sidebar sidebar)
@@ -140,9 +140,29 @@ namespace OrbItProcs.Interface
                 panelControls.Add("chkbox", chkbox);
 
             }
+            else if (editType.IsSubclassOf(typeof(Enum)))
+            {
+                //System.Console.WriteLine("ENUM!");
+                ComboBox cb = new ComboBox(grouppanel.Manager);
+                cb.Init();
+                cb.Parent = grouppanel;
+                cb.Left = LeftPadding;
+                cb.Top = 10;
+                cb.Width = 120;
+                foreach (string enumname in Enum.GetNames(editType))
+                {
+                    cb.Items.Add(enumname);
+                }
+                cb.ItemIndex = (int)activeInspectorItem.obj;
+                cb.ItemIndexChanged += cb_ItemIndexChanged;
+                panelControls.Add("cb", cb);
+            }
+        }
 
-
-
+        void cb_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            ComboBox cb = (ComboBox) sender;
+            activeInspectorItem.SetValue(cb.ItemIndex);
         }
 
         //not called currently, but we should edit the access to this event in the trackbar class in neoforce again.

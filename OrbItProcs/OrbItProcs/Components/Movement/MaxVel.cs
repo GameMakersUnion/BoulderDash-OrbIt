@@ -10,7 +10,10 @@ namespace OrbItProcs.Components
     public class MaxVel : Component {
 
         private float _maxvel = 100f;
-        public float maxvel { get { return _maxvel; } set { _maxvel = value; } }
+        public float maxvel { get { return _maxvel; } set { _maxvel = value; if (maxvel < _minvel) _maxvel = _minvel; } }
+
+        private float _minvel = 0f;
+        public float minvel { get { return _minvel; } set { _minvel = value; if (_minvel > _maxvel) _minvel = _maxvel; } }
 
         public MaxVel() : this(null) { }
         public MaxVel(Node parent = null)
@@ -34,6 +37,11 @@ namespace OrbItProcs.Components
             {
                 parent.velocity.Normalize();
                 parent.velocity *= maxvel;
+            }
+            if ((Math.Pow(parent.velocity.X, 2) + Math.Pow(parent.velocity.Y, 2)) < Math.Pow(minvel, 2))
+            {
+                parent.velocity.Normalize();
+                parent.velocity *= minvel;
             }
         }
 

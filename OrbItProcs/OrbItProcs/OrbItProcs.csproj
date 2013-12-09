@@ -103,6 +103,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml">
       <Private>False</Private>
     </Reference>
@@ -127,6 +128,7 @@
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\Movement\Gravity.cs" />
     <Compile Include="Components\Drawers\HueShifter.cs" />
+    <Compile Include="Components\Tether.cs" />
     <Compile Include="Components\Tracers\Laser.cs" />
     <Compile Include="Components\Depreciated\LaserTimers.cs" />
     <Compile Include="Components\Meta\Lifetime.cs" />
@@ -205,7 +207,6 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
   <!--

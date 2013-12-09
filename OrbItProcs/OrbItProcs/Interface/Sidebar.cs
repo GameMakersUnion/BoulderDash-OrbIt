@@ -16,6 +16,7 @@ using OrbItProcs;
 using OrbItProcs.Processes;
 
 using Component = OrbItProcs.Components.Component;
+using Console = System.Console;
 using System.IO;
 using EventHandler = TomShane.Neoforce.Controls.EventHandler;
 using EventArgs = TomShane.Neoforce.Controls.EventArgs;
@@ -39,6 +40,7 @@ namespace OrbItProcs.Interface
         TextBox consoletextbox;
         public ListBox lstMain;
         private CheckBox chkTempNodes;
+        public ComboBox cmbListPicker;
         Button btnRemoveNode, btnRemoveAllNodes, btnAddComponent, btnDefaultNode, btnApplyToAll, btnSaveNode;
         public TreeListBox lstComp;
         //public List<object> compLst { set { lstComp.Items.Clear(); foreach (object o in value) lstComp.Items.Add(o); } }
@@ -154,6 +156,7 @@ namespace OrbItProcs.Interface
             #endregion
 
             #region /// CheckBox ///
+            /*
             chkTempNodes = new CheckBox(manager);
             chkTempNodes.Init();
             chkTempNodes.Parent = first;
@@ -167,6 +170,22 @@ namespace OrbItProcs.Interface
             chkTempNodes.Text = "Show TempNodes";
             chkTempNodes.ToolTip.Text = "Enables or disables \nshowing temp nodes \nin the list.";
             // TODO : IMPLEMENT: chkTempNodes.CheckedChanged += chkTempNodes_CheckedChanged);
+            */
+            #endregion
+
+            #region  /// List Picker ///
+
+            cmbListPicker = new ComboBox(manager);
+            cmbListPicker.Init();
+            cmbListPicker.Parent = first;
+
+            cmbListPicker.Width = first.Width - LeftPadding * 6;
+            cmbListPicker.Left = LeftPadding;
+            cmbListPicker.Top = HeightCounter; HeightCounter += VertPadding + cmbListPicker.Height;
+            cmbListPicker.Items.Add("Nodes");
+            cmbListPicker.Items.Add("Other Objects");
+            cmbListPicker.ItemIndexChanged += cmbListPicker_ItemIndexChanged;
+
             #endregion
 
             #region  /// Remove Node Button ///
@@ -190,7 +209,7 @@ namespace OrbItProcs.Interface
 
             btnRemoveAllNodes.Top = HeightCounter;
             //btnRemoveAllNodes.Width = first.Width / 2 - LeftPadding;
-            btnRemoveAllNodes.Width = first.Width / 2 - LeftPadding + 100;
+            btnRemoveAllNodes.Width = first.Width / 2 - LeftPadding;
             btnRemoveAllNodes.Height = 24; HeightCounter += VertPadding + btnRemoveAllNodes.Height;
             btnRemoveAllNodes.Left = LeftPadding + btnRemoveNode.Width;
 
@@ -273,13 +292,14 @@ namespace OrbItProcs.Interface
             //applyToAllNodesMenuItem.Click += applyToAllNodesMenuItem_Click;
             applyToAllNodesMenuItem.Click += NotImplemented;
             toggleComponentMenuItem = new MenuItem("Toggle Component");
-            toggleComponentMenuItem.Click += NotImplemented;
-            //toggleComponentMenuItem.Click += toggleComponentMenuItem_Click;
+            //toggleComponentMenuItem.Click += NotImplemented;
+            toggleComponentMenuItem.Click += toggleComponentMenuItem_Click;
             removeComponentMenuItem = new MenuItem("Remove Component");
-            removeComponentMenuItem.Click += NotImplemented;
-            //removeComponentMenuItem.Click += removeComponentMenuItem_Click;
+            //removeComponentMenuItem.Click += NotImplemented;
+            removeComponentMenuItem.Click += removeComponentMenuItem_Click;
             contextMenulstComp.Items.Add(applyToAllNodesMenuItem);
 
+            lstComp.ContextMenu = contextMenulstComp;
             
             #endregion
             #endregion
@@ -428,6 +448,37 @@ namespace OrbItProcs.Interface
             #endregion
 
             ResetTreeListBox(lstComp, room.defaultNode);
+
+            //lstComp.BackColor = Color.Blue;
+            //lstComp.Color = Color.Black;
+            //lstComp.TextColor = Color.Green;
+        }
+
+        void cmbListPicker_ItemIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox cmb = (ComboBox)sender;
+            string item = cmb.Items.ElementAt(cmb.ItemIndex).ToString();
+            if (item.Equals("Nodes"))
+            {
+                foreach (object o in lstMain.Items.ToList())
+                {
+                    lstMain.Items.Remove(o);
+                }
+
+                lstMain.Items.AddRange(room.nodes);
+            }
+            else if (item.Equals("Other Objects"))
+            {
+                foreach (object o in lstMain.Items.ToList())
+                {
+                    lstMain.Items.Remove(o);
+                }
+                lstMain.Items.Add(room.game);
+                lstMain.Items.Add(room);
+
+
+            }
+
         }
 
         public void ResetTreeListBox(TreeListBox treelistbox, object rootobj)
@@ -443,7 +494,15 @@ namespace OrbItProcs.Interface
             {
                 treelistbox.Items.Add(o);
             }
-            ui.editNode = (Node)rootobj;
+            if (rootobj is Node)
+            {
+                ui.editNode = (Node)rootobj;
+                lblEditNodeName.Text = ui.editNode.name;
+            }
+            else
+            {
+                lblEditNodeName.Text = rootobj.GetType().ToString();
+            }
 
         }
 
@@ -551,32 +610,38 @@ namespace OrbItProcs.Interface
             }
 
         }
+        */
+        
         //TODO: transfer to InspectorItem system
         void toggleComponentMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            TreeListItem item = (TreeListItem)lstComp.Items.ElementAt(lstComp.ItemIndex);
-            if (item.itemtype != treeitem.component)
+            InspectorItem item = (InspectorItem)lstComp.Items.ElementAt(lstComp.ItemIndex);
+            if (!(item.obj is Component))
             {
-                System.Console.WriteLine("Error: The list item was not a component.");
+                Console.WriteLine("Error: The list item was not a component.");
                 return;
             }
 
-            Component component = (Component)((Node)item.obj).comps[item.component];
+            Component component = (Component)item.obj;
             component.active = !component.active;
         }
 
         void removeComponentMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            TreeListItem item = (TreeListItem)lstComp.Items.ElementAt(lstComp.ItemIndex);
-            if (item.itemtype != treeitem.component)
+            InspectorItem item = (InspectorItem)lstComp.Items.ElementAt(lstComp.ItemIndex);
+            if (!(item.obj is Component))
             {
-                System.Console.WriteLine("Error: The list item was not a component.");
+                Console.WriteLine("Error: The list item was not a component.");
                 return;
             }
 
-            Component component = (Component)((Node)item.obj).comps[item.component];
+            Component component = (Component)item.obj;
             component.active = false;
             ui.editNode.RemoveComponent(item.component);
+            item.RemoveChildren();
+            lstComp.Items.Remove(item);
+
+            /*
             if (!ui.editNode.comps.ContainsKey(item.component))
             {
                 lstComp.Items.RemoveAt(lstComp.ItemIndex);
@@ -594,8 +659,9 @@ namespace OrbItProcs.Interface
                 }
             }
             lstComp.Items.Remove(item);
+            */
         }
-*/
+
 
         void consolePressed(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
@@ -1058,7 +1124,15 @@ namespace OrbItProcs.Interface
 
             lstComp.Items = TreeListItem.GenerateList((Node)listbox.Items.ElementAt(listbox.ItemIndex), "");
             */
-            SetTargetNode((Node)listbox.Items.ElementAt(listbox.ItemIndex));
+
+            if (listbox.Items.ElementAt(listbox.ItemIndex) is Node)
+            {
+                SetTargetNode((Node)listbox.Items.ElementAt(listbox.ItemIndex));
+            }
+            else
+            {
+                ResetTreeListBox(lstComp, listbox.Items.ElementAt(listbox.ItemIndex));
+            }
 
         }
 
@@ -1156,7 +1230,6 @@ namespace OrbItProcs.Interface
                 contextMenulstComp.Items.RemoveRange(0, contextMenulstComp.Items.Count);
                 InspectorItem litem = (InspectorItem)listComp.Items.ElementAt(listComp.ItemIndex);
 
-
                 if (litem.obj is Component)
                 {
                     contextMenulstComp.Items.Add(toggleComponentMenuItem);
@@ -1252,8 +1325,13 @@ namespace OrbItProcs.Interface
         {
             if (c)
             {
-                if (ans == null)  PopUp.Toast(ui, "You didn't select a component.");
+                if (ans == null)
+                {
+                    PopUp.Toast(ui, "You didn't select a component.");
+                    return;
+                }
                 bool writeable = true;
+                
                 if (ui.editNode.comps.ContainsKey((comp)ans))
                     PopUp.Prompt(ui,
                         "The node already contains this component. Overwrite to default component?",

@@ -272,7 +272,13 @@ namespace OrbItProcs.Interface {
                             if (game.targetNode != null && game.targetNode.comps.ContainsKey(comp.flow))
                             {
                                 game.targetNode.comps[comp.flow].AddToOutgoing(n);
-                                sidebar.SetTargetNode(n);
+                                //sidebar.SetTargetNode(n);
+                                break;
+                            }
+                            if (game.targetNode != null && game.targetNode.comps.ContainsKey(comp.tether))
+                            {
+                                game.targetNode.comps[comp.tether].AddToOutgoing(n);
+                                //sidebar.SetTargetNode(n);
                                 break;
                             }
                             //found = true;
@@ -294,9 +300,14 @@ namespace OrbItProcs.Interface {
                             //room.nodes.Remove(n);
                             //break;
                             //--
-                            if (n.comps.ContainsKey(comp.flow))
+                            if (n.comps.ContainsKey(comp.tether))
                             {
-                                n.comps[comp.flow].activated = !n.comps[comp.flow].activated;
+                                n.comps[comp.tether].activated = !n.comps[comp.tether].activated;
+                                break;
+                            }
+                            if (n.comps.ContainsKey(comp.tether))
+                            {
+                                n.comps[comp.tether].activated = !n.comps[comp.tether].activated;
                                 break;
                             }
                             //found = true;

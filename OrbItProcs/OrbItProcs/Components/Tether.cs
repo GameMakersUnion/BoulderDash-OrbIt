@@ -9,15 +9,8 @@ using OrbItProcs.Processes;
 
 namespace OrbItProcs.Components
 {
-    public class Flow : Component
+    public class Tether : Component
     {
-        public enum gate
-        {
-            None,
-            AND,
-            OR,
-            NOT,
-        }
 
         private HashSet<Node> _outgoing = new HashSet<Node>();
         [Polenter.Serialization.ExcludeFromSerialization]
@@ -29,22 +22,19 @@ namespace OrbItProcs.Components
         private bool _activated = false;
         public bool activated { get { return _activated; } set { _activated = value; } }
 
-        private gate _gatetype = gate.AND;
-        public gate gatetype { get { return _gatetype; } set { _gatetype = value; } }
+        public int _maxdist = 300;
+        public int maxdist { get { return _maxdist; } set { _maxdist = value; } }
 
-        public Flow() : this(null) { }
-        public Flow(Node parent = null)
+        public Tether() : this(null) { }
+        public Tether(Node parent = null)
         {
             if (parent != null)
             {
                 this.parent = parent;
-
-
             }
-            com = comp.flow;
+            com = comp.tether;
             methods = mtypes.affectself | mtypes.draw | mtypes.minordraw;
             //InitializeLists();
-
         }
 
         public override void AfterCloning()
@@ -54,7 +44,6 @@ namespace OrbItProcs.Components
                 parent.addComponent(comp.lifetime, true);
 
             parent.comps[comp.lifetime].immortal = true;
-
 
         }
 
@@ -76,91 +65,40 @@ namespace OrbItProcs.Components
         }
         public override void AffectSelf()
         {
-            if (gatetype == gate.AND)
-                AND_Gate();
-            else if (gatetype == gate.OR)
-                OR_Gate();
-            else if (gatetype == gate.NOT)
-                NOT_Gate();
-        }
-
-        public void AND_Gate()
-        {
-            if (incoming.Count == 0)
+            if (activated)
             {
-                //activated = false;
-                return;
-            }
-            foreach (Node input in incoming)
-            {
-                if (input.comps.ContainsKey(comp.flow))
+                foreach (Node n in outgoing)
                 {
-                    if (!input.comps[comp.flow].activated)
+                    Vector2 diff = n.position - parent.position;
+                    float len = diff.Length();
+                    if (len > maxdist)
                     {
-                        activated = false;
-                        return;
+                        float percent = maxdist / len;
+                        diff *= percent;
+                        n.position = parent.position + diff;
                     }
+                    //diff = n.position - parent.position;
+                    //Console.WriteLine(diff.Length());
                 }
             }
-            activated = true;
-        }
-
-        public void OR_Gate()
-        {
-            if (incoming.Count == 0)
-            {
-                //activated = false;
-                return;
-            }
-            foreach (Node input in incoming)
-            {
-                if (input.comps.ContainsKey(comp.flow))
-                {
-                    if (input.comps[comp.flow].activated)
-                    {
-                        activated = true;
-                        return;
-                    }
-                }
-            }
-            activated = false;
-        }
-
-        public void NOT_Gate()
-        {
-            if (incoming.Count == 0)
-            {
-                activated = false;
-                return;
-            }
-            foreach (Node input in incoming)
-            {
-                if (input.comps.ContainsKey(comp.flow))
-                {
-                    activated = !input.comps[comp.flow].activated;
-                    return;
-                }
-            }
-            activated = false;
         }
 
         public void AddToOutgoing(Node node)
         {
-            
-            if (node != parent && node.comps.ContainsKey(comp.flow))
+            if (node != parent && node.comps.ContainsKey(comp.tether))
             {
                 if (outgoing.Contains(node))
                 {
                     outgoing.Remove(node);
-                    node.comps[comp.flow].incoming.Remove(parent);
+                    //node.comps[comp.tether].incoming.Remove(parent);
                 }
                 else
                 {
                     outgoing.Add(node);
-                    node.comps[comp.flow].incoming.Add(parent);
+                    //node.comps[comp.tether].incoming.Add(parent);
                 }
             }
-            
+
         }
 
         public override void Draw(SpriteBatch spritebatch)
@@ -173,23 +111,14 @@ namespace OrbItProcs.Components
             //Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
             Color col;
             if (activated)
-                col = Color.Green;
+                col = Color.Blue;
             else
-                col = Color.Red;
-
+                col = Color.White;
 
             spritebatch.Draw(parent.getTexture(), parent.position / mapzoom, null, col, 0, parent.TextureCenter(), (parent.scale / mapzoom) * 1.2f, SpriteEffects.None, 0);
 
             foreach (Node receiver in outgoing)
             {
-                /*
-                Color tempcol;
-                if (receiver.comps[comp.flow].gatetype == 2 && receiver.comps[comp.flow])
-                {
-                    //indexof wont work...
-                }
-                */
-
                 Utils.DrawLine(spritebatch, parent.position, receiver.position, 2f, col, room);
                 Vector2 center = (receiver.position + parent.position) / 2;
                 Vector2 perp = new Vector2(center.Y, -center.X);
@@ -198,17 +127,10 @@ namespace OrbItProcs.Components
                 //center += perp;
                 Utils.DrawLine(spritebatch, center + perp, receiver.position, 2f, col, room);
                 Utils.DrawLine(spritebatch, center - perp, receiver.position, 2f, col, room);
-
-                
                 //count++;
             }
 
-            string gatestring = "";
-            if ((int)gatetype > 0) gatestring = gatetype.ToString();
-
-            //spriteBatch.Begin();
-
-            spritebatch.DrawString(room.game.font, gatestring, parent.position/mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            //spritebatch.DrawString(room.game.font, gatestring, parent.position / mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
             //spriteBatch.DrawString(spriteFont, fps, new Vector2(1, 1), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
             //spritebatch.DrawString(room.game.font, gatestring, new Vector2(2, Game1.sHeight - 40), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
 

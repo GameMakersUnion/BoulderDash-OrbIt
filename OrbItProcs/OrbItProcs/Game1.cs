@@ -43,6 +43,7 @@ namespace OrbItProcs
         lifetime,
 
         //draw components
+        tether,
         flow,
         waver,
         laser,
@@ -81,6 +82,7 @@ namespace OrbItProcs
             {comp.randcolor,        typeof(RandColor)           },
             {comp.randinitialvel,   typeof(RandInitialVel)      },
             {comp.randvelchange,    typeof(RandVelChange)       },
+            {comp.tether,           typeof(Tether)              },
             {comp.transfer,         typeof(Transfer)            },
             {comp.tree,             typeof(Tree)                },
             {comp.waver,            typeof(Waver)               },
@@ -113,8 +115,8 @@ namespace OrbItProcs
         public Dictionary<textures, Texture2D> textureDict;
         //Node node;
 
-        public int worldWidth = 1600;
-        public int worldHeight = 960;
+        public int worldWidth { get; set; }
+        public int worldHeight { get; set; }
 
         string currentSelection = "placeNode";
         public Node targetNode = null;
@@ -125,7 +127,6 @@ namespace OrbItProcs
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
         //public List<FileInfo> presetFileInfos = new List<FileInfo>();
 
-
         /////////////////////
 
 
@@ -134,6 +135,9 @@ namespace OrbItProcs
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             IsFixedTimeStep = false;
+
+            worldWidth = 1600;
+            worldHeight = 960;
             
             Graphics.PreferredBackBufferWidth = sWidth;
             Graphics.PreferredBackBufferHeight = sHeight;
@@ -143,7 +147,6 @@ namespace OrbItProcs
             ExitConfirmation = false;
 
             Manager.AutoUnfocus = false;
-
             
         }
 
@@ -181,17 +184,24 @@ namespace OrbItProcs
                     //{ comp.tree, true },
                     //{ comp.queuer, true },
                     //{ comp.flow, true },
-                    { comp.waver, true },
+                    { comp.waver, false },
+                    { comp.tether, true },
                     
                 };
             #endregion
 
             room.defaultNode = new Node(room, userPr);
             room.defaultNode.name = "DEFAULTNODE";
+            foreach(comp c in room.defaultNode.comps.Keys.ToList())
+            {
+                room.defaultNode.comps[c].AfterCloning();
+            }
+
+            //room.defaultNode.Update(new GameTime());
 
             //MODIFIER ADDITION
-
-            //room.defaultNode.addComponent(comp.modifier, true); //room.defaultNode.comps[comp.modifier].active = false;
+            /*
+            room.defaultNode.addComponent(comp.modifier, true); //room.defaultNode.comps[comp.modifier].active = false;
             ModifierInfo modinfo = new ModifierInfo();
             modinfo.AddFPInfoFromString("o1", "scale", room.defaultNode);
             modinfo.AddFPInfoFromString("m1", "position", room.defaultNode);
@@ -207,8 +217,8 @@ namespace OrbItProcs
             //modinfo.delegateName = "VectorSine";
             modinfo.delegateName = "VectorSineComposite";
 
-            //room.defaultNode.comps[comp.modifier].modifierInfos["sinecomposite"] = modinfo;
-            
+            room.defaultNode.comps[comp.modifier].modifierInfos["sinecomposite"] = modinfo;
+            */
 
             
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
@@ -232,16 +242,16 @@ namespace OrbItProcs
         public void InitializePresets()
         {
 
-            System.Console.WriteLine("Current Folder" + filepath);
+            Console.WriteLine("Current Folder" + filepath);
             foreach (string file in Directory.GetFiles(filepath,"*.xml"))
             {
-                System.Console.WriteLine("Current Files" + filepath);
-                System.Console.WriteLine(file);
+                Console.WriteLine("Current Files" + filepath);
+                Console.WriteLine(file);
                 NodePresets.Add((Node)room.serializer.Deserialize(file));
             }
             foreach (Node snode in NodePresets)
             {
-                System.Console.WriteLine("Presetname: {0}", snode.name);
+                Console.WriteLine("Presetname: {0}", snode.name);
             }
         }
         protected override void LoadContent()
@@ -410,7 +420,7 @@ namespace OrbItProcs
 
         internal void deletePreset(Node p)
         {
-            System.Console.WriteLine("Deleting file: " + p);
+            Console.WriteLine("Deleting file: " + p);
             File.Delete(Game1.filepath + p.name + ".xml");
             NodePresets.Remove(p);
         }

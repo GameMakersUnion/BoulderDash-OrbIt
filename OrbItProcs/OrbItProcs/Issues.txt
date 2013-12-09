@@ -4,17 +4,16 @@
 - add 'reset to default' button when right clicking component (or fields: get the default value in the class)
 - make sure that components that have costly 'affectself' methods (that only produce graphical effects) are not
 	called. (only the most significant graphical logic code should be executed) (example: laser/wideray)
-
-- the serialization does not work for the Modifier component (this could be because the Tuple<> AND the delegate)
 - make it so that the modifier component doesn't set all node references to it's parent when updatingreferences (probably for processes)
-
-
+---
+- the PopUp doesn't work correctly when incorrect input is given (example, you AddComponent, but don't pick one from the dropdown.)
+- The treelistbox doesn't have a horizontal scroll bar, AND the scrolling needs to be done inside neoforce (instead of in the game logic)
 
 
 
 
 ============================== Fixed =================================
 - the defaultNode and NodePreset nodes don't fully remove their components from comps when using the RemoveComponent function
-
+- the serialization does not work for the Modifier component (this could be because the Tuple<> AND the delegate)
 
 

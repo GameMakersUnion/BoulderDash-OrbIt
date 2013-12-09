@@ -39,6 +39,11 @@ Nov29
 -now using fraps to record happenings
 -added the Tree component, which spawns new nodes with tree components at decreasing intervals
 -there is now a 'SafeAddComponent' method to support adding components at any time
+----------------------------
+Dec08
+-ModifierInfo now serializes properly due to a fix with FPInfo: now it carries the DeclaringType field to save it as a string for rebuilding
+-The InspectorItems are now sorted based on type in the TreeListBox
+-
 
 
 =======================================================TODO===============

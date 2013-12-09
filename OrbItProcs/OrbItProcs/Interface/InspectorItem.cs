@@ -8,6 +8,7 @@ using System.Reflection;
 using OrbItProcs.Processes;
 using OrbItProcs.Components;
 using Component = OrbItProcs.Components.Component;
+using Console = System.Console;
 using System.Collections.ObjectModel;
 
 namespace OrbItProcs.Interface {
@@ -20,19 +21,18 @@ namespace OrbItProcs.Interface {
         unimplemented,
         
     };
-
+    //listed in the order that they will appear in the listbox
     public enum data_type {
         none,
+        dict,
+        list,
+        enm,
+        boolean,
         integer,
         single,
         str,
-        boolean,
-        dict,
-        list,
         obj,
-        enm,
     };
-
 
     public class InspectorItem {
 
@@ -43,6 +43,9 @@ namespace OrbItProcs.Interface {
             typeof(ModifierInfo),
             typeof(Vector2),
             typeof(Color),
+            typeof(Game1),
+            typeof(Room),
+            typeof(GridSystem),
         };
         public static List<Type> PanelTypes = new List<Type>()
         {
@@ -88,8 +91,9 @@ namespace OrbItProcs.Interface {
             this.masterList = masterList; 
             //this.fpinfo = new FPInfo(propertyInfo);
             this.membertype = member_type.none;
+            this.children = new List<object>();
             CheckItemType();
-            prefix = "=";
+            prefix = "" + ((char)164);
             //System.Console.WriteLine(obj);
             //children = GenerateList(obj, whitespace, this); 
             
@@ -104,8 +108,9 @@ namespace OrbItProcs.Interface {
             this.fpinfo = new FPInfo(propertyInfo);
             this.masterList = masterList; 
             this.membertype = member_type.property;
+            this.children = new List<object>();
             CheckItemType();
-            prefix = "=";
+            prefix = "" + ((char)164);
             //System.Console.WriteLine(this);
             //children = GenerateList(obj, whitespace, this);
 
@@ -118,13 +123,14 @@ namespace OrbItProcs.Interface {
             this.obj = obj;
             this.masterList = masterList; 
             this.fpinfo = null;
+            this.children = new List<object>();
             Type t = parentItem.obj.GetType();
             if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
             {
                 membertype = member_type.dictentry;
                 this.key = key;
                 CheckItemType();
-                prefix = "=";
+                prefix = "" + ((char)164);
                 //System.Console.WriteLine(this);
                 //children = GenerateList(obj, whitespace, this);
             }
@@ -163,11 +169,13 @@ namespace OrbItProcs.Interface {
 
         public void GenerateChildren()
         {
+            /*
             if (ReferenceExists(parentItem, obj))
             {
                 children = new List<object>();
                 return;
             }
+            */
             //System.Console.WriteLine(this);
             children = GenerateList(obj, whitespace, this);
         }
@@ -175,9 +183,12 @@ namespace OrbItProcs.Interface {
         public static List<object> GenerateList(object parent, String whiteSpace, InspectorItem parentItem = null)
         {
             List<object> list = new List<object>();
+            List<int> weightsList = new List<int>();
+            //char a = (char)164;
+            //System.Console.WriteLine(a);
             string space = "|" + whiteSpace;
             //List<FieldInfo> fieldInfos = o.GetType().GetFields().ToList(); //just supporting properties for now
-            data_type dt = data_type.obj;
+            data_type dt = data_type.obj; //if this item is the root, we should give it it's real type insteam of assuming it's an object
             if (parentItem != null) dt = parentItem.datatype;
 
             if (dt == data_type.list)
@@ -192,25 +203,82 @@ namespace OrbItProcs.Interface {
                 {
                     //System.Console.WriteLine(key.ToString());
                     InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, space, key, dict[key]);
-                    iitem.GenerateChildren();
-                    list.Add(iitem);
+                    //iitem.GenerateChildren();
+                    //list.Add(iitem);
+                    if (iitem.CheckForChildren()) iitem.prefix = "+";
+                    InsertItemSorted(list, weightsList, iitem);
                 }
             }
             else if (dt == data_type.obj)
             {
-                List<PropertyInfo> propertyInfos = parent.GetType().GetProperties().ToList();
+                List<PropertyInfo> propertyInfos;
+                //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
+                if (!(parent is Component))
+                {
+                    propertyInfos = parent.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
+                }
+                else
+                {
+                    propertyInfos = parent.GetType().GetProperties().ToList();
+                }
 
                 foreach (PropertyInfo pinfo in propertyInfos)
                 {
-                    if (pinfo.PropertyType == typeof(Node)) continue; //don't infinitely recurse on nodes
+                    //if (pinfo.PropertyType == typeof(Node)) continue; //don't infinitely recurse on nodes
 
                     InspectorItem iitem = new InspectorItem(parentItem.masterList, pinfo.GetValue(parent, null), pinfo, parentItem, space);
-                    iitem.GenerateChildren();
-                    list.Add(iitem);
+                    //iitem.GenerateChildren();
+                    //list.Add(iitem);
+                    if (iitem.CheckForChildren()) iitem.prefix = "+";
+                    InsertItemSorted(list, weightsList, iitem);
                 }
             }
             //if it's just a normal primitive, it will return an empty list
+            if (list.Count > 0) parentItem.prefix = "+";
             return list;
+        }
+
+        public bool CheckForChildren()
+        {
+            if (datatype == data_type.dict)
+            {
+                dynamic dict = obj;
+                if (dict.Count > 0) return true;
+                else return false;
+            }
+            if (datatype == data_type.obj)
+            {
+                List<PropertyInfo> propertyInfos = obj.GetType().GetProperties().ToList();
+                if (propertyInfos.Count > 0) return true;
+                else return false;
+            }
+            return false;
+        }
+
+        public static void InsertItemSorted(List<object> objList, List<int> weightsList, InspectorItem item)
+        {
+            int length = objList.Count;
+            int weight = (int)item.datatype;
+
+            if (weight == 0)
+            {
+                weightsList.Add(weight);
+                objList.Add(item);
+                return;
+            }
+            
+            for (int i = 0; i < length; i++)
+            {
+                if (weight < weightsList.ElementAt(i))
+                {
+                    weightsList.Insert(i, weight);
+                    objList.Insert(i, item);
+                    return;
+                }
+            }
+            weightsList.Add(weight);
+            objList.Add(item);
+            
         }
 
         public override string ToString()
@@ -224,12 +292,27 @@ namespace OrbItProcs.Interface {
                     Component component = (Component) obj;
                     return result + key.ToString().ToUpper() + " : " + component.active;
                 }
-
+                if (datatype == data_type.obj || datatype == data_type.none)
+                {
+                    string ts = obj.GetType().ToString().Split('.').ToList().ElementAt(obj.GetType().ToString().Split('.').ToList().Count - 1);
+                    return result + key + "[" + ts + "]";
+                }
                 return result + key + ":" + obj;
             }
 
             if (fpinfo != null)
             {
+                if (datatype == data_type.dict)
+                {
+                    Type k = obj.GetType().GetGenericArguments()[0];
+                    Type v = obj.GetType().GetGenericArguments()[1];
+                    string ks = k.ToString().Split('.').ToList().ElementAt(k.ToString().Split('.').ToList().Count-1);
+                    string vs = v.ToString().Split('.').ToList().ElementAt(v.ToString().Split('.').ToList().Count-1);
+                    //System.Console.WriteLine(obj.GetType());
+                    //System.Console.WriteLine(result + fpinfo.Name + " <" + ks + "," + vs + ">");
+                    return result + fpinfo.Name + " <" + ks + "," + vs + ">";
+                }
+
                 return result + fpinfo.Name + " : " + fpinfo.GetValue(parentItem.obj);
             }
             if (obj == null)
@@ -237,8 +320,14 @@ namespace OrbItProcs.Interface {
                 return result + ": obj is null";
             }
 
-            return result + obj + " (" + obj.GetType() + ")";
-            
+            //return result + obj + " (" + obj.GetType() + ")";
+            if (datatype == data_type.obj || datatype == data_type.none)
+            {
+                
+                string ts = obj.GetType().ToString().Split('.').ToList().ElementAt(obj.GetType().ToString().Split('.').ToList().Count - 1);
+                return result + "[" + ts + "]";
+            }
+            return result + key + ":" + obj;
             
             
             //return result + obj.ToString();
@@ -257,6 +346,24 @@ namespace OrbItProcs.Interface {
             return "error_Name_99";
         }
 
+        public void RemoveChildren()
+        {
+            foreach (InspectorItem subitem in children.ToList())
+            {
+                masterList.Remove(subitem);
+                foreach (InspectorItem subsub in subitem.children.ToList())
+                {
+                    if (masterList.Contains(subsub))
+                    {
+                        subitem.RemoveChildren();
+                        break;
+                    }
+                }
+                
+                //listComp.Items.Remove(subitem);
+            }
+        }
+
         public void ClickItem(int position)
         {
             if (hasChildren())
@@ -264,11 +371,14 @@ namespace OrbItProcs.Interface {
                 if (extended)
                 {
                     prefix = "+";
-                    foreach (InspectorItem subitem in children)
+                    RemoveChildren();
+                    /*
+                    foreach (InspectorItem subitem in children.ToList())
                     {
                         masterList.Remove(subitem);
                         //listComp.Items.Remove(subitem);
                     }
+                    */
                 }
                 else
                 {
@@ -381,8 +491,6 @@ namespace OrbItProcs.Interface {
                 dynamic KEY = key;
                 dynamic VALUE = value;
 
-
-
                 if (!dict.GetType().IsGenericType || dict.GetType().GetGenericTypeDefinition() != typeof(Dictionary<,>))
                 {
                     System.Console.WriteLine("Error: The parentItem wasn't a dictionary.");
@@ -434,11 +542,15 @@ namespace OrbItProcs.Interface {
 
         public bool hasChildren()
         {
+            return CheckForChildren();
+
+            /*
             if (children != null)
             {
                 return (children.Count > 0);
             }
             return false;
+            */
         }
 
         public int childCount()

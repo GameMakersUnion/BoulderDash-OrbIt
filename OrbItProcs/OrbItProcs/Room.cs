@@ -28,10 +28,10 @@ namespace OrbItProcs {
 
 
         public Game1 game;
-        public ProcessManager processManager;
-        public float mapzoom;
+        public ProcessManager processManager { get; set; }
+        public float mapzoom { get; set; }
 
-        public GridSystem gridsystem;
+        public GridSystem gridsystem { get; set; }
         public List<Rectangle> gridSystemLines;
         public int gridSystemCounter = 0;
 
