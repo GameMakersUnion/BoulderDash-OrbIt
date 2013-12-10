@@ -42,7 +42,8 @@ namespace OrbItProcs
             window.Description.Top = window.Caption.Top;
             window.Description.Text = message;
             window.Width = 200;
-            window.SetPosition(Game1.sWidth - 210, Game1.sHeight / 4);
+            window.Height = 200;
+            window.SetPosition(Game1.sWidth - 220, Game1.sHeight / 4);
 
             Button btnOk = new Button(manager);
             btnOk.Top = window.Description.Top + window.Description.Height;
@@ -57,16 +58,17 @@ namespace OrbItProcs
             if (windowType == PopUpType.alert)
             {
                 btnOk.Left = window.Width / 2 - btnOk.Width / 2;
-
             }
 
             if (windowType == PopUpType.dropDown)
             {
+                
                 ComboBox cbBox = new ComboBox(manager);
                 cbBox.Init();
                 cbBox.Parent = window;
-                cbBox.Width = window.Width - VertPadding * 2;
-                cbBox.Left = VertPadding ;
+                cbBox.MaxItems = 20;
+                cbBox.Width = window.Width - VertPadding * 5;
+                cbBox.Left = VertPadding;
                 cbBox.Top = btnOk.Top;
                 btnOk.Top = cbBox.Top + cbBox.Height;
                 foreach (object o in list) cbBox.Items.Add(o);
@@ -77,7 +79,7 @@ namespace OrbItProcs
                 TextBox tbName = new TextBox(manager);
                 tbName.Init();
                 tbName.Parent = window;
-                tbName.Width = window.Width - VertPadding * 2;
+                tbName.Width = window.Width - VertPadding * 5;
                 tbName.Left = VertPadding;
                 tbName.Top = btnOk.Top;
                 btnOk.Top = tbName.Top + tbName.Height;

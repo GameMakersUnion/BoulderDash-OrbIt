@@ -84,7 +84,7 @@ namespace OrbItProcs.Components
 
             //perform death here.... do it properly later
             //parent.room.nodes.Remove(parent);
-            parent.props[node.active] = false;
+            parent.active = false;
         }
 
         public override void Draw(SpriteBatch spritebatch)

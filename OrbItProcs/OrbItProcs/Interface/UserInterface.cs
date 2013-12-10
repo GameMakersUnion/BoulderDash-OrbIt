@@ -269,20 +269,21 @@ namespace OrbItProcs.Interface {
                             //room.nodes.Remove(n);
                             //break;
                             //--
+                            bool had = false;
                             if (game.targetNode != null && game.targetNode.comps.ContainsKey(comp.flow))
                             {
                                 game.targetNode.comps[comp.flow].AddToOutgoing(n);
                                 //sidebar.SetTargetNode(n);
-                                break;
+                                had = true;
                             }
                             if (game.targetNode != null && game.targetNode.comps.ContainsKey(comp.tether))
                             {
                                 game.targetNode.comps[comp.tether].AddToOutgoing(n);
                                 //sidebar.SetTargetNode(n);
-                                break;
+                                had = true;
                             }
                             //found = true;
-
+                            if (had) break;
                         }
                     }
                     //if (!found) game.targetNode = null;
@@ -300,18 +301,21 @@ namespace OrbItProcs.Interface {
                             //room.nodes.Remove(n);
                             //break;
                             //--
-                            if (n.comps.ContainsKey(comp.tether))
+                            bool had = false;
+                            if (n.comps.ContainsKey(comp.flow))
                             {
-                                n.comps[comp.tether].activated = !n.comps[comp.tether].activated;
-                                break;
+                                n.comps[comp.flow].activated = !n.comps[comp.flow].activated;
+                                //break;
+                                had = true;
                             }
                             if (n.comps.ContainsKey(comp.tether))
                             {
                                 n.comps[comp.tether].activated = !n.comps[comp.tether].activated;
-                                break;
+                                //break;
+                                had = true;
                             }
                             //found = true;
-
+                            if (had) break;
                         }
                     }
                     //if (!found) game.targetNode = null;

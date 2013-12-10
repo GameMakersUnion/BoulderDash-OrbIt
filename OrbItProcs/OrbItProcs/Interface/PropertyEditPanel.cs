@@ -146,6 +146,7 @@ namespace OrbItProcs.Interface
                 ComboBox cb = new ComboBox(grouppanel.Manager);
                 cb.Init();
                 cb.Parent = grouppanel;
+                cb.MaxItems = 20;
                 cb.Left = LeftPadding;
                 cb.Top = 10;
                 cb.Width = 120;

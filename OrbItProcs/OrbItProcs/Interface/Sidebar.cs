@@ -178,6 +178,7 @@ namespace OrbItProcs.Interface
             cmbListPicker = new ComboBox(manager);
             cmbListPicker.Init();
             cmbListPicker.Parent = first;
+            cmbListPicker.MaxItems = 20;
 
             cmbListPicker.Width = first.Width - LeftPadding * 6;
             cmbListPicker.Left = LeftPadding;
@@ -249,6 +250,7 @@ namespace OrbItProcs.Interface
             cmbPresets = new ComboBox(manager);
             cmbPresets.Init();
             cmbPresets.Parent = first;
+            cmbPresets.MaxItems = 20;
 
             cmbPresets.Width = 160;
             cmbPresets.Left = LeftPadding;
@@ -556,6 +558,7 @@ namespace OrbItProcs.Interface
                             
                             dynamic dict = temp.parentItem.obj;
                             dynamic key = pathitem.key;
+                            if (!dict.ContainsKey(key)) break;
                             if (dict[key] is Component)
                             {
                                 dict[key].active = ((Component)value).active;
@@ -589,6 +592,7 @@ namespace OrbItProcs.Interface
                         {
                             dynamic dict = temp.obj;
                             dynamic key = next.key;
+                            if (!dict.ContainsKey(key)) break;
                             temp = new InspectorItem(null, temp, "", key, dict[key]);
                         }
                         else

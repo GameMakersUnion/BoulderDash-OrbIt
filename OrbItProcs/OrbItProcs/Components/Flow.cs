@@ -19,6 +19,28 @@ namespace OrbItProcs.Components
             NOT,
         }
 
+        public bool active
+        {
+            get { return _active; }
+            set
+            {
+                _active = value;
+                if (!_active)
+                {
+                    foreach (Node n in outgoing.ToList())
+                    {
+                        outgoing.Remove(n);
+                        n.comps[comp.flow].incoming.Remove(parent);
+                    }
+                    foreach (Node n in incoming.ToList())
+                    {
+                        incoming.Remove(n);
+                        n.comps[comp.flow].outgoing.Remove(parent);
+                    }
+                }
+            }
+        }
+
         private HashSet<Node> _outgoing = new HashSet<Node>();
         [Polenter.Serialization.ExcludeFromSerialization]
         public HashSet<Node> outgoing { get { return _outgoing; } set { _outgoing = value; } }

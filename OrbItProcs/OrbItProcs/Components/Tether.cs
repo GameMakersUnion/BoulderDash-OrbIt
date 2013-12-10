@@ -11,6 +11,27 @@ namespace OrbItProcs.Components
 {
     public class Tether : Component
     {
+        new public bool active
+        {
+            get { return _active; }
+            set
+            {
+                _active = value;
+                if (!_active)
+                {
+                    foreach (Node n in outgoing.ToList())
+                    {
+                        outgoing.Remove(n);
+                        n.comps[comp.tether].incoming.Remove(parent);
+                    }
+                    foreach (Node n in incoming.ToList())
+                    {
+                        incoming.Remove(n);
+                        n.comps[comp.tether].outgoing.Remove(parent);
+                    }
+                }
+            }
+        }
 
         private HashSet<Node> _outgoing = new HashSet<Node>();
         [Polenter.Serialization.ExcludeFromSerialization]
@@ -22,12 +43,24 @@ namespace OrbItProcs.Components
         private bool _activated = false;
         public bool activated { get { return _activated; } set { _activated = value; } }
 
+        private bool _confining = false;
+        public bool confining { get { return _confining; } set { if (!_confining && value) Confine(); _confining = value; } }
+        private Dictionary<Node, Vector2> confiningVects;
+
+        private bool _locked = false;
+        public bool locked { get { return _locked; } set { if (!_locked && value) Lock(); _locked = value; } }
+
+        private Dictionary<Node, int> lockedVals;
+
         public int _maxdist = 300;
-        public int maxdist { get { return _maxdist; } set { _maxdist = value; } }
+        public int maxdist { get { return _maxdist; } set { _maxdist = value; if (_maxdist < _mindist) _maxdist = _mindist; } }
+        public int _mindist = 100;
+        public int mindist { get { return _mindist; } set { _mindist = value; if (_mindist > _maxdist) _mindist = _maxdist; } }
 
         public Tether() : this(null) { }
         public Tether(Node parent = null)
         {
+            
             if (parent != null)
             {
                 this.parent = parent;
@@ -67,19 +100,82 @@ namespace OrbItProcs.Components
         {
             if (activated)
             {
+                
                 foreach (Node n in outgoing)
                 {
                     Vector2 diff = n.position - parent.position;
-                    float len = diff.Length();
+                    float len;
+                    if (locked)
+                    {
+                        len = lockedVals[n];
+                    }
+                    else
+                    {
+                        len = diff.Length();
+                    }
+
                     if (len > maxdist)
                     {
-                        float percent = maxdist / len;
-                        diff *= percent;
-                        n.position = parent.position + diff;
+                        if (confining)
+                        {
+                            n.position = parent.position + confiningVects[n] * maxdist;
+                        }
+                        else
+                        {
+                            float percent = maxdist / len;
+                            diff *= percent;
+                            n.position = parent.position + diff;
+                        }
                     }
+                    else if (len < mindist)
+                    {
+                        if (confining)
+                        {
+                            n.position = parent.position + confiningVects[n] * mindist;
+                        }
+                        else
+                        {
+                            float percent = mindist / len;
+                            diff *= percent;
+                            n.position = parent.position + diff;
+                        }
+                    }
+                    else
+                    {
+                        if (confining)
+                        {
+                            n.position = parent.position + confiningVects[n] * len;
+                        }
+                    }
+
+                    
+                    
                     //diff = n.position - parent.position;
                     //Console.WriteLine(diff.Length());
                 }
+            }
+        }
+
+        public void Confine()
+        {
+            if (parent == null) return;
+            confiningVects = new Dictionary<Node, Vector2>();
+            foreach (Node n in outgoing.ToList())
+            {
+                Vector2 len = n.position - parent.position;
+                len.Normalize();
+                confiningVects[n] = len;
+            }
+        }
+
+        public void Lock()
+        {
+            if (parent == null) return;
+            lockedVals = new Dictionary<Node, int>();
+            foreach (Node n in outgoing.ToList())
+            {
+                Vector2 len = n.position - parent.position;
+                lockedVals[n] = (int)len.Length();
             }
         }
 
@@ -90,12 +186,20 @@ namespace OrbItProcs.Components
                 if (outgoing.Contains(node))
                 {
                     outgoing.Remove(node);
-                    //node.comps[comp.tether].incoming.Remove(parent);
+                    node.comps[comp.tether].incoming.Remove(parent);
+                    if (confining && confiningVects.ContainsKey(node)) confiningVects.Remove(node);
+                    if (locked && lockedVals.ContainsKey(node)) lockedVals.Remove(node);
                 }
                 else
                 {
                     outgoing.Add(node);
-                    //node.comps[comp.tether].incoming.Add(parent);
+                    node.comps[comp.tether].incoming.Add(parent);
+                    if (confining && !confiningVects.ContainsKey(node))
+                    {
+                        Vector2 v = (node.position - parent.position); v.Normalize();
+                        confiningVects.Add(node, v);
+                    }
+                    if (locked && !lockedVals.ContainsKey(node)) lockedVals.Add(node, (int)(node.position - parent.position).Length());
                 }
             }
 

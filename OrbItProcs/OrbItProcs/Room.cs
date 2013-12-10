@@ -105,7 +105,7 @@ namespace OrbItProcs {
 
                     _node.Update(gametime);
 
-                    if (!_node.props[node.active])
+                    if (!_node.active)
                     {
                         toRemove.Add(_node);
                     }

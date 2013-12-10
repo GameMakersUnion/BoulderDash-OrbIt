@@ -248,7 +248,14 @@ namespace OrbItProcs
             {
                 Console.WriteLine("Current Files" + filepath);
                 Console.WriteLine(file);
-                NodePresets.Add((Node)room.serializer.Deserialize(file));
+                Node presetnode = (Node)room.serializer.Deserialize(file);
+                foreach (comp c in presetnode.comps.Keys.ToList())
+                {
+                    ((Component)presetnode.comps[c]).parent = presetnode;
+                }
+                NodePresets.Add(presetnode);
+
+                //NodePresets.Add((Node)room.serializer.Deserialize(file));
             }
             foreach (Node snode in NodePresets)
             {

@@ -68,7 +68,7 @@ namespace OrbItProcs.Components
         //flag as not editable in treelistbox
         public mtypes methods { get { return _methods; } protected set { _methods = value; } }
 
-       public abstract void Initialize(Node parent);
+       public virtual void Initialize(Node parent) { this.parent = parent; }
        public virtual void AfterCloning() { }
        public abstract void AffectOther(Node other);
        public abstract void AffectSelf();

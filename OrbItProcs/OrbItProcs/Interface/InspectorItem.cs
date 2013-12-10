@@ -422,6 +422,10 @@ namespace OrbItProcs.Interface {
             {
                 dt = data_type.boolean;
             }
+            else if (obj == null)
+            {
+                Console.WriteLine("Object was null when checking inspectoritem obj type.");
+            }
             else if (obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(Dictionary<,>))
             {
                 //System.Console.WriteLine("Dictionary found.");
@@ -464,6 +468,10 @@ namespace OrbItProcs.Interface {
             foreach (Type type in PanelTypes)
             {
                 if (obj.GetType() == type)
+                {
+                    return true;
+                }
+                if (obj.GetType().IsSubclassOf(type))
                 {
                     return true;
                 }
@@ -541,6 +549,12 @@ namespace OrbItProcs.Interface {
 
         public bool HasPanelElements()
         {
+            if (obj == null)
+            {
+                Console.WriteLine("object was null when checking if InspectorItem HasPanelElements()");
+                return false;
+            }
+
             Type itemtype = obj.GetType();
             foreach (Type type in PanelTypes)
             {

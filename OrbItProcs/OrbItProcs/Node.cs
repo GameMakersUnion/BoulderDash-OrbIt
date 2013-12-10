@@ -43,7 +43,7 @@ namespace OrbItProcs {
 
         static Dictionary<dynamic, dynamic> defaultProps = new Dictionary<dynamic, dynamic>()
         {
-            { node.active,                      true },
+            //{ node.active,                      true },
             { node.position,                    new Vector2(0,0) },
             { node.velocity,                    new Vector2(0,0) },
             { node.velMultiplier,               1f  },
@@ -63,6 +63,25 @@ namespace OrbItProcs {
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;
         //public bool active = true;
 
+        private bool _active = true;
+        public bool active
+        {
+            get { return _active; }
+            set
+            {
+                _active = value;
+                if (!_active)
+                {
+                    foreach (comp c in comps.Keys.ToList())
+                    {
+                        if (comps[c] is Component)
+                        {
+                            comps[c].active = false;
+                        }
+                    }
+                }
+            }
+        }
         
         private float _radius = 25f;
         public float radius
@@ -508,7 +527,7 @@ namespace OrbItProcs {
 
             foreach (Node other in hashlist)
             {
-                if (other.props[node.active])
+                if (other.active)
                 {
                     // iterate over components that contain 'affectOther' method (and only call that method)
                     foreach (comp c in aOtherProps)
@@ -521,11 +540,11 @@ namespace OrbItProcs {
             }
 
             // ONLY ENTER IF THERE IS AT LEAST ONE COMPONENT THAT HAS 'AFFECTOTHER' METHOD
-            if (props[node.active] && aOtherProps.Count > 0 && false)
+            if (active && aOtherProps.Count > 0 && false)
             {
                 foreach (Node other in room.nodes)
                 {
-                    if (other != this && other.props[node.active])
+                    if (other != this && other.active)
                     {
                         // iterate over components that contain 'effectOthers' method (and only call that method)
                         foreach (comp c in aOtherProps)

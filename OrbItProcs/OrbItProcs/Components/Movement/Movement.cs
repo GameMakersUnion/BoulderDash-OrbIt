@@ -79,21 +79,21 @@ namespace OrbItProcs.Components
 
             if (pos.X >= (levelwidth + parent.radius))
             {
-                parent.props[node.active] = false;
+                parent.active = false;
             }
             else if (pos.X < parent.radius * -1)
             {
-                parent.props[node.active] = false;
+                parent.active = false;
             }
 
 
             if (pos.Y >= (levelheight + parent.radius))
             {
-                parent.props[node.active] = false;
+                parent.active = false;
             }
             else if (pos.Y < parent.radius * -1)
             {
-                parent.props[node.active] = false;
+                parent.active = false;
             }
         }
 
