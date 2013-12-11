@@ -236,97 +236,105 @@ namespace OrbItProcs.Interface {
             {
                 if (mouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Released)
                 {
-                    bool found = false;
+                    //bool found = false;
+                    Node found = null;
+                    float shortedDistance = Int32.MaxValue;
                     for (int i = room.nodes.Count - 1; i >= 0; i--)
                     {
                         Node n = (Node)room.nodes.ElementAt(i);
                         // find node that has been clicked, starting from the most recently placed nodes
-                        if (Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY)) < n.radius * n.radius)
+                        float distsquared = Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY));
+                        if ( distsquared < n.radius * n.radius)
                         {
-                            //--
-                            //room.nodes.Remove(n);
-                            //break;
-                            //--
-                            //game.targetNode = n;
-                            sidebar.SetTargetNode(n);
+                            if (distsquared < shortedDistance)
+                            {
+                                found = n;
+                                shortedDistance = distsquared;
+                            }
                             //room.processManager.Add(new TripSpawnOnCollide(game.targetNode));
-                            found = true;
-                            break;
                         }
                     }
-                    if (!found) game.targetNode = null;
+                    if (found != null)
+                    {
+                        sidebar.SetTargetNode(found);
+                    }
+                    else
+                    {
+                        //targetnode is deselected if you click on nothing
+                        game.targetNode = null;
+                    }
                 }
                 else if (mouseState.RightButton == ButtonState.Pressed && oldMouseState.RightButton == ButtonState.Released)
                 {
-                    //bool found = false;
+                    Node found = null;
+                    float shortedDistance = Int32.MaxValue;
                     for (int i = room.nodes.Count - 1; i >= 0; i--)
                     {
                         Node n = (Node)room.nodes.ElementAt(i);
                         // find node that has been clicked, starting from the most recently placed nodes
-                        if (Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY)) < n.radius * n.radius)
+                        float distsquared = Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY));
+                        if (distsquared < n.radius * n.radius)
                         {
-                            //--
-                            //room.nodes.Remove(n);
-                            //break;
-                            //--
-                            bool had = false;
-                            if (game.targetNode != null && game.targetNode.comps.ContainsKey(comp.flow))
+                            if (distsquared < shortedDistance)
                             {
-                                game.targetNode.comps[comp.flow].AddToOutgoing(n);
-                                //sidebar.SetTargetNode(n);
-                                had = true;
+                                found = n;
+                                shortedDistance = distsquared;
                             }
-                            if (game.targetNode != null && game.targetNode.comps.ContainsKey(comp.tether))
-                            {
-                                game.targetNode.comps[comp.tether].AddToOutgoing(n);
-                                //sidebar.SetTargetNode(n);
-                                had = true;
-                            }
-                            //found = true;
-                            if (had) break;
                         }
                     }
-                    //if (!found) game.targetNode = null;
+                    if (found != null)
+                    {
+                        if (game.targetNode != null && game.targetNode.comps.ContainsKey(comp.flow))
+                        {
+                            game.targetNode.comps[comp.flow].AddToOutgoing(found);
+                        }
+                        if (game.targetNode != null && game.targetNode.comps.ContainsKey(comp.tether))
+                        {
+                            game.targetNode.comps[comp.tether].AddToOutgoing(found);
+                        }
+                    }
+                    else
+                    {
+                    }
                 }
                 else if (mouseState.MiddleButton == ButtonState.Pressed && oldMouseState.MiddleButton == ButtonState.Released)
                 {
-                    //bool found = false;
+                    Node found = null;
+                    float shortedDistance = Int32.MaxValue;
                     for (int i = room.nodes.Count - 1; i >= 0; i--)
                     {
                         Node n = (Node)room.nodes.ElementAt(i);
                         // find node that has been clicked, starting from the most recently placed nodes
-                        if (Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY)) < n.radius * n.radius)
+                        float distsquared = Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY));
+                        if (distsquared < n.radius * n.radius)
                         {
-                            //--
-                            //room.nodes.Remove(n);
-                            //break;
-                            //--
-                            bool had = false;
-                            if (n.comps.ContainsKey(comp.flow))
+                            if (distsquared < shortedDistance)
                             {
-                                n.comps[comp.flow].activated = !n.comps[comp.flow].activated;
-                                //break;
-                                had = true;
+                                found = n;
+                                shortedDistance = distsquared;
                             }
-                            if (n.comps.ContainsKey(comp.tether))
-                            {
-                                n.comps[comp.tether].activated = !n.comps[comp.tether].activated;
-                                //break;
-                                had = true;
-                            }
-                            //found = true;
-                            if (had) break;
                         }
                     }
-                    //if (!found) game.targetNode = null;
+                    if (found != null)
+                    {
+                        if (found.comps.ContainsKey(comp.flow))
+                        {
+                            found.comps[comp.flow].activated = !found.comps[comp.flow].activated;
+                        }
+                        if (found.comps.ContainsKey(comp.tether))
+                        {
+                            found.comps[comp.tether].activated = !found.comps[comp.tether].activated;
+                        }
+                    }
+                    else
+                    {
+                    }
                 }
                 //oldMouseScrollValue = mouseState.ScrollWheelValue;
-                oldMouseState = mouseState;
-                return;
+                //oldMouseState = mouseState;
+                //return;
             }
             
-
-
             if (hovertargetting)
             {
                 if (true || mouseState.LeftButton == ButtonState.Pressed)

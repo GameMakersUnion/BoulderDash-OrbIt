@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using TomShane.Neoforce.Controls;
 using Component = OrbItProcs.Components.Component;
+using Console = System.Console;
 
 namespace OrbItProcs.Interface
 {
@@ -41,7 +42,7 @@ namespace OrbItProcs.Interface
 
         public void UpdatePanel(InspectorItem inspectorItem)
         {
-            if (activeInspectorItem == inspectorItem) return;
+            //if (activeInspectorItem == inspectorItem) return;
 
             if (panelControls.Keys.Count > 0) DisableControls();
 
@@ -74,6 +75,7 @@ namespace OrbItProcs.Interface
             if (!activeInspectorItem.HasPanelElements()) return;
 
             editType = activeInspectorItem.obj.GetType();
+            object value = activeInspectorItem.GetValue();
 
             if (editType == typeof(int) || editType == typeof(Single) || editType == typeof(string))
             {
@@ -85,11 +87,19 @@ namespace OrbItProcs.Interface
                 txtbox.Top = 10;
                 txtbox.Width = 80;
                 txtbox.Height = txtbox.Height + 3;
+                txtbox.KeyUp += delegate (object sender, KeyEventArgs e) {
+                    if (!txtbox.Text.Equals("") && e.Key == Microsoft.Xna.Framework.Input.Keys.Enter)
+                    {
+                        btnModify_Click(sender, e);
+                    }
+                };
 
                 //txtbox.BackColor = Color.Green;
 
                 //txtbox.DrawBorders = true;
-                txtbox.Text = activeInspectorItem.obj.ToString();
+                //txtbox.Text = activeInspectorItem.obj.ToString();
+                
+                txtbox.Text = value.ToString();
 
                 Button btnModify = new Button(grouppanel.Manager);
                 btnModify.Init();
@@ -113,13 +123,28 @@ namespace OrbItProcs.Interface
                     trkMain.Top = 20 + btnModify.Height;
                     trkMain.Width = txtbox.Width + btnModify.Width + LeftPadding;
                     trkMain.Anchor = Anchors.Left | Anchors.Top | Anchors.Right;
-                    int val = Convert.ToInt32(activeInspectorItem.obj);
-                    trkMain.Value = val;
-                    if (val == 0) val = 5;
-                    trkMain.Range = val * 2;
+                    int val = Convert.ToInt32(value);
+                    
+                    //int range = Math.Max(100, val * 2);
 
+                    trkMain.Range = Math.Max(100, val * 2);
+
+                    trkMain.Value = val;
                     //trkMain.
                     trkMain.ValueChanged += new TomShane.Neoforce.Controls.EventHandler(trkMain_ValueChanged);
+                    trkMain.Click += delegate(object sender, TomShane.Neoforce.Controls.EventArgs e)
+                    {
+                        MouseEventArgs me = (MouseEventArgs)e;
+                        if (me.Button != MouseButton.Right) return;
+                        int relpos = me.Position.X - 810; //MAGIC NUMBER HACK OMG
+                        int sliderpos = (int)(((float)trkMain.Value / (float)trkMain.Range) * trkMain.Width);
+                        if (relpos < sliderpos) trkMain.Range = trkMain.Range / 2;
+                        else trkMain.Range = trkMain.Range * 2;
+
+                        //Console.WriteLine(relpos);
+                        
+                        
+                    };
                     //trkMain.btnSlider.MouseUp += new TomShane.Neoforce.Controls.MouseEventHandler(trkMain_MouseUp);
                     panelControls.Add("trkMain", trkMain);
                 }
@@ -134,8 +159,8 @@ namespace OrbItProcs.Interface
                 chkbox.Left = LeftPadding;
                 chkbox.Top = 10;
                 chkbox.Width = 120;
-                chkbox.Checked = (bool)activeInspectorItem.obj;
-                chkbox.Text = activeInspectorItem.Name() + " (" + activeInspectorItem.obj + ")";
+                chkbox.Checked = (bool)value;
+                chkbox.Text = activeInspectorItem.Name() + " (" + value + ")";
                 chkbox.CheckedChanged += new TomShane.Neoforce.Controls.EventHandler(chkbox_CheckedChanged);
                 panelControls.Add("chkbox", chkbox);
 
@@ -154,11 +179,13 @@ namespace OrbItProcs.Interface
                 {
                     cb.Items.Add(enumname);
                 }
-                cb.ItemIndex = (int)activeInspectorItem.obj;
+                cb.ItemIndex = (int)value;
                 cb.ItemIndexChanged += cb_ItemIndexChanged;
                 panelControls.Add("cb", cb);
             }
         }
+
+        
 
         void cb_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
@@ -192,17 +219,10 @@ namespace OrbItProcs.Interface
                 panelControls["txtbox"].Text = "" + trkbar.Value;
             }
 
-            //attempt to stop the slider range from changing rapidly
-            if (trkbar.Value != trkbar.Range)
-            {
-                triggerResizeSlider = true;
-            }
-
-            if (triggerResizeSlider && trkbar.Value == trkbar.Range)
-            {
-                trkbar.Range *= 2;
-                triggerResizeSlider = false;
-            }
+            //if (trkbar.Value == trkbar.Range)
+            //{
+            //    trkbar.Range *= 2;
+            //}
             
         }
 
@@ -220,7 +240,6 @@ namespace OrbItProcs.Interface
 
             activeInspectorItem.SetValue(checkbox.Checked);
             checkbox.Text = activeInspectorItem.Name() + " (" + activeInspectorItem.GetValue() + ")";
-
 
         }
 

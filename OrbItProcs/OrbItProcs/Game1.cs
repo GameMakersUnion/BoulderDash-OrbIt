@@ -193,12 +193,62 @@ namespace OrbItProcs
 
             room.defaultNode = new Node(room, userPr);
             room.defaultNode.name = "DEFAULTNODE";
+            /*
             foreach(comp c in room.defaultNode.comps.Keys.ToList())
             {
                 room.defaultNode.comps[c].AfterCloning();
             }
+            */
+            //much faster than foreach keyword apparently. Nice
+            room.defaultNode.comps.Keys.ToList().ForEach(delegate(comp c) 
+            {
+                room.defaultNode.comps[c].AfterCloning();
+            });
 
-            //room.defaultNode.Update(new GameTime());
+            List<int> ints = new List<int> { 1, 2, 3 };
+            ints.ForEach(delegate(int i) { if (i==2) ints.Remove(i); }); //COOL: NO ENUMERATION WAS MODIFIED ERROR
+            ints.ForEach(delegate(int i) { Console.WriteLine(i); });
+
+            MethodInfo testmethod = room.GetType().GetMethod("test");
+            Action<Room, int, float, string> del = (Action<Room, int, float, string>)Delegate.CreateDelegate(typeof(Action<Room, int, float, string>), testmethod);
+            del(room, 1, 0.3f, "Action worked.");
+
+            Action<int, float, string> del2 = (Action<int, float, string>)Delegate.CreateDelegate(typeof(Action< int, float, string>), room, testmethod);
+            //target is bound to 'room' in this example due to the overload of CreateDelegate used.
+            del2(2, 3.3f, "Action worked again.");
+
+            PropertyInfo pinfo = typeof(Component).GetProperty("active");
+            MethodInfo minfo = pinfo.GetGetMethod();
+            Console.WriteLine("{0}", minfo.ReturnType);
+
+            Movement tester = new Movement();
+            tester.active = true;
+
+            bool ret = (bool)minfo.Invoke(tester, new object[] { }); //VERY expensive (slow)
+            Console.WriteLine("{0}", ret);
+
+            
+
+            Func<Component, bool> delGet = (Func<Component, bool>)Delegate.CreateDelegate(typeof(Func<Component, bool>), minfo);
+            Console.WriteLine("{0}", delGet(tester)); //very fast, and no cast or creation of empty args array required
+
+            minfo = pinfo.GetSetMethod();
+            //Console.WriteLine("{0} {1}", minfo.ReturnType, minfo.GetParameters()[0].ParameterType);
+
+            Action<Component, bool> delSet = (Action<Component, bool>)Delegate.CreateDelegate(typeof(Action<Component, bool>), minfo);
+            delSet(tester, false);
+            Console.WriteLine("Here we go: {0}", delGet(tester));
+            delSet(tester, true);
+
+            /*
+            //gets all types that are a subclass of Component
+            List<Type> types = AppDomain.CurrentDomain.GetAssemblies()
+                       .SelectMany(assembly => assembly.GetTypes())
+                       .Where(type => type.IsSubclassOf(typeof(Component))).ToList();
+            foreach (Type t in types) Console.WriteLine(t);
+            */
+
+            //room.defaultNode.Update(new GameTime()); //for testing
 
             //MODIFIER ADDITION
             /*
@@ -243,11 +293,11 @@ namespace OrbItProcs
         public void InitializePresets()
         {
 
-            Console.WriteLine("Current Folder" + filepath);
+            //Console.WriteLine("Current Folder" + filepath);
             foreach (string file in Directory.GetFiles(filepath,"*.xml"))
             {
-                Console.WriteLine("Current Files" + filepath);
-                Console.WriteLine(file);
+                //Console.WriteLine("Current Files" + filepath);
+                //Console.WriteLine(file);
                 Node presetnode = (Node)room.serializer.Deserialize(file);
                 foreach (comp c in presetnode.comps.Keys.ToList())
                 {
@@ -259,7 +309,7 @@ namespace OrbItProcs
             }
             foreach (Node snode in NodePresets)
             {
-                Console.WriteLine("Presetname: {0}", snode.name);
+                //Console.WriteLine("Presetname: {0}", snode.name);
             }
         }
         protected override void LoadContent()
@@ -379,29 +429,29 @@ namespace OrbItProcs
             }
             foreach (Node preset in ui.game.NodePresets)
                 if (preset.name == name)
-            {
-                    
-                     PopUp.Toast(ui,"Node was overridden");
-            
-            
-                    }
-                    }
+                {
+
+                    PopUp.Toast(ui, "Node was overridden");
+
+
+                }
+        }
 
         public void spawnNode(Dictionary<dynamic, dynamic> userProperties)
-            {
+        {
             Node newNode = new Node();
             if (ui.spawnerNode != null)
-                {
+            {
                 Node.cloneObject(ui.spawnerNode, newNode);
-                    }
-                    else
-                    {
+            }
+            else
+            {
                 Node.cloneObject(room.defaultNode, newNode);
-                    }
+            }
             newNode.acceptUserProps(userProperties);
             newNode.name = "node" + Node.nodeCounter;
             room.nodes.Add(newNode);
-                        }
+        }
 
         /// <summary>
         /// This is called when the game should draw itself.

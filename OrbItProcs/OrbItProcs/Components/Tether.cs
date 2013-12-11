@@ -26,8 +26,9 @@ namespace OrbItProcs.Components
                     }
                     foreach (Node n in incoming.ToList())
                     {
-                        incoming.Remove(n);
+                        
                         n.comps[comp.tether].outgoing.Remove(parent);
+                        incoming.Remove(n);
                     }
                 }
             }

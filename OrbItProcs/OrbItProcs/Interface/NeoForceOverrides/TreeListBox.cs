@@ -5,12 +5,14 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using TomShane.Neoforce.Controls;
+using OrbItProcs.Interface;
 
 namespace TomShane.Neoforce.Controls
 {
     public class TreeListBox : ListBox
     {
         private ScrollBar sbVert = null;
+        public InspectorItem rootitem = null;
 
         public static string DeriveControlName(Control control)
         {

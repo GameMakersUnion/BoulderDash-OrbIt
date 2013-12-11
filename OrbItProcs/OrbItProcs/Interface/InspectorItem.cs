@@ -58,7 +58,7 @@ namespace OrbItProcs.Interface {
         };
 
 
-        public treeitem itemtype;
+        //public treeitem itemtype;
         public int depth = 1;
         //public FieldInfo fieldInfo;
         //public PropertyInfo propertyInfo;
@@ -84,9 +84,9 @@ namespace OrbItProcs.Interface {
         public IList<object> masterList;
 
         //root item
-        public InspectorItem(IList<object> masterList, object obj, string whitespace)
+        public InspectorItem(IList<object> masterList, object obj)
         {
-            this.whitespace = whitespace;
+            this.whitespace = "|";
             this.obj = obj;
             this.masterList = masterList; 
             //this.fpinfo = new FPInfo(propertyInfo);
@@ -98,10 +98,11 @@ namespace OrbItProcs.Interface {
             //children = GenerateList(obj, whitespace, this); 
             
         }
-
-        public InspectorItem(IList<object> masterList, object obj, PropertyInfo propertyInfo, InspectorItem parentItem, string whitespace)
+        //a property
+        public InspectorItem(IList<object> masterList, InspectorItem parentItem, object obj, PropertyInfo propertyInfo)
         {
-            this.whitespace = whitespace;
+            this.whitespace = "|";
+            if (parentItem != null) this.whitespace += parentItem.whitespace;
             this.obj = obj;
             this.parentItem = parentItem;
             //this.fieldInfo = fieldInfo;
@@ -116,9 +117,10 @@ namespace OrbItProcs.Interface {
 
         }
         //a dictionary entry
-        public InspectorItem(IList<object> masterList, InspectorItem parentItem, string whitespace, object key, object obj = null)
+        public InspectorItem(IList<object> masterList, InspectorItem parentItem, object obj, object key) //obj = null
         {
-            this.whitespace = whitespace;
+            this.whitespace = "|";
+            if (parentItem != null) this.whitespace += parentItem.whitespace;
             this.parentItem = parentItem;
             this.obj = obj;
             this.masterList = masterList; 
@@ -136,7 +138,7 @@ namespace OrbItProcs.Interface {
             }
             else
             {
-                System.Console.WriteLine("Unexpected: InspectorItem with no obj refernce was not a dictionary entry");
+                System.Console.WriteLine("Unexpected: InspectorItem with no obj reference was not a dictionary entry");
                 membertype = member_type.unimplemented;
             }
         }
@@ -177,16 +179,112 @@ namespace OrbItProcs.Interface {
             }
             */
             //System.Console.WriteLine(this);
-            children = GenerateList(obj, whitespace, this);
+            children = GenerateList(obj, this);
         }
 
-        public static List<object> GenerateList(object parent, String whiteSpace, InspectorItem parentItem = null)
+        public void RefrestMasterList()
+        {
+            AddMissingChildren();
+            foreach (object o in masterList.ToList())
+            {
+                masterList.Remove(o);
+            }
+            AddChildrenToMasterDeep();
+
+        }
+
+        public void AddChildrenToMasterDeep()
+        {
+            foreach (object child in children.ToList())
+            {
+                InspectorItem item = (InspectorItem)child;
+                masterList.Add(child);
+                if (item.children.Count > 0 && item.extended)
+                {
+                    item.AddChildrenToMasterDeep();
+                }
+            }
+
+        }
+
+        public void AddMissingChildren()
+        {
+            if (datatype == data_type.dict)
+            {
+                dynamic dict = obj;
+                foreach (dynamic key in dict.Keys)
+                {
+                    //System.Console.WriteLine(key.ToString());
+                    bool found = false;
+                    foreach (object child in children.ToList())
+                    {
+                        InspectorItem item = (InspectorItem)child;
+                        if (item.key.Equals(key))
+                        {
+                            found = true;
+                        }
+                    }
+                    if (!found)
+                    {
+                        InspectorItem iitem = new InspectorItem(masterList, this, dict[key], key);
+                        if (iitem.CheckForChildren()) iitem.prefix = "+";
+                        InsertItemSorted(children, iitem);
+                    }
+
+                }
+            }
+            else if (datatype == data_type.obj)
+            {
+                List<PropertyInfo> propertyInfos;
+                //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
+                if (!(this.obj is Component))
+                {
+                    propertyInfos = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
+                }
+                else
+                {
+                    propertyInfos = obj.GetType().GetProperties().ToList();
+                }
+
+                foreach (PropertyInfo pinfo in propertyInfos)
+                {
+                    //if (pinfo.PropertyType == typeof(Node)) continue; //don't infinitely recurse on nodes
+                    bool found = false;
+                    foreach (object child in children)
+                    {
+                        if (((InspectorItem)child).fpinfo.Name.Equals(pinfo.Name))
+                        {
+                            found = true;
+                        }
+                    }
+                    if (!found)
+                    {
+                        InspectorItem iitem = new InspectorItem(parentItem.masterList, this, pinfo.GetValue(obj, null), pinfo);
+                        if (iitem.CheckForChildren()) iitem.prefix = "+";
+                        InsertItemSorted(children, iitem);
+                    }
+
+
+                    
+                }
+                foreach (object child in children)
+                {
+                    InspectorItem item = (InspectorItem)child;
+                    if (item.extended)
+                    {
+                        item.AddMissingChildren();
+                    }
+                }
+            }
+        }
+
+        public static List<object> GenerateList(object parent, InspectorItem parentItem = null)
         {
             List<object> list = new List<object>();
-            List<int> weightsList = new List<int>();
             //char a = (char)164;
             //System.Console.WriteLine(a);
-            string space = "|" + whiteSpace;
+            //string space = "|";
+            //if (parentItem != null) space += parentItem.whitespace;
             //List<FieldInfo> fieldInfos = o.GetType().GetFields().ToList(); //just supporting properties for now
             data_type dt = data_type.obj; //if this item is the root, we should give it it's real type insteam of assuming it's an object
             if (parentItem != null) dt = parentItem.datatype;
@@ -202,11 +300,11 @@ namespace OrbItProcs.Interface {
                 foreach (dynamic key in dict.Keys)
                 {
                     //System.Console.WriteLine(key.ToString());
-                    InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, space, key, dict[key]);
+                    InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, dict[key], key);
                     //iitem.GenerateChildren();
                     //list.Add(iitem);
                     if (iitem.CheckForChildren()) iitem.prefix = "+";
-                    InsertItemSorted(list, weightsList, iitem);
+                    InsertItemSorted(list, iitem);
                 }
             }
             else if (dt == data_type.obj)
@@ -226,11 +324,11 @@ namespace OrbItProcs.Interface {
                 {
                     //if (pinfo.PropertyType == typeof(Node)) continue; //don't infinitely recurse on nodes
 
-                    InspectorItem iitem = new InspectorItem(parentItem.masterList, pinfo.GetValue(parent, null), pinfo, parentItem, space);
+                    InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, pinfo.GetValue(parent, null), pinfo);
                     //iitem.GenerateChildren();
                     //list.Add(iitem);
                     if (iitem.CheckForChildren()) iitem.prefix = "+";
-                    InsertItemSorted(list, weightsList, iitem);
+                    InsertItemSorted(list, iitem);
                 }
             }
             //if it's just a normal primitive, it will return an empty list
@@ -255,29 +353,25 @@ namespace OrbItProcs.Interface {
             return false;
         }
 
-        public static void InsertItemSorted(List<object> objList, List<int> weightsList, InspectorItem item)
+        public static void InsertItemSorted(List<object> itemList, InspectorItem item)
         {
-            int length = objList.Count;
+            int length = itemList.Count;
             int weight = (int)item.datatype;
 
             if (weight == 0)
             {
-                weightsList.Add(weight);
-                objList.Add(item);
+                itemList.Add(item);
                 return;
             }
-            
             for (int i = 0; i < length; i++)
             {
-                if (weight < weightsList.ElementAt(i))
+                if (weight < (int)((InspectorItem)itemList.ElementAt(i)).datatype)
                 {
-                    weightsList.Insert(i, weight);
-                    objList.Insert(i, item);
+                    itemList.Insert(i, item);
                     return;
                 }
             }
-            weightsList.Add(weight);
-            objList.Add(item);
+            itemList.Add(item);
             
         }
 
@@ -546,6 +640,8 @@ namespace OrbItProcs.Interface {
             }
 
         }
+
+        
 
         public bool HasPanelElements()
         {

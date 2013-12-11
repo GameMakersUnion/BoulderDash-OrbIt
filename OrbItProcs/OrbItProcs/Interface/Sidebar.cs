@@ -57,6 +57,7 @@ namespace OrbItProcs.Interface
         public MenuItem applyToAllNodesMenuItem;
         public MenuItem toggleComponentMenuItem;
         public MenuItem removeComponentMenuItem;
+        public MenuItem toggleBoolMenuItem;
         public ContextMenu presetContextMenu;
         public MenuItem deletePresetMenuItem;
 
@@ -257,6 +258,7 @@ namespace OrbItProcs.Interface
             cmbPresets.Top = HeightCounter; HeightCounter += VertPadding + cmbPresets.Height;
             game.NodePresets.CollectionChanged += NodePresets_Sync;
             cmbPresets.ItemIndexChanged += cmbPresets_ItemIndexChanged;
+            cmbPresets.Click += cmbPresets_Click;
 
             #endregion
 
@@ -299,6 +301,10 @@ namespace OrbItProcs.Interface
             removeComponentMenuItem = new MenuItem("Remove Component");
             //removeComponentMenuItem.Click += NotImplemented;
             removeComponentMenuItem.Click += removeComponentMenuItem_Click;
+            toggleBoolMenuItem = new MenuItem("Toggle");
+            toggleBoolMenuItem.Click += toggleBoolMenuItem_Click;
+
+
             contextMenulstComp.Items.Add(applyToAllNodesMenuItem);
 
             lstComp.ContextMenu = contextMenulstComp;
@@ -340,7 +346,7 @@ namespace OrbItProcs.Interface
 
             #endregion
 
-            #region  /// Save as Template ///
+            #region  /// Save as Preset ///
             btnSaveNode = new Button(manager);
             btnSaveNode.Init();
             btnSaveNode.Text = "Save Node";
@@ -385,7 +391,7 @@ namespace OrbItProcs.Interface
             consoletextbox.Height = consoletextbox.Height + 3;
 
             consoletextbox.ToolTip.Text = "Enter a command, and push enter";
-            consoletextbox.KeyUp += new KeyEventHandler(consolePressed);
+            consoletextbox.KeyUp += consolePressed;
             #endregion
 
             #region  /// Enter Button ///
@@ -434,6 +440,7 @@ namespace OrbItProcs.Interface
             lstPresets.Anchor = Anchors.Top | Anchors.Left | Anchors.Bottom;
             lstPresets.HideSelection = false;
             lstPresets.ItemIndexChanged += lstPresets_ItemIndexChanged;
+            
             // go to cmbPresets to find the preset synching reference.
             
             #region /// Presets ContextMenu ///
@@ -485,7 +492,9 @@ namespace OrbItProcs.Interface
 
         public void ResetTreeListBox(TreeListBox treelistbox, object rootobj)
         {
-            InspectorItem rootitem = new InspectorItem(treelistbox.Items, rootobj, "");
+            treelistbox.ItemIndex = 0;
+            InspectorItem rootitem = new InspectorItem(treelistbox.Items, rootobj);
+            treelistbox.rootitem = rootitem;
             rootitem.GenerateChildren();
 
             foreach (object o in treelistbox.Items.ToList())
@@ -542,7 +551,7 @@ namespace OrbItProcs.Interface
             foreach (Node n in room.nodes.ToList())
             {
                 if (n == itemspath.ElementAt(0).obj) continue;
-                InspectorItem temp = new InspectorItem(null, n, "");
+                InspectorItem temp = new InspectorItem(null, n);
                 int count = 0;
                 foreach (InspectorItem pathitem in itemspath)
                 {
@@ -593,11 +602,11 @@ namespace OrbItProcs.Interface
                             dynamic dict = temp.obj;
                             dynamic key = next.key;
                             if (!dict.ContainsKey(key)) break;
-                            temp = new InspectorItem(null, temp, "", key, dict[key]);
+                            temp = new InspectorItem(null, temp, dict[key], key);
                         }
                         else
                         {
-                            temp = new InspectorItem(null, next.fpinfo.GetValue(temp.obj), next.fpinfo.propertyInfo, temp, "");
+                            temp = new InspectorItem(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.propertyInfo);
                         }
                     }
                     count++;
@@ -635,6 +644,21 @@ namespace OrbItProcs.Interface
             Component component = (Component)item.obj;
             component.active = !component.active;
         }
+
+        void toggleBoolMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            InspectorItem item = (InspectorItem)lstComp.Items.ElementAt(lstComp.ItemIndex);
+            if (!(item.obj is bool))
+            {
+                Console.WriteLine("Error: The list item was not a bool.");
+                return;
+            }
+
+            //Component component = (Component)item.obj;
+            //component.active = !component.active;
+            item.SetValue(!(bool)item.GetValue());
+        }
+
 
         void removeComponentMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
@@ -1202,6 +1226,15 @@ namespace OrbItProcs.Interface
             });
         }
 
+        void cmbPresets_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            ComboBox combobox = (ComboBox)sender;
+            if (combobox.ItemIndex >= 0)
+            {
+                lstPresets_ItemIndexChanged(lstPresets, e); //HACKs
+            }
+        }
+
         void cmbPresets_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
 
@@ -1211,7 +1244,7 @@ namespace OrbItProcs.Interface
             ui.editNode = (Node)combobox.Items.ElementAt(combobox.ItemIndex);
             lblEditNodeName.Text = ui.editNode.name;
             */
-            System.Console.WriteLine("num : {0}", cmbPresets.ItemIndex);
+            //System.Console.WriteLine("num : {0}", cmbPresets.ItemIndex);
             if (combobox.ItemIndex != lstPresets.ItemIndex)
             {
                 lstPresets.ItemIndex = combobox.ItemIndex;
@@ -1248,6 +1281,12 @@ namespace OrbItProcs.Interface
                 }
                 else
                 {
+                    // zack
+                    if (litem.obj is bool)
+                    {
+                        contextMenulstComp.Items.Add(toggleBoolMenuItem);
+                    }
+
                     contextMenulstComp.Items.Add(applyToAllNodesMenuItem); //only works if nodes have the same structural element
                 }
 
@@ -1311,6 +1350,7 @@ namespace OrbItProcs.Interface
             if (ui.editNode != game.room.defaultNode && !lstPresets.Items.Contains(ui.editNode))
             {
                 lstComp.Items.Clear();
+                lstComp.rootitem = null;
                 ui.editNode = null;
             }
         }
@@ -1320,12 +1360,14 @@ namespace OrbItProcs.Interface
             //game.room.RemoveAllNodes();
             if (game.targetNode != null)
             {
-                game.room.nodes.Remove(game.targetNode);
+                //game.room.nodes.Remove(game.targetNode);
+                game.targetNode.active = false;
                 game.targetNode = null;
             }
             if (ui.editNode != game.room.defaultNode && !lstPresets.Items.Contains(ui.editNode))
             {
                 lstComp.Items.Clear();
+                lstComp.rootitem = null;
                 ui.editNode = null;
             }
             //DisableControls(groupPanel);
@@ -1338,7 +1380,7 @@ namespace OrbItProcs.Interface
                 if (ans == null)
                 {
                     PopUp.Toast(ui, "You didn't select a component.");
-                    return;
+                    return; //I added this, because if not, the above toast does not show. -zck
                 }
                 bool writeable = true;
                 
@@ -1346,7 +1388,11 @@ namespace OrbItProcs.Interface
                     PopUp.Prompt(ui,
                         "The node already contains this component. Overwrite to default component?",
                         action: delegate(bool k, object a) { writeable = k; });
-                if (writeable) ui.editNode.addComponent((comp)ans, true, true);
+                if (writeable)
+                {
+                    ui.editNode.addComponent((comp)ans, true, true);
+                    lstComp.rootitem.RefrestMasterList();
+                }
             }
         }
 

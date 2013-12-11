@@ -44,6 +44,7 @@ namespace OrbItProcs
             window.Width = 200;
             window.Height = 200;
             window.SetPosition(Game1.sWidth - 220, Game1.sHeight / 4);
+            //window.KeyUp += delegate (object sender, KeyEventArgs e) { if (windowType.In(PopUpType.alert) && e.Key == Keys.Enter) window.Close(); };
 
             Button btnOk = new Button(manager);
             btnOk.Top = window.Description.Top + window.Description.Height;
@@ -53,7 +54,6 @@ namespace OrbItProcs
             btnOk.Left = VertPadding;
             btnOk.Click += delegate { window.Close(); };
             btnOk.Init();
-
 
             if (windowType == PopUpType.alert)
             {
@@ -85,6 +85,15 @@ namespace OrbItProcs
                 btnOk.Top = tbName.Top + tbName.Height;
 
                 tbName.TextChanged += delegate {answer = tbName.Text;};
+                tbName.KeyUp += delegate(object sender, KeyEventArgs e)
+                {
+                    if (e.Key == Keys.Enter)
+                    {
+                        confirmed = true;
+                        action(true, answer);
+                        window.Close();
+                    }
+                };
             }
 
             if (windowType.In(PopUpType.prompt, PopUpType.textBox, PopUpType.dropDown))
@@ -104,6 +113,12 @@ namespace OrbItProcs
             window.Height = (btnOk.Top) + 70;
             manager.Add(window);
 
+        }
+
+        static void tbName_KeyUp(object sender, KeyEventArgs e)
+        {
+            
+        
         }
 
         public static void Toast(UserInterface ui, string message = "", string title = "Hey! Listen!")

@@ -74,6 +74,7 @@ namespace OrbItProcs {
             
             for (int i = 0; i < c; i++)
             {
+                ((Node)nodes.ElementAt(0)).active = false;
                 nodes.Remove(nodes.ElementAt(0));
             }
             //game.ui.sidebar.UpdateNodesTitle();
@@ -81,7 +82,9 @@ namespace OrbItProcs {
 
         public void Update(GameTime gametime)
         {
+            //these make it convienient to check values after pausing the game my mouseing over
             if (defaultNode == null) defaultNode = null;
+            //if (game.ui.sidebar.lstComp == null) game.ui.sidebar.lstComp = null;
 
             if (dtimerCount > dtimerMax)
             {
@@ -125,6 +128,7 @@ namespace OrbItProcs {
                 }
 
                 //addGridSystemLines(gridsystem);
+                addBorderLines();
 
 
                 //colorEffectedNodes();
@@ -184,6 +188,14 @@ namespace OrbItProcs {
             }
         }
 
+        public void addBorderLines()
+        {
+            gridSystemLines.Add(new Rectangle(0, 0, game.worldWidth, 0));
+            gridSystemLines.Add(new Rectangle(0, 0, 0, game.worldHeight));
+            gridSystemLines.Add(new Rectangle(0, game.worldHeight, game.worldWidth, game.worldHeight));
+            gridSystemLines.Add(new Rectangle(game.worldWidth, 0, game.worldWidth, game.worldHeight));
+        }
+
         public void Draw(SpriteBatch spritebatch)
         {
             if (game.targetNode != null)
@@ -200,7 +212,7 @@ namespace OrbItProcs {
             {
                 //float scale = 1 / mapzoom;
                 Rectangle maprect = new Rectangle((int)(rect.X / mapzoom), (int)(rect.Y / mapzoom), (int)(rect.Width / mapzoom), (int)(rect.Height / mapzoom));
-                spritebatch.DrawLine(new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), Color.Purple);
+                spritebatch.DrawLine(new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), Color.Green);
                 linecount++;
             }   
             
