@@ -46,6 +46,7 @@ namespace OrbItProcs.Interface {
             typeof(Game1),
             typeof(Room),
             typeof(GridSystem),
+            typeof(Group),
         };
         public static List<Type> PanelTypes = new List<Type>()
         {

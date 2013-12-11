@@ -30,7 +30,46 @@ namespace OrbItProcs.Interface
         public Game1 game;
         public Room room;
         public UserInterface ui;
-
+        private Group _ActiveGroup;
+        public Group ActiveGroup { 
+            get 
+            { 
+                if (cmbListPicker != null && cmbListPicker.ItemIndex != -1 && room != null && room.masterGroup != null)
+                {
+                    string name = cmbListPicker.Text;
+                    if (room.masterGroup.childGroups.ContainsKey(name))
+                    {
+                        return room.masterGroup.childGroups[name];
+                    }
+                    //Console.WriteLine("Group couldn't be found while getting ActiveGroup property.");
+                    return room.masterGroup;
+                }
+                else
+                {
+                    //Console.WriteLine("Group couldn't be found while getting ActiveGroup property.");
+                    return room.masterGroup;
+                }
+            }
+            //set { _ActiveGroup = value; }
+        }
+        public Node ActiveDefaultNode
+        {
+            get
+            {
+                if (cmbListPicker != null && cmbListPicker.ItemIndex != -1 && room != null && room.masterGroup != null)
+                {
+                    string name = cmbListPicker.Text;
+                    if (room.masterGroup.childGroups.ContainsKey(name))
+                    {
+                        return room.masterGroup.childGroups[name].defaultNode;
+                    }
+                    //Console.WriteLine("Group couldn't be found while getting ActiveGroup property.");
+                    //return room.masterGroup.defaultNode;
+                }
+                return room.masterGroup.defaultNode;
+            }
+        }
+        
         public int Width = 200;
         #region /// Neoforce Fields///
         private Manager manager;
@@ -54,12 +93,13 @@ namespace OrbItProcs.Interface
         //public Node ui.editNode, ui.spawnerNode;
         public ListBox lstPresets;
         public ComboBox cmbPresets;
-        public MenuItem applyToAllNodesMenuItem;
-        public MenuItem toggleComponentMenuItem;
-        public MenuItem removeComponentMenuItem;
-        public MenuItem toggleBoolMenuItem;
+        public MenuItem applyToAllNodesMenuItem, toggleComponentMenuItem, removeComponentMenuItem, toggleBoolMenuItem;
         public ContextMenu presetContextMenu;
         public MenuItem deletePresetMenuItem;
+
+        public ContextMenu mainNodeContextMenu;
+        public MenuItem ConvertIntoList, PromoteToDefault;
+        
 
         public PropertyEditPanel propertyEditPanel;
         #endregion
@@ -152,8 +192,16 @@ namespace OrbItProcs.Interface
 
             lstMain.HideSelection = false; // TODO WTF
             lstMain.ItemIndexChanged += lstMain_ItemIndexChanged;
-            //lstMain.Items = room.nodes;
-            room.nodes.CollectionChanged += nodes_Sync;
+            lstMain.Click += lstMain_Click;
+            //room.nodes.CollectionChanged += nodes_Sync;
+
+            mainNodeContextMenu = new ContextMenu(manager);
+            ConvertIntoList = new MenuItem("Make Default of new Group.");
+            ConvertIntoList.Click += ConvertIntoList_Click;
+            PromoteToDefault = new MenuItem("Make Default of current Group");
+            PromoteToDefault.Click += PromoteToDefault_Click;
+            mainNodeContextMenu.Items.Add(ConvertIntoList);
+            lstMain.ContextMenu = mainNodeContextMenu;
             #endregion
 
             #region /// CheckBox ///
@@ -184,8 +232,8 @@ namespace OrbItProcs.Interface
             cmbListPicker.Width = first.Width - LeftPadding * 6;
             cmbListPicker.Left = LeftPadding;
             cmbListPicker.Top = HeightCounter; HeightCounter += VertPadding + cmbListPicker.Height;
-            cmbListPicker.Items.Add("Nodes");
             cmbListPicker.Items.Add("Other Objects");
+            cmbListPicker.ItemIndex = 0;
             cmbListPicker.ItemIndexChanged += cmbListPicker_ItemIndexChanged;
 
             #endregion
@@ -268,7 +316,7 @@ namespace OrbItProcs.Interface
             lblEditNodeName.Parent = first;
 
             lblEditNodeName.Top = HeightCounter + 10; HeightCounter += VertPadding + lblEditNodeName.Height + 10;
-            lblEditNodeName.Width = 150;
+            lblEditNodeName.Width = first.Width - LeftPadding * 2;
             lblEditNodeName.Left = first.Width / 5;
             lblEditNodeName.Anchor = Anchors.Left;
 
@@ -292,7 +340,7 @@ namespace OrbItProcs.Interface
             lstComp.Click += lstComp_Click;
             #region  /// Context Menu ///
             contextMenulstComp = new ContextMenu(manager);
-            applyToAllNodesMenuItem = new MenuItem("Apply to all Nodes");
+            applyToAllNodesMenuItem = new MenuItem("Apply to Group");
             applyToAllNodesMenuItem.Click += applyToAllNodesMenuItem_Click;
             //applyToAllNodesMenuItem.Click += NotImplemented;
             toggleComponentMenuItem = new MenuItem("Toggle Component");
@@ -331,12 +379,12 @@ namespace OrbItProcs.Interface
             propertyEditPanel = new PropertyEditPanel(groupPanel, this);
             #endregion
 
-            #region  /// Apply to All ///
+            #region  /// Apply to Group ///
             btnApplyToAll = new Button(manager);
             btnApplyToAll.Init();
             btnApplyToAll.Parent = first;
 
-            btnApplyToAll.Text = "Apply To All";
+            btnApplyToAll.Text = "Apply To Group";
             btnApplyToAll.Top = HeightCounter;
             btnApplyToAll.Width = first.Width / 2 - LeftPadding;
             btnApplyToAll.Height = 20; //HeightCounter += VertPadding + btnApplyToAll.Height;
@@ -456,27 +504,62 @@ namespace OrbItProcs.Interface
             #endregion
             #endregion
 
-            ResetTreeListBox(lstComp, room.defaultNode);
+            ResetTreeListBox(lstComp, ActiveDefaultNode);
 
             //lstComp.BackColor = Color.Blue;
             //lstComp.Color = Color.Black;
             //lstComp.TextColor = Color.Green;
         }
 
+        void PromoteToDefault_Click(object sender, EventArgs e)
+        {
+            Node n = (Node)lstMain.Items.ElementAt(lstMain.ItemIndex);
+            Node newdefault = new Node();
+            Node.cloneObject(n, newdefault);
+            Group g = ActiveGroup;
+            g.defaultNode = newdefault;
+            g.entities.Remove(n);
+            SetDefaultNodeAsEdit();
+        }
+
+        void ConvertIntoList_Click(object sender, EventArgs e)
+        {
+            Node n = (Node)lstMain.Items.ElementAt(lstMain.ItemIndex);
+            Node newdefault = new Node();
+            Node.cloneObject(n, newdefault);
+            Group g = new Group(newdefault, parentGroup: room.masterGroup, Name: newdefault.name);
+            room.masterGroup.AddGroup(g.Name, g);
+            ActiveGroup.entities.Remove(n);
+            g.entities.Add(n);
+
+            int index = cmbListPicker.Items.IndexOf(newdefault.name);
+            cmbListPicker.ItemIndex = index;
+        }
+
+        void lstMain_Click(object sender, EventArgs e)
+        {
+            MouseEventArgs me = (MouseEventArgs)e;
+            if (me.Button != MouseButton.Right) return;
+            ListBox listbox = (ListBox)sender;
+            listbox.ContextMenu.Items.ForEach(delegate(MenuItem o) { listbox.ContextMenu.Items.Remove(o); });
+            Color c = listbox.ContextMenu.Color;
+            listbox.ContextMenu.Color = new Color(0f, 0f, 0f, 0f);
+            if(listbox.ItemIndex >= 0 && listbox.Items.ElementAt(listbox.ItemIndex) is Node)
+            {
+                //Color c = listbox.ContextMenu.Color;
+                //Console.WriteLine("{0},{1},{2},{3}",c.R,c.G,c.B,c.A);
+                listbox.ContextMenu.Color = new Color(1f, 1f, 1f, 1.0f);
+                listbox.ContextMenu.Items.Add(ConvertIntoList);
+                listbox.ContextMenu.Items.Add(PromoteToDefault);
+            }
+        }
+
         void cmbListPicker_ItemIndexChanged(object sender, EventArgs e)
         {
+            
             ComboBox cmb = (ComboBox)sender;
             string item = cmb.Items.ElementAt(cmb.ItemIndex).ToString();
-            if (item.Equals("Nodes"))
-            {
-                foreach (object o in lstMain.Items.ToList())
-                {
-                    lstMain.Items.Remove(o);
-                }
-
-                lstMain.Items.AddRange(room.nodes);
-            }
-            else if (item.Equals("Other Objects"))
+            if (item.Equals("Other Objects"))
             {
                 foreach (object o in lstMain.Items.ToList())
                 {
@@ -484,10 +567,26 @@ namespace OrbItProcs.Interface
                 }
                 lstMain.Items.Add(room.game);
                 lstMain.Items.Add(room);
+                lstMain.Items.Add(room.masterGroup);
+            }
+            else if (!item.Equals(""))
+            {
+                foreach (object o in lstMain.Items.ToList())
+                {
+                    lstMain.Items.Remove(o);
+                }
 
+                Group find = room.masterGroup.FindGroup(item);
+                if (find == null) return;
+                lstMain.Items.AddRange(find.entities);
+                SyncTitleNumber(find);
+
+                SetDefaultNodeAsEdit();
 
             }
 
+            //if (lstMain.Items.Count > 0) lstMain.ItemIndex = 0;
+            lstMain.ScrollTo(0);
         }
 
         public void ResetTreeListBox(TreeListBox treelistbox, object rootobj)
@@ -527,8 +626,18 @@ namespace OrbItProcs.Interface
 
         void nodes_Sync(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            title1.Text = "Node List : " + room.nodes.Count;
-            lstMain.Items.syncOC(e);
+            int count = ActiveGroup == null ? 0 : ActiveGroup.entities.Count;
+            title1.Text = "Node List : " + count;
+            if (cmbListPicker.Text.Equals("Nodes"))
+                lstMain.Items.syncOC(e);
+        }
+
+        public void SyncTitleNumber(Group caller)
+        {
+            Group g = ActiveGroup;
+            if (g != caller) return;
+            int count = g == null ? 0 : g.entities.Count;
+            title1.Text = g.Name + " : " + count;
         }
 
         void btnSaveNode_Click(object sender, EventArgs e)
@@ -548,9 +657,12 @@ namespace OrbItProcs.Interface
 
             BuildItemsPath(item, itemspath);
 
-            foreach (Node n in room.nodes.ToList())
+            Group activeGroup = ActiveGroup;
+            //Group.ForEachDictionary(room.groups, delegate(object o) {
+            activeGroup.entities.ToList().ForEach(delegate(object o)
             {
-                if (n == itemspath.ElementAt(0).obj) continue;
+                Node n = (Node)o;
+                if (n == itemspath.ElementAt(0).obj) return;
                 InspectorItem temp = new InspectorItem(null, n);
                 int count = 0;
                 foreach (InspectorItem pathitem in itemspath)
@@ -564,7 +676,6 @@ namespace OrbItProcs.Interface
                     {
                         if (pathitem.membertype == member_type.dictentry)
                         {
-                            
                             dynamic dict = temp.parentItem.obj;
                             dynamic key = pathitem.key;
                             if (!dict.ContainsKey(key)) break;
@@ -576,9 +687,7 @@ namespace OrbItProcs.Interface
                             {
                                 dict[key] = value;
                             }
-                            
                             //Console.WriteLine("Successfully writted dict entry.");
-
                         }
                         else
                         {
@@ -590,13 +699,12 @@ namespace OrbItProcs.Interface
                             {
                                 temp.fpinfo.SetValue(value, temp.parentItem.obj);
                             }
-                            
                             //Console.WriteLine("Successfully writted property. {0} -> {1}", value, temp.parentItem.obj);
                         }
                     }
                     else
                     {
-                        InspectorItem next = itemspath.ElementAt(count+1);
+                        InspectorItem next = itemspath.ElementAt(count + 1);
                         if (next.membertype == member_type.dictentry)
                         {
                             dynamic dict = temp.obj;
@@ -611,7 +719,7 @@ namespace OrbItProcs.Interface
                     }
                     count++;
                 }
-            }
+            });
         }
 
         public void BuildItemsPath(InspectorItem item, List<InspectorItem> itemspath)
@@ -1128,17 +1236,20 @@ namespace OrbItProcs.Interface
         */
         public void lstMain_ChangeScrollPosition(int change)
         {
+            
             if (lstMainScrollPosition + change < 0) lstMainScrollPosition = 0;
-            else if (lstMainScrollPosition + change > lstMain.Items.Count) lstMainScrollPosition = lstMain.Items.Count;
+            else if (lstMainScrollPosition + change > lstMain.Items.Count-7) lstMainScrollPosition = lstMain.Items.Count-7;
             else lstMainScrollPosition += change;
+            lstMain.ScrollTo(lstMain.Items.Count - 1);
             lstMain.ScrollTo(lstMainScrollPosition);
         }
 
         public void lstComp_ChangeScrollPosition(int change)
         {
             if (lstCompScrollPosition + change < 0) lstCompScrollPosition = 0;
-            else if (lstCompScrollPosition + change > lstComp.Items.Count) lstCompScrollPosition = lstComp.Items.Count;
+            else if (lstCompScrollPosition + change > lstComp.Items.Count-9) lstCompScrollPosition = lstComp.Items.Count-9;
             else lstCompScrollPosition += change;
+            lstComp.ScrollTo(lstComp.Items.Count - 1);
             lstComp.ScrollTo(lstCompScrollPosition);
         }
 
@@ -1159,11 +1270,11 @@ namespace OrbItProcs.Interface
             lstComp.Items = TreeListItem.GenerateList((Node)listbox.Items.ElementAt(listbox.ItemIndex), "");
             */
 
-            if (listbox.Items.ElementAt(listbox.ItemIndex) is Node)
+            if (listbox.ItemIndex > 0 && listbox.Items.ElementAt(listbox.ItemIndex) is Node)
             {
                 SetTargetNode((Node)listbox.Items.ElementAt(listbox.ItemIndex));
             }
-            else
+            else if (listbox.ItemIndex > 0)
             {
                 ResetTreeListBox(lstComp, listbox.Items.ElementAt(listbox.ItemIndex));
             }
@@ -1196,6 +1307,7 @@ namespace OrbItProcs.Interface
             }
             //System.Console.WriteLine("" + treebox.ItemIndex);
             //game.room.defaultNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
+            if (listbox.ItemIndex < 0) return;
             ui.editNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
             lblEditNodeName.Text = ui.editNode.name;
             ui.spawnerNode = ui.editNode;
@@ -1335,36 +1447,51 @@ namespace OrbItProcs.Interface
             
 
             //compLst = TreeListItem.GenerateList(game.room.defaultNode, "");
-            ui.editNode = game.room.defaultNode;
-            ui.spawnerNode = ui.editNode;
-            lblEditNodeName.Text = ui.editNode.name;
+            SetDefaultNodeAsEdit();
+        }
 
-            ResetTreeListBox(lstComp, room.defaultNode);
+        public void SetDefaultNodeAsEdit()
+        {
+            ui.editNode = ActiveDefaultNode;
+            ui.spawnerNode = ui.editNode;
+
+
+            ResetTreeListBox(lstComp, ActiveDefaultNode);
+
+            lblEditNodeName.Text = ui.editNode.name + "(DEFAULT)";
         }
 
         void btnRemoveAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            game.room.RemoveAllNodes();
-            game.targetNode = null;
-
-            if (ui.editNode != game.room.defaultNode && !lstPresets.Items.Contains(ui.editNode))
+            //game.room.RemoveAllNodes();
+            //game.targetNode = null;
+            Group g = ActiveGroup;
+            if (g.entities.Contains(game.targetNode)) game.targetNode = null;
+            if (g.entities.Contains(ui.editNode) && ui.editNode != g.defaultNode)
             {
                 lstComp.Items.Clear();
                 lstComp.rootitem = null;
                 ui.editNode = null;
             }
+            g.entities.ToList().ForEach(delegate(object o) { g.entities.Remove(o); });
+
+            lstMain.ItemIndex = -1;
+
         }
 
         void btnRemoveNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             //game.room.RemoveAllNodes();
+            Group g = ActiveGroup;
+            if (g != null && g.entities.Contains(game.targetNode)) g.entities.Remove(game.targetNode);
+
             if (game.targetNode != null)
             {
                 //game.room.nodes.Remove(game.targetNode);
                 game.targetNode.active = false;
                 game.targetNode = null;
             }
-            if (ui.editNode != game.room.defaultNode && !lstPresets.Items.Contains(ui.editNode))
+            if (ui.editNode != ActiveDefaultNode && !lstPresets.Items.Contains(ui.editNode))
             {
                 lstComp.Items.Clear();
                 lstComp.rootitem = null;

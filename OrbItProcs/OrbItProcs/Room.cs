@@ -37,6 +37,9 @@ namespace OrbItProcs {
 
         public Dictionary<string, bool> PropertiesDict = new Dictionary<string, bool>();
 
+        //public Dictionary<string, Group> groups = new Dictionary<string, Group>();
+        public Group masterGroup;
+
         public ObservableCollection<object> nodes = new ObservableCollection<object>();
 
         public Queue<object> nodesToAdd = new Queue<object>();
@@ -66,8 +69,10 @@ namespace OrbItProcs {
             gridsystem = new GridSystem(this, 40, 40);
             gridSystemLines = new List<Rectangle>();
 
-        }
+            
 
+        }
+        /*
         public void RemoveAllNodes()
         {
             int c = nodes.Count;
@@ -79,7 +84,7 @@ namespace OrbItProcs {
             }
             //game.ui.sidebar.UpdateNodesTitle();
         }
-
+        */
         public void Update(GameTime gametime)
         {
             //these make it convienient to check values after pausing the game my mouseing over
@@ -94,7 +99,40 @@ namespace OrbItProcs {
                 gridsystem.clear();
                 gridSystemLines = new List<Rectangle>();
 
+                HashSet<Node> toRemove = new HashSet<Node>();
+                //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
+                masterGroup.entities.ToList().ForEach(delegate(object o) 
+                {
+                    Node n = (Node)o; 
+                    gridsystem.insert(n);
+                });
 
+                //fullset.ToList().ForEach(delegate(Node n) { gridsystem.insert(n); });
+
+                masterGroup.entities.ToList().ForEach(delegate(object o)
+                {
+                    Node n = (Node)o;
+                    n.Update(gametime);
+                    if (!n.active)
+                    {
+                        toRemove.Add(n);
+                    }
+                });
+
+                toRemove.ToList().ForEach(delegate(Node n) 
+                {
+                    if (masterGroup.entities.Contains(n)) masterGroup.entities.Remove(n);
+                    /*
+                    groups.Keys.ToList().ForEach(delegate(string key)
+                    {
+                        Group g = groups[key];
+                        if (g.entities.Contains(n)) g.entities.Remove(n);
+                    });
+                    */
+                });
+                
+
+                /*
                 List<Node> toRemove = new List<Node>();
                 //Console.WriteLine("AMOUNT OF NODES: {0}",nodes.Count);
                 foreach (Node _node in nodes)
@@ -113,6 +151,7 @@ namespace OrbItProcs {
                         toRemove.Add(_node);
                     }
                 }
+                
                 int toAddCounter = nodesToAdd.Count;
                 for (int i = 0; i < toAddCounter; i++)
                 {
@@ -126,7 +165,7 @@ namespace OrbItProcs {
                     nodes.Remove(node);
                     //game.ui.sidebar.UpdateNodesTitle();
                 }
-
+                */
                 //addGridSystemLines(gridsystem);
                 addBorderLines();
 
@@ -202,10 +241,11 @@ namespace OrbItProcs {
             {
                 targetNodeGraphic.Draw(spritebatch);
             }
-            foreach (Node node in nodes)
+            masterGroup.entities.ToList().ForEach(delegate(object o)
             {
-                node.Draw(spritebatch);
-            }
+                Node n = (Node)o;
+                n.Draw(spritebatch);
+            });
             int linecount = 0;
 
             foreach (Rectangle rect in gridSystemLines)

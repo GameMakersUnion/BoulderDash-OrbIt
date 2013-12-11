@@ -103,7 +103,7 @@ namespace OrbItProcs
             return component;
         }
         
-        private UserInterface ui;
+        public UserInterface ui;
         public Room room;
         SpriteBatch spriteBatch;
         public SpriteFont font;
@@ -192,19 +192,27 @@ namespace OrbItProcs
             #endregion
 
             room.defaultNode = new Node(room, userPr);
-            room.defaultNode.name = "DEFAULTNODE";
-            /*
-            foreach(comp c in room.defaultNode.comps.Keys.ToList())
-            {
-                room.defaultNode.comps[c].AfterCloning();
-            }
-            */
+            room.defaultNode.name = "master";
+
             //much faster than foreach keyword apparently. Nice
             room.defaultNode.comps.Keys.ToList().ForEach(delegate(comp c) 
             {
                 room.defaultNode.comps[c].AfterCloning();
             });
 
+            Node firstdefault = new Node();
+            Node.cloneObject(room.defaultNode, firstdefault);
+            firstdefault.name = "first";
+
+            Group masterGroup = new Group(room.defaultNode, Name: room.defaultNode.name);
+            room.masterGroup = masterGroup;
+            //room.groups.Add(masterGroup.Name, masterGroup);
+            Group firstGroup = new Group(firstdefault, parentGroup: masterGroup , Name: firstdefault.name);
+            room.masterGroup.AddGroup(firstGroup.Name, firstGroup, false);
+            //room.groups.Add(firstGroup.Name, firstGroup);
+
+            
+            //////////////////////////////////////////////////////////////////////////////////////
             List<int> ints = new List<int> { 1, 2, 3 };
             ints.ForEach(delegate(int i) { if (i==2) ints.Remove(i); }); //COOL: NO ENUMERATION WAS MODIFIED ERROR
             ints.ForEach(delegate(int i) { Console.WriteLine(i); });
@@ -239,7 +247,7 @@ namespace OrbItProcs
             delSet(tester, false);
             Console.WriteLine("Here we go: {0}", delGet(tester));
             delSet(tester, true);
-
+            /////////////////////////////////////////////////////////////////////////////////////////
             /*
             //gets all types that are a subclass of Component
             List<Type> types = AppDomain.CurrentDomain.GetAssemblies()
@@ -287,6 +295,9 @@ namespace OrbItProcs
 
 
             ui = new UserInterface(this);
+            //ui.sidebar.ActiveGroup = firstGroup;
+            room.masterGroup.UpdateComboBox();
+            room.game.ui.sidebar.cmbListPicker.ItemIndex = 1;
             InitializePresets();
         }
 
@@ -360,53 +371,35 @@ namespace OrbItProcs
                 room.colorEffectedNodes();
             }
         }
-
-        public void spawnNode(int worldMouseX, int worldMouseY)
+        public void spawnNode(Dictionary<dynamic, dynamic> userProperties)
         {
-            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
-                    { node.position, new Vector2(worldMouseX, worldMouseY) },
-                    { node.texture, textures.whiteorb },
-                    //{ node.radius, 12 },
-                    //{ comp.randcolor, true },
-                    { comp.basicdraw, true },
-                    { comp.movement, true }, //this will default as 'true'
-                    //{ comp.randvelchange, true },
-                    //{ comp.randinitialvel, true },
-                    //{ comp.gravity, true },
-                    
-                    //{ comp.transfer, true },
-                    //{ comp.lasertimers, true },
-                    //{ comp.laser, true },
-                    //{ comp.wideray, true },
-                    //{ comp.hueshifter, true },
-                };
-
+            Group activegroup = ui.sidebar.ActiveGroup;
+            if (activegroup.Name.Equals("master")) return;
             Node newNode = new Node();
             if (ui.spawnerNode != null)
             {
                 Node.cloneObject(ui.spawnerNode, newNode);
-
             }
             else
             {
-                Node.cloneObject(room.defaultNode, newNode);
+                Node.cloneObject(ui.sidebar.ActiveDefaultNode, newNode);
             }
-            
-            newNode.position = new Vector2(worldMouseX, worldMouseY);
-            //newNode.acceptUserProps(userP);
+            newNode.acceptUserProps(userProperties);
+            newNode.OnSpawn();
 
-            //Node newNode = new Node(room, userP);
+            newNode.name = activegroup.Name + Node.nodeCounter;
 
-            newNode.name = "node" + Node.nodeCounter;
-            //if (newNode.comps.ContainsKey(comp.modifier)) newNode.comps[comp.modifier].UpdateReferences();
-
-            //newNode.comps[comp.gravity].multiplier = 1000000f;
-            //Console.WriteLine(newNode.velocity);
-            room.nodes.Add(newNode);
-            //Console.WriteLine(newNode.comps[comp.randinitialvel].multiplier);
-            //Console.WriteLine("Nodes: {0}", room.nodes.Count);
-            //ui.sidebar.UpdateNodesTitle();
+            activegroup.entities.Add(newNode);
         }
+        public void spawnNode(int worldMouseX, int worldMouseY)
+        {
+            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
+                                { node.position, new Vector2(worldMouseX,worldMouseY) },
+            };
+            spawnNode(userP);
+        }
+
+
         public void saveNode(Node node, string name)
         {
             bool updatePresetList = true;
@@ -437,21 +430,7 @@ namespace OrbItProcs
                 }
         }
 
-        public void spawnNode(Dictionary<dynamic, dynamic> userProperties)
-        {
-            Node newNode = new Node();
-            if (ui.spawnerNode != null)
-            {
-                Node.cloneObject(ui.spawnerNode, newNode);
-            }
-            else
-            {
-                Node.cloneObject(room.defaultNode, newNode);
-            }
-            newNode.acceptUserProps(userProperties);
-            newNode.name = "node" + Node.nodeCounter;
-            room.nodes.Add(newNode);
-        }
+        
 
         /// <summary>
         /// This is called when the game should draw itself.

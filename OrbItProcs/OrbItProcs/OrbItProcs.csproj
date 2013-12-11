@@ -152,7 +152,7 @@
     <Compile Include="Interface\Sidebar.cs" />
     <Compile Include="lists.cs" />
     <Compile Include="Processes\DelegateManager.cs" />
-    <Compile Include="Processes\EntityList.cs" />
+    <Compile Include="Processes\Group.cs" />
     <Compile Include="Processes\FPInfo.cs" />
     <Compile Include="Interface\PopUp.cs" />
     <Compile Include="Interface\InspectorItem.cs" />

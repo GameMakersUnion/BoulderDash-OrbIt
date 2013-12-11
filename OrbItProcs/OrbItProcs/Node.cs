@@ -359,7 +359,7 @@ namespace OrbItProcs {
             }
             comps[c].active = false;
             compsToRemove.Add(c);
-            if (!room.nodes.Contains(this))
+            if (!room.masterGroup.entities.Contains(this))
             {
                 SortComponentLists();
                 RemoveComponentTriggered();
@@ -542,7 +542,7 @@ namespace OrbItProcs {
             // ONLY ENTER IF THERE IS AT LEAST ONE COMPONENT THAT HAS 'AFFECTOTHER' METHOD
             if (active && aOtherProps.Count > 0 && false)
             {
-                foreach (Node other in room.nodes)
+                foreach (Node other in hashlist)
                 {
                     if (other != this && other.active)
                     {
@@ -644,6 +644,21 @@ namespace OrbItProcs {
         public float diameter()
         {
             return radius * 2;
+        }
+
+        public void OnSpawn()
+        {
+            foreach (comp key in comps.Keys.ToList())
+            {
+                Component component = comps[key];
+                MethodInfo mInfo = component.GetType().GetMethod("OnSpawn");
+                if (mInfo != null
+                    && mInfo.DeclaringType == component.GetType())
+                {
+                    component.OnSpawn();
+                }
+
+            }
         }
 
         public static void cloneObject(Node sourceNode, Node destNode) //they must be the same type

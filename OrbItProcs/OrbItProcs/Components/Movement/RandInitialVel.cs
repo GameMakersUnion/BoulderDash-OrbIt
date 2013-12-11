@@ -79,6 +79,16 @@ namespace OrbItProcs.Components
             }
         }
 
+        public override void OnSpawn()
+        {
+            float x = ((float)Utils.random.NextDouble() * 100) - 50;
+            float y = ((float)Utils.random.NextDouble() * 100) - 50;
+            Vector2 vel = new Vector2(x, y);
+            vel.Normalize();
+            vel = vel * multiplier;
+            parent.velocity = vel;
+        }
+
         public override void AffectOther(Node other)
         {
             
