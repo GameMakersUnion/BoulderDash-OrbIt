@@ -40,9 +40,10 @@ namespace OrbItProcs {
 
         public event ProcessMethod Collided;
         public Dictionary<dynamic, dynamic> CollideArgs;
-
+        
         static Dictionary<dynamic, dynamic> defaultProps = new Dictionary<dynamic, dynamic>()
         {
+            /*
             //{ node.active,                      true },
             { node.position,                    new Vector2(0,0) },
             { node.velocity,                    new Vector2(0,0) },
@@ -57,8 +58,14 @@ namespace OrbItProcs {
             { node.lifetime,                    -1 },
             { node.color,                       new Color(255,255,255) },
             //{ comp.movement,                    true },
-            
+            */
         };
+
+        public T GetComponent<T>()
+        {
+            //return comps[Game1.compEnums[typeof(T)]];
+            return comps[comp.movement];
+        }
 
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;
         //public bool active = true;

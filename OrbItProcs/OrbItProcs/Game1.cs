@@ -109,6 +109,8 @@ namespace OrbItProcs
         public SpriteFont font;
         FrameRateCounter frameRateCounter;
 
+        public static Dictionary<Type, comp> compEnums;
+
         public static int sWidth = 1000;
         public static int sHeight = 600;
         public static string filepath = "Presets//Nodes/";
@@ -149,6 +151,12 @@ namespace OrbItProcs
             ExitConfirmation = false;
 
             Manager.AutoUnfocus = false;
+
+            compEnums = new Dictionary<Type, comp>();
+            foreach (comp key in compTypes.Keys.ToList())
+            {
+                compEnums.Add(compTypes[key], key);
+            }
             
         }
 
@@ -383,19 +391,24 @@ namespace OrbItProcs
             MethodInfo minfo = typeof(Node).GetProperty("mass").GetGetMethod();
             Func<Node, float> getDel = (Func<Node, float>)Delegate.CreateDelegate(typeof(Func<Node, float>), minfo);
             DateTime dt = DateTime.Now;
-
+            Movement gotten;
             for(int i = 0; i < 100000; i++)
             {
-                if (i > 0) if (i > 1) if (i > 2) if (i > 3) if (i > 4) total++;
+                //if (i > 0) if (i > 1) if (i > 2) if (i > 3) if (i > 4) total++;
                 
                 //delList.Add(getDel);
                 //float slow = (float)minfo.Invoke(room.defaultNode, new object[] { });
-                float mass = getDel(room.defaultNode);
+                //float mass = getDel(room.defaultNode);
                 //float mass2 = getDel(nodeobj); //doesn't work because it's of type Object at compile time
                 //float mass2 = getDel(nodedynamic);
                 //total += mass;
-                
+                gotten = room.defaultNode.GetComponent<Movement>(); //generic method to grab components
+                //gotten = room.defaultNode.comps[comp.movement];
+                //bool act = gotten.active;
+                //gotten.active = true;
             }
+            //Movement move = room.defaultNode.comps[comp.movement];
+
             int mill = DateTime.Now.Millisecond - dt.Millisecond;
             if (mill < 0) mill += 1000;
             Console.WriteLine("{0} - {1} = {2}",DateTime.Now.Millisecond,dt.Millisecond, mill);
@@ -405,6 +418,8 @@ namespace OrbItProcs
                              .MakeGenericMethod(new Type[] { typeof(Type) });
             method.Invoke(this, new object[] { dt, mill });
             */
+
+            //gotten.fallOff();
 
             /////////////////////////////////////////////////////////////////////////////
             Group activegroup = ui.sidebar.ActiveGroup;
