@@ -14,6 +14,7 @@ namespace OrbItProcs.Processes
     {
         public Group parentGroup { get; set; }
         public ObservableCollection<object> entities { get; set; }
+        public ObservableCollection<object> foreigners { get; set; }
         private Dictionary<string, Group> _childGroups;
         public Dictionary<string, Group> childGroups
         {
@@ -26,7 +27,6 @@ namespace OrbItProcs.Processes
                 _childGroups = value;
             }
         }
-        
         public Node defaultNode { get; set; }
         public Room room;
         private string _Name;
@@ -41,6 +41,7 @@ namespace OrbItProcs.Processes
             room = Program.getRoom();
             this.defaultNode = defaultNode ?? room.defaultNode;
             this.entities = entities ?? new ObservableCollection<object>();
+            this.foreigners = new ObservableCollection<object>();
             this.parentGroup = parentGroup;
             this.groupState = groupState;
             this.Name = Name;
@@ -63,7 +64,7 @@ namespace OrbItProcs.Processes
                     if (parentGroup != null && !parentGroup.entities.Contains(n))
                     {
                         //Console.WriteLine("Adding {0} to {1}", n.name, Name);
-                        parentGroup.entities.Add(n);
+                        parentGroup.foreigners.Add(n);
                     }
                 }
                 room.game.ui.sidebar.SyncTitleNumber(this);
@@ -125,9 +126,23 @@ namespace OrbItProcs.Processes
                 root = root.parentGroup;
             }
             root.DiscludeEntity(entity);
-
         }
 
+        public void ForEachAll(Action<object> action)
+        {
+            entities.ToList().ForEach(action);
+            foreigners.ToList().ForEach(action);
+        }
+
+        public void TraverseGroups()
+        {
+            foreach (Group g in childGroups.Values.ToList())
+            {
+                g.TraverseGroups();
+            }
+        }
+
+        //dunno about this
         public void RemoveFromChildrenDeep(object toremove)
         {
             if (entities.Contains(toremove)) entities.Remove(toremove);

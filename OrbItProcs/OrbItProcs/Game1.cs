@@ -132,7 +132,7 @@ namespace OrbItProcs
         //public List<FileInfo> presetFileInfos = new List<FileInfo>();
 
         /////////////////////
-
+        public Redirector redirector;
 
         public Game1()
         {
@@ -308,6 +308,18 @@ namespace OrbItProcs
             room.masterGroup.UpdateComboBox();
             room.game.ui.sidebar.cmbListPicker.ItemIndex = 1;
             InitializePresets();
+
+            Movement movement = new Movement();
+            movement.active = true;
+            Console.WriteLine("::" + movement.active);
+
+            Redirector.PopulateDelegatesAll();
+            redirector = new Redirector();
+            //redirector.PopulateDelegatesAll();
+            //Console.WriteLine(redirectior.setters[typeof(Movement)]["pushable"].GetType());
+            //redirectior.setters[typeof(Movement)]["pushable"](movement, false);
+            
+
         }
 
         public void InitializePresets()
@@ -390,8 +402,18 @@ namespace OrbItProcs
             float total = 0;
             MethodInfo minfo = typeof(Node).GetProperty("mass").GetGetMethod();
             Func<Node, float> getDel = (Func<Node, float>)Delegate.CreateDelegate(typeof(Func<Node, float>), minfo);
+            
             DateTime dt = DateTime.Now;
-            Movement gotten;
+            Movement movement = new Movement();
+
+            //redirector.TargetObject = movement;
+            //redirector.PropertyToObject["active"] = movement;
+            redirector.AssignObjectToPropertiesAll(movement);
+            PropertyInfo pinfo = movement.GetType().GetProperty("active");
+            //Action<object, object> movementsetter = redirector.setters[typeof(Movement)]["active"];
+            //Console.WriteLine(":::" + movement.active);
+            //bool a = redirector.active;
+            bool a = false;
             for(int i = 0; i < 100000; i++)
             {
                 //if (i > 0) if (i > 1) if (i > 2) if (i > 3) if (i > 4) total++;
@@ -399,13 +421,18 @@ namespace OrbItProcs
                 //delList.Add(getDel);
                 //float slow = (float)minfo.Invoke(room.defaultNode, new object[] { });
                 //float mass = getDel(room.defaultNode);
-                //float mass2 = getDel(nodeobj); //doesn't work because it's of type Object at compile time
+                //float mass2 = getDel((Node)nodeobj); //doesn't work because it's of type Object at compile time
                 //float mass2 = getDel(nodedynamic);
                 //total += mass;
-                gotten = room.defaultNode.GetComponent<Movement>(); //generic method to grab components
+                //gotten = room.defaultNode.GetComponent<Movement>(); //generic method to grab components
                 //gotten = room.defaultNode.comps[comp.movement];
                 //bool act = gotten.active;
                 //gotten.active = true;
+                //redirector.active = false; //21m(impossible)... 24m(new) ... 19m (newer) ... 16m(newest)
+                //a = redirector.active;
+                //pinfo.SetValue(movement, false, null); //34m
+                //movementsetter(movement, false); //4m(old)......... 6m(new)
+                //movement.active = false;
             }
             //Movement move = room.defaultNode.comps[comp.movement];
 

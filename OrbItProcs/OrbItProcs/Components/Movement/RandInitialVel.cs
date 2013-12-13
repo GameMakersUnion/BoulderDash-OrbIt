@@ -48,6 +48,11 @@ namespace OrbItProcs.Components
             methods = mtypes.initialize; 
         }
 
+        public override void AfterCloning()
+        {
+            parent.velocity = new Vector2(0, 0);
+        }
+
         public void ScaleVelocity()
         {
             if (parent.velocity.X != 0 && parent.velocity.Y != 0)
@@ -78,15 +83,18 @@ namespace OrbItProcs.Components
                 
             }
         }
-
         public override void OnSpawn()
         {
+            Initialize(parent);
+            return;
+            /*
             float x = ((float)Utils.random.NextDouble() * 100) - 50;
             float y = ((float)Utils.random.NextDouble() * 100) - 50;
             Vector2 vel = new Vector2(x, y);
             vel.Normalize();
             vel = vel * multiplier;
             parent.velocity = vel;
+            */
         }
 
         public override void AffectOther(Node other)

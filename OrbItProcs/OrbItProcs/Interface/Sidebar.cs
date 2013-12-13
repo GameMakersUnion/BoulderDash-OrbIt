@@ -662,7 +662,7 @@ namespace OrbItProcs.Interface
 
             Group activeGroup = ActiveGroup;
             //Group.ForEachDictionary(room.groups, delegate(object o) {
-            activeGroup.entities.ToList().ForEach(delegate(object o)
+            activeGroup.ForEachAll(delegate(object o)
             {
                 Node n = (Node)o;
                 if (n == itemspath.ElementAt(0).obj) return;
