@@ -11,7 +11,7 @@ namespace OrbItProcs.Components
 {
     public class Waver : Component
     {
-        private bool _reflective = true;
+        private bool _reflective = false;
         public bool reflective { get { return _reflective; } set { _reflective = value; } }
         private Queue<Vector2> metapositions = new Queue<Vector2>();
         private Queue<Vector2> reflectpositions = new Queue<Vector2>();
@@ -31,7 +31,7 @@ namespace OrbItProcs.Components
 
 
 
-        private float _period = 10;
+        private float _period = 30;
         public float period
         {
             get { return _period; }

@@ -115,6 +115,7 @@ namespace OrbItProcs
 
         public Dictionary<textures, Texture2D> textureDict;
         //Node node;
+        
 
         public int worldWidth { get; set; }
         public int worldHeight { get; set; }
@@ -373,6 +374,39 @@ namespace OrbItProcs
         }
         public void spawnNode(Dictionary<dynamic, dynamic> userProperties)
         {
+            //testing to see how long it takes to generate all the getter/setter delegates
+            
+            object nodeobj = room.defaultNode;
+            dynamic nodedynamic = room.defaultNode;
+            List<Func<Node, float>> delList = new List<Func<Node, float>>();
+            float total = 0;
+            MethodInfo minfo = typeof(Node).GetProperty("mass").GetGetMethod();
+            Func<Node, float> getDel = (Func<Node, float>)Delegate.CreateDelegate(typeof(Func<Node, float>), minfo);
+            DateTime dt = DateTime.Now;
+
+            for(int i = 0; i < 100000; i++)
+            {
+                if (i > 0) if (i > 1) if (i > 2) if (i > 3) if (i > 4) total++;
+                
+                //delList.Add(getDel);
+                //float slow = (float)minfo.Invoke(room.defaultNode, new object[] { });
+                float mass = getDel(room.defaultNode);
+                //float mass2 = getDel(nodeobj); //doesn't work because it's of type Object at compile time
+                //float mass2 = getDel(nodedynamic);
+                //total += mass;
+                
+            }
+            int mill = DateTime.Now.Millisecond - dt.Millisecond;
+            if (mill < 0) mill += 1000;
+            Console.WriteLine("{0} - {1} = {2}",DateTime.Now.Millisecond,dt.Millisecond, mill);
+            //Console.WriteLine(total);
+            /* //this code won't run right now, but it represents the ability to make a specific generic method based on type variables from another generic method, and then invoke it... (this is slow)
+            MethodInfo method = GetType().GetMethod("DoesEntityExist")
+                             .MakeGenericMethod(new Type[] { typeof(Type) });
+            method.Invoke(this, new object[] { dt, mill });
+            */
+
+            /////////////////////////////////////////////////////////////////////////////
             Group activegroup = ui.sidebar.ActiveGroup;
             if (activegroup.Name.Equals("master")) return;
             Node newNode = new Node();
@@ -389,7 +423,8 @@ namespace OrbItProcs
 
             newNode.name = activegroup.Name + Node.nodeCounter;
 
-            activegroup.entities.Add(newNode);
+            //activegroup.entities.Add(newNode);
+            activegroup.IncludeEntity(newNode);
         }
         public void spawnNode(int worldMouseX, int worldMouseY)
         {

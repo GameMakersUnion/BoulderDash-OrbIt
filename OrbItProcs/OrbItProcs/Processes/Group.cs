@@ -52,14 +52,18 @@ namespace OrbItProcs.Processes
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
             {
+                
                 foreach (Node n in e.NewItems)
                 {
-                    if (room.game.ui.sidebar.cmbListPicker.Text.Equals(Name)) 
+                    if (room.game.ui.sidebar.cmbListPicker.Text.Equals(Name))
+                    {
                         room.game.ui.sidebar.lstMain.Items.Add(n);
+                        room.game.ui.sidebar.SyncTitleNumber(this);
+                    }
                     if (parentGroup != null && !parentGroup.entities.Contains(n))
                     {
+                        //Console.WriteLine("Adding {0} to {1}", n.name, Name);
                         parentGroup.entities.Add(n);
-                        
                     }
                 }
                 room.game.ui.sidebar.SyncTitleNumber(this);
@@ -68,18 +72,60 @@ namespace OrbItProcs.Processes
             {
                 foreach (Node n in e.OldItems)
                 {
-                    if (room.game.ui.sidebar.cmbListPicker.Text.Equals(Name)) 
+                    if (room.game.ui.sidebar.cmbListPicker.Text.Equals(Name))
+                    {
                         room.game.ui.sidebar.lstMain.Items.Remove(n);
+                        room.game.ui.sidebar.SyncTitleNumber(this);
+                    }
                     if (parentGroup != null && parentGroup.entities.Contains(n))
                     {
-                        n.active = false;
-                        parentGroup.entities.Remove(n);
+                        //n.active = false;
+                        //Console.WriteLine("Removing {0} from {1}", n.name, Name);
+                        //parentGroup.entities.Remove(n);
                     }
 
-                    RemoveFromChildrenDeep(n);
+                    //RemoveFromChildrenDeep(n);
                 }
-                room.game.ui.sidebar.SyncTitleNumber(this);
+                
             }
+        }
+        //adds entity to current group and all parent groups
+        public void IncludeEntity(object entity)
+        {
+            if (!entities.Contains(entity))
+                entities.Add(entity);
+
+            if (parentGroup != null)
+                parentGroup.IncludeEntity(entity);
+        }
+        //removes entity from current group and all child groups
+        public void DiscludeEntity(object entity)
+        {
+            if (entity is Node && parentGroup == null) ((Node)entity).active = false;
+
+            if (entities.Contains(entity))
+                entities.Remove(entity);
+
+            if (childGroups.Count > 0)
+            {
+                foreach (Group childgroup in childGroups.Values.ToList())
+                {
+                    childgroup.DiscludeEntity(entity);
+                }
+            }
+        }
+        //removes entity from all groups, starting from the highest root
+        public void DeleteEntity(object entity)
+        {
+            if (entity is Node) ((Node)entity).active = false;
+
+            Group root = this;
+            while (root.parentGroup != null)
+            {
+                root = root.parentGroup;
+            }
+            root.DiscludeEntity(entity);
+
         }
 
         public void RemoveFromChildrenDeep(object toremove)

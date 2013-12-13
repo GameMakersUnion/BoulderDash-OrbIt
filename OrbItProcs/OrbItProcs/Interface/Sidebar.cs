@@ -529,7 +529,10 @@ namespace OrbItProcs.Interface
             Node.cloneObject(n, newdefault);
             Group g = new Group(newdefault, parentGroup: room.masterGroup, Name: newdefault.name);
             room.masterGroup.AddGroup(g.Name, g);
-            ActiveGroup.entities.Remove(n);
+            Group active = ActiveGroup;
+            //Console.WriteLine(active.Name);
+            active.entities.Remove(n);
+            
             g.entities.Add(n);
 
             int index = cmbListPicker.Items.IndexOf(newdefault.name);
@@ -1473,7 +1476,11 @@ namespace OrbItProcs.Interface
                 lstComp.rootitem = null;
                 ui.editNode = null;
             }
-            g.entities.ToList().ForEach(delegate(object o) { g.entities.Remove(o); });
+            g.entities.ToList().ForEach(delegate(object o) 
+            { 
+                //g.entities.Remove(o); 
+                g.DeleteEntity(o);
+            });
 
             lstMain.ItemIndex = -1;
 
@@ -1483,8 +1490,8 @@ namespace OrbItProcs.Interface
         {
             //game.room.RemoveAllNodes();
             Group g = ActiveGroup;
-            if (g != null && g.entities.Contains(game.targetNode)) g.entities.Remove(game.targetNode);
-
+            if (g != null && g.entities.Contains(game.targetNode)) //g.entities.Remove(game.targetNode);
+                g.DeleteEntity(game.targetNode);
             if (game.targetNode != null)
             {
                 //game.room.nodes.Remove(game.targetNode);

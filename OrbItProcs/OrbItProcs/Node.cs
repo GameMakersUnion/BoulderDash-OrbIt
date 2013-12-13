@@ -69,8 +69,7 @@ namespace OrbItProcs {
             get { return _active; }
             set
             {
-                _active = value;
-                if (!_active)
+                if (_active && !value)
                 {
                     foreach (comp c in comps.Keys.ToList())
                     {
@@ -80,6 +79,7 @@ namespace OrbItProcs {
                         }
                     }
                 }
+                _active = value;
             }
         }
         
@@ -590,6 +590,7 @@ namespace OrbItProcs {
         {
             foreach (comp c in drawProps)
             {
+                if (!comps[c].active) continue;
                 comps[c].Draw(spritebatch);
                 if (!comps[c].methods.HasFlag(mtypes.minordraw))
                     break; //only executes the most significant draw component

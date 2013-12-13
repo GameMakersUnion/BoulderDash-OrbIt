@@ -146,6 +146,7 @@ namespace OrbItProcs.Components
                         if (confining)
                         {
                             n.position = parent.position + confiningVects[n] * len;
+                            Console.WriteLine("{0}, {1}, {2}", confiningVects[n], n.position, len);
                         }
                     }
 

@@ -13,6 +13,7 @@ namespace OrbItProcs.Components
 {
     public enum movemode
     {
+        free,
         wallbounce,
         screenwrap,
         falloff,

@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrbItProcs", "OrbItProcs\OrbItProcs\OrbItProcs.csproj", "{66F21142-987B-4E08-B7CC-3FF8215D2F5C}"
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "OrbItProcsContent", "OrbItProcs\OrbItProcsContent\OrbItProcsContent.contentproj", "{04C6CFB5-F887-4C51-A0DC-9694BCE16B7D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrbItProcsContent", "OrbItProcs\OrbItProcsContent\OrbItProcsContent.contentproj", "{04C6CFB5-F887-4C51-A0DC-9694BCE16B7D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,5 +22,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

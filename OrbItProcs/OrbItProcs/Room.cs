@@ -131,45 +131,8 @@ namespace OrbItProcs {
                     */
                 });
                 
-
-                /*
-                List<Node> toRemove = new List<Node>();
-                //Console.WriteLine("AMOUNT OF NODES: {0}",nodes.Count);
-                foreach (Node _node in nodes)
-                {
-                    gridsystem.insert(_node);
-
-                    //_node.color = Color.White;
-                }
-                foreach (Node _node in nodes)
-                {
-
-                    _node.Update(gametime);
-
-                    if (!_node.active)
-                    {
-                        toRemove.Add(_node);
-                    }
-                }
-                
-                int toAddCounter = nodesToAdd.Count;
-                for (int i = 0; i < toAddCounter; i++)
-                {
-                    nodes.Add(nodesToAdd.Dequeue());
-                }
-                //Console.WriteLine("Nodes: {0}\t Quadcount: {1}\t Gridcount: {2}\t Normal: {3}", nodes.Count, quadcounter,gridcounter,nodes.Count * nodes.Count);
-
-                foreach (Node node in toRemove)
-                {
-                    //Console.WriteLine("node removed. ------------------------------------");
-                    nodes.Remove(node);
-                    //game.ui.sidebar.UpdateNodesTitle();
-                }
-                */
                 //addGridSystemLines(gridsystem);
                 addBorderLines();
-
-
                 //colorEffectedNodes();
             }
             else
