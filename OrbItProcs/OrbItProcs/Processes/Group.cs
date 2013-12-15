@@ -118,7 +118,7 @@ namespace OrbItProcs.Processes
         //removes entity from all groups, starting from the highest root
         public void DeleteEntity(object entity)
         {
-            if (entity is Node) ((Node)entity).active = false;
+            if (entity is Node) ((Node)entity).IsDeleted = true;
 
             Group root = this;
             while (root.parentGroup != null)
@@ -217,6 +217,7 @@ namespace OrbItProcs.Processes
         //unfortunately I'm not sure it makes sense to use this awesome method
         public static void ForEachDictionary (Dictionary<string,Group> dict, Action<object> action)
         {
+            //dict.Values.ToList().Select(x => x.entities).Aggregate((x, y) => (ObservableCollection<object>)x.Union(y)).ToList().ForEach(action);
             HashSet<object> hashset = new HashSet<object>();
             dict.Keys.ToList().ForEach(delegate(string key) {
                 Group g = dict[key];

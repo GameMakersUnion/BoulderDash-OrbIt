@@ -30,6 +30,7 @@ namespace OrbItProcs.Interface {
         boolean,
         integer,
         single,
+        tbyte,
         str,
         obj,
     };
@@ -56,6 +57,7 @@ namespace OrbItProcs.Interface {
             typeof(string),
             typeof(bool),
             typeof(Enum),
+            typeof(byte),
         };
 
 
@@ -516,6 +518,10 @@ namespace OrbItProcs.Interface {
             else if (obj is bool)
             {
                 dt = data_type.boolean;
+            }
+            else if (obj is byte)
+            {
+                dt = data_type.tbyte;
             }
             else if (obj == null)
             {

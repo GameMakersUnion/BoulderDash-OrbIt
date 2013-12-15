@@ -28,6 +28,7 @@ namespace OrbItProcs
 
     public enum comp
     {
+        transform,
         queuer,
         linearpull,
         movement,
@@ -44,12 +45,14 @@ namespace OrbItProcs
         lifetime,
 
         //draw components
-        tether,
-        flow,
+        
         waver,
         laser,
         wideray,
         phaseorb,
+        flow,
+
+        tether,
         tree,
         basicdraw,
 
@@ -85,6 +88,7 @@ namespace OrbItProcs
             {comp.randvelchange,    typeof(RandVelChange)       },
             {comp.tether,           typeof(Tether)              },
             {comp.transfer,         typeof(Transfer)            },
+            {comp.transform,        typeof(Transform)           },
             {comp.tree,             typeof(Tree)                },
             {comp.waver,            typeof(Waver)               },
             {comp.wideray,          typeof(WideRay)             },
@@ -396,12 +400,12 @@ namespace OrbItProcs
         {
             //testing to see how long it takes to generate all the getter/setter delegates
             
-            object nodeobj = room.defaultNode;
+            object transformobj = room.defaultNode.transform;
             dynamic nodedynamic = room.defaultNode;
             List<Func<Node, float>> delList = new List<Func<Node, float>>();
             float total = 0;
-            MethodInfo minfo = typeof(Node).GetProperty("mass").GetGetMethod();
-            Func<Node, float> getDel = (Func<Node, float>)Delegate.CreateDelegate(typeof(Func<Node, float>), minfo);
+            MethodInfo minfo = typeof(Transform).GetProperty("mass").GetGetMethod();
+            Func<Transform, float> getDel = (Func<Transform, float>)Delegate.CreateDelegate(typeof(Func<Transform, float>), minfo);
             
             DateTime dt = DateTime.Now;
             Movement movement = new Movement();
@@ -419,9 +423,9 @@ namespace OrbItProcs
                 //if (i > 0) if (i > 1) if (i > 2) if (i > 3) if (i > 4) total++;
                 
                 //delList.Add(getDel);
-                //float slow = (float)minfo.Invoke(room.defaultNode, new object[] { });
+                //float slow = (float)minfo.Invoke((Transform)transformobj, new object[] { });
                 //float mass = getDel(room.defaultNode);
-                //float mass2 = getDel((Node)nodeobj); //doesn't work because it's of type Object at compile time
+                //float mass2 = getDel((Transform)transformobj); //doesn't work because it's of type Object at compile time
                 //float mass2 = getDel(nodedynamic);
                 //total += mass;
                 //gotten = room.defaultNode.GetComponent<Movement>(); //generic method to grab components
@@ -433,6 +437,7 @@ namespace OrbItProcs
                 //pinfo.SetValue(movement, false, null); //34m
                 //movementsetter(movement, false); //4m(old)......... 6m(new)
                 //movement.active = false;
+
             }
             //Movement move = room.defaultNode.comps[comp.movement];
 

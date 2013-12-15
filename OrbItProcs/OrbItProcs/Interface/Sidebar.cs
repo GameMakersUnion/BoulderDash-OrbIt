@@ -11,17 +11,17 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using TomShane.Neoforce.Controls;
 using System.Reflection;
-
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
 using OrbItProcs;
 using OrbItProcs.Processes;
 
 using Component = OrbItProcs.Components.Component;
 using Console = System.Console;
-using System.IO;
 using EventHandler = TomShane.Neoforce.Controls.EventHandler;
 using EventArgs = TomShane.Neoforce.Controls.EventArgs;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+
 namespace OrbItProcs.Interface
 {
     public class Sidebar
@@ -63,8 +63,6 @@ namespace OrbItProcs.Interface
                     {
                         return room.masterGroup.childGroups[name].defaultNode;
                     }
-                    //Console.WriteLine("Group couldn't be found while getting ActiveGroup property.");
-                    //return room.masterGroup.defaultNode;
                 }
                 return room.masterGroup.defaultNode;
             }
@@ -390,8 +388,6 @@ namespace OrbItProcs.Interface
             btnApplyToAll.Height = 20; //HeightCounter += VertPadding + btnApplyToAll.Height;
             btnApplyToAll.Left = LeftPadding;
             btnApplyToAll.Click += applyToAllNodesMenuItem_Click; //TODO ??
-            //btnApplyToAll.Click += NotImplemented; //TODO ??
-
             #endregion
 
             #region  /// Save as Preset ///
@@ -530,7 +526,6 @@ namespace OrbItProcs.Interface
             Group g = new Group(newdefault, parentGroup: room.masterGroup, Name: newdefault.name);
             room.masterGroup.AddGroup(g.Name, g);
             Group active = ActiveGroup;
-            //Console.WriteLine(active.Name);
             active.entities.Remove(n);
             
             g.entities.Add(n);
@@ -549,8 +544,6 @@ namespace OrbItProcs.Interface
             listbox.ContextMenu.Color = new Color(0f, 0f, 0f, 0f);
             if(listbox.ItemIndex >= 0 && listbox.Items.ElementAt(listbox.ItemIndex) is Node)
             {
-                //Color c = listbox.ContextMenu.Color;
-                //Console.WriteLine("{0},{1},{2},{3}",c.R,c.G,c.B,c.A);
                 listbox.ContextMenu.Color = new Color(1f, 1f, 1f, 1.0f);
                 listbox.ContextMenu.Items.Add(ConvertIntoList);
                 listbox.ContextMenu.Items.Add(PromoteToDefault);
@@ -587,8 +580,6 @@ namespace OrbItProcs.Interface
                 SetDefaultNodeAsEdit();
 
             }
-
-            //if (lstMain.Items.Count > 0) lstMain.ItemIndex = 0;
             lstMain.ScrollTo(0);
         }
 
@@ -661,7 +652,6 @@ namespace OrbItProcs.Interface
             BuildItemsPath(item, itemspath);
 
             Group activeGroup = ActiveGroup;
-            //Group.ForEachDictionary(room.groups, delegate(object o) {
             activeGroup.ForEachAll(delegate(object o)
             {
                 Node n = (Node)o;
@@ -690,7 +680,6 @@ namespace OrbItProcs.Interface
                             {
                                 dict[key] = value;
                             }
-                            //Console.WriteLine("Successfully writted dict entry.");
                         }
                         else
                         {
@@ -702,7 +691,6 @@ namespace OrbItProcs.Interface
                             {
                                 temp.fpinfo.SetValue(value, temp.parentItem.obj);
                             }
-                            //Console.WriteLine("Successfully writted property. {0} -> {1}", value, temp.parentItem.obj);
                         }
                     }
                     else
@@ -734,12 +722,6 @@ namespace OrbItProcs.Interface
                 temp = temp.parentItem;
                 itemspath.Insert(0, temp);
             }
-            /*
-            foreach (InspectorItem i in itemspath)
-            {
-                Console.WriteLine(i.obj.GetType());
-            }
-            */
         }
 
         
@@ -765,8 +747,6 @@ namespace OrbItProcs.Interface
                 return;
             }
 
-            //Component component = (Component)item.obj;
-            //component.active = !component.active;
             item.SetValue(!(bool)item.GetValue());
         }
 
@@ -785,26 +765,6 @@ namespace OrbItProcs.Interface
             ui.editNode.RemoveComponent(item.component);
             item.RemoveChildren();
             lstComp.Items.Remove(item);
-
-            /*
-            if (!ui.editNode.comps.ContainsKey(item.component))
-            {
-                lstComp.Items.RemoveAt(lstComp.ItemIndex);
-            }
-            //remove the children and item
-            if (item.hasChildren)
-            {
-                if (item.extended)
-                {
-                    item.prefix = "+";
-                    foreach (TreeListItem subitem in item.children)
-                    {
-                        lstComp.Items.Remove(subitem);
-                    }
-                }
-            }
-            lstComp.Items.Remove(item);
-            */
         }
 
 
@@ -839,12 +799,12 @@ namespace OrbItProcs.Interface
             {
                 PopUp.Toast(ui, "No Command Provided");
                 return;
-        }
+            }
 
             MethodInfo methinfo = currentObj.GetType().GetMethod(methodname);
 
             if (methinfo == null || methinfo.IsPrivate)
-        {
+            {
                 PopUp.Toast(ui, "Invalid method specification.");
                 return;
             }
@@ -862,7 +822,6 @@ namespace OrbItProcs.Interface
                 {
                     if (paraminfos[i].IsOptional)
                     {
-                        //Missing missing;
                         finalargs[i] = Type.Missing;
                         continue;
                     }
@@ -877,12 +836,12 @@ namespace OrbItProcs.Interface
                 {
                     PopUp.Toast(ui, "Casting exception: " + e.Message);
                     return;
-        }
+                }
 
             }
             if (methinfo.IsStatic) currentObj = null;
             try
-        {
+            {
                 methinfo.Invoke(currentObj, finalargs);
             }
             catch (Exception e)
@@ -890,23 +849,6 @@ namespace OrbItProcs.Interface
                 PopUp.Toast(ui, "Invoking exception: " + e.Message);
                 return;
             }
-
-            /*
-            if (args[0].Equals("gridsystem") || args[0].Equals("gs"))
-            {
-                for (int i = 1; i < args.Length; i++) 
-                //System.Console.WriteLine("first!");
-                if (args.Length == 1)
-                    game.room.gridsystem = new GridSystem(game.room, 20, 5);
-                else if (args.Length == 2)
-                    //game.room.gridsystem = new GridSystem(
-                    game.room.gridsystem = new GridSystem(game.room, game.room.gridsystem.cellsX, Convert.ToInt32(args[1]));
-                else if (args.Length == 3)
-                    game.room.gridsystem = new GridSystem(game.room, Convert.ToInt32(args[1]), Convert.ToInt32(args[2]));
-                //game.room.gridsystem = new GridSystem(game.room, game.worldWidth, game.worldHeight, Convert.ToInt32(args[1]), Convert.ToInt32(args[1]), Convert.ToInt32(args[2]));
-
-            }
-            */
         }
 
         void btnClear_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
@@ -918,7 +860,6 @@ namespace OrbItProcs.Interface
                 {
                     TextBox textbox = (TextBox)sender;
                     textbox.Text = "";
-
                 }
             }
             else
@@ -926,317 +867,7 @@ namespace OrbItProcs.Interface
                 consoletextbox.Text = "";
             }
         }
-        /*
-        public void UpdateGroupPanel(InspectorItem inspectorItem, GroupPanel grouppanel)
-        {
-            if (activeInspectorItem == inspectorItem) return;
-
-            if (panelControls.Keys.Count > 0) DisableControls(grouppanel);
-
-            activeInspectorItem = inspectorItem;
-
-            TreeListItem treeItem = new TreeListItem(null,comp.flow,""); //No.
-
-            if (inspectorItem.itemtype == treeitem.component)
-            {
-                //System.Console.WriteLine("Component, run boolean code");
-                CheckBox chkbox = new CheckBox(manager);
-                chkbox.Init();
-                chkbox.Parent = grouppanel;
-                chkbox.Left = LeftPadding;
-                chkbox.Top = 10;
-                chkbox.Width = 120;
-                chkbox.Checked = (bool)treeItem.node.isCompActive(treeItem.component);
-                chkbox.Text = treeItem.component + " (" + treeItem.node.isCompActive(treeItem.component) + ")";
-                chkbox.CheckedChanged += chkbox_CheckedChanged;
-
-                panelControls.Add("chkbox", chkbox);
-
-                return;
-            }
-            parentObject = null;
-            if (treeItem.itemtype == treeitem.fieldinfo || treeItem.itemtype == treeitem.propertyinfo)
-            {
-                parentObject = treeItem.node;
-            }
-            else if (treeItem.itemtype == treeitem.objfieldinfo)
-            {
-                parentObject = treeItem.obj;
-            }
-            else if (treeItem.itemtype == treeitem.objpropertyinfo)
-            {
-                parentObject = treeItem.obj;
-            }
-
-            if (treeItem.fieldInfo == null && treeItem.propertyInfo == null) return;
-
-            dynamic field = null;
-            Type t = null;
-            if (treeItem.itemtype == treeitem.propertyinfo || treeItem.itemtype == treeitem.objpropertyinfo)
-            {
-                field = treeItem.propertyInfo;
-                t = field.PropertyType;
-                //System.Console.WriteLine("Yeah");
-            }
-            else
-            {
-                field = treeItem.fieldInfo;
-                t = field.FieldType;
-            }
-
-            //FieldInfo field = treeItem.fieldInfo;
-            groupPanel.Text = field.Name;
-
-
-            //Type t = field.FieldType;
-
-            //System.Console.WriteLine(t.ToString());
-
-            if (t.ToString().Equals("System.Int32") || t.ToString().Equals("System.Single") || t.ToString().Equals("System.String"))
-            {
-                //System.Console.WriteLine("It's an int or float.");
-                TextBox txtbox = new TextBox(manager);
-                txtbox.Init();
-                txtbox.Parent = grouppanel;
-                txtbox.Left = LeftPadding;
-                txtbox.Top = 10;
-                txtbox.Width = 80;
-                txtbox.Height = txtbox.Height + 3;
-
-                //txtbox.BackColor = Color.Green;
-
-                //txtbox.DrawBorders = true;
-                txtbox.Text = field.GetValue(parentObject).ToString();
-
-                Button btnModify = new Button(manager);
-                btnModify.Init();
-                btnModify.Parent = grouppanel;
-                btnModify.Left = LeftPadding * 2 + txtbox.Width;
-                btnModify.Top = 10;
-                btnModify.Width = 80;
-                btnModify.Text = "Modify";
-                btnModify.Click += btnModify_Click;
-
-
-                panelControls.Add("txtbox", txtbox);
-                panelControls.Add("btnModify", btnModify);
-
-                if (t.ToString().Equals("System.Int32") || t.ToString().Equals("System.Single"))
-                {
-                    TrackBar trkMain = new TrackBar(manager);
-                    trkMain.Init();
-                    trkMain.Parent = grouppanel;
-                    trkMain.Left = LeftPadding;
-                    trkMain.Top = 20 + btnModify.Height;
-                    trkMain.Width = txtbox.Width + btnModify.Width + LeftPadding;
-                    trkMain.Anchor = Anchors.Left | Anchors.Top | Anchors.Right;
-                    int val = Convert.ToInt32(field.GetValue(parentObject));
-                    trkMain.Value = val;
-                    if (val == 0) val = 5;
-                    trkMain.Range = val * 2;
-                    trkMain.ValueChanged += trkMain_ValueChanged;
-                    //trkMain.btnSlider.MouseUp += new TomShane.Neoforce.Controls.MouseEventHandler(trkMain_MouseUp);
-                    panelControls.Add("trkMain", trkMain);
-                }
-
-            }
-            else if (t.ToString().Equals("System.Boolean"))
-            {
-                //System.Console.WriteLine("It's a boolean.");
-                CheckBox chkbox = new CheckBox(manager);
-                chkbox.Init();
-                chkbox.Parent = grouppanel;
-                chkbox.Left = LeftPadding;
-                chkbox.Top = 10;
-                chkbox.Width = 120;
-                chkbox.Checked = (bool)field.GetValue(parentObject);
-                chkbox.Text = field.Name + " (" + field.GetValue(parentObject) + ")";
-                chkbox.CheckedChanged += chkbox_CheckedChanged;
-                panelControls.Add("chkbox", chkbox);
-
-            }
-            else if (t.ToString().Equals("Microsoft.Xna.Framework.Vector2"))
-            {
-                //System.Console.WriteLine("It's a vector2.");
-            }
-            else if (t.ToString().Equals("Microsoft.Xna.Framework.Color"))
-            {
-                //System.Console.WriteLine("It's a color.");
-            }
-
-
-        }
-
-        public void DisableControls(GroupPanel grouppanel)
-        {
-            List<String> list = panelControls.Keys.ToList(); // for some reason this isn't updated if you click quickly
-            //System.Console.WriteLine(list.Count);
-            foreach (String key in list)
-            {
-                grouppanel.Remove(panelControls[key]);
-                panelControls.Remove(key);
-            }
-        }
-        */
-        /*
-        void trkMain_MouseUp(object sender, TomShane.Neoforce.Controls.MouseEventArgs e)
-        {
-            //TrackBar trkbar = (TrackBar)sender;
-            //System.Console.WriteLine("yeah");
-            TrackBar trkbar = (TrackBar)panelControls["trkMain"];
-
-            if (trkbar.Value == trkbar.Range) trkbar.Range *= 2;
-        }
-
-        void trkMain_ValueChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
-        {
-            TrackBar trkbar = (TrackBar)sender;
-            GroupPanel gp = (GroupPanel)(trkbar.Parent.Parent);
-
-            
-
-            if (gp.Parent == tbcMain.TabPages[0])
-            {
-                TreeListItem item = (TreeListItem)lstComp.Items.ElementAt(lstComp.ItemIndex);
-                //dynamic field = null;
-                if (item.itemtype == treeitem.propertyinfo || item.itemtype == treeitem.objpropertyinfo)
-                {
-                    PropertyInfo property = item.propertyInfo;
-
-                    if (property.GetValue(parentObject, null) == null) return;
-
-                    if (property.PropertyType.ToString().Equals("System.Int32"))
-                    {
-                        property.SetValue(parentObject, trkbar.Value, null);
-                        panelControls["txtbox"].Text = "" + trkbar.Value;
-                    }
-                    else if (property.PropertyType.ToString().Equals("System.Single"))
-                    {
-                        property.SetValue(parentObject, Convert.ToSingle(trkbar.Value), null);
-                        panelControls["txtbox"].Text = "" + trkbar.Value;
-                        //field.SetValue(10.0f, parentObject);
-
-                    }
-                }
-                else if (item.itemtype == treeitem.fieldinfo || item.itemtype == treeitem.objfieldinfo)
-                {
-                    FieldInfo field = item.fieldInfo;
-
-                    if (field.GetValue(parentObject) == null) return;
-
-                    if (field.FieldType.ToString().Equals("System.Int32"))
-                    {
-                        field.SetValue(parentObject, trkbar.Value);
-                        panelControls["txtbox"].Text = "" + trkbar.Value;
-                    }
-                    else if (field.FieldType.Equals("System.Single"))
-                    {
-                        field.SetValue(parentObject, Convert.ToSingle(trkbar.Value));
-                        panelControls["txtbox"].Text = "" + trkbar.Value;
-                        //field.SetValue(10.0f, parentObject);
-
-                    }
-
-                }
-
-            }
-            if (trkbar.Value == trkbar.Range) trkbar.Range *= 2;
-        }
-
-        void chkbox_CheckedChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
-        {
-
-            CheckBox checkbox = (CheckBox)sender;
-            if (checkbox.Parent.Parent.Parent == tbcMain.TabPages[0]) // checkbox is in the 'first' tab page
-            {
-                TreeListItem item = (TreeListItem)lstComp.Items.ElementAt(lstComp.ItemIndex);
-
-                if (item.itemtype == treeitem.component)
-                {
-                    item.node.setCompActive(item.component, checkbox.Checked);
-                    checkbox.Text = item.component + " (" + item.node.isCompActive(item.component) + ")";
-                }
-                else if (item.itemtype == treeitem.fieldinfo || item.itemtype == treeitem.objfieldinfo)
-                {
-                    item.fieldInfo.SetValue(parentObject, checkbox.Checked);
-                    checkbox.Text = item.fieldInfo.Name + " (" + item.fieldInfo.GetValue(parentObject) + ")";
-                }
-                else if (item.itemtype == treeitem.propertyinfo || item.itemtype == treeitem.objpropertyinfo)
-                {
-                    item.propertyInfo.SetValue(parentObject, checkbox.Checked, null);
-                    checkbox.Text = item.propertyInfo.Name + " (" + item.propertyInfo.GetValue(parentObject, null) + ")";
-                }
-            }
-            else if (checkbox.Parent.Parent == tbcMain.TabPages[1]) // checkbox is in the 'second' tab page
-            {
-
-            }
-
-
-
-
-        }
-
-        void btnModify_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
-        {
-            TreeListItem item = (TreeListItem)lstComp.Items.ElementAt(lstComp.ItemIndex);
-
-            dynamic field = null;
-            Type t = null;
-            if (item.itemtype == treeitem.fieldinfo || item.itemtype == treeitem.objfieldinfo)
-            {
-                field = item.fieldInfo;
-                t = field.FieldType;
-            }
-            else if (item.itemtype == treeitem.propertyinfo || item.itemtype == treeitem.objpropertyinfo)
-            {
-                field = item.propertyInfo;
-                t = field.PropertyType;
-            }
-            else
-            {
-                field = item.fieldInfo;
-                t = field.FieldType;
-            }
-            //GroupPanel grouppanel = (GroupPanel)((Button) sender).Parent;
-            GroupPanel grouppanel = groupPanel;
-
-            //FieldInfo field = item.fieldInfo;
-            //Type t = field.FieldType;
-            //System.Console.WriteLine(t.ToString());
-
-            String str;
-
-            if (t.ToString().Equals("System.Int32"))
-            {
-                str = panelControls["txtbox"].Text.Trim();
-                int integer;
-                if (str.Length < 1) return;
-                if (Int32.TryParse(str, out integer))
-                    field.SetValue(parentObject, integer);
-                else
-                    return;
-            }
-            if (t.ToString().Equals("System.Single"))
-            {
-                str = panelControls["txtbox"].Text.Trim();
-                float f;
-                if (str.Length < 1) return;
-                if (float.TryParse(str, out f))
-                    field.SetValue(parentObject, f);
-                else
-                    return;
-            }
-            if (t.ToString().Equals("System.String"))
-            {
-                str = panelControls["txtbox"].Text;
-                if (str.Length < 1) return;
-                field.SetValue(parentObject, str);
-                return;
-            }
-
-        }
-        */
+        
         public void lstMain_ChangeScrollPosition(int change)
         {
             
@@ -1260,18 +891,11 @@ namespace OrbItProcs.Interface
         {
             ListBox listbox = (ListBox)sender;
             //remove panelControl elements (from groupPanel at the bottom)
-            if (panelControls.Keys.Count > 0) //DisableControls(groupPanel);
+            if (panelControls.Keys.Count > 0)
             {
                 propertyEditPanel.DisableControls();
             }
-            //System.Console.WriteLine("" + treebox.ItemIndex);
-            /*
-            game.targetNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
-            ui.editNode = game.targetNode;
-            lblEditNodeName.Text = ui.editNode.name;
-
-            lstComp.Items = TreeListItem.GenerateList((Node)listbox.Items.ElementAt(listbox.ItemIndex), "");
-            */
+            
 
             if (listbox.ItemIndex > 0 && listbox.Items.ElementAt(listbox.ItemIndex) is Node)
             {
@@ -1288,16 +912,11 @@ namespace OrbItProcs.Interface
         {
             //if (game.targetNode == target) return;
             game.targetNode = target;
+            
+            if (ui.editNode != target)
+                ResetTreeListBox(lstComp, game.targetNode);
             ui.editNode = target;
             lblEditNodeName.Text = ui.editNode.name;
-            //compLst = TreeListItem.GenerateList(target, "");
-            //InspectorItem root = new InspectorItem(lstComp.Items, game.targetNode, "");
-            //root.GenerateChildren();
-            //compLst = root.children;
-            //compLst = roo
-
-            ResetTreeListBox(lstComp, game.targetNode);
-
         }
 
         void lstPresets_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
@@ -1308,15 +927,11 @@ namespace OrbItProcs.Interface
             {
                 propertyEditPanel.DisableControls();
             }
-            //System.Console.WriteLine("" + treebox.ItemIndex);
-            //game.room.defaultNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
             if (listbox.ItemIndex < 0) return;
             ui.editNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
             lblEditNodeName.Text = ui.editNode.name;
             ui.spawnerNode = ui.editNode;
-            //ui.editNode = game.targetNode;
-
-            //compLst = TreeListItem.GenerateList(ui.editNode, "");
+            
             ResetTreeListBox(lstComp, ui.editNode);
 
             if (cmbPresets.ItemIndex != lstPresets.ItemIndex)
@@ -1354,12 +969,6 @@ namespace OrbItProcs.Interface
         {
 
             ComboBox combobox = (ComboBox)sender;
-            /*
-            if (panelControls.Keys.Count > 0) DisableControls(groupPanel);
-            ui.editNode = (Node)combobox.Items.ElementAt(combobox.ItemIndex);
-            lblEditNodeName.Text = ui.editNode.name;
-            */
-            //System.Console.WriteLine("num : {0}", cmbPresets.ItemIndex);
             if (combobox.ItemIndex != lstPresets.ItemIndex)
             {
                 lstPresets.ItemIndex = combobox.ItemIndex;
@@ -1371,16 +980,13 @@ namespace OrbItProcs.Interface
             TreeListBox listComp = (TreeListBox)sender;
 
             if (listComp.ItemIndex < 0) return;
-            //TreeListItem item = (TreeListItem)listComp.Items.ElementAt(listComp.ItemIndex);
             InspectorItem item = (InspectorItem)listComp.Items.ElementAt(listComp.ItemIndex);
 
-            //UpdateGroupPanel(item, groupPanel); //todo: update this.
+            //UpdateGroupPanel(item, groupPanel);
         }
 
         void lstComp_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            //System.Console.WriteLine(e.GetType());
-
             TreeListBox listComp = (TreeListBox)sender;
             MouseEventArgs mouseArgs = (MouseEventArgs)e;
             if (mouseArgs.Button == MouseButton.Right)
@@ -1396,33 +1002,31 @@ namespace OrbItProcs.Interface
                 }
                 else
                 {
-                    // zack
                     if (litem.obj is bool)
                     {
                         contextMenulstComp.Items.Add(toggleBoolMenuItem);
                     }
 
-                    contextMenulstComp.Items.Add(applyToAllNodesMenuItem); //only works if nodes have the same structural element
+                    contextMenulstComp.Items.Add(applyToAllNodesMenuItem);
                 }
 
             }
             else if (mouseArgs.Button == MouseButton.Left)
             {
-
                 if (listComp.ItemIndex < 0) return;
                 InspectorItem item = (InspectorItem)listComp.Items.ElementAt(listComp.ItemIndex);
                 item.ClickItem(listComp.ItemIndex);
+                Type t = item.obj.GetType();
 
                 if (activeInspectorItem != item)
                     propertyEditPanel.UpdatePanel(item);
-                //UpdateGroupPanel(item, groupPanel); //todo: update this.
+                    
             }
         }
 
         void chkTempNodes_CheckedChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             //TODO: Ask harley what to do
-
         }
 
         void btnAddComponent_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
@@ -1439,25 +1043,16 @@ namespace OrbItProcs.Interface
                 );
         }
 
-            // if it's open don't open again... (TODO)
-
-
         void btnDefaultNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            //InspectorItem item = new InspectorItem(game.targetNode, "");
-            //item.GenerateChildren();
-            //compLst = item.children;
-            
-
-            //compLst = TreeListItem.GenerateList(game.room.defaultNode, "");
             SetDefaultNodeAsEdit();
         }
 
         public void SetDefaultNodeAsEdit()
         {
+            if (ui.editNode == ActiveDefaultNode) return;
             ui.editNode = ActiveDefaultNode;
             ui.spawnerNode = ui.editNode;
-
 
             ResetTreeListBox(lstComp, ActiveDefaultNode);
 
@@ -1466,8 +1061,6 @@ namespace OrbItProcs.Interface
 
         void btnRemoveAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            //game.room.RemoveAllNodes();
-            //game.targetNode = null;
             Group g = ActiveGroup;
             if (g.entities.Contains(game.targetNode)) game.targetNode = null;
             if (g.entities.Contains(ui.editNode) && ui.editNode != g.defaultNode)
@@ -1477,8 +1070,7 @@ namespace OrbItProcs.Interface
                 ui.editNode = null;
             }
             g.entities.ToList().ForEach(delegate(object o) 
-            { 
-                //g.entities.Remove(o); 
+            {
                 g.DeleteEntity(o);
             });
 
@@ -1488,14 +1080,13 @@ namespace OrbItProcs.Interface
 
         void btnRemoveNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            //game.room.RemoveAllNodes();
             Group g = ActiveGroup;
-            if (g != null && g.entities.Contains(game.targetNode)) //g.entities.Remove(game.targetNode);
+            if (g != null && g.entities.Contains(game.targetNode))
                 g.DeleteEntity(game.targetNode);
             if (game.targetNode != null)
             {
-                //game.room.nodes.Remove(game.targetNode);
-                game.targetNode.active = false;
+                //game.targetNode.active = false;
+                game.targetNode.IsDeleted = true;
                 game.targetNode = null;
             }
             if (ui.editNode != ActiveDefaultNode && !lstPresets.Items.Contains(ui.editNode))
@@ -1504,7 +1095,6 @@ namespace OrbItProcs.Interface
                 lstComp.rootitem = null;
                 ui.editNode = null;
             }
-            //DisableControls(groupPanel);
             propertyEditPanel.DisableControls();
         }
         void addComponent(bool c, object ans)
@@ -1529,6 +1119,5 @@ namespace OrbItProcs.Interface
                 }
             }
         }
-
     }
 }

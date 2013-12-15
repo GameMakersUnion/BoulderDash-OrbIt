@@ -83,31 +83,31 @@ namespace OrbItProcs.Components
         public override void AffectSelf()
         {
             /*
-            angle = Math.Atan2(parent.velocity.Y, parent.velocity.X) + (Math.PI / 2);
+            angle = Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2);
 
             if (timer > timerMax)
             {
                 timer = 0;
                 if (positions.Count < queuecount)
                 {
-                    positions.Enqueue(parent.position);
+                    positions.Enqueue(parent.transform.position);
                     //colors.Enqueue(Utils.randomColor());
-                    scales.Enqueue((float)parent.scale);
+                    scales.Enqueue((float)parent.transform.scale);
                 }
                 else
                 {
                     positions.Dequeue();
                     scales.Dequeue();
                     //colors.Dequeue();
-                    positions.Enqueue(parent.position);
-                    scales.Enqueue((float)parent.scale);
+                    positions.Enqueue(parent.transform.position);
+                    scales.Enqueue((float)parent.transform.scale);
                     //colors.Enqueue(Utils.randomColor());
 
                     //angles.Dequeue();
                     //angles.Enqueue((float)angle);
                     /*
-                    Vector2 v0 = parent.position - positions.ElementAt(0);
-                    Vector2 vq = parent.position - positions.ElementAt(8);
+                    Vector2 v0 = parent.transform.position - positions.ElementAt(0);
+                    Vector2 vq = parent.transform.position - positions.ElementAt(8);
                     Console.WriteLine("Dif (0 p): {0}, Dif (count p): {1}", v0.Length(), vq.Length());
                     //---
                 }
@@ -132,15 +132,16 @@ namespace OrbItProcs.Components
             //Queue<float> angles = parent.comps[comp.queuer].angles;
             Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
 
-            Vector2 screenPos = parent.position / mapzoom;
+            Vector2 screenPos = parent.transform.position / mapzoom;
             Vector2 centerTexture = new Vector2(0.5f, 0.5f);
 
-            Vector2 start = parent.position;
+            Vector2 start = parent.transform.position;
             Vector2 end = Vector2.Zero;
             int count = 0;
 
             //foreach (Vector2 pos in positions)
-            for (int i = 1; i <= positions.Count; i++)
+            int min = Math.Min(positions.Count, scales.Count);
+            for (int i = 1; i <= min; i++)
             {
                 //Vector2 pos = positions.ElementAt(i);
                 float red = (float)i * (255f / queuecount) / 255f;
@@ -148,7 +149,7 @@ namespace OrbItProcs.Components
                 //col = Utils.randomColor();
 
                 start = positions.ElementAt(i-1);
-                if (i == positions.Count) end = parent.position;
+                if (i == positions.Count) end = parent.transform.position;
                 else end = positions.ElementAt(i);
                 
                 Vector2 diff = (end - start) / mapzoom;
@@ -168,8 +169,8 @@ namespace OrbItProcs.Components
                 Color coll = new Color(collarr[0], collarr[1], collarr[2]);
                 
                 spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint, null, new Color(1f, 1f, 1f, 255 / queuecount * i), testangle, centerTexture, scalevect, SpriteEffects.None, 0);
-                spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint + diff, null, /*parent.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
-                spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint - diff, null, /*parent.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+                spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint + diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+                spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint - diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
                 count++;
             }
             //spritebatch.Draw(parent.room.game.whitepixelTexture, new Vector2(screenx, screeny), null, Color.White, (float)angle, center, scaling, SpriteEffects.None, 0);
@@ -192,7 +193,7 @@ namespace OrbItProcs.Components
             spritebatch.Draw(parent.room.game.colororbTexture, centerpoint, null, Color.White, 0f, new Vector2(25f, 25f), 1 / mapzoom, SpriteEffects.None, 0);
             spritebatch.Draw(parent.room.game.whitepixelTexture, centerpoint, null, Color.White, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
             */
-            //spritebatch.Draw(parent.texture, new Vector2(screenx, screeny), null, Color.White, 0, new Vector2(parent.texture.Width / 2, parent.texture.Height / 2), parent.scale, SpriteEffects.None, 0);
+            //spritebatch.Draw(parent.texture, new Vector2(screenx, screeny), null, Color.White, 0, new Vector2(parent.texture.Width / 2, parent.texture.Height / 2), parent.transform.scale, SpriteEffects.None, 0);
             //spritebatch.Draw(parent.props[properties.core_texture], parent.props[properties.core_position], null, Color.White, 0, new Vector2(parent.props[properties.core_texture].Width / 2, parent.props[properties.core_texture].Height / 2), 1f, SpriteEffects.None, 0);
         }
 

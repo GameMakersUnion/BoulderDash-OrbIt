@@ -31,14 +31,14 @@ namespace OrbItProcs.Components
         public override void AffectSelf()
         {
             float counterVelocity = 40f;
-            float xCounterVel = (parent.velocity.X * -1) / counterVelocity;
-            float yCounterVel = (parent.velocity.Y * -1) / counterVelocity;
+            float xCounterVel = (parent.transform.velocity.X * -1) / counterVelocity;
+            float yCounterVel = (parent.transform.velocity.Y * -1) / counterVelocity;
             float dx = 1 - ((float)Utils.random.NextDouble() * 2);
             float dy = 1 - ((float)Utils.random.NextDouble() * 2);
             dx = dx + xCounterVel;
             dy = dy + yCounterVel;
-            parent.velocity.X += dx;
-            parent.velocity.Y += dy;
+            parent.transform.velocity.X += dx;
+            parent.transform.velocity.Y += dy;
         }
 
         public override void Draw(SpriteBatch spritebatch)

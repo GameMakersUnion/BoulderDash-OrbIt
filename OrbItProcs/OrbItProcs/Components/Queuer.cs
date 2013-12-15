@@ -60,6 +60,13 @@ namespace OrbItProcs.Components
 
         }
 
+        public override void OnSpawn()
+        {
+            if (parent.comps.ContainsKey(comp.waver))
+            {
+                positions = parent.comps[comp.waver].metapositions;
+            }
+        }
 
         public override void InitializeLists()
         {
@@ -91,7 +98,7 @@ namespace OrbItProcs.Components
                     {
                         positions.Dequeue();
                     }
-                    positions.Enqueue(parent.position);
+                    positions.Enqueue(parent.transform.position);
                 }
                 if ((qs & queues.scale) == queues.scale)
                 {
@@ -100,7 +107,7 @@ namespace OrbItProcs.Components
                     {
                         scales.Dequeue();
                     }
-                    scales.Enqueue((float)parent.scale);
+                    scales.Enqueue((float)parent.transform.scale);
                 }
                 if ((qs & queues.angle) == queues.angle)
                 {
@@ -109,7 +116,7 @@ namespace OrbItProcs.Components
                     {
                         angles.Dequeue();
                     }
-                    float angle = (float)(Math.Atan2(parent.velocity.Y, parent.velocity.X) + (Math.PI / 2));
+                    float angle = (float)(Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2));
                     angles.Enqueue(angle);
                 }
                 if ((qs & queues.customs) == queues.customs)

@@ -47,7 +47,7 @@ namespace OrbItProcs.Components {
             if (!other.comps.ContainsKey(comp.gravity)) return; //controversial: what the fuck do we do
 
             //assuming other has been checked for 'active' from caller
-            float distVects = Vector2.Distance(other.position, parent.position);
+            float distVects = Vector2.Distance(other.transform.position, parent.transform.position);
 
             // INSTEAD of checking all distances between all nodes (expensive; needs to take roots)
             // do this: find all nodes within the SQUARE (radius = width/2), then find distances to remove nodes in the corners of square
@@ -55,42 +55,42 @@ namespace OrbItProcs.Components {
             {
                 //Console.WriteLine("YEP");
                 if (distVects < lowerbound) distVects = lowerbound;
-                //if (distVects < (parent.mass * 10)) distVects = (parent.mass * 10);
-                double angle = Math.Atan2((parent.position.Y - other.position.Y), (parent.position.X - other.position.X));
+                //if (distVects < (parent.transform.mass * 10)) distVects = (parent.transform.mass * 10);
+                double angle = Math.Atan2((parent.transform.position.Y - other.transform.position.Y), (parent.transform.position.X - other.transform.position.X));
                 //float counterforce = 100 / distVects;
                 float counterforce = 1;
                 //float gravForce = multiplier / (distVects * distVects * counterforce);
-                float gravForce = (multiplier * parent.mass * other.mass) / (distVects * distVects * counterforce);
+                float gravForce = (multiplier * parent.transform.mass * other.transform.mass) / (distVects * distVects * counterforce);
                 //float gravForce = gnode1.GravMultiplier;
                 float velX = (float)Math.Cos(angle) * gravForce;
                 float velY = (float)Math.Sin(angle) * gravForce;
                 Vector2 delta = new Vector2(velX, velY);
                 
                 /*
-                delta /= other.mass;
-                other.velocity += delta;
+                delta /= other.transform.mass;
+                other.transform.velocity += delta;
                 //*/
                 //*
                 delta /= 2;
 
                 if (constant)
                 {
-                    other.velocity = delta / other.mass;
-                    parent.velocity = -delta / parent.mass;
+                    other.transform.velocity = delta / other.transform.mass;
+                    parent.transform.velocity = -delta / parent.transform.mass;
                 }
                 else
                 {
-                    other.velocity += delta / other.mass;
-                    parent.velocity -= delta / parent.mass;
+                    other.transform.velocity += delta / other.transform.mass;
+                    parent.transform.velocity -= delta / parent.transform.mass;
                 }
 
                 
                 
                 //*/
 
-                //other.velocity.X += velX;
-                //other.velocity.Y += velY;
-                //other.velocity /=  other.mass; //creates snakelike effect when put below increments
+                //other.transform.velocity.X += velX;
+                //other.transform.velocity.Y += velY;
+                //other.transform.velocity /=  other.transform.mass; //creates snakelike effect when put below increments
             }
         }
         public override void AffectSelf()

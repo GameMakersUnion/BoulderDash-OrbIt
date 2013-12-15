@@ -78,22 +78,22 @@ namespace OrbItProcs.Components
         }
         public override void AffectSelf()
         {
-            //angle = Math.Atan2(parent.velocity.Y, parent.velocity.X) + (Math.PI / 2);
+            //angle = Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2);
             /*
             if (++timer % timerMax == 0)
             {
                 
                 if (positions.Count < queuecount)
                 {
-                    //positions.Enqueue(parent.position);
-                    //scales.Enqueue(parent.scale);
+                    //positions.Enqueue(parent.transform.position);
+                    //scales.Enqueue(parent.transform.scale);
                 }
                 else
                 {
                     //positions.Dequeue();
-                    //positions.Enqueue(parent.position);
+                    //positions.Enqueue(parent.transform.position);
                     //scales.Dequeue();
-                    //scales.Enqueue(parent.scale);
+                    //scales.Enqueue(parent.transform.scale);
                 }
                 
 
@@ -112,7 +112,7 @@ namespace OrbItProcs.Components
             float a, b, c;
             a = b = c = 0;
 
-            //Vector2 screenPos = parent.position / mapzoom;
+            //Vector2 screenPos = parent.transform.position / mapzoom;
 
             int count = 0;
             //foreach (Vector2 pos in positions)
@@ -121,18 +121,18 @@ namespace OrbItProcs.Components
             Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
             //float t = parent.comps[comp.queuer].scales.ElementAt(2);
             //Console.WriteLine(scales.Count + " :: " + positions.Count);
-
-            foreach (float s in scales)
+            int min = Math.Min(positions.Count, scales.Count);
+            for (int i = 0; i < min; i++)
             {
                 //color = new Color(color.R, color.G, color.B, 255/queuecount * count);
                 a += r1 / 10;
                 b += g1 / 10;
                 c += b1 / 10;
                 col = new Color(a, b, c, 0.8f);
-                if (parent.comps.ContainsKey(comp.hueshifter) && parent.comps[comp.hueshifter].active) col = parent.color;
+                if (parent.comps.ContainsKey(comp.hueshifter) && parent.comps[comp.hueshifter].active) col = parent.transform.color;
 
                 //float scale = scales.ElementAt(count) / mapzoom;
-                //float scale = parent.scale;
+                //float scale = parent.transform.scale;
                 //if (parent.comps.ContainsKey(comp.queuer))
                 //{
                 //    if (parent.comps[comp.queuer].scales.Count > count)
@@ -140,13 +140,13 @@ namespace OrbItProcs.Components
                 
                 //}
 
-                spritebatch.Draw(parent.getTexture(), positions.ElementAt(count) / mapzoom, null, col, 0, parent.TextureCenter(), s / mapzoom , SpriteEffects.None, 0);
+                spritebatch.Draw(parent.getTexture(), positions.ElementAt(i) / mapzoom, null, col, 0, parent.TextureCenter(), scales.ElementAt(i) / mapzoom , SpriteEffects.None, 0);
                 count++;
             }
 
-            //float testangle = (float)(Math.Atan2(parent.velocity.Y, parent.velocity.X) + (Math.PI / 2));
-            if (parent.comps.ContainsKey(comp.hueshifter)) col = parent.color;
-            spritebatch.Draw(parent.getTexture(), parent.position / mapzoom, null, col, 0, parent.TextureCenter(), parent.scale / mapzoom, SpriteEffects.None, 0);
+            //float testangle = (float)(Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2));
+            if (parent.comps.ContainsKey(comp.hueshifter)) col = parent.transform.color;
+            spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, col, 0, parent.TextureCenter(), parent.transform.scale / mapzoom, SpriteEffects.None, 0);
 
         }
 
