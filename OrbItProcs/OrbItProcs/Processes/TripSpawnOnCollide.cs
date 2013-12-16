@@ -44,9 +44,9 @@ namespace OrbItProcs.Processes
             n1.Collided -= Collision;
             n2.Collided -= Collision;
             n3.Collided -= Collision;
-            n1.position.X -= 150;
-            n2.position.X += 150;
-            n3.position.Y -= 150;
+            n1.transform.position.X -= 150;
+            n2.transform.position.X += 150;
+            n3.transform.position.Y -= 150;
             
 
             if (n1.room.nodesToAdd.Count < 1)

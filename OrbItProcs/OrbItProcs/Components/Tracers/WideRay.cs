@@ -60,25 +60,25 @@ namespace OrbItProcs.Components
         public override void AffectSelf()
         {
             /*
-            angle = Math.Atan2(parent.velocity.Y, parent.velocity.X) +(Math.PI / 2);
+            angle = Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) +(Math.PI / 2);
 
             timer++;
             if (timer % timerMax == 0)
             {
                 if (positions.Count < queuecount)
                 {
-                    positions.Enqueue(parent.position);
+                    positions.Enqueue(parent.transform.position);
                     angles.Enqueue((float)angle);
-                    scales.Enqueue((float)parent.scale);
+                    scales.Enqueue((float)parent.transform.scale);
                 }
                 else
                 {
                     positions.Dequeue();
-                    positions.Enqueue(parent.position);
+                    positions.Enqueue(parent.transform.position);
                     angles.Dequeue();
                     angles.Enqueue((float)angle);
                     scales.Dequeue();
-                    scales.Enqueue((float)parent.scale);
+                    scales.Enqueue((float)parent.transform.scale);
                 }
             }
             */
@@ -95,21 +95,22 @@ namespace OrbItProcs.Components
             Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
             
 
-            Vector2 screenPos = parent.position / mapzoom;
+            Vector2 screenPos = parent.transform.position / mapzoom;
             Vector2 centerTexture = new Vector2(0.5f, 0.5f);
 
             int count = 0;
             Vector2 scalevect = new Vector2(rayscale, width);
-            foreach (Vector2 pos in positions)
+            int min = Math.Min(Math.Min(positions.Count, scales.Count), angles.Count);
+            for (int i = 0; i < min; i++)
             {
-                scalevect.X = scales.ElementAt(count) * 50;
-                spritebatch.Draw(parent.getTexture(textures.whitepixel), pos/mapzoom, null, parent.color, angles.ElementAt(count), centerTexture, scalevect, SpriteEffects.None, 0);
+                scalevect.X = scales.ElementAt(i) * 50;
+                spritebatch.Draw(parent.getTexture(textures.whitepixel), positions.ElementAt(i) / mapzoom, null, parent.transform.color, angles.ElementAt(i), centerTexture, scalevect, SpriteEffects.None, 0);
                 count++;
             }
 
-            float testangle = (float)(Math.Atan2(parent.velocity.Y, parent.velocity.X) + (Math.PI / 2));
-            scalevect.X = parent.scale * 50;
-            spritebatch.Draw(parent.getTexture(textures.whitepixel), parent.position / mapzoom, null, parent.color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+            float testangle = (float)(Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2));
+            scalevect.X = parent.transform.scale * 50;
+            spritebatch.Draw(parent.getTexture(textures.whitepixel), parent.transform.position / mapzoom, null, parent.transform.color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
             
         }
 

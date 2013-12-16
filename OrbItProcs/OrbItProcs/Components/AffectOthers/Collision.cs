@@ -16,9 +16,6 @@ namespace OrbItProcs.Components
             com = comp.collision; 
             methods = mtypes.affectother; 
         }
-
-
-
         public override void Initialize(Node parent)
         {
             this.parent = parent;

@@ -33,15 +33,15 @@ namespace OrbItProcs.Components
         }
         public override void AffectSelf()
         {
-            if ((Math.Pow(parent.velocity.X, 2) + Math.Pow(parent.velocity.Y, 2)) > Math.Pow(maxvel, 2))
+            if ((Math.Pow(parent.transform.velocity.X, 2) + Math.Pow(parent.transform.velocity.Y, 2)) > Math.Pow(maxvel, 2))
             {
-                parent.velocity.Normalize();
-                parent.velocity *= maxvel;
+                parent.transform.velocity.Normalize();
+                parent.transform.velocity *= maxvel;
             }
-            if ((Math.Pow(parent.velocity.X, 2) + Math.Pow(parent.velocity.Y, 2)) < Math.Pow(minvel, 2))
+            if ((Math.Pow(parent.transform.velocity.X, 2) + Math.Pow(parent.transform.velocity.Y, 2)) < Math.Pow(minvel, 2))
             {
-                parent.velocity.Normalize();
-                parent.velocity *= minvel;
+                parent.transform.velocity.Normalize();
+                parent.transform.velocity *= minvel;
             }
         }
 

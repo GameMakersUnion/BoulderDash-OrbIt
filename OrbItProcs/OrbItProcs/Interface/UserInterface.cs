@@ -29,7 +29,7 @@ namespace OrbItProcs.Interface {
         KeyboardState oldKeyBState;
         MouseState oldMouseState;
         
-        string currentSelection = "placeNode";//
+        public string currentSelection = "placeNode";//
         int oldMouseScrollValue = 0;//
         bool hovertargetting = false;//
         int rightClickCount = 0;//
@@ -243,8 +243,8 @@ namespace OrbItProcs.Interface {
                     {
                         Node n = (Node)room.masterGroup.entities.ElementAt(i);
                         // find node that has been clicked, starting from the most recently placed nodes
-                        float distsquared = Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY));
-                        if ( distsquared < n.radius * n.radius)
+                        float distsquared = Vector2.DistanceSquared(n.transform.position, new Vector2(worldMouseX, worldMouseY));
+                        if ( distsquared < n.transform.radius * n.transform.radius)
                         {
                             if (distsquared < shortedDistance)
                             {
@@ -272,8 +272,8 @@ namespace OrbItProcs.Interface {
                     {
                         Node n = (Node)room.masterGroup.entities.ElementAt(i);
                         // find node that has been clicked, starting from the most recently placed nodes
-                        float distsquared = Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY));
-                        if (distsquared < n.radius * n.radius)
+                        float distsquared = Vector2.DistanceSquared(n.transform.position, new Vector2(worldMouseX, worldMouseY));
+                        if (distsquared < n.transform.radius * n.transform.radius)
                         {
                             if (distsquared < shortedDistance)
                             {
@@ -305,8 +305,8 @@ namespace OrbItProcs.Interface {
                     {
                         Node n = (Node)room.masterGroup.entities.ElementAt(i);
                         // find node that has been clicked, starting from the most recently placed nodes
-                        float distsquared = Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY));
-                        if (distsquared < n.radius * n.radius)
+                        float distsquared = Vector2.DistanceSquared(n.transform.position, new Vector2(worldMouseX, worldMouseY));
+                        if (distsquared < n.transform.radius * n.transform.radius)
                         {
                             if (distsquared < shortedDistance)
                             {
@@ -344,7 +344,7 @@ namespace OrbItProcs.Interface {
                     {
                         Node n = (Node)room.masterGroup.entities.ElementAt(i);
                         // find node that has been clicked, starting from the most recently placed nodes
-                        if (Vector2.DistanceSquared(n.position, new Vector2(worldMouseX, worldMouseY)) < n.radius * n.radius)
+                        if (Vector2.DistanceSquared(n.transform.position, new Vector2(worldMouseX, worldMouseY)) < n.transform.radius * n.transform.radius)
                         {
                             game.targetNode = n;
                             found = true;

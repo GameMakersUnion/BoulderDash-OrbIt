@@ -28,13 +28,13 @@ namespace OrbItProcs.Components
         public override void AffectOther(Node other)
         {
 
-            float distVects = Vector2.Distance(other.position, parent.position);
+            float distVects = Vector2.Distance(other.transform.position, parent.transform.position);
             if (distVects < radius)
             {
-                float newX = (parent.position.X - other.position.X) * 2.05f;
-                float newY = (parent.position.Y - other.position.Y) * 2.05f;
-                other.position.X += newX;
-                other.position.Y += newY;
+                float newX = (parent.transform.position.X - other.transform.position.X) * 2.05f;
+                float newY = (parent.transform.position.Y - other.transform.position.Y) * 2.05f;
+                other.transform.position.X += newX;
+                other.transform.position.Y += newY;
 
             }
         }

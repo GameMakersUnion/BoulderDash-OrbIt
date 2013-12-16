@@ -29,7 +29,6 @@ namespace OrbItProcs {
         name,
         lifetime,
         color,
-    
     };
 
     //public delegate void MyEventHandler (object sender, EventArgs e);
@@ -63,12 +62,14 @@ namespace OrbItProcs {
 
         public T GetComponent<T>()
         {
-            //return comps[Game1.compEnums[typeof(T)]];
-            return comps[comp.movement];
+            return comps[Game1.compEnums[typeof(T)]]; //since it's dynamic value, we don't need to cast result to T
+            //return comps[comp.movement];
         }
 
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;
         //public bool active = true;
+        private Dictionary<comp, bool> tempCompActiveValues = new Dictionary<comp, bool>();
+        //public Dictionary<comp, bool> tempCompActiveValues { get { return _tempCompActiveValues; } set { _tempCompActiveValues = value; } }
 
         private bool _active = true;
         public bool active
@@ -82,58 +83,100 @@ namespace OrbItProcs {
                     {
                         if (comps[c] is Component)
                         {
+                            tempCompActiveValues[c] = comps[c].active;
                             comps[c].active = false;
+                        }
+                    }
+                }
+                else if (!_active && value)
+                {
+                    foreach (comp c in comps.Keys.ToList())
+                    {
+                        if (comps[c] is Component)
+                        {
+                            if (tempCompActiveValues.ContainsKey(c)) comps[c].active = tempCompActiveValues[c];
+                            else comps[c].active = true;
                         }
                     }
                 }
                 _active = value;
             }
         }
-        
+
+        private bool _IsDeleted = false;
+        public bool IsDeleted
+        {
+            get { return _IsDeleted; }
+            set
+            {
+                if (!IsDeleted && value)
+                {
+                    active = false;
+                }
+                _IsDeleted = value;
+            }
+        }
+
+        public bool IsDefault = false;
+
+        private float _multiplier = 1f;
+        public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
+
+        /*
+        public Vector2 position = new Vector2(0,0);
+        public Vector2 velocity = new Vector2(0,0);
         private float _radius = 25f;
         public float radius
         {
             get { return _radius; }
-            set {
+            set
+            {
                 _radius = value;
                 if (getTexture() != null)
                 {
-                    scale = value / (getTexture().Width / 2);
+                    transform.scale = value / (getTexture().Width / 2);
                 }
                 else
                 {
-                    scale = value / (50 / 2);
+                    transform.scale = value / (50 / 2);
                 }
             }
         }
         private float _mass = 10f;
         public float mass { get { return _mass; } set { _mass = value; } }
+        private float _scale = 1f; // TODO: make the setter change the radius -e harely
+        public float scale
+        {
+            get { return _scale; }
+            set { _scale = value; }
+        }
+        public Color color = new Color(255, 255, 255);
+        public Color ColorProp
+        {
+            get { return color; }
+            set { color = value; }
+        }
+        private textures _texture = textures.whitecircle;
+        public textures texture { get { return _texture; } set { _texture = value; } }
+        */
 
-        private float _multiplier = 1f;
-        public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
-        public Vector2 position = new Vector2(0,0);
-        public Vector2 velocity = new Vector2(0,0);
         public int lifetime = -1;
         private float _effectiveRadius = 100f;
         public float effectiveRadius { get { return _effectiveRadius; } set { _effectiveRadius = value; } }
 
-        private float _scale = 1f; // TODO: make the setter change the radius -e harely
-        public float scale { get { return _scale; } 
-            set { _scale = value; } 
-        }
+        
         
         private string _name = "node";
         public string name { get { return _name; } set { _name = value; } }
 
-        public Color color = new Color(255,255,255);
+        
 
         public int _sentinel = -10;
 
         public int sentinelp { get { return _sentinel; } set { _sentinel = value; } }
 
         public Room room = Program.getRoom();
-        private textures _texture = textures.whitecircle;
-        public textures texture { get { return _texture; } set { _texture = value; } }
+        
 
         private float _velMultiplier = 1f;
         public float velMultiplier { get { return _velMultiplier; } set { _velMultiplier = value; } }
@@ -144,8 +187,6 @@ namespace OrbItProcs {
         public Dictionary<dynamic, bool> _props = new Dictionary<dynamic, bool>();
         public Dictionary<dynamic, bool> props { get { return _props; } set { _props = value; } }
 
-        //public OrderedDictionary ocomps;
-
         public List<comp> aOtherProps = new List<comp>();
         public List<comp> aSelfProps = new List<comp>();
         public List<comp> drawProps = new List<comp>();
@@ -153,35 +194,44 @@ namespace OrbItProcs {
         public List<comp> compsToRemove = new List<comp>();
         public List<comp> compsToAdd = new List<comp>();
 
+        public Transform transform;
+        public Transform TRANSFORM { get { return transform; } set { transform = value; } }
+
         public void storeInInstance(node val, Dictionary<dynamic,dynamic> dict)
         {
-            //if (val == node.active)             active          = dict[val];
-            if (val == node.position)           position        = dict[val];
-            if (val == node.velocity)           velocity        = dict[val];
-            if (val == node.velMultiplier)      velMultiplier   = dict[val];
-            if (val == node.multiplier)         multiplier      = dict[val];
-            if (val == node.effectiveRadius)    effectiveRadius = dict[val];
-            if (val == node.radius)             radius          = dict[val];
-            if (val == node.mass)               mass            = dict[val];
-            if (val == node.scale)              scale           = dict[val];
-            if (val == node.texture)            texture         = dict[val];
-            if (val == node.name)               name            = dict[val];
-            if (val == node.lifetime)           lifetime        = dict[val];
-            if (val == node.color)              color           = dict[val];
-
+            if (val == node.active)             active                      = dict[val];
+            if (val == node.position)           transform.position          = dict[val];
+            if (val == node.velocity)           transform.velocity          = dict[val];
+            if (val == node.velMultiplier)      velMultiplier               = dict[val];
+            if (val == node.multiplier)         multiplier                  = dict[val];
+            if (val == node.effectiveRadius)    effectiveRadius             = dict[val];
+            if (val == node.radius)             transform.radius            = dict[val];
+            if (val == node.mass)               transform.mass              = dict[val];
+            if (val == node.scale)              transform.scale             = dict[val];
+            if (val == node.texture)            transform.texture           = dict[val];
+            if (val == node.name)               name                        = dict[val];
+            if (val == node.lifetime)           lifetime                    = dict[val];
+            if (val == node.color)              transform.color             = dict[val];
         }
+        //these comes will allow eachother's draws to be called (all 4 could draw at once)
+        public static List<comp> drawPropsSuper = new List<comp>()
+        {
+            comp.waver,
+            comp.wideray,
+            comp.laser,
+            comp.phaseorb
+        };
 
         public Node()
         {
             nodeCounter++;
             room = Program.getRoom();
-            
+            transform = new Transform(this);
         }
 
-        public Node(Room room1, Dictionary<dynamic, dynamic> userProps = null)
+        public Node(Room room1, Dictionary<dynamic, dynamic> userProps = null) : this()
         {
-            nodeCounter++;    
-
+            //nodeCounter++;
             // add the userProps to the props
             foreach (dynamic p in userProps.Keys)
             {
@@ -218,7 +268,7 @@ namespace OrbItProcs {
             }
             SortComponentLists();
             //room = room1;
-            room = Program.getRoom();
+            //room = Program.getRoom();
             if (room == null) Console.WriteLine("null");
             if (Program.getGame() == null) Console.WriteLine("gnull");
             if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0,5);
@@ -229,7 +279,9 @@ namespace OrbItProcs {
         public override string ToString()
         {
             //return base.ToString();
-            return name;
+            string ret = name;
+            if (IsDefault) ret += "(DEF)";
+            return ret;
         }
 
         public void setCompActive(comp c, bool Active)
@@ -511,7 +563,7 @@ namespace OrbItProcs {
             List<Node> collisionList = new List<Node>();
             returnObjectsFinal = room.gridsystem.retrieve(this);
 
-            int cellReach = (int)(radius * 2) / room.gridsystem.cellwidth * 2;
+            int cellReach = (int)(transform.radius * 2) / room.gridsystem.cellwidth * 2;
 
             if (comps.ContainsKey(comp.collision) && comps[comp.collision].active) collisionList = room.gridsystem.retrieve(this, cellReach);
             HashSet<Node> hashlist = new HashSet<Node>();
@@ -595,12 +647,25 @@ namespace OrbItProcs {
 
         public void Draw(SpriteBatch spritebatch)
         {
+            int numOfSupers = 0;
             foreach (comp c in drawProps)
             {
+                if (!comps[c].CallDraw) continue;
                 if (!comps[c].active) continue;
-                comps[c].Draw(spritebatch);
-                if (!comps[c].methods.HasFlag(mtypes.minordraw))
-                    break; //only executes the most significant draw component
+                if (drawPropsSuper.Contains(c))
+                {
+                    numOfSupers++;
+                    comps[c].Draw(spritebatch);
+                }
+                else
+                {
+                    if (numOfSupers > 0) break;
+                    comps[c].Draw(spritebatch);
+                    if (!comps[c].methods.HasFlag(mtypes.minordraw))
+                        break; //only executes the most significant draw component
+                }
+                //if (!comps[c].methods.HasFlag(mtypes.minordraw))
+                //    break; //only executes the most significant draw component
             }
 
             if (triggerSortComponentsDraw)
@@ -630,7 +695,7 @@ namespace OrbItProcs {
 
         public Texture2D getTexture()
         {
-            return room.game.textureDict[texture];
+            return room.game.textureDict[transform.texture];
         }
         public Texture2D getTexture(textures t)
         {
@@ -638,7 +703,7 @@ namespace OrbItProcs {
         }
         public Vector2 TextureCenter()
         { 
-            Texture2D tx = room.game.textureDict[texture];
+            Texture2D tx = room.game.textureDict[transform.texture];
             return new Vector2(tx.Width / 2f, tx.Height / 2f); // TODO: maybe cast to floats to make sure it's the exact center.
         }
         
@@ -646,12 +711,12 @@ namespace OrbItProcs {
 
         public void changeRadius(float newRadius)
         {
-            radius = newRadius;
-            scale = radius / (getTexture().Width / 2);
+            transform.radius = newRadius;
+            transform.scale = transform.radius / (getTexture().Width / 2);
         }
         public float diameter()
         {
-            return radius * 2;
+            return transform.radius * 2;
         }
 
         public void OnSpawn()
@@ -746,7 +811,8 @@ namespace OrbItProcs {
                     || (field.FieldType.ToString().Equals("System.Boolean"))
                     || (field.FieldType.ToString().Equals("System.String")))
                 {
-                    field.SetValue(destNode, field.GetValue(sourceNode));
+                    if (!field.Name.Equals("IsDefault"))
+                        field.SetValue(destNode, field.GetValue(sourceNode));
                 }
                 else if (field.FieldType.ToString().Contains("Vector2"))
                 {
@@ -763,6 +829,10 @@ namespace OrbItProcs {
                 else if (field.Name.Equals("parent"))
                 {
                     //do nothing
+                }
+                else if (field.FieldType == (typeof(Transform)))
+                {
+                    Component.CloneComponent(sourceNode.transform, destNode.transform);
                 }
                 else
                 {

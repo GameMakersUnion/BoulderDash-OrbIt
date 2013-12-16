@@ -47,7 +47,7 @@ namespace OrbItProcs.Components {
             this.parent = parent;
             if (active)
             {
-                parent.color = new Color((float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255);
+                parent.transform.color = new Color((float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255);
             }
         }
 

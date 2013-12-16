@@ -44,23 +44,23 @@ namespace OrbItProcs.Components
 
         public override void AffectOther(Node other)
         {
-            float distVects = Vector2.Distance(other.position, parent.position);
-
+            float distVects = Vector2.Distance(other.transform.position, parent.transform.position);
+            
             if (distVects < radius)
             {
 
-                double angle = Math.Atan2((parent.position.Y - other.position.Y), (parent.position.X - other.position.X));
+                double angle = Math.Atan2((parent.transform.position.Y - other.transform.position.Y), (parent.transform.position.X - other.transform.position.X));
 
                 float velX = (float)Math.Cos(angle) * multiplier;
                 float velY = (float)Math.Sin(angle) * multiplier;
                 Vector2 delta = new Vector2(velX, velY);
-                delta /= other.mass;
+                delta /= other.transform.mass;
                 if (constant)
-                    other.velocity = delta;
+                    other.transform.velocity = delta;
                 else
                 {
                     //Console.WriteLine(delta);
-                    other.velocity += delta;
+                    other.transform.velocity += delta;
                 }
 
             }

@@ -13,7 +13,8 @@ namespace OrbItProcs {
         public int cellwidth, cellheight;
         public int gridwidth, gridheight;
         public List<Node>[,] grid;
-        public int cellReach { get; set; }
+        private int _cellReach;
+        public int cellReach { get { return _cellReach; } set { if (value < 1) return; _cellReach = value; } }
 
         //obsolete constructor
         public GridSystem(Room room, int gridwidth, int gridheight, int cellsX, int cellsY, int cellReach = 4)
@@ -133,15 +134,15 @@ namespace OrbItProcs {
 
         public Tuple<int, int> getIndexs(Node node)
         {
-            Vector2 pos = new Vector2(node.position.X, node.position.Y);
-            int x = (int)node.position.X;
-            int y = (int)node.position.Y;
+            Vector2 pos = new Vector2(node.transform.position.X, node.transform.position.Y);
+            int x = (int)node.transform.position.X;
+            int y = (int)node.transform.position.Y;
             int gridx = (int)pos.X - ((int)pos.X % cellwidth);
             x = gridx / cellwidth;
-            //if ((int)pos.X - gridx > gridx + cellwidth - (int)node.radius) x++;
+            //if ((int)pos.X - gridx > gridx + cellwidth - (int)node.transform.radius) x++;
             int gridy = (int)pos.Y - ((int)pos.Y % cellheight);
             y = gridy / cellheight;
-            //if ((int)pos.Y - gridy > gridy + cellheight - (int)node.radius) y++;
+            //if ((int)pos.Y - gridy > gridy + cellheight - (int)node.transform.radius) y++;
 
             if (x > cellsX - 1) x = cellsX - 1;
             if (y > cellsY - 1) y = cellsY - 1;

@@ -47,12 +47,12 @@ namespace OrbItProcs.Components
         }
         public override void AffectSelf()
         {
-            parent.position.X += parent.velocity.X;
-            parent.position.Y += parent.velocity.Y;
+            parent.transform.position.X += parent.transform.velocity.X;
+            parent.transform.position.Y += parent.transform.velocity.Y;
 
             //test (holy SHIT that looks cool)
             //PropertyInfo pi = parent.GetType().GetProperty("scale");
-            //pi.SetValue(parent, parent.position.X % 4.0f, null);
+            //pi.SetValue(parent, parent.transform.position.X % 4.0f, null);
 
             if (movementmode == movemode.screenwrap) screenWrap();
             if (movementmode == movemode.wallbounce) wallBounce();
@@ -69,7 +69,7 @@ namespace OrbItProcs.Components
             int levelwidth = parent.room.game.worldWidth;
             int levelheight = parent.room.game.worldHeight;
 
-            Vector2 pos = parent.position;
+            Vector2 pos = parent.transform.position;
 
             if (parent.comps.ContainsKey(comp.queuer) && (parent.comps[comp.queuer].qs & queues.position) == queues.position)
             {
@@ -78,21 +78,21 @@ namespace OrbItProcs.Components
             }
 
 
-            if (pos.X >= (levelwidth + parent.radius))
+            if (pos.X >= (levelwidth + parent.transform.radius))
             {
                 parent.active = false;
             }
-            else if (pos.X < parent.radius * -1)
+            else if (pos.X < parent.transform.radius * -1)
             {
                 parent.active = false;
             }
 
 
-            if (pos.Y >= (levelheight + parent.radius))
+            if (pos.Y >= (levelheight + parent.transform.radius))
             {
                 parent.active = false;
             }
-            else if (pos.Y < parent.radius * -1)
+            else if (pos.Y < parent.transform.radius * -1)
             {
                 parent.active = false;
             }
@@ -112,29 +112,29 @@ namespace OrbItProcs.Components
 
 
 
-            if (parent.position.X >= (levelwidth - parent.radius))
+            if (parent.transform.position.X >= (levelwidth - parent.transform.radius))
             {
-                parent.position.X = levelwidth - parent.radius;
-                parent.velocity.X *= -1;
+                parent.transform.position.X = levelwidth - parent.transform.radius;
+                parent.transform.velocity.X *= -1;
                 parent.OnCollidePublic();
 
             }
-            if (parent.position.X < parent.radius)
+            if (parent.transform.position.X < parent.transform.radius)
             {
-                parent.position.X = parent.radius;
-                parent.velocity.X *= -1;
+                parent.transform.position.X = parent.transform.radius;
+                parent.transform.velocity.X *= -1;
                 parent.OnCollidePublic();
             }
-            if (parent.position.Y >= (levelheight - parent.radius))
+            if (parent.transform.position.Y >= (levelheight - parent.transform.radius))
             {
-                parent.position.Y = levelheight - parent.radius;
-                parent.velocity.Y *= -1;
+                parent.transform.position.Y = levelheight - parent.transform.radius;
+                parent.transform.velocity.Y *= -1;
                 parent.OnCollidePublic();
             }
-            if (parent.position.Y < parent.radius)
+            if (parent.transform.position.Y < parent.transform.radius)
             {
-                parent.position.Y = parent.radius;
-                parent.velocity.Y *= -1;
+                parent.transform.position.Y = parent.transform.radius;
+                parent.transform.velocity.Y *= -1;
                 parent.OnCollidePublic();
             }
 
@@ -150,40 +150,40 @@ namespace OrbItProcs.Components
 
             //hitting top/bottom of screen
             //teleport node
-            if (parent.position.X >= levelwidth)
+            if (parent.transform.position.X >= levelwidth)
             {
-                parent.position.X = 1;
+                parent.transform.position.X = 1;
             }
-            else if (parent.position.X < 0)
+            else if (parent.transform.position.X < 0)
             {
-                parent.position.X = levelwidth - 1;
+                parent.transform.position.X = levelwidth - 1;
             }
             //show half texture on other side
-            if (parent.position.X >= (levelwidth - parent.radius))
+            if (parent.transform.position.X >= (levelwidth - parent.transform.radius))
             {
                 //
             }
-            else if (parent.position.X < parent.radius)
+            else if (parent.transform.position.X < parent.transform.radius)
             {
                 //
             }
 
             //hitting sides
             //teleport node
-            if (parent.position.Y >= levelheight)
+            if (parent.transform.position.Y >= levelheight)
             {
-                parent.position.Y = 1;
+                parent.transform.position.Y = 1;
             }
-            else if (parent.position.Y < 0)
+            else if (parent.transform.position.Y < 0)
             {
-                parent.position.Y = levelheight - 1;
+                parent.transform.position.Y = levelheight - 1;
             }
             //show half texture on other side
-            if (parent.position.Y >= (levelheight - parent.radius))
+            if (parent.transform.position.Y >= (levelheight - parent.transform.radius))
             {
                 //
             }
-            else if (parent.position.Y < parent.radius)
+            else if (parent.transform.position.Y < parent.transform.radius)
             {
                 //
             }

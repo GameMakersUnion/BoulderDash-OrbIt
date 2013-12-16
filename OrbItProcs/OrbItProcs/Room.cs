@@ -66,7 +66,7 @@ namespace OrbItProcs {
             this.game = game;
 
             // grid System
-            gridsystem = new GridSystem(this, 40, 40);
+            gridsystem = new GridSystem(this, 40, 4);
             gridSystemLines = new List<Rectangle>();
 
             
@@ -99,7 +99,7 @@ namespace OrbItProcs {
                 gridsystem.clear();
                 gridSystemLines = new List<Rectangle>();
 
-                HashSet<Node> toRemove = new HashSet<Node>();
+                HashSet<Node> toDelete = new HashSet<Node>();
                 //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
                 masterGroup.entities.ToList().ForEach(delegate(object o) 
                 {
@@ -112,16 +112,25 @@ namespace OrbItProcs {
                 masterGroup.entities.ToList().ForEach(delegate(object o)
                 {
                     Node n = (Node)o;
-                    n.Update(gametime);
-                    if (!n.active)
+                    if (n.active)
                     {
-                        toRemove.Add(n);
+                        n.Update(gametime);
+                    }
+                    if (n.IsDeleted)
+                    {
+                        toDelete.Add(n);
+                        if (n == game.targetNode) game.targetNode = null;
+                        if (n == game.ui.editNode) game.ui.editNode = null;
+                        if (n == game.ui.spawnerNode) game.ui.spawnerNode = null;
                     }
                 });
 
-                toRemove.ToList().ForEach(delegate(Node n) 
+                toDelete.ToList().ForEach(delegate(Node n) 
                 {
-                    if (masterGroup.entities.Contains(n)) masterGroup.entities.Remove(n);
+                    if (masterGroup.entities.Contains(n)) //masterGroup.entities.Remove(n);
+                    {
+                        masterGroup.DeleteEntity(n);
+                    }
                     /*
                     groups.Keys.ToList().ForEach(delegate(string key)
                     {
@@ -148,8 +157,8 @@ namespace OrbItProcs {
         {
             if (game.targetNode != null)
             {
-                targetNodeGraphic.position = game.targetNode.position;
-                targetNodeGraphic.scale = game.targetNode.scale * 1.5f;
+                targetNodeGraphic.transform.position = game.targetNode.transform.position;
+                targetNodeGraphic.transform.scale = game.targetNode.transform.scale * 1.5f;
             }
         }
 
@@ -163,15 +172,15 @@ namespace OrbItProcs {
 
                 foreach (Node _node in nodes)
                 {
-                    if (_node.color != Color.Black)
+                    if (_node.transform.color != Color.Black)
                     {
                         if (returnObjectsGridSystem.Contains(_node))
-                            _node.color = Color.Purple;
+                            _node.transform.color = Color.Purple;
                         else
-                            _node.color = Color.White;
+                            _node.transform.color = Color.White;
                     }
                 }
-                game.targetNode.color = Color.Red;
+                game.targetNode.transform.color = Color.Red;
             }
         }
 

@@ -9,7 +9,7 @@ using OrbItProcs.Processes;
 
 namespace OrbItProcs.Components
 {
-    public class Tether : Component
+    public class Tether : Component, ILinkable
     {
         new public bool active
         {
@@ -104,7 +104,7 @@ namespace OrbItProcs.Components
                 
                 foreach (Node n in outgoing)
                 {
-                    Vector2 diff = n.position - parent.position;
+                    Vector2 diff = n.transform.position - parent.transform.position;
                     float len;
                     if (locked)
                     {
@@ -119,40 +119,40 @@ namespace OrbItProcs.Components
                     {
                         if (confining)
                         {
-                            n.position = parent.position + confiningVects[n] * maxdist;
+                            n.transform.position = parent.transform.position + confiningVects[n] * maxdist;
                         }
                         else
                         {
                             float percent = maxdist / len;
                             diff *= percent;
-                            n.position = parent.position + diff;
+                            n.transform.position = parent.transform.position + diff;
                         }
                     }
                     else if (len < mindist)
                     {
                         if (confining)
                         {
-                            n.position = parent.position + confiningVects[n] * mindist;
+                            n.transform.position = parent.transform.position + confiningVects[n] * mindist;
                         }
                         else
                         {
                             float percent = mindist / len;
                             diff *= percent;
-                            n.position = parent.position + diff;
+                            n.transform.position = parent.transform.position + diff;
                         }
                     }
                     else
                     {
                         if (confining)
                         {
-                            n.position = parent.position + confiningVects[n] * len;
-                            Console.WriteLine("{0}, {1}, {2}", confiningVects[n], n.position, len);
+                            n.transform.position = parent.transform.position + confiningVects[n] * len;
+                            Console.WriteLine("{0}, {1}, {2}", confiningVects[n], n.transform.position, len);
                         }
                     }
 
                     
                     
-                    //diff = n.position - parent.position;
+                    //diff = n.transform.position - parent.transform.position;
                     //Console.WriteLine(diff.Length());
                 }
             }
@@ -164,7 +164,7 @@ namespace OrbItProcs.Components
             confiningVects = new Dictionary<Node, Vector2>();
             foreach (Node n in outgoing.ToList())
             {
-                Vector2 len = n.position - parent.position;
+                Vector2 len = n.transform.position - parent.transform.position;
                 len.Normalize();
                 confiningVects[n] = len;
             }
@@ -176,7 +176,7 @@ namespace OrbItProcs.Components
             lockedVals = new Dictionary<Node, int>();
             foreach (Node n in outgoing.ToList())
             {
-                Vector2 len = n.position - parent.position;
+                Vector2 len = n.transform.position - parent.transform.position;
                 lockedVals[n] = (int)len.Length();
             }
         }
@@ -198,10 +198,10 @@ namespace OrbItProcs.Components
                     node.comps[comp.tether].incoming.Add(parent);
                     if (confining && !confiningVects.ContainsKey(node))
                     {
-                        Vector2 v = (node.position - parent.position); v.Normalize();
+                        Vector2 v = (node.transform.position - parent.transform.position); v.Normalize();
                         confiningVects.Add(node, v);
                     }
-                    if (locked && !lockedVals.ContainsKey(node)) lockedVals.Add(node, (int)(node.position - parent.position).Length());
+                    if (locked && !lockedVals.ContainsKey(node)) lockedVals.Add(node, (int)(node.transform.position - parent.transform.position).Length());
                 }
             }
 
@@ -221,26 +221,26 @@ namespace OrbItProcs.Components
             else
                 col = Color.White;
 
-            spritebatch.Draw(parent.getTexture(), parent.position / mapzoom, null, col, 0, parent.TextureCenter(), (parent.scale / mapzoom) * 1.2f, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, col, 0, parent.TextureCenter(), (parent.transform.scale / mapzoom) * 1.2f, SpriteEffects.None, 0);
 
             foreach (Node receiver in outgoing)
             {
-                Utils.DrawLine(spritebatch, parent.position, receiver.position, 2f, col, room);
-                Vector2 center = (receiver.position + parent.position) / 2;
+                Utils.DrawLine(spritebatch, parent.transform.position, receiver.transform.position, 2f, col, room);
+                Vector2 center = (receiver.transform.position + parent.transform.position) / 2;
                 Vector2 perp = new Vector2(center.Y, -center.X);
                 perp.Normalize();
                 perp *= 10;
                 //center += perp;
-                Utils.DrawLine(spritebatch, center + perp, receiver.position, 2f, col, room);
-                Utils.DrawLine(spritebatch, center - perp, receiver.position, 2f, col, room);
+                Utils.DrawLine(spritebatch, center + perp, receiver.transform.position, 2f, col, room);
+                Utils.DrawLine(spritebatch, center - perp, receiver.transform.position, 2f, col, room);
                 //count++;
             }
 
-            //spritebatch.DrawString(room.game.font, gatestring, parent.position / mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            //spritebatch.DrawString(room.game.font, gatestring, parent.transform.position / mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
             //spriteBatch.DrawString(spriteFont, fps, new Vector2(1, 1), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
             //spritebatch.DrawString(room.game.font, gatestring, new Vector2(2, Game1.sHeight - 40), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
 
-            //spritebatch.Draw(parent.getTexture(), parent.position / mapzoom, null, parent.color, 0, parent.TextureCenter(), parent.scale / mapzoom, SpriteEffects.None, 0);
+            //spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, parent.transform.color, 0, parent.TextureCenter(), parent.transform.scale / mapzoom, SpriteEffects.None, 0);
 
         }
 

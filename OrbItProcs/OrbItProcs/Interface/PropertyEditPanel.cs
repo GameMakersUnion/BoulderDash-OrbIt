@@ -43,6 +43,7 @@ namespace OrbItProcs.Interface
         public void UpdatePanel(InspectorItem inspectorItem)
         {
             //if (activeInspectorItem == inspectorItem) return;
+            if (inspectorItem.membertype == member_type.previouslevel) return;
 
             if (panelControls.Keys.Count > 0) DisableControls();
 
@@ -77,7 +78,7 @@ namespace OrbItProcs.Interface
             editType = activeInspectorItem.obj.GetType();
             object value = activeInspectorItem.GetValue();
 
-            if (editType == typeof(int) || editType == typeof(Single) || editType == typeof(string))
+            if (editType == typeof(int) || editType == typeof(Single) || editType == typeof(string) || editType == typeof(byte))
             {
                 //System.Console.WriteLine("It's an int or float.");
                 TextBox txtbox = new TextBox(grouppanel.Manager);
@@ -114,7 +115,7 @@ namespace OrbItProcs.Interface
                 panelControls.Add("txtbox", txtbox);
                 panelControls.Add("btnModify", btnModify);
 
-                if (editType == typeof(int) || editType == typeof(Single))
+                if (editType == typeof(int) || editType == typeof(Single) || editType == typeof(byte))
                 {
                     TrackBar trkMain = new TrackBar(grouppanel.Manager);
                     trkMain.Init();
@@ -126,7 +127,6 @@ namespace OrbItProcs.Interface
                     int val = Convert.ToInt32(value);
                     
                     //int range = Math.Max(100, val * 2);
-
                     trkMain.Range = Math.Max(100, val * 2);
 
                     trkMain.Value = val;
@@ -216,6 +216,11 @@ namespace OrbItProcs.Interface
             else if (activeInspectorItem.obj is Single)
             {
                 activeInspectorItem.SetValue((Single)trkbar.Value);
+                panelControls["txtbox"].Text = "" + trkbar.Value;
+            }
+            else if (activeInspectorItem.obj is byte)
+            {
+                activeInspectorItem.SetValue((byte)trkbar.Value);
                 panelControls["txtbox"].Text = "" + trkbar.Value;
             }
 

@@ -12,7 +12,9 @@ using TomShane.Neoforce.Controls;
 using System.Reflection;
 using System.CodeDom;
 using System.Runtime.Serialization;
-
+using System.Drawing;
+using SColor = System.Drawing.Color;
+using Color = Microsoft.Xna.Framework.Color;
 using Component = OrbItProcs.Components.Component;
 using Console = System.Console;
 using sc = System.Console; // use this
@@ -28,6 +30,7 @@ namespace OrbItProcs
 
     public enum comp
     {
+        transform,
         queuer,
         linearpull,
         movement,
@@ -39,17 +42,19 @@ namespace OrbItProcs
         transfer,
         maxvel,
         modifier,
-
+        
         hueshifter,
         lifetime,
 
         //draw components
-        tether,
-        flow,
+        
         waver,
         laser,
         wideray,
         phaseorb,
+        flow,
+
+        tether,
         tree,
         basicdraw,
 
@@ -85,6 +90,7 @@ namespace OrbItProcs
             {comp.randvelchange,    typeof(RandVelChange)       },
             {comp.tether,           typeof(Tether)              },
             {comp.transfer,         typeof(Transfer)            },
+            {comp.transform,        typeof(Transform)           },
             {comp.tree,             typeof(Tree)                },
             {comp.waver,            typeof(Waver)               },
             {comp.wideray,          typeof(WideRay)             },
@@ -102,7 +108,7 @@ namespace OrbItProcs
             Component component = (Component)Activator.CreateInstance(compTypes[c]);
             return component;
         }
-
+        
         public UserInterface ui;
         public Room room;
         SpriteBatch spriteBatch;
@@ -117,12 +123,12 @@ namespace OrbItProcs
 
         public Dictionary<textures, Texture2D> textureDict;
         //Node node;
-
+        
 
         public int worldWidth { get; set; }
         public int worldHeight { get; set; }
 
-        string currentSelection = "placeNode";
+        //string currentSelection = "placeNode";
         public Node targetNode = null;
 
         TimeSpan elapsedTime = new TimeSpan();
@@ -132,7 +138,7 @@ namespace OrbItProcs
         //public List<FileInfo> presetFileInfos = new List<FileInfo>();
 
         /////////////////////
-
+        public Redirector redirector;
 
         public Game1()
         {
@@ -142,7 +148,7 @@ namespace OrbItProcs
 
             worldWidth = 1600;
             worldHeight = 960;
-
+            
             Graphics.PreferredBackBufferWidth = sWidth;
             Graphics.PreferredBackBufferHeight = sHeight;
 
@@ -157,7 +163,7 @@ namespace OrbItProcs
             {
                 compEnums.Add(compTypes[key], key);
             }
-
+            
         }
 
         protected override void Initialize()
@@ -202,9 +208,11 @@ namespace OrbItProcs
 
             room.defaultNode = new Node(room, userPr);
             room.defaultNode.name = "master";
+            room.defaultNode.IsDefault = true;
+
 
             //much faster than foreach keyword apparently. Nice
-            room.defaultNode.comps.Keys.ToList().ForEach(delegate(comp c)
+            room.defaultNode.comps.Keys.ToList().ForEach(delegate(comp c) 
             {
                 room.defaultNode.comps[c].AfterCloning();
             });
@@ -212,6 +220,9 @@ namespace OrbItProcs
             Node firstdefault = new Node();
             Node.cloneObject(room.defaultNode, firstdefault);
             firstdefault.name = "first";
+            firstdefault.IsDefault = true;
+
+
 
             Group masterGroup = new Group(room.defaultNode, Name: room.defaultNode.name);
             room.masterGroup = masterGroup;
@@ -220,7 +231,7 @@ namespace OrbItProcs
             room.masterGroup.AddGroup(firstGroup.Name, firstGroup, false);
             //room.groups.Add(firstGroup.Name, firstGroup);
 
-
+            
             //////////////////////////////////////////////////////////////////////////////////////
             List<int> ints = new List<int> { 1, 2, 3 };
             ints.ForEach(delegate(int i) { if (i == 2) ints.Remove(i); }); //COOL: NO ENUMERATION WAS MODIFIED ERROR
@@ -244,7 +255,7 @@ namespace OrbItProcs
             bool ret = (bool)minfo.Invoke(tester, new object[] { }); //VERY expensive (slow)
             Console.WriteLine("{0}", ret);
 
-
+            
 
             Func<Component, bool> delGet = (Func<Component, bool>)Delegate.CreateDelegate(typeof(Func<Component, bool>), minfo);
             Console.WriteLine("{0}", delGet(tester)); //very fast, and no cast or creation of empty args array required
@@ -288,7 +299,7 @@ namespace OrbItProcs
             room.defaultNode.comps[comp.modifier].modifierInfos["sinecomposite"] = modinfo;
             */
 
-
+            
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
                     { node.position, new Vector2(0, 0) },
                     { comp.basicdraw, true },
@@ -308,6 +319,18 @@ namespace OrbItProcs
             room.masterGroup.UpdateComboBox();
             room.game.ui.sidebar.cmbListPicker.ItemIndex = 1;
             InitializePresets();
+
+            Movement movement = new Movement();
+            movement.active = true;
+            Console.WriteLine("::" + movement.active);
+
+            Redirector.PopulateDelegatesAll();
+            redirector = new Redirector();
+            //redirector.PopulateDelegatesAll();
+            //Console.WriteLine(redirectior.setters[typeof(Movement)]["pushable"].GetType());
+            //redirectior.setters[typeof(Movement)]["pushable"](movement, false);
+            
+
         }
 
         public void InitializePresets()
@@ -355,7 +378,7 @@ namespace OrbItProcs
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-
+            
             base.Update(gameTime);
             if (!IsFixedTimeStep)
             {
@@ -373,7 +396,7 @@ namespace OrbItProcs
 
             ui.Update(gameTime);
 
-            if (!currentSelection.Equals("pause"))
+            if (!ui.currentSelection.Equals("pause"))
                 room.Update(gameTime);
             else
             {
@@ -383,29 +406,45 @@ namespace OrbItProcs
         public void spawnNode(Dictionary<dynamic, dynamic> userProperties)
         {
             //testing to see how long it takes to generate all the getter/setter delegates
-
-            object nodeobj = room.defaultNode;
+            
+            object transformobj = room.defaultNode.transform;
             dynamic nodedynamic = room.defaultNode;
             List<Func<Node, float>> delList = new List<Func<Node, float>>();
             float total = 0;
-            MethodInfo minfo = typeof(Node).GetProperty("mass").GetGetMethod();
-            Func<Node, float> getDel = (Func<Node, float>)Delegate.CreateDelegate(typeof(Func<Node, float>), minfo);
+            MethodInfo minfo = typeof(Transform).GetProperty("mass").GetGetMethod();
+            Func<Transform, float> getDel = (Func<Transform, float>)Delegate.CreateDelegate(typeof(Func<Transform, float>), minfo);
+            
             DateTime dt = DateTime.Now;
-            Movement gotten;
-            for (int i = 0; i < 100000; i++)
+            Movement movement = new Movement();
+
+            //redirector.TargetObject = movement;
+            //redirector.PropertyToObject["active"] = movement;
+            redirector.AssignObjectToPropertiesAll(movement);
+            PropertyInfo pinfo = movement.GetType().GetProperty("active");
+            //Action<object, object> movementsetter = redirector.setters[typeof(Movement)]["active"];
+            //Console.WriteLine(":::" + movement.active);
+            //bool a = redirector.active;
+            bool a = false;
+            for(int i = 0; i < 100000; i++)
             {
                 //if (i > 0) if (i > 1) if (i > 2) if (i > 3) if (i > 4) total++;
-
+                
                 //delList.Add(getDel);
-                //float slow = (float)minfo.Invoke(room.defaultNode, new object[] { });
+                //float slow = (float)minfo.Invoke((Transform)transformobj, new object[] { });
                 //float mass = getDel(room.defaultNode);
-                //float mass2 = getDel(nodeobj); //doesn't work because it's of type Object at compile time
+                //float mass2 = getDel((Transform)transformobj); //doesn't work because it's of type Object at compile time
                 //float mass2 = getDel(nodedynamic);
                 //total += mass;
                 //gotten = room.defaultNode.GetComponent<Movement>(); //generic method to grab components
                 //gotten = room.defaultNode.comps[comp.movement];
                 //bool act = gotten.active;
                 //gotten.active = true;
+                //redirector.active = false; //21m(impossible)... 24m(new) ... 19m (newer) ... 16m(newest)
+                //a = redirector.active;
+                //pinfo.SetValue(movement, false, null); //34m
+                //movementsetter(movement, false); //4m(old)......... 6m(new)
+                //movement.active = false;
+
             }
             //Movement move = room.defaultNode.comps[comp.movement];
 
@@ -440,6 +479,11 @@ namespace OrbItProcs
 
             //activegroup.entities.Add(newNode);
             activegroup.IncludeEntity(newNode);
+            int size = Enum.GetValues(typeof(KnownColor)).Length;
+            int rand = Utils.random.Next(size - 1);
+            System.Drawing.Color syscolor = System.Drawing.Color.FromKnownColor((KnownColor)rand);
+            Color xnacol = new Color(syscolor.R, syscolor.G, syscolor.B, syscolor.A);
+            newNode.transform.color = xnacol;
         }
         public void spawnNode(int worldMouseX, int worldMouseY)
         {
@@ -449,15 +493,14 @@ namespace OrbItProcs
             spawnNode(userP);
         }
 
-
         public void saveNode(Node node, string name)
         {
             name = name.Trim();
             string filename = "Presets//Nodes//" + name + ".xml";
             Action completeSave = delegate{
-                ui.editNode.name = name;
-                Node serializenode = new Node();
-                Node.cloneObject(ui.editNode, serializenode);
+            ui.editNode.name = name;
+            Node serializenode = new Node();
+            Node.cloneObject(ui.editNode, serializenode);
                 room.serializer.Serialize(serializenode, filename);
                 ui.game.NodePresets.Add(serializenode);
             };
@@ -468,9 +511,9 @@ namespace OrbItProcs
             }
             else { PopUp.Toast(ui, "Node Saved"); completeSave(); }
 
-        }
+                }
 
-
+        
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -478,12 +521,12 @@ namespace OrbItProcs
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-
+            
             Manager.BeginDraw(gameTime);
             base.Draw(gameTime);
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
-
+            
             room.Draw(spriteBatch);
             frameRateCounter.Draw(spriteBatch, font);
 
