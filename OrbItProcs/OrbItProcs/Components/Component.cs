@@ -68,28 +68,29 @@ namespace OrbItProcs.Components
         //flag as not editable in treelistbox
         public mtypes methods { get { return _methods; } protected set { _methods = value; } }
 
-       public virtual void Initialize(Node parent) { this.parent = parent; }
-       public virtual void AfterCloning() { }
-       public virtual void OnSpawn() { }
-       public abstract void AffectOther(Node other);
-       public abstract void AffectSelf();
-       public abstract void Draw(SpriteBatch spritebatch);
+        public virtual void Initialize(Node parent) { this.parent = parent; }
+        public virtual void AfterCloning() { }
+        public virtual void OnSpawn() { }
+        public abstract void AffectOther(Node other);
+        public abstract void AffectSelf();
+        public abstract void Draw(SpriteBatch spritebatch);
 
-       public virtual void InitializeLists()
-       { 
+        public virtual void InitializeLists()
+        { 
        
-       }
+        }
 
-       public virtual Texture2D getTexture()
-       {
-           if (parent != null)
-           {
-               return parent.getTexture();
-           }
-           return null;
+        public virtual Texture2D getTexture()
+        {
+            if (parent != null)
+            {
+                return parent.getTexture();
+            }
+            return null;
+        }
 
-           
-       }
+        
+        
 
        public static void CloneComponent(Component sourceComp, Component destComp)
        {

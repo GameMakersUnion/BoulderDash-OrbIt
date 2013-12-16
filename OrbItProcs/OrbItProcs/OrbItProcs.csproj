@@ -128,6 +128,7 @@
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\Movement\Gravity.cs" />
     <Compile Include="Components\Drawers\HueShifter.cs" />
+    <Compile Include="Components\Redirector.cs" />
     <Compile Include="Components\Tether.cs" />
     <Compile Include="Components\Tracers\Laser.cs" />
     <Compile Include="Components\Depreciated\LaserTimers.cs" />

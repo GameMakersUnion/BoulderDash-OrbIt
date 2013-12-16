@@ -39,7 +39,7 @@ namespace OrbItProcs
         transfer,
         maxvel,
         modifier,
-        
+
         hueshifter,
         lifetime,
 
@@ -102,12 +102,14 @@ namespace OrbItProcs
             Component component = (Component)Activator.CreateInstance(compTypes[c]);
             return component;
         }
-        
+
         public UserInterface ui;
         public Room room;
         SpriteBatch spriteBatch;
         public SpriteFont font;
         FrameRateCounter frameRateCounter;
+
+        public static Dictionary<Type, comp> compEnums;
 
         public static int sWidth = 1000;
         public static int sHeight = 600;
@@ -115,7 +117,7 @@ namespace OrbItProcs
 
         public Dictionary<textures, Texture2D> textureDict;
         //Node node;
-        
+
 
         public int worldWidth { get; set; }
         public int worldHeight { get; set; }
@@ -140,7 +142,7 @@ namespace OrbItProcs
 
             worldWidth = 1600;
             worldHeight = 960;
-            
+
             Graphics.PreferredBackBufferWidth = sWidth;
             Graphics.PreferredBackBufferHeight = sHeight;
 
@@ -149,7 +151,13 @@ namespace OrbItProcs
             ExitConfirmation = false;
 
             Manager.AutoUnfocus = false;
-            
+
+            compEnums = new Dictionary<Type, comp>();
+            foreach (comp key in compTypes.Keys.ToList())
+            {
+                compEnums.Add(compTypes[key], key);
+            }
+
         }
 
         protected override void Initialize()
@@ -196,7 +204,7 @@ namespace OrbItProcs
             room.defaultNode.name = "master";
 
             //much faster than foreach keyword apparently. Nice
-            room.defaultNode.comps.Keys.ToList().ForEach(delegate(comp c) 
+            room.defaultNode.comps.Keys.ToList().ForEach(delegate(comp c)
             {
                 room.defaultNode.comps[c].AfterCloning();
             });
@@ -208,21 +216,21 @@ namespace OrbItProcs
             Group masterGroup = new Group(room.defaultNode, Name: room.defaultNode.name);
             room.masterGroup = masterGroup;
             //room.groups.Add(masterGroup.Name, masterGroup);
-            Group firstGroup = new Group(firstdefault, parentGroup: masterGroup , Name: firstdefault.name);
+            Group firstGroup = new Group(firstdefault, parentGroup: masterGroup, Name: firstdefault.name);
             room.masterGroup.AddGroup(firstGroup.Name, firstGroup, false);
             //room.groups.Add(firstGroup.Name, firstGroup);
 
-            
+
             //////////////////////////////////////////////////////////////////////////////////////
             List<int> ints = new List<int> { 1, 2, 3 };
-            ints.ForEach(delegate(int i) { if (i==2) ints.Remove(i); }); //COOL: NO ENUMERATION WAS MODIFIED ERROR
+            ints.ForEach(delegate(int i) { if (i == 2) ints.Remove(i); }); //COOL: NO ENUMERATION WAS MODIFIED ERROR
             ints.ForEach(delegate(int i) { Console.WriteLine(i); });
 
             MethodInfo testmethod = room.GetType().GetMethod("test");
             Action<Room, int, float, string> del = (Action<Room, int, float, string>)Delegate.CreateDelegate(typeof(Action<Room, int, float, string>), testmethod);
             del(room, 1, 0.3f, "Action worked.");
 
-            Action<int, float, string> del2 = (Action<int, float, string>)Delegate.CreateDelegate(typeof(Action< int, float, string>), room, testmethod);
+            Action<int, float, string> del2 = (Action<int, float, string>)Delegate.CreateDelegate(typeof(Action<int, float, string>), room, testmethod);
             //target is bound to 'room' in this example due to the overload of CreateDelegate used.
             del2(2, 3.3f, "Action worked again.");
 
@@ -236,7 +244,7 @@ namespace OrbItProcs
             bool ret = (bool)minfo.Invoke(tester, new object[] { }); //VERY expensive (slow)
             Console.WriteLine("{0}", ret);
 
-            
+
 
             Func<Component, bool> delGet = (Func<Component, bool>)Delegate.CreateDelegate(typeof(Func<Component, bool>), minfo);
             Console.WriteLine("{0}", delGet(tester)); //very fast, and no cast or creation of empty args array required
@@ -280,7 +288,7 @@ namespace OrbItProcs
             room.defaultNode.comps[comp.modifier].modifierInfos["sinecomposite"] = modinfo;
             */
 
-            
+
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
                     { node.position, new Vector2(0, 0) },
                     { comp.basicdraw, true },
@@ -306,7 +314,7 @@ namespace OrbItProcs
         {
 
             //Console.WriteLine("Current Folder" + filepath);
-            foreach (string file in Directory.GetFiles(filepath,"*.xml"))
+            foreach (string file in Directory.GetFiles(filepath, "*.xml"))
             {
                 //Console.WriteLine("Current Files" + filepath);
                 //Console.WriteLine(file);
@@ -347,7 +355,7 @@ namespace OrbItProcs
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            
+
             base.Update(gameTime);
             if (!IsFixedTimeStep)
             {
@@ -375,7 +383,7 @@ namespace OrbItProcs
         public void spawnNode(Dictionary<dynamic, dynamic> userProperties)
         {
             //testing to see how long it takes to generate all the getter/setter delegates
-            
+
             object nodeobj = room.defaultNode;
             dynamic nodedynamic = room.defaultNode;
             List<Func<Node, float>> delList = new List<Func<Node, float>>();
@@ -383,28 +391,35 @@ namespace OrbItProcs
             MethodInfo minfo = typeof(Node).GetProperty("mass").GetGetMethod();
             Func<Node, float> getDel = (Func<Node, float>)Delegate.CreateDelegate(typeof(Func<Node, float>), minfo);
             DateTime dt = DateTime.Now;
-
-            for(int i = 0; i < 100000; i++)
+            Movement gotten;
+            for (int i = 0; i < 100000; i++)
             {
-                if (i > 0) if (i > 1) if (i > 2) if (i > 3) if (i > 4) total++;
-                
+                //if (i > 0) if (i > 1) if (i > 2) if (i > 3) if (i > 4) total++;
+
                 //delList.Add(getDel);
                 //float slow = (float)minfo.Invoke(room.defaultNode, new object[] { });
-                float mass = getDel(room.defaultNode);
+                //float mass = getDel(room.defaultNode);
                 //float mass2 = getDel(nodeobj); //doesn't work because it's of type Object at compile time
                 //float mass2 = getDel(nodedynamic);
                 //total += mass;
-                
+                //gotten = room.defaultNode.GetComponent<Movement>(); //generic method to grab components
+                //gotten = room.defaultNode.comps[comp.movement];
+                //bool act = gotten.active;
+                //gotten.active = true;
             }
+            //Movement move = room.defaultNode.comps[comp.movement];
+
             int mill = DateTime.Now.Millisecond - dt.Millisecond;
             if (mill < 0) mill += 1000;
-            Console.WriteLine("{0} - {1} = {2}",DateTime.Now.Millisecond,dt.Millisecond, mill);
+            Console.WriteLine("{0} - {1} = {2}", DateTime.Now.Millisecond, dt.Millisecond, mill);
             //Console.WriteLine(total);
             /* //this code won't run right now, but it represents the ability to make a specific generic method based on type variables from another generic method, and then invoke it... (this is slow)
             MethodInfo method = GetType().GetMethod("DoesEntityExist")
                              .MakeGenericMethod(new Type[] { typeof(Type) });
             method.Invoke(this, new object[] { dt, mill });
             */
+
+            //gotten.fallOff();
 
             /////////////////////////////////////////////////////////////////////////////
             Group activegroup = ui.sidebar.ActiveGroup;
@@ -437,35 +452,25 @@ namespace OrbItProcs
 
         public void saveNode(Node node, string name)
         {
-            bool updatePresetList = true;
             name = name.Trim();
-            ui.editNode.name = name;
-            List<string> filesWithName = Directory.GetFiles(filepath, name + ".xml").ToList();
-            if (filesWithName.Count > 0) //we must be overwriting, therefore don't update the live presetList
-                updatePresetList = false;
-
             string filename = "Presets//Nodes//" + name + ".xml";
-            Node serializenode = new Node();
-            Node.cloneObject(ui.editNode, serializenode);
+            Action completeSave = delegate{
+                ui.editNode.name = name;
+                Node serializenode = new Node();
+                Node.cloneObject(ui.editNode, serializenode);
+                room.serializer.Serialize(serializenode, filename);
+                ui.game.NodePresets.Add(serializenode);
+            };
 
-            room.serializer.Serialize(serializenode, filename);
-            if (updatePresetList)
-                foreach (string file in Directory.GetFiles(filepath, name + ".xml"))
-            {
-                    ui.game.NodePresets.Add((Node)ui.room.serializer.Deserialize(file));
-                    break;
+            if (File.Exists(filename)){ //we must be overwriting, therefore don't update the live presetList
+                PopUp.Prompt(ui, "OverWrite?", "O/W?",
+                    delegate(bool c, object a) { if (c) {completeSave(); PopUp.Toast(ui, "Node was overridden"); } return true; });
             }
-            foreach (Node preset in ui.game.NodePresets)
-                if (preset.name == name)
-                {
+            else { PopUp.Toast(ui, "Node Saved"); completeSave(); }
 
-                    PopUp.Toast(ui, "Node was overridden");
-
-
-                }
         }
 
-        
+
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -473,12 +478,12 @@ namespace OrbItProcs
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            
+
             Manager.BeginDraw(gameTime);
             base.Draw(gameTime);
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
-            
+
             room.Draw(spriteBatch);
             frameRateCounter.Draw(spriteBatch, font);
 

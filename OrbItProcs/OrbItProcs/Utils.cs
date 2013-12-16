@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using System.Reflection;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace OrbItProcs {
     public static class Utils {
@@ -28,7 +30,7 @@ namespace OrbItProcs {
 
         public static object selected(this TomShane.Neoforce.Controls.ListBox c) { return c.Items.ElementAt(c.ItemIndex); }
 
-        public static void syncOC(this ICollection<object> lst, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        public static void syncToOCDelegate(this ICollection<object> lst, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
                 foreach (object o in e.NewItems)
@@ -37,6 +39,19 @@ namespace OrbItProcs {
                 foreach (object o in e.OldItems)
                     lst.Remove(o);
         }
+        public static void syncTo(this ObservableCollection<object> oc, ICollection<object> from)
+        {
+            oc.CollectionChanged += delegate(object s, NotifyCollectionChangedEventArgs e) { (from as ObservableCollection<object>).syncToOCDelegate(e); };
+        }
+        public static void reset(this ObservableCollection<object> oc)
+        {
+            foreach (object o in oc) oc.Remove(o);
+        }
+        public static void AddRange(this ObservableCollection<object> oc, ICollection<object> from)
+        { foreach (object o in from) oc.Add(o); }
+        public static void RemoveRange(this ObservableCollection<object> oc, ICollection<object> from)
+        { foreach (object o in from) if (oc.Contains(o)) oc.Remove(o); }
+
         /*
         public static void cloneObject<T>(T obj, T newobj) //they must be the same type
         {

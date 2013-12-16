@@ -623,8 +623,8 @@ namespace OrbItProcs.Interface
         {
             if (((ObservableCollection<Object>)sender).Count() < 1) presetContextMenu.Enabled = false;
             else presetContextMenu.Enabled = true;
-            cmbPresets.Items.syncOC(e);
-            lstPresets.Items.syncOC(e);
+            cmbPresets.Items.syncToOCDelegate(e);
+            lstPresets.Items.syncToOCDelegate(e);
         }
 
         void nodes_Sync(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -632,7 +632,7 @@ namespace OrbItProcs.Interface
             int count = ActiveGroup == null ? 0 : ActiveGroup.entities.Count;
             title1.Text = "Node List : " + count;
             if (cmbListPicker.Text.Equals("Nodes"))
-                lstMain.Items.syncOC(e);
+                lstMain.Items.syncToOCDelegate(e);
         }
 
         public void SyncTitleNumber(Group caller)
@@ -649,7 +649,9 @@ namespace OrbItProcs.Interface
                 PopUp.Toast(ui, "You haven't selected a Node.");
             else
                 PopUp.Text(ui, "Pick a preset name", "Name preset",
-                                delegate(bool c, object input) { if (c) ui.game.saveNode(ui.editNode, (string)input); });
+                                delegate(bool c, object input) {
+                                    if (c) ui.game.saveNode(ui.editNode, (string)input);
+                                        return true; });
         }
 
         void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
@@ -1338,6 +1340,7 @@ namespace OrbItProcs.Interface
                 {
                     game.deletePreset((Node)lstPresets.selected());
                 }
+                return true;
             });
         }
 
@@ -1428,15 +1431,60 @@ namespace OrbItProcs.Interface
         void btnAddComponent_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             if (ui.editNode == null)
-                 PopUp.Toast(ui, "You haven't selected a Node.");
+                PopUp.Toast(ui, "You haven't selected a Node.");
             else
-                PopUp.Select(
-                    ui,
-                    "Add component to: " + ui.editNode.name,
-                    "Choose Component",
-                    addComponent,
-                    Enum.GetValues(typeof(comp)).Cast<comp>().Where(c => !ui.editNode.comps.ContainsKey(c))
-                );
+            {
+                ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !ui.editNode.comps.ContainsKey(c))));
+                List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => ui.editNode.comps.ContainsKey(c)));
+
+                PopUp.opt[] options = new PopUp.opt[]{
+                    new PopUp.opt(PopUp.OptType.info, "Add component to: " + ui.editNode.name),
+                    new PopUp.opt(PopUp.OptType.dropDown, nodecomplist),
+                    new PopUp.opt(PopUp.OptType.checkBox, "Add to all", 
+                        delegate(object s, TomShane.Neoforce.Controls.EventArgs a){
+                            if ((s as CheckBox).Checked) nodecomplist.AddRange(missingcomps);
+                            else nodecomplist.RemoveRange(missingcomps);})};
+                
+                PopUp.makePopup(ui, options, "Add Component", delegate(bool a, object[] o)
+                {
+                    if (a) return addComponent(o);
+                    else return false;
+                    });
+            }
+        }
+
+        private bool addComponent(object[] o)
+        {
+
+            bool writeable = false;
+            if ((bool)o[2])
+            {
+                foreach (Object n in ActiveGroup.entities)
+                    if (!((Node)n).comps.ContainsKey((comp)o[1]))
+                        ((Node)n).addComponent((comp)o[1], true);
+                return true;
+            }
+
+            else
+            {
+                if (!ui.editNode.comps.ContainsKey((comp)o[1]))
+                    ui.editNode.addComponent((comp)o[1], true);
+                else PopUp.Prompt(ui,
+                            "The node already contains this component. Overwrite to default component?",
+                            action: delegate(bool k, object ans) { writeable = k; return true; });
+
+                if (writeable)
+                {
+                    ui.editNode.addComponent((comp)o[1], true);
+                    lstComp.rootitem.RefrestMasterList();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
         }
 
             // if it's open don't open again... (TODO)
@@ -1507,10 +1555,8 @@ namespace OrbItProcs.Interface
             //DisableControls(groupPanel);
             propertyEditPanel.DisableControls();
         }
-        void addComponent(bool c, object ans)
+        void addComponent(object ans, Node n)
         {
-            if (c)
-            {
                 if (ans == null)
                 {
                     PopUp.Toast(ui, "You didn't select a component.");
@@ -1518,16 +1564,8 @@ namespace OrbItProcs.Interface
                 }
                 bool writeable = true;
                 
-                if (ui.editNode.comps.ContainsKey((comp)ans))
-                    PopUp.Prompt(ui,
-                        "The node already contains this component. Overwrite to default component?",
-                        action: delegate(bool k, object a) { writeable = k; });
-                if (writeable)
-                {
-                    ui.editNode.addComponent((comp)ans, true, true);
-                    lstComp.rootitem.RefrestMasterList();
-                }
-            }
+                
+                
         }
 
     }
