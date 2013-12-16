@@ -9,7 +9,7 @@ using OrbItProcs.Processes;
 
 namespace OrbItProcs.Components
 {
-    public class Tether : Component
+    public class Tether : Component, ILinkable
     {
         new public bool active
         {

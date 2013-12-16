@@ -102,6 +102,7 @@
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml">
@@ -123,6 +124,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\Drawers\BasicDraw.cs" />
+    <Compile Include="Components\ILinkable.cs" />
     <Compile Include="Components\Linkers\Flow.cs" />
     <Compile Include="Components\AffectOthers\Collision.cs" />
     <Compile Include="Components\Component.cs" />
@@ -152,6 +154,7 @@
     <Compile Include="Interface\PropertyEditPanel.cs" />
     <Compile Include="Interface\Sidebar.cs" />
     <Compile Include="IRedirectable.cs" />
+    <Compile Include="Link.cs" />
     <Compile Include="lists.cs" />
     <Compile Include="Processes\DelegateManager.cs" />
     <Compile Include="Processes\Group.cs" />

@@ -43,6 +43,7 @@ namespace OrbItProcs.Interface
         public void UpdatePanel(InspectorItem inspectorItem)
         {
             //if (activeInspectorItem == inspectorItem) return;
+            if (inspectorItem.membertype == member_type.previouslevel) return;
 
             if (panelControls.Keys.Count > 0) DisableControls();
 
@@ -126,7 +127,6 @@ namespace OrbItProcs.Interface
                     int val = Convert.ToInt32(value);
                     
                     //int range = Math.Max(100, val * 2);
-
                     trkMain.Range = Math.Max(100, val * 2);
 
                     trkMain.Value = val;

@@ -12,7 +12,9 @@ using TomShane.Neoforce.Controls;
 using System.Reflection;
 using System.CodeDom;
 using System.Runtime.Serialization;
-
+using System.Drawing;
+using SColor = System.Drawing.Color;
+using Color = Microsoft.Xna.Framework.Color;
 using Component = OrbItProcs.Components.Component;
 using Console = System.Console;
 using sc = System.Console; // use this
@@ -126,7 +128,7 @@ namespace OrbItProcs
         public int worldWidth { get; set; }
         public int worldHeight { get; set; }
 
-        string currentSelection = "placeNode";
+        //string currentSelection = "placeNode";
         public Node targetNode = null;
 
         TimeSpan elapsedTime = new TimeSpan();
@@ -206,6 +208,8 @@ namespace OrbItProcs
 
             room.defaultNode = new Node(room, userPr);
             room.defaultNode.name = "master";
+            room.defaultNode.IsDefault = true;
+
 
             //much faster than foreach keyword apparently. Nice
             room.defaultNode.comps.Keys.ToList().ForEach(delegate(comp c) 
@@ -216,6 +220,9 @@ namespace OrbItProcs
             Node firstdefault = new Node();
             Node.cloneObject(room.defaultNode, firstdefault);
             firstdefault.name = "first";
+            firstdefault.IsDefault = true;
+
+
 
             Group masterGroup = new Group(room.defaultNode, Name: room.defaultNode.name);
             room.masterGroup = masterGroup;
@@ -389,7 +396,7 @@ namespace OrbItProcs
 
             ui.Update(gameTime);
 
-            if (!currentSelection.Equals("pause"))
+            if (!ui.currentSelection.Equals("pause"))
                 room.Update(gameTime);
             else
             {
@@ -472,6 +479,11 @@ namespace OrbItProcs
 
             //activegroup.entities.Add(newNode);
             activegroup.IncludeEntity(newNode);
+            int size = Enum.GetValues(typeof(KnownColor)).Length;
+            int rand = Utils.random.Next(size - 1);
+            System.Drawing.Color syscolor = System.Drawing.Color.FromKnownColor((KnownColor)rand);
+            Color xnacol = new Color(syscolor.R, syscolor.G, syscolor.B, syscolor.A);
+            newNode.transform.color = xnacol;
         }
         public void spawnNode(int worldMouseX, int worldMouseY)
         {
@@ -480,7 +492,6 @@ namespace OrbItProcs
             };
             spawnNode(userP);
         }
-
 
         public void saveNode(Node node, string name)
         {

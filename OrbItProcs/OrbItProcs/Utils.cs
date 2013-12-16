@@ -11,11 +11,12 @@ namespace OrbItProcs {
 
         public static string wordWrap(this string message, int maxCharsPerLine)
         {
-            int chars = 25;
+
+            int chars = maxCharsPerLine;
                 for (int i = 1; i <= 4; i++)
                     if (message.Length > chars * i)
                         for (int j = chars * i; j > (chars * i) - chars; j--)
-                            if (message.ElementAt(j).Equals(' '))
+                            if (message.ElementAt(j).Equals(' ') || message.ElementAt(j).Equals('/'))
                             {
                                 message = message.Insert(j + 1, "\n");
 

@@ -19,6 +19,11 @@ namespace OrbItProcs.Components
         private float _mass = 10f;
         private textures _texture = textures.whitecircle;
 
+        public Color colorP
+        {
+            get { return color; }
+            set { color = value; }
+        }
         public float X
         {
             get { return position.X; }

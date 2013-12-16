@@ -82,41 +82,6 @@ namespace OrbItProcs.Components
         }
         public override void AffectSelf()
         {
-            /*
-            angle = Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2);
-
-            if (timer > timerMax)
-            {
-                timer = 0;
-                if (positions.Count < queuecount)
-                {
-                    positions.Enqueue(parent.transform.position);
-                    //colors.Enqueue(Utils.randomColor());
-                    scales.Enqueue((float)parent.transform.scale);
-                }
-                else
-                {
-                    positions.Dequeue();
-                    scales.Dequeue();
-                    //colors.Dequeue();
-                    positions.Enqueue(parent.transform.position);
-                    scales.Enqueue((float)parent.transform.scale);
-                    //colors.Enqueue(Utils.randomColor());
-
-                    //angles.Dequeue();
-                    //angles.Enqueue((float)angle);
-                    /*
-                    Vector2 v0 = parent.transform.position - positions.ElementAt(0);
-                    Vector2 vq = parent.transform.position - positions.ElementAt(8);
-                    Console.WriteLine("Dif (0 p): {0}, Dif (count p): {1}", v0.Length(), vq.Length());
-                    //---
-                }
-            }
-            else
-            {
-                timer++;
-            }
-            */
         }
 
         

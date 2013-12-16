@@ -13,7 +13,8 @@ namespace OrbItProcs {
         public int cellwidth, cellheight;
         public int gridwidth, gridheight;
         public List<Node>[,] grid;
-        public int cellReach { get; set; }
+        private int _cellReach;
+        public int cellReach { get { return _cellReach; } set { if (value < 1) return; _cellReach = value; } }
 
         //obsolete constructor
         public GridSystem(Room room, int gridwidth, int gridheight, int cellsX, int cellsY, int cellReach = 4)

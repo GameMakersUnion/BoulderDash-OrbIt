@@ -67,6 +67,7 @@ namespace OrbItProcs.Interface
                 return room.masterGroup.defaultNode;
             }
         }
+        public InspectorItem ActiveInspectorParent;
         
         public int Width = 200;
         #region /// Neoforce Fields///
@@ -83,6 +84,7 @@ namespace OrbItProcs.Interface
         //public List<object> compLst { set { lstComp.Items.Clear(); foreach (object o in value) lstComp.Items.Add(o); } }
         public ContextMenu contextMenulstComp;
         public Label lblEditNodeName;
+        public Label lblInspectorAddress;
         public GroupPanel groupPanel;
         public Dictionary<string, Control> panelControls;
         //private TreeListItem activeTreeItem;
@@ -298,27 +300,46 @@ namespace OrbItProcs.Interface
             cmbPresets.Init();
             cmbPresets.Parent = first;
             cmbPresets.MaxItems = 20;
-
             cmbPresets.Width = 160;
             cmbPresets.Left = LeftPadding;
-            cmbPresets.Top = HeightCounter; HeightCounter += VertPadding + cmbPresets.Height;
+            cmbPresets.Top = HeightCounter; HeightCounter += cmbPresets.Height;
             game.NodePresets.CollectionChanged += NodePresets_Sync;
             cmbPresets.ItemIndexChanged += cmbPresets_ItemIndexChanged;
             cmbPresets.Click += cmbPresets_Click;
-
             #endregion
-
+            /*
             #region  /// Edit Node Name ///
             lblEditNodeName = new Label(manager);
             lblEditNodeName.Init();
             lblEditNodeName.Parent = first;
-
-            lblEditNodeName.Top = HeightCounter + 10; HeightCounter += VertPadding + lblEditNodeName.Height + 10;
+            lblEditNodeName.Top = HeightCounter; HeightCounter += VertPadding + lblEditNodeName.Height;
             lblEditNodeName.Width = first.Width - LeftPadding * 2;
             lblEditNodeName.Left = first.Width / 5;
             lblEditNodeName.Anchor = Anchors.Left;
-
             lblEditNodeName.Text = ">No Node Selected<";
+            #endregion
+            */
+            #region  /// Inspector Address Label ///
+            lblInspectorAddress = new Label(manager);
+            lblInspectorAddress.Init();
+            lblInspectorAddress.Parent = first;
+            lblInspectorAddress.Top = HeightCounter; HeightCounter += VertPadding + lblInspectorAddress.Height + 10;
+            lblInspectorAddress.Width = first.Width - LeftPadding * 2;
+            lblInspectorAddress.Height = lblInspectorAddress.Height * 2;
+            lblInspectorAddress.Left = LeftPadding;
+            lblInspectorAddress.Anchor = Anchors.Left;
+            lblInspectorAddress.Text = ">No Node Selected<\u2190";
+            bool changed = false;
+            lblInspectorAddress.TextChanged += delegate(object s, EventArgs e){
+                if (!changed)
+                {
+                    changed = true;
+                    Label l = (Label)s;
+                    l.Text = l.Text.wordWrap(25);
+                    
+                }
+                changed = false;
+            };
             #endregion
 
             #region  /// Component List ///
@@ -336,6 +357,7 @@ namespace OrbItProcs.Interface
             lstComp.HideSelection = false;
             lstComp.ItemIndexChanged += lstComp_ItemIndexChanged;
             lstComp.Click += lstComp_Click;
+            lstComp.DoubleClick += lstComp_DoubleClick;
             #region  /// Context Menu ///
             contextMenulstComp = new ContextMenu(manager);
             applyToAllNodesMenuItem = new MenuItem("Apply to Group");
@@ -539,7 +561,11 @@ namespace OrbItProcs.Interface
             MouseEventArgs me = (MouseEventArgs)e;
             if (me.Button != MouseButton.Right) return;
             ListBox listbox = (ListBox)sender;
-            listbox.ContextMenu.Items.ForEach(delegate(MenuItem o) { listbox.ContextMenu.Items.Remove(o); });
+            listbox.ContextMenu.Items.ToList().ForEach(o => listbox.ContextMenu.Items.Remove(o));
+            //foreach (MenuItem m in listbox.ContextMenu.Items.ToList())
+            //{
+            //    listbox.ContextMenu.Items.Remove(m);
+            //}
             Color c = listbox.ContextMenu.Color;
             listbox.ContextMenu.Color = new Color(0f, 0f, 0f, 0f);
             if(listbox.ItemIndex >= 0 && listbox.Items.ElementAt(listbox.ItemIndex) is Node)
@@ -589,6 +615,7 @@ namespace OrbItProcs.Interface
             InspectorItem rootitem = new InspectorItem(treelistbox.Items, rootobj);
             treelistbox.rootitem = rootitem;
             rootitem.GenerateChildren();
+            ActiveInspectorParent = rootitem;
 
             foreach (object o in treelistbox.Items.ToList())
             {
@@ -601,11 +628,13 @@ namespace OrbItProcs.Interface
             if (rootobj is Node)
             {
                 ui.editNode = (Node)rootobj;
-                lblEditNodeName.Text = ui.editNode.name;
+                //lblEditNodeName.Text = ui.editNode.name;
+                lblInspectorAddress.Text = "/" + ui.editNode.ToString();
             }
             else
             {
-                lblEditNodeName.Text = rootobj.GetType().ToString();
+                //lblEditNodeName.Text = rootobj.GetType().ToString();
+                lblInspectorAddress.Text = rootobj.GetType().ToString();
             }
 
         }
@@ -897,11 +926,11 @@ namespace OrbItProcs.Interface
             }
             
 
-            if (listbox.ItemIndex > 0 && listbox.Items.ElementAt(listbox.ItemIndex) is Node)
+            if (listbox.ItemIndex >= 0 && listbox.Items.ElementAt(listbox.ItemIndex) is Node)
             {
                 SetTargetNode((Node)listbox.Items.ElementAt(listbox.ItemIndex));
             }
-            else if (listbox.ItemIndex > 0)
+            else if (listbox.ItemIndex >= 0)
             {
                 ResetTreeListBox(lstComp, listbox.Items.ElementAt(listbox.ItemIndex));
             }
@@ -916,7 +945,9 @@ namespace OrbItProcs.Interface
             if (ui.editNode != target)
                 ResetTreeListBox(lstComp, game.targetNode);
             ui.editNode = target;
-            lblEditNodeName.Text = ui.editNode.name;
+            //lblEditNodeName.Text = ui.editNode.name;
+            //lblInspectorAddress.Text = "/" + ui.editNode.ToString();
+            
         }
 
         void lstPresets_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
@@ -929,7 +960,8 @@ namespace OrbItProcs.Interface
             }
             if (listbox.ItemIndex < 0) return;
             ui.editNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
-            lblEditNodeName.Text = ui.editNode.name;
+            //lblEditNodeName.Text = ui.editNode.name;
+            lblInspectorAddress.Text = "/" + ui.editNode.ToString();
             ui.spawnerNode = ui.editNode;
             
             ResetTreeListBox(lstComp, ui.editNode);
@@ -979,19 +1011,51 @@ namespace OrbItProcs.Interface
         {
             TreeListBox listComp = (TreeListBox)sender;
 
-            if (listComp.ItemIndex < 0) return;
+            if (listComp.ItemIndex < 0 || lstComp.Items.Count == 0) return;
             InspectorItem item = (InspectorItem)listComp.Items.ElementAt(listComp.ItemIndex);
 
             //UpdateGroupPanel(item, groupPanel);
+        }
+
+        void lstComp_DoubleClick(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            TreeListBox listComp = (TreeListBox)sender;
+            MouseEventArgs mouseArgs = (MouseEventArgs)e;
+            if (mouseArgs.Button == MouseButton.Left)
+            {
+                if (listComp.ItemIndex < 0 || lstComp.Items.Count == 0) return;
+                InspectorItem item = (InspectorItem)listComp.Items.ElementAt(listComp.ItemIndex);
+                item.DoubleClickItem(this);
+                InspectorItem temp = ActiveInspectorParent;
+                string lbltext = "/" + temp.Name();
+                while (temp.parentItem != null)
+                {
+                    temp = temp.parentItem;
+                    lbltext = lbltext.Insert(0, "/" + temp.Name());
+                }
+                lblInspectorAddress.Text = lbltext;
+
+                //Type t = item.obj.GetType();
+
+                //if (activeInspectorItem != item)
+                //    propertyEditPanel.UpdatePanel(item);
+
+            }
         }
 
         void lstComp_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             TreeListBox listComp = (TreeListBox)sender;
             MouseEventArgs mouseArgs = (MouseEventArgs)e;
+
+            
+
             if (mouseArgs.Button == MouseButton.Right)
             {
                 contextMenulstComp.Items.RemoveRange(0, contextMenulstComp.Items.Count);
+                if (listComp.ItemIndex < 0 || lstComp.Items.Count == 0) return;
+
+
                 InspectorItem litem = (InspectorItem)listComp.Items.ElementAt(listComp.ItemIndex);
 
                 if (litem.obj is Component)
@@ -1013,14 +1077,14 @@ namespace OrbItProcs.Interface
             }
             else if (mouseArgs.Button == MouseButton.Left)
             {
-                if (listComp.ItemIndex < 0) return;
+                if (listComp.ItemIndex < 0 || listComp.Items.Count == 0) return;
                 InspectorItem item = (InspectorItem)listComp.Items.ElementAt(listComp.ItemIndex);
-                item.ClickItem(listComp.ItemIndex);
+                //item.ClickItem(listComp.ItemIndex);
                 Type t = item.obj.GetType();
 
                 if (activeInspectorItem != item)
                     propertyEditPanel.UpdatePanel(item);
-                    
+                
             }
         }
 
@@ -1056,7 +1120,8 @@ namespace OrbItProcs.Interface
 
             ResetTreeListBox(lstComp, ActiveDefaultNode);
 
-            lblEditNodeName.Text = ui.editNode.name + "(DEFAULT)";
+            //lblEditNodeName.Text = ui.editNode.name + "(DEFAULT)";
+            lblInspectorAddress.Text = "/" + ui.editNode.ToString();
         }
 
         void btnRemoveAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)

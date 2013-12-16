@@ -68,8 +68,8 @@ namespace OrbItProcs {
 
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;
         //public bool active = true;
-        private Dictionary<comp, bool> _tempCompActiveValues = new Dictionary<comp, bool>();
-        public Dictionary<comp, bool> tempCompActiveValues { get { return _tempCompActiveValues; } set { _tempCompActiveValues = value; } }
+        private Dictionary<comp, bool> tempCompActiveValues = new Dictionary<comp, bool>();
+        //public Dictionary<comp, bool> tempCompActiveValues { get { return _tempCompActiveValues; } set { _tempCompActiveValues = value; } }
 
         private bool _active = true;
         public bool active
@@ -116,6 +116,8 @@ namespace OrbItProcs {
                 _IsDeleted = value;
             }
         }
+
+        public bool IsDefault = false;
 
         private float _multiplier = 1f;
         public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
@@ -193,7 +195,7 @@ namespace OrbItProcs {
         public List<comp> compsToAdd = new List<comp>();
 
         public Transform transform;
-        public Transform transformP { get { return transform; } set { transform = value; } }
+        public Transform TRANSFORM { get { return transform; } set { transform = value; } }
 
         public void storeInInstance(node val, Dictionary<dynamic,dynamic> dict)
         {
@@ -277,7 +279,9 @@ namespace OrbItProcs {
         public override string ToString()
         {
             //return base.ToString();
-            return name;
+            string ret = name;
+            if (IsDefault) ret += "(DEF)";
+            return ret;
         }
 
         public void setCompActive(comp c, bool Active)
@@ -807,7 +811,8 @@ namespace OrbItProcs {
                     || (field.FieldType.ToString().Equals("System.Boolean"))
                     || (field.FieldType.ToString().Equals("System.String")))
                 {
-                    field.SetValue(destNode, field.GetValue(sourceNode));
+                    if (!field.Name.Equals("IsDefault"))
+                        field.SetValue(destNode, field.GetValue(sourceNode));
                 }
                 else if (field.FieldType.ToString().Contains("Vector2"))
                 {

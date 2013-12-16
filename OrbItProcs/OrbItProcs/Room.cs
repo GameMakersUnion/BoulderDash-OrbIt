@@ -66,7 +66,7 @@ namespace OrbItProcs {
             this.game = game;
 
             // grid System
-            gridsystem = new GridSystem(this, 40, 40);
+            gridsystem = new GridSystem(this, 40, 4);
             gridSystemLines = new List<Rectangle>();
 
             
@@ -119,6 +119,9 @@ namespace OrbItProcs {
                     if (n.IsDeleted)
                     {
                         toDelete.Add(n);
+                        if (n == game.targetNode) game.targetNode = null;
+                        if (n == game.ui.editNode) game.ui.editNode = null;
+                        if (n == game.ui.spawnerNode) game.ui.spawnerNode = null;
                     }
                 });
 

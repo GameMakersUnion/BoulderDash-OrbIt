@@ -39,6 +39,7 @@ namespace OrbItProcs.Components {
 
         public override void AffectOther(Node other)
         {
+
             if (!active)
             {
                 return;

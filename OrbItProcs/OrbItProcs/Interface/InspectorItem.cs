@@ -10,6 +10,9 @@ using OrbItProcs.Components;
 using Component = OrbItProcs.Components.Component;
 using Console = System.Console;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using Color = Microsoft.Xna.Framework.Color;
+using SysColor = System.Drawing.Color;
 
 namespace OrbItProcs.Interface {
 
@@ -18,6 +21,7 @@ namespace OrbItProcs.Interface {
         field,
         property,
         dictentry,
+        previouslevel,
         unimplemented,
         
     };
@@ -26,13 +30,13 @@ namespace OrbItProcs.Interface {
         none,
         dict,
         list,
+        obj,
         enm,
         boolean,
         integer,
         single,
         tbyte,
         str,
-        obj,
     };
 
     public class InspectorItem {
@@ -59,8 +63,6 @@ namespace OrbItProcs.Interface {
             typeof(Enum),
             typeof(byte),
         };
-
-
         //public treeitem itemtype;
         public int depth = 1;
         //public FieldInfo fieldInfo;
@@ -440,6 +442,10 @@ namespace OrbItProcs.Interface {
             {
                 return fpinfo.Name;
             }
+            if (obj is Node)
+            {
+                return ((Node)obj).ToString();
+            }
             return "error_Name_99";
         }
 
@@ -457,11 +463,62 @@ namespace OrbItProcs.Interface {
                         break;
                     }
                 }
-                
+                //Color c = new Color();
+                //System.Drawing.Color c;
                 //listComp.Items.Remove(subitem);
+                //System.Drawing.Color cc = new System.Drawing.Color();
+                //System.Drawing.Color.FromKnownColor(KnownColor.ActiveBorder);
+                //System.Drawing.Drawing2D.
             }
         }
+        public void DoubleClickItem(Sidebar sidebar)
+        {
+            if (hasChildren())
+            {
+                if (extended)
+                {
+                    prefix = "+";
+                    RemoveChildren();
+                }
+                else
+                {
+                    GenerateChildren();
+                    prefix = "-";
+                    
+                    if (masterList != null)
+                    {
+                        sidebar.ActiveInspectorParent = this;
+                        foreach (object item in masterList.ToList())
+                        {
+                            masterList.Remove(item);
+                        }
+                        if (parentItem != null)
+                        {
+                            InspectorItem uplevel = new InspectorItem(masterList, "...");
+                            uplevel.parentItem = this;
+                            uplevel.membertype = member_type.previouslevel;
+                            masterList.Add(uplevel);
+                        }
+                        foreach (InspectorItem subitem in children)
+                        {
+                            //masterList.Insert(position + i++, subitem);
+                            masterList.Add(subitem);
+                        }
+                    }
+                }
+                //extended = !extended;
+            }
+            else if (membertype == member_type.previouslevel)
+            {
+                if (parentItem != null && parentItem.parentItem != null)
+                {
+                    parentItem.parentItem.DoubleClickItem(sidebar);
+                }
+            }
 
+        }
+
+        /*
         public void ClickItem(int position)
         {
             if (hasChildren())
@@ -470,13 +527,6 @@ namespace OrbItProcs.Interface {
                 {
                     prefix = "+";
                     RemoveChildren();
-                    /*
-                    foreach (InspectorItem subitem in children.ToList())
-                    {
-                        masterList.Remove(subitem);
-                        //listComp.Items.Remove(subitem);
-                    }
-                    */
                 }
                 else
                 {
@@ -488,7 +538,6 @@ namespace OrbItProcs.Interface {
                         foreach (InspectorItem subitem in children)
                         {
                             masterList.Insert(position + i++, subitem);
-                            //listComp.Items.Insert(listComp.ItemIndex + i++, subitem);
                         }
                     }
                 }
@@ -496,6 +545,7 @@ namespace OrbItProcs.Interface {
             }
 
         }
+        */
 
         public void CheckItemType()
         {

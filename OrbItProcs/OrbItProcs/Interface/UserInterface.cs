@@ -29,7 +29,7 @@ namespace OrbItProcs.Interface {
         KeyboardState oldKeyBState;
         MouseState oldMouseState;
         
-        string currentSelection = "placeNode";//
+        public string currentSelection = "placeNode";//
         int oldMouseScrollValue = 0;//
         bool hovertargetting = false;//
         int rightClickCount = 0;//

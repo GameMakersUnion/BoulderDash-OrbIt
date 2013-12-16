@@ -9,7 +9,7 @@ using OrbItProcs.Processes;
 
 namespace OrbItProcs.Components
 {
-    public class Flow : Component
+    public class Flow : Component, ILinkable
     {
         public enum gate
         {
