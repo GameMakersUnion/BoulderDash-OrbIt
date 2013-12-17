@@ -134,9 +134,10 @@ namespace OrbItProcs.Components
                     newNode.comps[comp.tree].randlife = randomlife;
                     newNode.comps[comp.tree].lifeleft = 0;
                     newNode.comps[comp.tree].maxchilds = Math.Max(1,maxchilds - (depth % 2));
-                    parent.room.nodesToAdd.Enqueue(newNode);
+                    //parent.room.nodesToAdd.Enqueue(newNode);
+                    parent.room.masterGroup.childGroups.Values.ElementAt(0).IncludeEntity(newNode);
                 }
-
+                parent.nodeState = state.drawOnly;
                 
 
             }

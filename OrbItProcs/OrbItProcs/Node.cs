@@ -31,6 +31,13 @@ namespace OrbItProcs {
         color,
     };
 
+    public enum state
+    {
+        off,
+        updateOnly,
+        drawOnly,
+        on,
+    }
     //public delegate void MyEventHandler (object sender, EventArgs e);
 
     public class Node {
@@ -39,37 +46,19 @@ namespace OrbItProcs {
 
         public event ProcessMethod Collided;
         public Dictionary<dynamic, dynamic> CollideArgs;
-        
-        static Dictionary<dynamic, dynamic> defaultProps = new Dictionary<dynamic, dynamic>()
-        {
-            /*
-            //{ node.active,                      true },
-            { node.position,                    new Vector2(0,0) },
-            { node.velocity,                    new Vector2(0,0) },
-            { node.velMultiplier,               1f  },
-            { node.multiplier,                  1f },
-            { node.effectiveRadius,             100f  },
-            { node.radius,                      25f  },
-            { node.mass,                        10f  },
-            { node.scale,                       1f  },
-            { node.texture,                     null  },
-            { node.name,                        "node" },
-            { node.lifetime,                    -1 },
-            { node.color,                       new Color(255,255,255) },
-            //{ comp.movement,                    true },
-            */
-        };
+
+        static Dictionary<dynamic, dynamic> defaultProps = new Dictionary<dynamic, dynamic>() { };
 
         public T GetComponent<T>()
         {
-            return comps[Game1.compEnums[typeof(T)]]; //since it's dynamic value, we don't need to cast result to T
-            //return comps[comp.movement];
+            return comps[Game1.compEnums[typeof(T)]];
         }
 
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;
-        //public bool active = true;
         private Dictionary<comp, bool> tempCompActiveValues = new Dictionary<comp, bool>();
-        //public Dictionary<comp, bool> tempCompActiveValues { get { return _tempCompActiveValues; } set { _tempCompActiveValues = value; } }
+
+        private state _nodeState = state.on;
+        public state nodeState { get { return _nodeState; } set { _nodeState = value;} }
 
         private bool _active = true;
         public bool active
@@ -558,6 +547,7 @@ namespace OrbItProcs {
         
         public void Update(GameTime gametime)
         {
+            if (nodeState == state.off || nodeState == state.drawOnly) return;
 
             List<Node> returnObjectsFinal = new List<Node>();
             List<Node> collisionList = new List<Node>();
@@ -569,6 +559,8 @@ namespace OrbItProcs {
             HashSet<Node> hashlist = new HashSet<Node>();
             hashlist.UnionWith(returnObjectsFinal);//bad
             hashlist.UnionWith(collisionList);
+            
+
             
 
             if (comps.ContainsKey(comp.flow) && comps[comp.flow].active)
@@ -647,6 +639,8 @@ namespace OrbItProcs {
 
         public void Draw(SpriteBatch spritebatch)
         {
+            if (nodeState == state.off || nodeState == state.updateOnly) return;
+
             int numOfSupers = 0;
             foreach (comp c in drawProps)
             {
