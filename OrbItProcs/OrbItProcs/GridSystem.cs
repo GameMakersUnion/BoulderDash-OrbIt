@@ -59,6 +59,29 @@ namespace OrbItProcs {
             }
         }
 
+        public GridSystem(Room room, int cellsX, int cellsY, int cellReach = 4)
+        {
+            this.room = room;
+            this.gridwidth = room.game.worldWidth;
+            this.gridheight = room.game.worldHeight;
+            this.cellsX = cellsX;
+            this.cellsY = cellsY;
+
+            this.cellReach = cellReach;
+            cellwidth = gridwidth / cellsX;
+            cellheight = gridheight / cellsY;
+            
+            //cellheight = gridheight / cellsY;
+            grid = new List<Node>[cellsX, cellsY];
+            for (int i = 0; i < cellsX; i++)
+            {
+                for (int j = 0; j < cellsY; j++)
+                {
+                    grid[i, j] = new List<Node>();
+                }
+            }
+        }
+
         public void insert(Node node)
         {
             Tuple<int, int> indexs = getIndexs(node);

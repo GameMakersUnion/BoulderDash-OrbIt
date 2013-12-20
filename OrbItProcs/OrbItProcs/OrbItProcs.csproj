@@ -156,6 +156,7 @@
     <Compile Include="IRedirectable.cs" />
     <Compile Include="Link.cs" />
     <Compile Include="lists.cs" />
+    <Compile Include="ObservableHashSetOfT.cs" />
     <Compile Include="Processes\DelegateManager.cs" />
     <Compile Include="Processes\Group.cs" />
     <Compile Include="Processes\FPInfo.cs" />
@@ -175,6 +176,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="RDTest.cs" />
     <Compile Include="Room.cs" />
+    <Compile Include="Testing.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

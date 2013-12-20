@@ -139,6 +139,7 @@ namespace OrbItProcs
 
         /////////////////////
         public Redirector redirector;
+        public Testing testing;
 
         public Game1()
         {
@@ -146,9 +147,10 @@ namespace OrbItProcs
             IsMouseVisible = true;
             IsFixedTimeStep = false;
 
-            worldWidth = 1600;
-            worldHeight = 960;
-            
+            worldWidth = 1580;
+            //worldHeight = 960;
+            worldHeight = 1175;
+
             Graphics.PreferredBackBufferWidth = sWidth;
             Graphics.PreferredBackBufferHeight = sHeight;
 
@@ -163,6 +165,7 @@ namespace OrbItProcs
             {
                 compEnums.Add(compTypes[key], key);
             }
+            
             
         }
 
@@ -201,7 +204,7 @@ namespace OrbItProcs
                     //{ comp.queuer, true },
                     //{ comp.flow, true },
                     { comp.waver, false },
-                    { comp.tether, true },
+                    { comp.tether, false },
                     
                 };
             #endregion
@@ -226,78 +229,11 @@ namespace OrbItProcs
 
             Group masterGroup = new Group(room.defaultNode, Name: room.defaultNode.name);
             room.masterGroup = masterGroup;
-            //room.groups.Add(masterGroup.Name, masterGroup);
             Group firstGroup = new Group(firstdefault, parentGroup: masterGroup, Name: firstdefault.name);
             room.masterGroup.AddGroup(firstGroup.Name, firstGroup, false);
-            //room.groups.Add(firstGroup.Name, firstGroup);
 
             
-            //////////////////////////////////////////////////////////////////////////////////////
-            List<int> ints = new List<int> { 1, 2, 3 };
-            ints.ForEach(delegate(int i) { if (i == 2) ints.Remove(i); }); //COOL: NO ENUMERATION WAS MODIFIED ERROR
-            ints.ForEach(delegate(int i) { Console.WriteLine(i); });
-
-            MethodInfo testmethod = room.GetType().GetMethod("test");
-            Action<Room, int, float, string> del = (Action<Room, int, float, string>)Delegate.CreateDelegate(typeof(Action<Room, int, float, string>), testmethod);
-            del(room, 1, 0.3f, "Action worked.");
-
-            Action<int, float, string> del2 = (Action<int, float, string>)Delegate.CreateDelegate(typeof(Action<int, float, string>), room, testmethod);
-            //target is bound to 'room' in this example due to the overload of CreateDelegate used.
-            del2(2, 3.3f, "Action worked again.");
-
-            PropertyInfo pinfo = typeof(Component).GetProperty("active");
-            MethodInfo minfo = pinfo.GetGetMethod();
-            Console.WriteLine("{0}", minfo.ReturnType);
-
-            Movement tester = new Movement();
-            tester.active = true;
-
-            bool ret = (bool)minfo.Invoke(tester, new object[] { }); //VERY expensive (slow)
-            Console.WriteLine("{0}", ret);
-
             
-
-            Func<Component, bool> delGet = (Func<Component, bool>)Delegate.CreateDelegate(typeof(Func<Component, bool>), minfo);
-            Console.WriteLine("{0}", delGet(tester)); //very fast, and no cast or creation of empty args array required
-
-            minfo = pinfo.GetSetMethod();
-            //Console.WriteLine("{0} {1}", minfo.ReturnType, minfo.GetParameters()[0].ParameterType);
-
-            Action<Component, bool> delSet = (Action<Component, bool>)Delegate.CreateDelegate(typeof(Action<Component, bool>), minfo);
-            delSet(tester, false);
-            Console.WriteLine("Here we go: {0}", delGet(tester));
-            delSet(tester, true);
-            /////////////////////////////////////////////////////////////////////////////////////////
-            /*
-            //gets all types that are a subclass of Component
-            List<Type> types = AppDomain.CurrentDomain.GetAssemblies()
-                       .SelectMany(assembly => assembly.GetTypes())
-                       .Where(type => type.IsSubclassOf(typeof(Component))).ToList();
-            foreach (Type t in types) Console.WriteLine(t);
-            */
-
-            //room.defaultNode.Update(new GameTime()); //for testing
-
-            //MODIFIER ADDITION
-            /*
-            room.defaultNode.addComponent(comp.modifier, true); //room.defaultNode.comps[comp.modifier].active = false;
-            ModifierInfo modinfo = new ModifierInfo();
-            modinfo.AddFPInfoFromString("o1", "scale", room.defaultNode);
-            modinfo.AddFPInfoFromString("m1", "position", room.defaultNode);
-            modinfo.AddFPInfoFromString("v1", "position", room.defaultNode);
-
-            modinfo.args.Add("mod", 4.0f);
-            modinfo.args.Add("times", 3.0f);
-            modinfo.args.Add("test", 3.0f);
-            
-            //modinfo.delegateName = "Mod";
-            //modinfo.delegateName = "Triangle";
-            //modinfo.delegateName = "VelocityToOutput";
-            //modinfo.delegateName = "VectorSine";
-            modinfo.delegateName = "VectorSineComposite";
-
-            room.defaultNode.comps[comp.modifier].modifierInfos["sinecomposite"] = modinfo;
-            */
 
             
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
@@ -313,6 +249,7 @@ namespace OrbItProcs
             frameRateCounter = new FrameRateCounter(this);
             base.Initialize();
 
+            testing = new Testing();
 
             ui = new UserInterface(this);
             //ui.sidebar.ActiveGroup = firstGroup;
@@ -324,13 +261,7 @@ namespace OrbItProcs
             movement.active = true;
             Console.WriteLine("::" + movement.active);
 
-            Redirector.PopulateDelegatesAll();
-            redirector = new Redirector();
-            //redirector.PopulateDelegatesAll();
-            //Console.WriteLine(redirectior.setters[typeof(Movement)]["pushable"].GetType());
-            //redirectior.setters[typeof(Movement)]["pushable"](movement, false);
             
-
         }
 
         public void InitializePresets()
@@ -405,62 +336,12 @@ namespace OrbItProcs
         }
         public void spawnNode(Dictionary<dynamic, dynamic> userProperties)
         {
-            //testing to see how long it takes to generate all the getter/setter delegates
-            
-            object transformobj = room.defaultNode.transform;
-            dynamic nodedynamic = room.defaultNode;
-            List<Func<Node, float>> delList = new List<Func<Node, float>>();
-            float total = 0;
-            MethodInfo minfo = typeof(Transform).GetProperty("mass").GetGetMethod();
-            Func<Transform, float> getDel = (Func<Transform, float>)Delegate.CreateDelegate(typeof(Func<Transform, float>), minfo);
-            
-            DateTime dt = DateTime.Now;
-            Movement movement = new Movement();
+            //
+            //testing.TestOnClick();
+            //testing.TestHashSet();
+            //testing.WhereTest();
+            //
 
-            //redirector.TargetObject = movement;
-            //redirector.PropertyToObject["active"] = movement;
-            redirector.AssignObjectToPropertiesAll(movement);
-            PropertyInfo pinfo = movement.GetType().GetProperty("active");
-            //Action<object, object> movementsetter = redirector.setters[typeof(Movement)]["active"];
-            //Console.WriteLine(":::" + movement.active);
-            //bool a = redirector.active;
-            bool a = false;
-            for(int i = 0; i < 100000; i++)
-            {
-                //if (i > 0) if (i > 1) if (i > 2) if (i > 3) if (i > 4) total++;
-                
-                //delList.Add(getDel);
-                //float slow = (float)minfo.Invoke((Transform)transformobj, new object[] { });
-                //float mass = getDel(room.defaultNode);
-                //float mass2 = getDel((Transform)transformobj); //doesn't work because it's of type Object at compile time
-                //float mass2 = getDel(nodedynamic);
-                //total += mass;
-                //gotten = room.defaultNode.GetComponent<Movement>(); //generic method to grab components
-                //gotten = room.defaultNode.comps[comp.movement];
-                //bool act = gotten.active;
-                //gotten.active = true;
-                //redirector.active = false; //21m(impossible)... 24m(new) ... 19m (newer) ... 16m(newest)
-                //a = redirector.active;
-                //pinfo.SetValue(movement, false, null); //34m
-                //movementsetter(movement, false); //4m(old)......... 6m(new)
-                //movement.active = false;
-
-            }
-            //Movement move = room.defaultNode.comps[comp.movement];
-
-            int mill = DateTime.Now.Millisecond - dt.Millisecond;
-            if (mill < 0) mill += 1000;
-            Console.WriteLine("{0} - {1} = {2}", DateTime.Now.Millisecond, dt.Millisecond, mill);
-            //Console.WriteLine(total);
-            /* //this code won't run right now, but it represents the ability to make a specific generic method based on type variables from another generic method, and then invoke it... (this is slow)
-            MethodInfo method = GetType().GetMethod("DoesEntityExist")
-                             .MakeGenericMethod(new Type[] { typeof(Type) });
-            method.Invoke(this, new object[] { dt, mill });
-            */
-
-            //gotten.fallOff();
-
-            /////////////////////////////////////////////////////////////////////////////
             Group activegroup = ui.sidebar.ActiveGroup;
             if (activegroup.Name.Equals("master")) return;
             Node newNode = new Node();
@@ -472,16 +353,26 @@ namespace OrbItProcs
             {
                 Node.cloneObject(ui.sidebar.ActiveDefaultNode, newNode);
             }
+            newNode.name = activegroup.Name + Node.nodeCounter;
+
             newNode.acceptUserProps(userProperties);
             newNode.OnSpawn();
 
-            newNode.name = activegroup.Name + Node.nodeCounter;
+            
 
             //activegroup.entities.Add(newNode);
             activegroup.IncludeEntity(newNode);
-            int size = Enum.GetValues(typeof(KnownColor)).Length;
-            int rand = Utils.random.Next(size - 1);
-            System.Drawing.Color syscolor = System.Drawing.Color.FromKnownColor((KnownColor)rand);
+            int Enumsize = Enum.GetValues(typeof(KnownColor)).Length;
+
+            //int rand = Utils.random.Next(size - 1);
+            int index = 0;
+            foreach(char c in activegroup.Name.ToCharArray().ToList())
+            {
+                index += (int)c;
+            }
+            index = index % (Enumsize - 1);
+
+            System.Drawing.Color syscolor = System.Drawing.Color.FromKnownColor((KnownColor)index);
             Color xnacol = new Color(syscolor.R, syscolor.G, syscolor.B, syscolor.A);
             newNode.transform.color = xnacol;
         }

@@ -71,6 +71,8 @@ namespace OrbItProcs.Components
         public bool CallDraw { get { return _CallDraw; } set { _CallDraw = value; } }
         public mtypes methods { get { return _methods; } protected set { _methods = value; } }
 
+        public HashSet<Node> exclusions = new HashSet<Node>();
+
         public virtual void Initialize(Node parent) { this.parent = parent; }
         public virtual void AfterCloning() { }
         public virtual void OnSpawn() { }

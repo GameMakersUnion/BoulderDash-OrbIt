@@ -683,7 +683,7 @@ namespace OrbItProcs.Interface
             BuildItemsPath(item, itemspath);
 
             Group activeGroup = ActiveGroup;
-            activeGroup.ForEachAll(delegate(object o)
+            activeGroup.ForEachAll(delegate(Node o)
             {
                 Node n = (Node)o;
                 if (n == itemspath.ElementAt(0).obj) return;
@@ -1130,6 +1130,9 @@ namespace OrbItProcs.Interface
                 foreach (Object n in ActiveGroup.entities)
                     if (!((Node)n).comps.ContainsKey((comp)o[1]))
                         ((Node)n).addComponent((comp)o[1], true);
+                Node def = ActiveGroup.defaultNode;
+                if (!(def).comps.ContainsKey((comp)o[1]))
+                    (def).addComponent((comp)o[1], true);
                 return true;
             }
 
@@ -1182,7 +1185,7 @@ namespace OrbItProcs.Interface
                 lstComp.rootitem = null;
                 ui.editNode = null;
             }
-            g.entities.ToList().ForEach(delegate(object o) 
+            g.entities.ToList().ForEach(delegate(Node o) 
             {
                 g.DeleteEntity(o);
             });

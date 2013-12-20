@@ -13,8 +13,9 @@ namespace OrbItProcs.Processes
     public class Group
     {
         public Group parentGroup { get; set; }
-        public ObservableCollection<object> entities { get; set; }
-        public ObservableCollection<object> foreigners { get; set; }
+        public ObservableHashSet<Node> entities { get; set; }
+        public ObservableHashSet<Node> foreigners { get; set; }
+        public ObservableHashSet<Node> fullSet { get; set; }
         private Dictionary<string, Group> _childGroups;
         public Dictionary<string, Group> childGroups
         {
@@ -36,12 +37,13 @@ namespace OrbItProcs.Processes
         public Group() : this(null)
         {
         }
-        public Group(Node defaultNode = null, ObservableCollection<object> entities = null, Group parentGroup = null, GroupState groupState = GroupState.on, string Name = "newlist")
+        public Group(Node defaultNode = null, ObservableHashSet<Node> entities = null, Group parentGroup = null, GroupState groupState = GroupState.on, string Name = "newlist")
         {
             room = Program.getRoom();
             this.defaultNode = defaultNode ?? room.defaultNode;
-            this.entities = entities ?? new ObservableCollection<object>();
-            this.foreigners = new ObservableCollection<object>();
+            this.entities = entities ?? new ObservableHashSet<Node>();
+            this.foreigners = new ObservableHashSet<Node>();
+            this.fullSet = new ObservableHashSet<Node>();
             this.parentGroup = parentGroup;
             this.groupState = groupState;
             this.Name = Name;
@@ -66,6 +68,7 @@ namespace OrbItProcs.Processes
                         //Console.WriteLine("Adding {0} to {1}", n.name, Name);
                         parentGroup.foreigners.Add(n);
                     }
+                    fullSet.Add(n);
                 }
                 room.game.ui.sidebar.SyncTitleNumber(this);
             }
@@ -78,33 +81,26 @@ namespace OrbItProcs.Processes
                         room.game.ui.sidebar.lstMain.Items.Remove(n);
                         room.game.ui.sidebar.SyncTitleNumber(this);
                     }
-                    if (parentGroup != null && parentGroup.entities.Contains(n))
-                    {
-                        //n.active = false;
-                        //Console.WriteLine("Removing {0} from {1}", n.name, Name);
-                        //parentGroup.entities.Remove(n);
-                    }
-
-                    //RemoveFromChildrenDeep(n);
+                    fullSet.Remove(n);
                 }
                 
             }
         }
         //adds entity to current group and all parent groups
-        public void IncludeEntity(object entity)
+        public void IncludeEntity(Node entity)
         {
-            if (!entities.Contains(entity))
+            //if (!entities.Contains(entity))
                 entities.Add(entity);
 
             if (parentGroup != null)
                 parentGroup.IncludeEntity(entity);
         }
         //removes entity from current group and all child groups
-        public void DiscludeEntity(object entity)
+        public void DiscludeEntity(Node entity)
         {
             if (entity is Node && parentGroup == null) ((Node)entity).active = false;
 
-            if (entities.Contains(entity))
+            ///if (entities.Contains(entity))
                 entities.Remove(entity);
 
             if (childGroups.Count > 0)
@@ -116,7 +112,7 @@ namespace OrbItProcs.Processes
             }
         }
         //removes entity from all groups, starting from the highest root
-        public void DeleteEntity(object entity)
+        public void DeleteEntity(Node entity)
         {
             if (entity is Node) ((Node)entity).IsDeleted = true;
 
@@ -128,7 +124,7 @@ namespace OrbItProcs.Processes
             root.DiscludeEntity(entity);
         }
 
-        public void ForEachAll(Action<object> action)
+        public void ForEachAll(Action<Node> action)
         {
             entities.ToList().ForEach(action);
             foreigners.ToList().ForEach(action);
@@ -143,7 +139,7 @@ namespace OrbItProcs.Processes
         }
 
         //dunno about this
-        public void RemoveFromChildrenDeep(object toremove)
+        public void RemoveFromChildrenDeep(Node toremove)
         {
             if (entities.Contains(toremove)) entities.Remove(toremove);
             if (childGroups.Count == 0) return;
@@ -158,7 +154,7 @@ namespace OrbItProcs.Processes
         {
             if (groupState.In(GroupState.on, GroupState.updatingOnly))
             {
-                entities.ToList().ForEach(delegate(object n) { ((Node)n).Update(gametime); });
+                entities.ToList().ForEach(delegate(Node n) { ((Node)n).Update(gametime); });
             }
         }
 
@@ -166,7 +162,7 @@ namespace OrbItProcs.Processes
         {
             if (groupState.In(GroupState.on, GroupState.drawingOnly))
             {
-                entities.ToList().ForEach(delegate(object n) { ((Node)n).Draw(spritebatch); });
+                entities.ToList().ForEach(delegate(Node n) { ((Node)n).Draw(spritebatch); });
             }
         }
 
@@ -222,7 +218,8 @@ namespace OrbItProcs.Processes
             dict.Keys.ToList().ForEach(delegate(string key) {
                 Group g = dict[key];
 
-                g.entities.ToList().ForEach(delegate(object o) { 
+                g.entities.ToList().ForEach(delegate(Node o)
+                { 
                     if (!hashset.Contains(o))
                     {
                         hashset.Add(o);

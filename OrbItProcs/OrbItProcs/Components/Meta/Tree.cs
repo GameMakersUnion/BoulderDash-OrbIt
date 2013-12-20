@@ -138,6 +138,8 @@ namespace OrbItProcs.Components
                     parent.room.masterGroup.childGroups.Values.ElementAt(0).IncludeEntity(newNode);
                 }
                 parent.nodeState = state.drawOnly;
+
+                HashSet<Node> hs = new HashSet<Node>();
                 
 
             }

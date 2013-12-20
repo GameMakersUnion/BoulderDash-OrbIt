@@ -27,6 +27,8 @@ namespace OrbItProcs.Components
 
         public override void AffectOther(Node other)
         {
+            if (!active) return;
+            if (exclusions.Contains(other)) return;
 
             float distVects = Vector2.Distance(other.transform.position, parent.transform.position);
             if (distVects < radius)
@@ -35,7 +37,6 @@ namespace OrbItProcs.Components
                 float newY = (parent.transform.position.Y - other.transform.position.Y) * 2.05f;
                 other.transform.position.X += newX;
                 other.transform.position.Y += newY;
-
             }
         }
         public override void AffectSelf()

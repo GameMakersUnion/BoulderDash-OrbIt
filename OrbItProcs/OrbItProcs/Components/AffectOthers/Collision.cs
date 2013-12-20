@@ -28,6 +28,7 @@ namespace OrbItProcs.Components
                 return;
             }
             //assuming other has been checked for 'active' from caller
+            if (exclusions.Contains(other)) return;
 
             if (Utils.checkCollision(parent, other))
             {

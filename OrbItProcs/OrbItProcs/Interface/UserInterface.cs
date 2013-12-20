@@ -186,8 +186,7 @@ namespace OrbItProcs.Interface {
 
                             //new node(s)
                             Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
-                                { node.position, positionToSpawn },
-                                { node.velocity, diff },
+                                
                                 //{ node.texture, textures.whitecircle },
                                 //{ node.radius, 12 },
                                 { comp.randcolor, true },
@@ -203,6 +202,8 @@ namespace OrbItProcs.Interface {
                                 //{ comp.hueshifter, true },
                                 //{ comp.phaseorb, true },
                                 //{ comp.collision, false },
+                                { node.position, positionToSpawn },
+                                { node.velocity, diff },
                             };
 
                             game.spawnNode(userP);

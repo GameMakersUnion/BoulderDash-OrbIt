@@ -63,13 +63,16 @@ namespace OrbItProcs {
 
             string fps = string.Format("fps: {0}", frameRate);
             string ups = string.Format("ups: {0}", updateRate);
-            //spriteBatch.Begin();
+            //string fpsups = string.Format("fps:{0} ups:{1}", frameRate, updateRate);
 
             spriteBatch.DrawString(spriteFont, fps, new Vector2(2, Game1.sHeight - 70), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-            //spriteBatch.DrawString(spriteFont, fps, new Vector2(1, 1), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            spriteBatch.DrawString(spriteFont, fps, new Vector2(1, Game1.sHeight - 69), Color.Black, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            
             spriteBatch.DrawString(spriteFont, ups, new Vector2(2, Game1.sHeight - 40), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            spriteBatch.DrawString(spriteFont, ups, new Vector2(1, Game1.sHeight - 39), Color.Black, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
 
-            //spriteBatch.End();
+            //spriteBatch.DrawString(spriteFont, fpsups, new Vector2(Game1.sWidth - 100, Game1.sHeight - 70), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+
         }
     }
 }

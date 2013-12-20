@@ -44,6 +44,7 @@ namespace OrbItProcs.Components {
             {
                 return;
             }
+            if (exclusions.Contains(other)) return;
 
             if (!other.comps.ContainsKey(comp.gravity)) return; //controversial: what the fuck do we do
 

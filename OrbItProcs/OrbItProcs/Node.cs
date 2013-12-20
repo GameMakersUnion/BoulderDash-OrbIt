@@ -111,44 +111,6 @@ namespace OrbItProcs {
         private float _multiplier = 1f;
         public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
 
-        /*
-        public Vector2 position = new Vector2(0,0);
-        public Vector2 velocity = new Vector2(0,0);
-        private float _radius = 25f;
-        public float radius
-        {
-            get { return _radius; }
-            set
-            {
-                _radius = value;
-                if (getTexture() != null)
-                {
-                    transform.scale = value / (getTexture().Width / 2);
-                }
-                else
-                {
-                    transform.scale = value / (50 / 2);
-                }
-            }
-        }
-        private float _mass = 10f;
-        public float mass { get { return _mass; } set { _mass = value; } }
-        private float _scale = 1f; // TODO: make the setter change the radius -e harely
-        public float scale
-        {
-            get { return _scale; }
-            set { _scale = value; }
-        }
-        public Color color = new Color(255, 255, 255);
-        public Color ColorProp
-        {
-            get { return color; }
-            set { color = value; }
-        }
-        private textures _texture = textures.whitecircle;
-        public textures texture { get { return _texture; } set { _texture = value; } }
-        */
-
         public int lifetime = -1;
         private float _effectiveRadius = 100f;
         public float effectiveRadius { get { return _effectiveRadius; } set { _effectiveRadius = value; } }
@@ -278,9 +240,6 @@ namespace OrbItProcs {
             if (comps.ContainsKey(c))
             {
                 comps[c].active = Active;
-                //ensure that the componenent delegate lists are updated to only include active components
-                //triggerSortLists() is called from the 'active' property in the component class 
-                //(to ensure that if active is altered and this method isn't used, the update will still occur)
             }
             else
             {
@@ -306,19 +265,6 @@ namespace OrbItProcs {
         {
             foreach (dynamic p in userProps.Keys)
             {
-                //old method using comp enum values in props
-                /*
-                // if the value is bool, it is a property and is added to props dict
-                if (p is comp && userProps[p] is bool)
-                    props.Add(p, userProps[p]);
-                // if the key is a comp type, we need to add the component to comps dict
-                if (p is comp)
-                    fetchComponent(p);
-                // if the key is a node type, (and not a bool) we need to update the instance variable value
-                if (p is node)// && !(userProps[p] is bool))
-                    storeInInstance(p, userProps);
-                */
-
                 // if the key is a node type, (and not a bool) we need to update the instance variable value
                 if (p is node)// && !(userProps[p] is bool))
                     storeInInstance(p, userProps);
@@ -328,15 +274,12 @@ namespace OrbItProcs {
                     fetchComponent(p, userProps[p]);
                     if (comps.ContainsKey(p)) comps[p].active = userProps[p];
                 }
-                
             }
         }
 
         public void addComponent(comp c, bool active, bool overwrite = false)
         {
-
             fetchComponent(c, active, overwrite);
-            
             SortComponentLists();
         }
 
@@ -351,8 +294,6 @@ namespace OrbItProcs {
 
         public void addComponent(Component component, bool active)
         {
-            //component.com = comp.flow;
-            //component.GetType().GetProperty("com").GetSetMethod().IsPublic; //foreach (Enegry e in Lol) Air.Say("Ahoohoohoo");
             component.parent = this;
             comps.Add(component.com, component);
 
@@ -364,8 +305,8 @@ namespace OrbItProcs {
 
         public bool fetchComponent(comp c, bool active, bool overwrite = false)
         {
-
             Component component = MakeComponent(c, active, this);
+
             
             if (overwrite)
             {
@@ -382,7 +323,6 @@ namespace OrbItProcs {
                     comps.Add(c, component);
                 }
             }
-
             return true;
         }
 
@@ -393,9 +333,9 @@ namespace OrbItProcs {
             component = Game1.GenerateComponent(c);
             component.parent = this;
             component.active = active;
+            component.AfterCloning();
 
             return component;
-
         }
 
         public void RemoveComponent(comp c)
@@ -417,8 +357,6 @@ namespace OrbItProcs {
                 triggerSortLists();
                 triggerRemoveComponent = true;
             }
-            
-
         }
 
         public void RemoveComponentTriggered()
@@ -460,17 +398,12 @@ namespace OrbItProcs {
             {
                 compsToAdd.Remove(toaddremove.ElementAt(0));
             }
-
-
         }
 
         public void SortComponentLists()
         {
             SortComponentListsUpdate();
             SortComponentListsDraw();
-
-            
-            
         }
 
         public void SortComponentListsUpdate()
@@ -496,20 +429,6 @@ namespace OrbItProcs {
                     aSelfProps.Add(c);
                 }
             }
-
-            //remove comps from removelist
-            /*
-            foreach (comp c in compsToRemove)
-            {
-                if (comps.ContainsKey(c))
-                {
-                    if (!drawProps.Contains(c))
-                    {
-                        triggerRemoveComponent = true;
-                    }
-                }
-            }
-            */
         }
 
         public void SortComponentListsDraw()
@@ -527,20 +446,6 @@ namespace OrbItProcs {
                     drawProps.Add(c);
                 }
             }
-
-            //remove comps from removelist
-            /*
-            foreach (comp c in compsToRemove)
-            {
-                if (comps.ContainsKey(c))
-                {
-                    if (!aOtherProps.Contains(c) && !aSelfProps.Contains(c))
-                    {
-                        triggerRemoveComponent = true;
-                    }
-                }
-            }
-            */
         }
 
         
@@ -560,9 +465,6 @@ namespace OrbItProcs {
             hashlist.UnionWith(returnObjectsFinal);//bad
             hashlist.UnionWith(collisionList);
             
-
-            
-
             if (comps.ContainsKey(comp.flow) && comps[comp.flow].active)
             {
                 hashlist = new HashSet<Node>();
@@ -611,8 +513,6 @@ namespace OrbItProcs {
             // iterate over components that contain 'effectSelf' (and only call that method)
             foreach (comp c in aSelfProps)
             {
-                //if (props[c])
-                //if (isCompActive(c)) // we don't need this because we're assuming that any components in the aSelfProps list is active.
                     comps[c].AffectSelf();
                     //a useless check except to make sure this isn't an error
                     //if (!isCompActive(c)) Console.WriteLine("a component that is not active is in the aSelfProps list.(bad)");

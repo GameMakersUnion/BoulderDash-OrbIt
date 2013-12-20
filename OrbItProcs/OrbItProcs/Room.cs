@@ -67,6 +67,7 @@ namespace OrbItProcs {
 
             // grid System
             gridsystem = new GridSystem(this, 40, 4);
+            //gridsystem = new GridSystem(this, 40, 70, 4);
             gridSystemLines = new List<Rectangle>();
 
             
@@ -101,7 +102,7 @@ namespace OrbItProcs {
 
                 HashSet<Node> toDelete = new HashSet<Node>();
                 //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
-                masterGroup.entities.ToList().ForEach(delegate(object o) 
+                masterGroup.entities.ToList().ForEach(delegate(Node o) 
                 {
                     Node n = (Node)o; 
                     gridsystem.insert(n);
@@ -109,7 +110,7 @@ namespace OrbItProcs {
 
                 //fullset.ToList().ForEach(delegate(Node n) { gridsystem.insert(n); });
 
-                masterGroup.entities.ToList().ForEach(delegate(object o)
+                masterGroup.entities.ToList().ForEach(delegate(Node o)
                 {
                     Node n = (Node)o;
                     if (n.active)
@@ -213,7 +214,7 @@ namespace OrbItProcs {
             {
                 targetNodeGraphic.Draw(spritebatch);
             }
-            masterGroup.entities.ToList().ForEach(delegate(object o)
+            masterGroup.entities.ToList().ForEach(delegate(Node o)
             {
                 Node n = (Node)o;
                 n.Draw(spritebatch);
