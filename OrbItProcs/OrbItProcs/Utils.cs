@@ -26,6 +26,24 @@ namespace OrbItProcs {
                             };
                 return message;
         }
+        //even distribution of colors between 0 and 16.5 million (total number of possible colors, excluding alphas)
+        public static Color IntToColor(int i, int alpha = 255)
+        {
+            int r = (i / (255 * 255)) % 255;
+            int g = (i / 255) % 255;
+            int b = i % 255;
+
+            //string s = string.Format("{0}\t{1}\t{2}", r, g, b);
+            //Console.WriteLine(s);
+            return new Color(r, g, b, alpha);
+        }
+
+        public static int CurrentMilliseconds()
+        {
+            DateTime dt = DateTime.Now;
+            int total = dt.Millisecond + (dt.Second * 1000) + (dt.Minute * 60 * 1000);
+            return total;
+        }
 
         public static bool In<T>(this T x, params T[] args) {return args.Contains(x);}
 

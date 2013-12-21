@@ -42,6 +42,7 @@ namespace OrbItProcs.Interface {
 
         #endregion
 
+        public float zoomfactor { get; set; }
 
         public Node editNode, spawnerNode;
         public Sidebar sidebar;
@@ -53,6 +54,7 @@ namespace OrbItProcs.Interface {
             
             sidebar = new Sidebar(this);
             sidebar.Initialize();
+            zoomfactor = 0.9f;
         }
 
         public void Update(GameTime gameTime)
@@ -60,7 +62,7 @@ namespace OrbItProcs.Interface {
             ProcessKeyboard();
             ProcessMouse();
             
-
+            
         }
 
         public void ProcessKeyboard()
@@ -206,7 +208,9 @@ namespace OrbItProcs.Interface {
                                 { node.velocity, diff },
                             };
 
-                            game.spawnNode(userP);
+                            Action<Node> after = delegate(Node n) { n.transform.velocity = diff; };
+
+                            game.spawnNode(userP, after);
                             rightClickCount = 0;
                         }
                     }
@@ -240,9 +244,9 @@ namespace OrbItProcs.Interface {
                     //bool found = false;
                     Node found = null;
                     float shortedDistance = Int32.MaxValue;
-                    for (int i = room.masterGroup.entities.Count - 1; i >= 0; i--)
+                    for (int i = room.masterGroup.fullSet.Count - 1; i >= 0; i--)
                     {
-                        Node n = (Node)room.masterGroup.entities.ElementAt(i);
+                        Node n = (Node)room.masterGroup.fullSet.ElementAt(i);
                         // find node that has been clicked, starting from the most recently placed nodes
                         float distsquared = Vector2.DistanceSquared(n.transform.position, new Vector2(worldMouseX, worldMouseY));
                         if ( distsquared < n.transform.radius * n.transform.radius)
@@ -269,9 +273,9 @@ namespace OrbItProcs.Interface {
                 {
                     Node found = null;
                     float shortedDistance = Int32.MaxValue;
-                    for (int i = room.masterGroup.entities.Count - 1; i >= 0; i--)
+                    for (int i = room.masterGroup.fullSet.Count - 1; i >= 0; i--)
                     {
-                        Node n = (Node)room.masterGroup.entities.ElementAt(i);
+                        Node n = (Node)room.masterGroup.fullSet.ElementAt(i);
                         // find node that has been clicked, starting from the most recently placed nodes
                         float distsquared = Vector2.DistanceSquared(n.transform.position, new Vector2(worldMouseX, worldMouseY));
                         if (distsquared < n.transform.radius * n.transform.radius)
@@ -302,9 +306,9 @@ namespace OrbItProcs.Interface {
                 {
                     Node found = null;
                     float shortedDistance = Int32.MaxValue;
-                    for (int i = room.masterGroup.entities.Count - 1; i >= 0; i--)
+                    for (int i = room.masterGroup.fullSet.Count - 1; i >= 0; i--)
                     {
-                        Node n = (Node)room.masterGroup.entities.ElementAt(i);
+                        Node n = (Node)room.masterGroup.fullSet.ElementAt(i);
                         // find node that has been clicked, starting from the most recently placed nodes
                         float distsquared = Vector2.DistanceSquared(n.transform.position, new Vector2(worldMouseX, worldMouseY));
                         if (distsquared < n.transform.radius * n.transform.radius)
@@ -341,9 +345,9 @@ namespace OrbItProcs.Interface {
                 if (true || mouseState.LeftButton == ButtonState.Pressed)
                 {
                     bool found = false;
-                    for (int i = room.masterGroup.entities.Count - 1; i >= 0; i--)
+                    for (int i = room.masterGroup.fullSet.Count - 1; i >= 0; i--)
                     {
-                        Node n = (Node)room.masterGroup.entities.ElementAt(i);
+                        Node n = (Node)room.masterGroup.fullSet.ElementAt(i);
                         // find node that has been clicked, starting from the most recently placed nodes
                         if (Vector2.DistanceSquared(n.transform.position, new Vector2(worldMouseX, worldMouseY)) < n.transform.radius * n.transform.radius)
                         {
@@ -363,11 +367,11 @@ namespace OrbItProcs.Interface {
 
             if (mouseState.ScrollWheelValue < oldMouseScrollValue)
             {
-                room.mapzoom += 0.2f;
+                room.mapzoom /= zoomfactor;
             }
             else if (mouseState.ScrollWheelValue > oldMouseScrollValue)
             {
-                room.mapzoom -= 0.2f;
+                room.mapzoom *= zoomfactor;
             }
 
             oldMouseScrollValue = mouseState.ScrollWheelValue;

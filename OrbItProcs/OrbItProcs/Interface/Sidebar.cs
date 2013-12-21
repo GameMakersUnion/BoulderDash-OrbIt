@@ -536,7 +536,7 @@ namespace OrbItProcs.Interface
             Node.cloneObject(n, newdefault);
             Group g = ActiveGroup;
             g.defaultNode = newdefault;
-            g.entities.Remove(n);
+            g.fullSet.Remove(n);
             SetDefaultNodeAsEdit();
         }
 
@@ -545,12 +545,13 @@ namespace OrbItProcs.Interface
             Node n = (Node)lstMain.Items.ElementAt(lstMain.ItemIndex);
             Node newdefault = new Node();
             Node.cloneObject(n, newdefault);
+            newdefault.transform.velocity = new Vector2(0, 0);
             Group g = new Group(newdefault, parentGroup: room.masterGroup, Name: newdefault.name);
             room.masterGroup.AddGroup(g.Name, g);
             Group active = ActiveGroup;
-            active.entities.Remove(n);
+            active.fullSet.Remove(n);
             
-            g.entities.Add(n);
+            g.fullSet.Add(n);
 
             int index = cmbListPicker.Items.IndexOf(newdefault.name);
             cmbListPicker.ItemIndex = index;
@@ -683,7 +684,7 @@ namespace OrbItProcs.Interface
             BuildItemsPath(item, itemspath);
 
             Group activeGroup = ActiveGroup;
-            activeGroup.ForEachAll(delegate(Node o)
+            activeGroup.ForEachAllSets(delegate(Node o)
             {
                 Node n = (Node)o;
                 if (n == itemspath.ElementAt(0).obj) return;
@@ -1127,7 +1128,7 @@ namespace OrbItProcs.Interface
             bool writeable = false;
             if ((bool)o[2])
             {
-                foreach (Object n in ActiveGroup.entities)
+                foreach (Object n in ActiveGroup.fullSet)
                     if (!((Node)n).comps.ContainsKey((comp)o[1]))
                         ((Node)n).addComponent((comp)o[1], true);
                 Node def = ActiveGroup.defaultNode;
@@ -1178,14 +1179,14 @@ namespace OrbItProcs.Interface
         void btnRemoveAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             Group g = ActiveGroup;
-            if (g.entities.Contains(game.targetNode)) game.targetNode = null;
-            if (g.entities.Contains(ui.editNode) && ui.editNode != g.defaultNode)
+            if (g.fullSet.Contains(game.targetNode)) game.targetNode = null;
+            if (g.fullSet.Contains(ui.editNode) && ui.editNode != g.defaultNode)
             {
                 lstComp.Items.Clear();
                 lstComp.rootitem = null;
                 ui.editNode = null;
             }
-            g.entities.ToList().ForEach(delegate(Node o) 
+            g.fullSet.ToList().ForEach(delegate(Node o) 
             {
                 g.DeleteEntity(o);
             });
@@ -1197,7 +1198,7 @@ namespace OrbItProcs.Interface
         void btnRemoveNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             Group g = ActiveGroup;
-            if (g != null && g.entities.Contains(game.targetNode))
+            if (g != null && g.fullSet.Contains(game.targetNode))
                 g.DeleteEntity(game.targetNode);
             if (game.targetNode != null)
             {

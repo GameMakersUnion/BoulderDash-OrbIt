@@ -32,6 +32,9 @@ namespace OrbItProcs.Components {
             }
         }
 
+        public bool _IsBasedOnTime = true;
+        public bool IsBasedOnTime { get { return _IsBasedOnTime; } set { _IsBasedOnTime = value; } }
+
         //public Color randCol;
 
         public RandColor() : this(null) { }
@@ -48,6 +51,15 @@ namespace OrbItProcs.Components {
             if (active)
             {
                 parent.transform.color = new Color((float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255);
+            }
+            
+        }
+
+        public override void OnSpawn()
+        {
+            if (IsBasedOnTime)
+            {
+                parent.transform.color = Utils.IntToColor(Utils.CurrentMilliseconds());
             }
         }
 

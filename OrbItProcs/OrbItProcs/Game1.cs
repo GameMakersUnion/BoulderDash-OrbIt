@@ -40,6 +40,7 @@ namespace OrbItProcs
         randvelchange,
         randinitialvel,
         transfer,
+        circler, //if this goes after maxvel instead, it should have an impact on circler.
         maxvel,
         modifier,
         
@@ -73,6 +74,7 @@ namespace OrbItProcs
         # region /// Comp to Type Dictionary ///
         public static Dictionary<comp, Type> compTypes = new Dictionary<comp, Type>(){
             {comp.basicdraw,        typeof(BasicDraw)           },
+            {comp.circler,          typeof(Circler)             },
             {comp.collision,        typeof(Collision)           },
             {comp.flow,             typeof(Flow)                },
             {comp.gravity,          typeof(Gravity)             },
@@ -334,12 +336,14 @@ namespace OrbItProcs
                 room.colorEffectedNodes();
             }
         }
-        public void spawnNode(Dictionary<dynamic, dynamic> userProperties)
+        public void spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null)
         {
             //
             //testing.TestOnClick();
             //testing.TestHashSet();
             //testing.WhereTest();
+            //testing.ForLoops();
+            //testing.ColorsTest();
             //
 
             Group activegroup = ui.sidebar.ActiveGroup;
@@ -357,7 +361,7 @@ namespace OrbItProcs
 
             newNode.acceptUserProps(userProperties);
             newNode.OnSpawn();
-
+            if (afterSpawnAction != null) afterSpawnAction(newNode);
             
 
             //activegroup.entities.Add(newNode);
@@ -402,7 +406,7 @@ namespace OrbItProcs
             }
             else { PopUp.Toast(ui, "Node Saved"); completeSave(); }
 
-                }
+        }
 
         
 

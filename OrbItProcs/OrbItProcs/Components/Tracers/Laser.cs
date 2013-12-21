@@ -17,7 +17,6 @@ namespace OrbItProcs.Components
             }
             set
             {
-                
                 _active = value;
                 if (!value && parent != null) parent.Collided -= onCollision;
                 if (parent != null && parent.comps.ContainsKey(com))
@@ -32,6 +31,8 @@ namespace OrbItProcs.Components
 
         private int _queuecount = 10;
         public int queuecount { get { return _queuecount; } set { _queuecount = value; } }
+        private bool _IsColorByAngle = true;
+        public bool IsColorByAngle { get { return _IsColorByAngle; } set { _IsColorByAngle = value; } }
 
 
         private int timer = 0, _timerMax = 2;
@@ -132,9 +133,16 @@ namespace OrbItProcs.Components
                 //uncommet later when not using direction based color shit
                 //color = new Color(color.R, color.G, color.B, 255/queuecount * i);
                 //Console.WriteLine(testangle);
-                int[] collarr = HueShifter.getColorsFromAngle((testangle + (float)Math.PI) * (float)(180/Math.PI));
-                Color coll = new Color(collarr[0], collarr[1], collarr[2]);
-                
+                Color coll;
+                if (IsColorByAngle)
+                {
+                    int[] collarr = HueShifter.getColorsFromAngle((testangle + (float)Math.PI) * (float)(180 / Math.PI));
+                    coll = new Color(collarr[0], collarr[1], collarr[2]);
+                }
+                else
+                {
+                    coll = parent.transform.color;
+                }
                 spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint, null, new Color(1f, 1f, 1f, 255 / queuecount * i), testangle, centerTexture, scalevect, SpriteEffects.None, 0);
                 spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint + diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
                 spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint - diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
