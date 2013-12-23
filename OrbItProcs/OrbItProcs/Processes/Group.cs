@@ -14,7 +14,6 @@ namespace OrbItProcs.Processes
     {
         public Group parentGroup { get; set; }
         public ObservableHashSet<Node> entities { get; set; }
-        public ObservableHashSet<Node> foreigners { get; set; }
         public ObservableHashSet<Node> inherited { get; set; }
         public ObservableHashSet<Node> fullSet { get; set; }
         private Dictionary<string, Group> _childGroups;
@@ -44,7 +43,6 @@ namespace OrbItProcs.Processes
             this.defaultNode = defaultNode ?? room.defaultNode;
             this.entities = entities ?? new ObservableHashSet<Node>();
             this.inherited = new ObservableHashSet<Node>();
-            this.foreigners = new ObservableHashSet<Node>();
             this.fullSet = new ObservableHashSet<Node>();
             if (entities != null)
             {
@@ -58,7 +56,6 @@ namespace OrbItProcs.Processes
             this.Name = Name;
             this.childGroups = new Dictionary<string, Group>();
             this.entities.CollectionChanged += entities_CollectionChanged;
-            this.foreigners.CollectionChanged += entities_CollectionChanged;
             this.inherited.CollectionChanged += entities_CollectionChanged;
 
         }
@@ -76,7 +73,6 @@ namespace OrbItProcs.Processes
                     }
                     if (parentGroup != null && !parentGroup.entities.Contains(n))
                     {
-                        //Console.WriteLine("Adding {0} to {1}", n.name, Name);
                         parentGroup.inherited.Add(n);
                     }
                     fullSet.Add(n);
@@ -92,29 +88,21 @@ namespace OrbItProcs.Processes
                         room.game.ui.sidebar.lstMain.Items.Remove(n);
                         room.game.ui.sidebar.SyncTitleNumber(this);
                     }
-                    if (!entities.Contains(n) && !foreigners.Contains(n) && !inherited.Contains(n))
+                    if (!entities.Contains(n) && !inherited.Contains(n))
                         fullSet.Remove(n);
                 }
-            }
-        }
-        public void ForEachEntitiesAndForeigners(Action<Node> action)
-        {
-            foreach (Node n in entities)
-            {
-                action(n);
-            }
-            foreach (Node n in foreigners)
-            {
-                action(n);
             }
         }
 
         public void ForEachFullSet(Action<Node> action)
         {
+            fullSet.ToList().ForEach(action);
+            /*
             foreach (Node n in fullSet)
             {
                 action(n);
             }
+            */
         }
 
         //adds entity to current group and all parent groups
@@ -131,7 +119,6 @@ namespace OrbItProcs.Processes
             if (entity is Node && parentGroup == null) ((Node)entity).active = false;
 
             entities.Remove(entity);
-            foreigners.Remove(entity);
             inherited.Remove(entity);
 
             if (childGroups.Count > 0)
@@ -157,7 +144,6 @@ namespace OrbItProcs.Processes
         public void ForEachAllSets(Action<Node> action)
         {
             entities.ToList().ForEach(action);
-            foreigners.ToList().ForEach(action);
             inherited.ToList().ForEach(action);
         }
 

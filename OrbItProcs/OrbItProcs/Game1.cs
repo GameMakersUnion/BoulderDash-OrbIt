@@ -17,7 +17,7 @@ using SColor = System.Drawing.Color;
 using Color = Microsoft.Xna.Framework.Color;
 using Component = OrbItProcs.Components.Component;
 using Console = System.Console;
-using sc = System.Console; // use this
+using sc = System.Console;
 
 using OrbItProcs.Interface;
 using OrbItProcs.Components;
@@ -378,7 +378,7 @@ namespace OrbItProcs
 
             System.Drawing.Color syscolor = System.Drawing.Color.FromKnownColor((KnownColor)index);
             Color xnacol = new Color(syscolor.R, syscolor.G, syscolor.B, syscolor.A);
-            newNode.transform.color = xnacol;
+            //newNode.transform.color = xnacol;
         }
         public void spawnNode(int worldMouseX, int worldMouseY)
         {

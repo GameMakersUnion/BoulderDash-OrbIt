@@ -33,8 +33,9 @@ namespace OrbItProcs {
             int g = (i / 255) % 255;
             int b = i % 255;
 
-            //string s = string.Format("{0}\t{1}\t{2}", r, g, b);
+            string s = string.Format("{0}\t{1}\t{2}", r, g, b);
             //Console.WriteLine(s);
+            //Console.WriteLine(i);
             return new Color(r, g, b, alpha);
         }
 

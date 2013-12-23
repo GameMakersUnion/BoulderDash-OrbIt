@@ -9,7 +9,7 @@ namespace OrbItProcs {
         {
            game = new Game1();
                 game.Run();
-            Console.WriteLine("....guys?");
+            //Console.WriteLine("....guys?");
         }
 
         public static Game1 getGame()

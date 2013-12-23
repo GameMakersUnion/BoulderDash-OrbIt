@@ -24,7 +24,7 @@ using EventArgs = TomShane.Neoforce.Controls.EventArgs;
 
 namespace OrbItProcs.Interface
 {
-    public class Sidebar
+    public partial class Sidebar
     {
         EventHandler NotImplemented;
         public Game1 game;
@@ -71,7 +71,7 @@ namespace OrbItProcs.Interface
         
         public int Width = 200;
         #region /// Neoforce Fields///
-        private Manager manager;
+        public Manager manager;
         public Window master;
         TabControl tbcMain;
         public Label title1;
@@ -99,6 +99,9 @@ namespace OrbItProcs.Interface
 
         public ContextMenu mainNodeContextMenu;
         public MenuItem ConvertIntoList, PromoteToDefault;
+        
+        StackPanel stackpanel;
+        GroupPanel gp;
         
 
         public PropertyEditPanel propertyEditPanel;
@@ -426,29 +429,39 @@ namespace OrbItProcs.Interface
             #endregion
             #endregion
 
-            #region  /// Page two ///
+            #region  /// Page 2 ///
             tbcMain.AddPage();
             tbcMain.TabPages[1].Text = "Second";
             TabPage second = tbcMain.TabPages[1];
             HeightCounter = 0;
 
-            #region  /// Title ///
-            Label secondTitle = new Label(manager);
-            secondTitle.Init();
-            secondTitle.Parent = second;
+            
+            
+            #endregion
 
-            secondTitle.Top = VertPadding;
-            secondTitle.Left = first.Width / 2 - title1.Width / 2;
-            HeightCounter2 += VertPadding * 2 + secondTitle.Height;
-            secondTitle.Anchor = Anchors.Left;
+            #region  /// Page 3 ///
+            tbcMain.AddPage();
+            tbcMain.TabPages[2].Text = "Third";
+            TabPage third = tbcMain.TabPages[2];
+            HeightCounter = 0;
 
-            secondTitle.Text = "Console";
+            #region  /// Title (Console) ///
+            Label thirdTitle = new Label(manager);
+            thirdTitle.Init();
+            thirdTitle.Parent = third;
+
+            thirdTitle.Top = VertPadding;
+            thirdTitle.Left = third.Width / 2 - thirdTitle.Width;
+            HeightCounter2 += VertPadding * 2 + thirdTitle.Height;
+            thirdTitle.Anchor = Anchors.Left;
+
+            thirdTitle.Text = "Console";
             #endregion
 
             #region  /// Console textbox ///
             consoletextbox = new TextBox(manager);
             consoletextbox.Init();
-            consoletextbox.Parent = second;
+            consoletextbox.Parent = third;
 
             consoletextbox.Left = LeftPadding;
             consoletextbox.Top = HeightCounter2;
@@ -463,7 +476,7 @@ namespace OrbItProcs.Interface
             #region  /// Enter Button ///
             Button btnEnter = new Button(manager);
             btnEnter.Init();
-            btnEnter.Parent = second;
+            btnEnter.Parent = third;
 
             btnEnter.Left = LeftPadding;
             btnEnter.Top = HeightCounter2;
@@ -476,30 +489,35 @@ namespace OrbItProcs.Interface
             #region  /// Clear ///
             Button btnClear = new Button(manager);
             btnClear.Init();
-            btnClear.Parent = second;
+            btnClear.Parent = third;
 
             btnClear.Left = LeftPadding + btnEnter.Width;
-            btnClear.Top = HeightCounter2; HeightCounter2 += VertPadding + btnClear.Height;            
+            btnClear.Top = HeightCounter2; HeightCounter2 += VertPadding + btnClear.Height;
             btnClear.Width = (second.Width - LeftPadding * 2) / 2;
 
             btnClear.Text = "Clear";
             btnClear.Click += btnClear_Click;
             #endregion
 
-            #endregion
+            #region  /// Label (Presets) ///
+            Label lblPresets = new Label(manager);
+            lblPresets.Init();
+            lblPresets.Parent = third;
 
-            #region  /// Third Page ///
-            tbcMain.AddPage();
-            tbcMain.TabPages[2].Text = "Third";
-            TabPage third = tbcMain.TabPages[2];
-            HeightCounter = 0;
+            lblPresets.Top = HeightCounter2;
+            lblPresets.Left = third.Width / 2 - lblPresets.Width;
+            HeightCounter2 += VertPadding * 2 + lblPresets.Height;
+            lblPresets.Anchor = Anchors.Left;
+
+            lblPresets.Text = "Presets";
+            #endregion
 
             #region /// Presets ///
 
             lstPresets = new ListBox(manager);
             lstPresets.Init();
             lstPresets.Parent = third;
-            lstPresets.Top = third.Top;
+            lstPresets.Top = HeightCounter2;
             lstPresets.Left = LeftPadding;
             lstPresets.Width = third.Width - LeftPadding * 2;
             lstPresets.Height = third.Height / 4; HeightCounter += VertPadding + lstPresets.Height;
@@ -527,6 +545,109 @@ namespace OrbItProcs.Interface
             //lstComp.BackColor = Color.Blue;
             //lstComp.Color = Color.Black;
             //lstComp.TextColor = Color.Green;
+
+            InitializeSecondPage();
+
+
+            #region StackPanel Testing
+            /*
+            Window win = new Window(manager);
+            win.Init();
+            win.Top = 100;
+            win.Left = 100;
+            win.Height = 200;
+            win.Width = 300;
+            manager.Add(win);
+
+            stackpanel = new StackPanel(manager, Orientation.Vertical);
+           
+            stackpanel.Width = 100;
+            stackpanel.Height = 100;
+            stackpanel.Visible = true;
+            Button b1 = new Button(manager);
+            b1.Init();
+            b1.Text = "b1";
+            b1.Click += b2_Click;
+            stackpanel.Add(b1);
+            Button b2 = new Button(manager);
+            b2.Init();
+            b2.Text = "b2";
+            b2.Click += b2_Click;
+            Button b3 = new Button(manager);
+            b3.Init();
+            stackpanel.Add(b3);
+            b3.Text = "b3";
+            b3.Click += b2_Click;
+            win.Add(stackpanel);
+            stackpanel.Init();
+            stackpanel.Resize += stackpanel_Resize;
+
+
+            gp = new GroupPanel(manager);
+            gp.Height = 100;
+            gp.Width = 100;
+            gp.Init();
+            win.Add(gp);
+            gp.Text = "   Panel";
+
+            b2.Left = 100;
+            b2.Height = 20;
+            b2.Width = 15;
+            b2.Text = "^";
+            gp.AutoScroll = true;
+            
+
+            TabControl tb = new TabControl(manager);
+            tb.AddPage("first");
+            tb.AddPage("second");
+            
+
+
+            tb.AutoScroll = true;
+            win.Add(tb);
+            tb.Init();
+            tb.Height = 300;
+            tb.Width = 200;
+            
+            tb.Refresh();
+            gp.Refresh();
+
+            GroupBox box = new GroupBox(manager);
+            box.AutoScroll = true;
+            box.Init();
+
+            box.Add(b2);
+            b2.Top = 500;
+            b2.Left = 500;
+            box.Refresh();
+
+            box.Width = tb.TabPages[0].Width;
+            box.Height = tb.TabPages[0].Height;
+
+
+            tb.TabPages[0].Add(box);
+            tb.TabPages[0].Refresh();
+            */
+            #endregion
+        }
+
+        void stackpanel_Resize(object sender, ResizeEventArgs e)
+        {
+            Console.WriteLine("resized");
+        }
+
+        void b2_Click(object sender, EventArgs e)
+        {
+            Button b = (Button)sender;
+            if (b.Text.Equals("^")) b.Text = "v";
+            else b.Text = "^";
+
+
+            if (gp.Height == 100)
+                gp.Height = 20;
+            else gp.Height = 100;
+
+            stackpanel.Refresh();
         }
 
         void PromoteToDefault_Click(object sender, EventArgs e)

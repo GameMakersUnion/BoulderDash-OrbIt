@@ -38,7 +38,7 @@ namespace OrbItProcs.Components
         public override void Initialize(Node parent)
         {
             this.parent = parent;
-            movementmode = movemode.wallbounce;
+            //movementmode = movemode.wallbounce;
         }
 
         public override void AffectOther(Node other)
@@ -80,21 +80,21 @@ namespace OrbItProcs.Components
 
             if (pos.X >= (levelwidth + parent.transform.radius))
             {
-                parent.active = false;
+                parent.IsDeleted = true;
             }
             else if (pos.X < parent.transform.radius * -1)
             {
-                parent.active = false;
+                parent.IsDeleted = true;
             }
 
 
             if (pos.Y >= (levelheight + parent.transform.radius))
             {
-                parent.active = false;
+                parent.IsDeleted = true;
             }
             else if (pos.Y < parent.transform.radius * -1)
             {
-                parent.active = false;
+                parent.IsDeleted = true;
             }
         }
 

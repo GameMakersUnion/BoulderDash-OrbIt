@@ -208,9 +208,10 @@ namespace OrbItProcs.Interface {
                                 { node.velocity, diff },
                             };
 
-                            Action<Node> after = delegate(Node n) { n.transform.velocity = diff; };
+                            game.spawnNode(userP);
+                            //Action<Node> after = delegate(Node n) { n.transform.velocity = diff; }; game.spawnNode(userP, after);
 
-                            game.spawnNode(userP, after);
+                            
                             rightClickCount = 0;
                         }
                     }
