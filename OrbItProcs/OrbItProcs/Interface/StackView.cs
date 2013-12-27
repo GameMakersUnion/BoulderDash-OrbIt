@@ -16,18 +16,19 @@ namespace OrbItProcs.Interface
             CollapsePanels = new List<CollapsePanel>();
         }
 
-        public void AddPanel(CollapsePanel panel)
+        public void AddPanel(CollapsePanel collapsePanel)
         {
-            if (CollapsePanels.Contains(panel)) return;
+            if (CollapsePanels.Contains(collapsePanel)) return;
 
-            CollapsePanels.Add(panel);
+            CollapsePanels.Add(collapsePanel);
 
-            panel.collapseButton.Click += collapseButton_Click;
+            collapsePanel.collapseButton.Click += RefreshStackView;
+            collapsePanel.ExpandedHeightChanged += Refresh;
 
             Refresh();
         }
 
-        void collapseButton_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        void RefreshStackView(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             Refresh();
         }

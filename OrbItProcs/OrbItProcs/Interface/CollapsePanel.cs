@@ -9,12 +9,32 @@ namespace OrbItProcs.Interface
 {
     public class CollapsePanel
     {
+        public event Action ExpandedHeightChanged;
+
         public GroupPanel panel;
         public Button collapseButton;
         public Control parent;
         public Dictionary<string, Control> panelControls;
 
-        public int ExpandedHeight { get; set; }
+        private bool _IsExtended = true;
+        public bool IsExtended
+        {
+            get { return _IsExtended; }
+            set { _IsExtended = value; if (value) Extend(); else Collapse(); }
+        }
+
+        private int _ExpandedHeight;
+        public int ExpandedHeight
+        {
+            get { return _ExpandedHeight; }
+            set 
+            {
+                _ExpandedHeight = value; 
+                if (panel != null) panel.Height = value; 
+                if (IsExtended && parent != null) parent.Refresh(); 
+                if (ExpandedHeightChanged != null) ExpandedHeightChanged.Invoke(); 
+            }
+        }
 
         public int Top
         {
@@ -39,7 +59,7 @@ namespace OrbItProcs.Interface
         public string Text
         {
             get { return panel.Text; }
-            set { panel.Text = value; }
+            set { panel.Text = "  " + value.Trim(); }
         }
 
         public CollapsePanel(Manager manager, Control parent, string Name, int expandedHeight = 100)
@@ -48,7 +68,9 @@ namespace OrbItProcs.Interface
             panel.Init();
             panel.Height = expandedHeight;
             panel.Width = 180;
-            panel.Text = "  " + Name.Trim();
+            panel.Resizable = true;
+            //panel.Text = "  " + Name.Trim();
+            Text = Name;
             this.collapseButton = new Button(manager);
             collapseButton.Init();
             collapseButton.Width = 15;
@@ -68,7 +90,6 @@ namespace OrbItProcs.Interface
         void collapseButton_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             Toggle();
-            parent.Refresh();
         }
 
         public void Add(string name, Control control)
@@ -80,13 +101,19 @@ namespace OrbItProcs.Interface
 
         public void Collapse()
         {
+            _IsExtended = false;
             collapseButton.Text = "v";
             panel.Height = 20;
+
+            parent.Refresh();
         }
-        public void Expand()
+        public void Extend()
         {
+            _IsExtended = true;
             collapseButton.Text = "^";
             panel.Height = ExpandedHeight;
+
+            parent.Refresh();
         }
 
         public void Toggle()
@@ -98,7 +125,7 @@ namespace OrbItProcs.Interface
             }
             else
             {
-                Expand();
+                Extend();
             }
             //StackView.Refresh();
         }
