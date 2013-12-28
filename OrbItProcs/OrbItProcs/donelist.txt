@@ -42,7 +42,7 @@ Nov29
 ----------------------------
 Dec08
 -ModifierInfo now serializes properly due to a fix with FPInfo: now it carries the DeclaringType field to save it as a string for rebuilding
--The InspectorItems are now sorted based on type in the TreeListBox
+-The InspectorItems are now sorted based on type in the InspectorBox
 -
 
 

@@ -121,30 +121,31 @@ namespace OrbItProcs.Interface {
                 {
                     if (mouseState.ScrollWheelValue < oldMouseState.ScrollWheelValue)
                     {
-                        //lstMain.
                         sidebar.lstMain_ChangeScrollPosition(1);
-
+                        
                     }
                     else if (mouseState.ScrollWheelValue > oldMouseState.ScrollWheelValue)
                     {
                         sidebar.lstMain_ChangeScrollPosition(-1);
+                        
                     }
                 }
+
+                sidebar.inspectorArea.ScrollInsBox(mouseState, oldMouseState);
+
+                /*
                 if (mouseState.Y > sidebar.lstComp.Top + 24 && mouseState.Y < sidebar.lstComp.Top + sidebar.lstComp.Height + 24)
                 {
                     if (mouseState.ScrollWheelValue < oldMouseState.ScrollWheelValue)
                     {
-                        //lstMain.
-                        sidebar.lstComp_ChangeScrollPosition(1);
-
+                        sidebar.inspectorArea.InsBox_ChangeScrollPosition(1);
                     }
                     else if (mouseState.ScrollWheelValue > oldMouseState.ScrollWheelValue)
                     {
-                        sidebar.lstComp_ChangeScrollPosition(-1);
+                        sidebar.inspectorArea.InsBox_ChangeScrollPosition(-1);
                     }
-
-
                 }
+                */
 
                 oldMouseState = mouseState;
                 return;

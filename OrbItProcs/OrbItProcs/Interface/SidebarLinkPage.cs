@@ -298,15 +298,16 @@ namespace OrbItProcs.Interface
 
             Label lblPaletteTitle;
             ComboBox cbLinkList;
-            TreeListBox LinkInspectorBox;
+            InspectorBox LinkInspectorBox;
             Button btnCreateLink;
-
 
             #endregion
 
 
+            //stackview.MovePanel(0, 1);
+
             backPanel.Refresh();
-            //tbcMain.SelectedPage = tbcMain.TabPages[0];
+            tbcMain.SelectedPage = tbcMain.TabPages[0];
 
             
 

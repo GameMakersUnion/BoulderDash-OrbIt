@@ -152,7 +152,8 @@
     <Compile Include="FrameRateCounter.cs" />
     <Compile Include="GridSystem.cs" />
     <Compile Include="Interface\CollapsePanel.cs" />
-    <Compile Include="Interface\NeoForceOverrides\TreeListBox.cs" />
+    <Compile Include="Interface\InspectorArea.cs" />
+    <Compile Include="Interface\NeoForceOverrides\InspectorBox.cs" />
     <Compile Include="Interface\PropertyEditPanel.cs" />
     <Compile Include="Interface\Sidebar.cs" />
     <Compile Include="Interface\SidebarLinkPage.cs" />

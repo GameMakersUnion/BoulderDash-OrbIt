@@ -7,7 +7,7 @@
 - make it so that the modifier component doesn't set all node references to it's parent when updatingreferences (probably for processes)
 ---
 - the PopUp doesn't work correctly when incorrect input is given (example, you AddComponent, but don't pick one from the dropdown.)
-- The treelistbox doesn't have a horizontal scroll bar, AND the scrolling needs to be done inside neoforce (instead of in the game logic)
+- The InspectorBox doesn't have a horizontal scroll bar, AND the scrolling needs to be done inside neoforce (instead of in the game logic)
 
 
 

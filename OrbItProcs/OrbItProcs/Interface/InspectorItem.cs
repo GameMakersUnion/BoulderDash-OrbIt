@@ -471,7 +471,7 @@ namespace OrbItProcs.Interface {
                 //System.Drawing.Drawing2D.
             }
         }
-        public void DoubleClickItem(Sidebar sidebar)
+        public void DoubleClickItem(InspectorArea inspectorArea)
         {
             if (hasChildren())
             {
@@ -487,7 +487,7 @@ namespace OrbItProcs.Interface {
                     
                     if (masterList != null)
                     {
-                        sidebar.ActiveInspectorParent = this;
+                        inspectorArea.ActiveInspectorParent = this;
                         foreach (object item in masterList.ToList())
                         {
                             masterList.Remove(item);
@@ -512,7 +512,7 @@ namespace OrbItProcs.Interface {
             {
                 if (parentItem != null && parentItem.parentItem != null)
                 {
-                    parentItem.parentItem.DoubleClickItem(sidebar);
+                    parentItem.parentItem.DoubleClickItem(inspectorArea);
                 }
             }
 

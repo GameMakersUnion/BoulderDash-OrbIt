@@ -69,5 +69,13 @@ namespace OrbItProcs.Interface
                 */
             }
         }
+
+        public void MovePanel(int fromIndex, int toIndex)
+        {
+            CollapsePanel swap = CollapsePanels.ElementAt(fromIndex);
+            CollapsePanels.Remove(swap);
+            CollapsePanels.Insert(toIndex, swap);
+            Refresh();
+        }
     }
 }

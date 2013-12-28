@@ -62,11 +62,11 @@ namespace OrbItProcs.Components
         }
 
         //*/
-        //flag as not editable in treelistbox
+        //flag as not editable in InspectorBox
         private comp _com;
         public comp com { get { return _com; } protected set { _com = value; } }
         private mtypes _methods;
-        //flag as not editable in treelistbox
+        //flag as not editable in InspectorBox
         private bool _CallDraw = true;
         public bool CallDraw { get { return _CallDraw; } set { _CallDraw = value; } }
         public mtypes methods { get { return _methods; } protected set { _methods = value; } }

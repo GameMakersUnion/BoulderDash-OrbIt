@@ -9,7 +9,7 @@ using OrbItProcs.Interface;
 
 namespace TomShane.Neoforce.Controls
 {
-    public class TreeListBox : ListBox
+    public class InspectorBox : ListBox
     {
         private ScrollBar sbVert = null;
         public InspectorItem rootitem = null;
@@ -35,7 +35,7 @@ namespace TomShane.Neoforce.Controls
         //private List<object> Items = new List<object>();
         public int startChildren = -1, endChildren = -1;
 
-        public TreeListBox(Manager manager)
+        public InspectorBox(Manager manager)
             : base(manager)
         {
 

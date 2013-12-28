@@ -251,46 +251,16 @@ namespace OrbItProcs {
         }
 
 
-        public void pw()
-        {
-            game.ui.sidebar.backPanel.Refresh();
-        }
-
-        public void test(int a, float f, string s = " Ok")
-        {
-            Console.WriteLine(a*a + " " + f + " " + s);
-        }
-
-        public void move(int height)
-        {
-            TomShane.Neoforce.Controls.GroupPanel gp = game.ui.sidebar.groupPanel;
-            //game.ui.sidebar.groupPanel.Top = 100;
-            if (gp.Height != height)
-                gp.Height = height;
-            else gp.Height = 100;
-            
-        }
-
-        public void lower()
-        {
-            game.ui.sidebar.lstComp.Top = game.ui.sidebar.lstComp.Top + game.ui.sidebar.lstComp.Height;
-        }
+        
 
         public void hide()
         {
-            //game.ui.sidebar.manager.Remove(game.ui.sidebar.lstMain);
-            game.ui.sidebar.lstComp.Top = game.ui.sidebar.lstMain.Top;
-            game.ui.sidebar.lstMain.Visible = false;
-            game.ui.sidebar.lstComp.BringToFront();
-            game.ui.sidebar.lstComp.Visible = true;
+            //game.ui.sidebar.lstComp.Visible = false;
             
         }
         public void show()
         {
-            //game.ui.sidebar.manager.Add(game.ui.sidebar.lstMain);
-            game.ui.sidebar.lstMain.Visible = true;
-            game.ui.sidebar.lstMain.BringToFront();
-            game.ui.sidebar.lstComp.Visible = false;
+            //game.ui.sidebar.lstComp.Visible = true;
         }
     }
 }
