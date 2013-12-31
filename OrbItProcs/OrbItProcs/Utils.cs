@@ -48,6 +48,13 @@ namespace OrbItProcs {
 
         public static bool In<T>(this T x, params T[] args) {return args.Contains(x);}
 
+        public static string SelectedItem(this TomShane.Neoforce.Controls.ComboBox cb)
+        {
+            if (cb == null || cb.ItemIndex == -1) return null;
+            return cb.Items.ElementAt(cb.ItemIndex).ToString();
+        }
+
+
         public static object selected(this TomShane.Neoforce.Controls.ListBox c) { return c.Items.ElementAt(c.ItemIndex); }
 
         public static void syncToOCDelegate(this ICollection<object> lst, NotifyCollectionChangedEventArgs e)
@@ -233,10 +240,10 @@ namespace OrbItProcs {
             o2.transform.velocity.X = o2.transform.velocity.X + pvalue * normal.X * o1.transform.mass;
             o2.transform.velocity.Y = o2.transform.velocity.Y + pvalue * normal.Y * o1.transform.mass;
 
-            float loss1 = 0.99999f;
-            float loss2 = 0.99999f;
-            //o1.transform.velocity *= loss1;
-            //o2.transform.velocity *= loss2;
+            float loss1 = 0.899999f;
+            float loss2 = 0.899999f;
+            o1.transform.velocity *= loss1;
+            o2.transform.velocity *= loss2;
 
             //if (game.fixCollisionOn)
             fixCollision(o1, o2);

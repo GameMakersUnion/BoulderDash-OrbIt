@@ -44,6 +44,8 @@ namespace OrbItProcs {
 
         public static int nodeCounter = 0;
 
+        public event EventHandler OnAffectOthers;
+
         public event ProcessMethod Collided;
         public Dictionary<dynamic, dynamic> CollideArgs;
 
@@ -66,6 +68,7 @@ namespace OrbItProcs {
             get { return _active; }
             set
             {
+                OnAffectOthers += Node_OnAffectOthers;
                 if (_active && !value)
                 {
                     foreach (comp c in comps.Keys.ToList())
@@ -90,6 +93,11 @@ namespace OrbItProcs {
                 }
                 _active = value;
             }
+        }
+
+        void Node_OnAffectOthers(object sender, EventArgs e)
+        {
+            
         }
 
         private bool _IsDeleted = false;
@@ -120,9 +128,9 @@ namespace OrbItProcs {
         private string _name = "node";
         public string name { get { return _name; } set { _name = value; } }
 
-        
 
-        public int _sentinel = -10;
+
+        private int _sentinel = -10;
 
         public int sentinelp { get { return _sentinel; } set { _sentinel = value; } }
 
@@ -132,10 +140,10 @@ namespace OrbItProcs {
         private float _velMultiplier = 1f;
         public float velMultiplier { get { return _velMultiplier; } set { _velMultiplier = value; } }
 
-        public Dictionary<comp, dynamic> _comps = new Dictionary<comp, dynamic>();
+        private Dictionary<comp, dynamic> _comps = new Dictionary<comp, dynamic>();
         public Dictionary<comp, dynamic> comps { get { return _comps; } set { _comps = value; } }
 
-        public Dictionary<dynamic, bool> _props = new Dictionary<dynamic, bool>();
+        private Dictionary<dynamic, bool> _props = new Dictionary<dynamic, bool>();
         public Dictionary<dynamic, bool> props { get { return _props; } set { _props = value; } }
 
         public List<comp> aOtherProps = new List<comp>();
@@ -198,6 +206,8 @@ namespace OrbItProcs {
                 // if the key is a node type, (and not a bool) we need to update the instance variable value
                 if (p is node)// && !(userProps[p] is bool))
                     storeInInstance(p, userProps);
+
+                
 
             }
             // fill in remaining defaultProps
@@ -425,7 +435,6 @@ namespace OrbItProcs {
             {
                 if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.affectself) == mtypes.affectself))
                 {
-                    //compsASC.Add(asc[p]);
                     aSelfProps.Add(c);
                 }
             }
@@ -442,7 +451,6 @@ namespace OrbItProcs {
             {
                 if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.draw) == mtypes.draw))
                 {
-                    //compsDC.Add(dc[p]);
                     drawProps.Add(c);
                 }
             }
@@ -471,58 +479,27 @@ namespace OrbItProcs {
                 if (comps[comp.flow].activated)
                 {
                     hashlist.UnionWith(comps[comp.flow].outgoing);
-                    //Console.WriteLine(hashlist.Count);
                 }
             }
             hashlist.Remove(this);
-            //List<Node> gravList = room.gridsystem.retrieve(this, (int)(comps[comp.gravity].radius / room.gridsystem.cellwidth));
-
 
             foreach (Node other in hashlist)
             {
                 if (other.active)
                 {
-                    // iterate over components that contain 'affectOther' method (and only call that method)
                     foreach (comp c in aOtherProps)
                     {
                         comps[c].AffectOther(other);
-                        //Console.Write(c.ToString());
                     }
-                    //Console.WriteLine(hashlist.Count);
                 }
             }
 
-            // ONLY ENTER IF THERE IS AT LEAST ONE COMPONENT THAT HAS 'AFFECTOTHER' METHOD
-            if (active && aOtherProps.Count > 0 && false)
-            {
-                foreach (Node other in hashlist)
-                {
-                    if (other != this && other.active)
-                    {
-                        // iterate over components that contain 'effectOthers' method (and only call that method)
-                        foreach (comp c in aOtherProps)
-                        {
-                            //if (props[c])
-                            //if (isCompActive(c)) // we don't need this because we're assuming that any components in the aOtherProps list is active.
-                                comps[c].AffectOther(other);
-                        }
-                    }
-                }
-            }
-            //yo
-            // iterate over components that contain 'effectSelf' (and only call that method)
+            if (OnAffectOthers != null) OnAffectOthers.Invoke(this, null);
+
             foreach (comp c in aSelfProps)
             {
                     comps[c].AffectSelf();
-                    //a useless check except to make sure this isn't an error
-                    //if (!isCompActive(c)) Console.WriteLine("a component that is not active is in the aSelfProps list.(bad)");
             }
-            /*foreach (ASC del in compsASC)
-            {
-                del(this);
-            }*/
-
-            //position += velocity;
 
             if (triggerSortComponentsUpdate)
             {
@@ -558,8 +535,6 @@ namespace OrbItProcs {
                     if (!comps[c].methods.HasFlag(mtypes.minordraw))
                         break; //only executes the most significant draw component
                 }
-                //if (!comps[c].methods.HasFlag(mtypes.minordraw))
-                //    break; //only executes the most significant draw component
             }
 
             if (triggerSortComponentsDraw)

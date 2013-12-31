@@ -11,7 +11,7 @@ namespace OrbItProcs.Interface
 {
     public class PropertyEditPanel
     {
-        public Sidebar sidebar;
+        //public Sidebar sidebar;
         public GroupPanel grouppanel;
         public Dictionary<string, Control> panelControls;
         private InspectorItem activeInspectorItem;
@@ -22,9 +22,9 @@ namespace OrbItProcs.Interface
         private int LeftPadding = 5;
         private bool triggerResizeSlider = true;
 
-        public PropertyEditPanel(GroupPanel grouppanel, Sidebar sidebar)
+        public PropertyEditPanel(GroupPanel grouppanel)
         {
-            this.sidebar = sidebar;
+            //this.sidebar = sidebar;
             this.grouppanel = grouppanel;
             panelControls = new Dictionary<string, Control>();
 

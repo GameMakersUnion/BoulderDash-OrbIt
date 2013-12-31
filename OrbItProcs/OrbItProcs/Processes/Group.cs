@@ -12,6 +12,8 @@ namespace OrbItProcs.Processes
 
     public class Group
     {
+        public static int GroupNumber = 0;
+
         public Group parentGroup { get; set; }
         public ObservableHashSet<Node> entities { get; set; }
         public ObservableHashSet<Node> inherited { get; set; }
@@ -32,12 +34,13 @@ namespace OrbItProcs.Processes
         public Room room;
         private string _Name;
         public string Name { get { return _Name; } set { if (_Name != null && _Name.Equals("master")) return; _Name = value; } } //cannot rename main group
+        public bool Spawnable;
         public GroupState groupState { get; set; }
 
         public Group() : this(null)
         {
         }
-        public Group(Node defaultNode = null, ObservableHashSet<Node> entities = null, Group parentGroup = null, GroupState groupState = GroupState.on, string Name = "newlist")
+        public Group(Node defaultNode = null, ObservableHashSet<Node> entities = null, Group parentGroup = null, GroupState groupState = GroupState.on, string Name = "", bool Spawnable = true)
         {
             room = Program.getRoom();
             this.defaultNode = defaultNode ?? room.defaultNode;
@@ -53,10 +56,17 @@ namespace OrbItProcs.Processes
             }
             this.parentGroup = parentGroup;
             this.groupState = groupState;
-            this.Name = Name;
+            this.Spawnable = Spawnable;
             this.childGroups = new Dictionary<string, Group>();
             this.entities.CollectionChanged += entities_CollectionChanged;
             this.inherited.CollectionChanged += entities_CollectionChanged;
+
+            if (Name.Equals("")) 
+            {
+                Name = "[G" + GroupNumber + "]"; //maybe a check that the name is unique
+                GroupNumber++; 
+            }
+            this.Name = Name;
 
         }
 
@@ -66,7 +76,7 @@ namespace OrbItProcs.Processes
             {
                 foreach (Node n in e.NewItems)
                 {
-                    if (room.game.ui.sidebar.cmbListPicker.Text.Equals(Name))
+                    if (room.game.ui.sidebar.cbListPicker.Text.Equals(Name))
                     {
                         room.game.ui.sidebar.lstMain.Items.Add(n);
                         room.game.ui.sidebar.SyncTitleNumber(this);
@@ -83,7 +93,7 @@ namespace OrbItProcs.Processes
             {
                 foreach (Node n in e.OldItems)
                 {
-                    if (room.game.ui.sidebar.cmbListPicker.Text.Equals(Name))
+                    if (room.game.ui.sidebar.cbListPicker.Text.Equals(Name))
                     {
                         room.game.ui.sidebar.lstMain.Items.Remove(n);
                         room.game.ui.sidebar.SyncTitleNumber(this);
@@ -140,6 +150,32 @@ namespace OrbItProcs.Processes
             }
             root.DiscludeEntity(entity);
         }
+
+        public Group FindGroup(string name)
+        {
+            Group root = this;
+            while (root.parentGroup != null)
+            {
+                root = root.parentGroup;
+            }
+            Group result = root.FindGroupRecurse(name);
+            if (result != null) return result;
+            return root;
+        }
+
+        private Group FindGroupRecurse(string name)
+        {
+            if (Name.Equals(name)) return this;
+            if (childGroups.Count == 0) return null;
+
+            foreach (Group g in childGroups.Values)
+            {
+                Group result = g.FindGroupRecurse(name);
+                if (result != null) return result;
+            }
+            return null;
+        }
+
         
         public void ForEachAllSets(Action<Node> action)
         {
@@ -187,7 +223,7 @@ namespace OrbItProcs.Processes
         {
             return Name;
         }
-
+        /*
         public Group FindGroup(string name)
         {
             if (name.Equals(Name)) return this;
@@ -199,8 +235,8 @@ namespace OrbItProcs.Processes
             if (parentGroup != null) return parentGroup;
             return this;
         }
-
-        public void AddGroup(string name, Group group, bool updateCmb = true)
+        */
+        public void AddGroup(string name, Group group)
         {
             if (childGroups.ContainsKey(name))
             {
@@ -208,25 +244,28 @@ namespace OrbItProcs.Processes
                 return;
             }
             childGroups.Add(name, group);
-
-            if (updateCmb) UpdateComboBox();
         }
 
+        public void GroupNamesToList(List<object> list)
+        {
+            list.Add(Name);
+            foreach (Group g in childGroups.Values)
+            {
+                g.GroupNamesToList(list);
+            }
+        }
+
+        /*
         public void UpdateComboBox()
         {
-            List<object> list = room.game.ui.sidebar.cmbListPicker.Items;
-            foreach (object o in list.ToList())
-            {
-                list.Remove(o);
-            }
-            list.Add(Name);
-            foreach (string s in childGroups.Keys.ToList())
-            {
-                list.Add(s);
-            }
+            room.game.ui.sidebar.cbListPicker.ItemIndex = 0;
+            List<object> list = room.game.ui.sidebar.cbListPicker.Items;
+            list.ToList().ForEach((o) => list.Remove(o));
+
+            GroupNamesToList(list);
             list.Add("Other Objects");
         }
-
+        */
         //unfortunately I'm not sure it makes sense to use this awesome method
         public static void ForEachDictionary (Dictionary<string,Group> dict, Action<object> action)
         {

@@ -29,7 +29,7 @@ namespace OrbItProcs
         {
             private static Dictionary<OptType, Type> tc = new Dictionary<OptType, Type>(){
                 {OptType.info,         typeof(String)},
-                {OptType.prompt,         typeof(String)},
+                {OptType.prompt,       typeof(String)},
                 {OptType.textBox,      typeof(String)},
                 {OptType.dropDown,     typeof(ObservableCollection<object>)},
                 {OptType.radialButton, typeof(String[])},

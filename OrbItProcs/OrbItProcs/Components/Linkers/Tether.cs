@@ -19,16 +19,16 @@ namespace OrbItProcs.Components
                 _active = value;
                 if (!_active)
                 {
-                    foreach (Node n in outgoing.ToList())
+                    foreach (Node other in outgoing.ToList())
                     {
-                        outgoing.Remove(n);
-                        n.comps[comp.tether].incoming.Remove(parent);
+                        outgoing.Remove(other);
+                        other.comps[comp.tether].incoming.Remove(parent);
                     }
-                    foreach (Node n in incoming.ToList())
+                    foreach (Node other in incoming.ToList())
                     {
                         
-                        n.comps[comp.tether].outgoing.Remove(parent);
-                        incoming.Remove(n);
+                        other.comps[comp.tether].outgoing.Remove(parent);
+                        incoming.Remove(other);
                     }
                 }
             }
@@ -67,7 +67,8 @@ namespace OrbItProcs.Components
                 this.parent = parent;
             }
             com = comp.tether;
-            methods = mtypes.affectself | mtypes.draw | mtypes.minordraw;
+            //methods = mtypes.affectself | mtypes.draw | mtypes.minordraw;
+            methods = mtypes.affectother | mtypes.draw | mtypes.minordraw;
             //InitializeLists();
         }
 
@@ -93,22 +94,71 @@ namespace OrbItProcs.Components
 
         }
 
-        public override void AffectOther(Node other)
+        public override void AffectOther(Node other) // called when used as a link
         {
+            if (activated)
+            {
+                Vector2 diff = other.transform.position - parent.transform.position;
+                float len;
+                if (locked)
+                {
+                    len = lockedVals[other];
+                }
+                else
+                {
+                    len = diff.Length();
+                }
 
+                if (len > maxdist)
+                {
+                    if (confining)
+                    {
+                        other.transform.position = parent.transform.position + confiningVects[other] * maxdist;
+                    }
+                    else
+                    {
+                        float percent = maxdist / len;
+                        diff *= percent;
+                        other.transform.position = parent.transform.position + diff;
+                    }
+                }
+                else if (len < mindist)
+                {
+                    if (confining)
+                    {
+                        other.transform.position = parent.transform.position + confiningVects[other] * mindist;
+                    }
+                    else
+                    {
+                        float percent = mindist / len;
+                        diff *= percent;
+                        other.transform.position = parent.transform.position + diff;
+                    }
+                }
+                else
+                {
+                    if (confining)
+                    {
+                        other.transform.position = parent.transform.position + confiningVects[other] * len;
+                        Console.WriteLine("{0}, {1}, {2}", confiningVects[other], other.transform.position, len);
+                    }
+                }
+                //diff = other.transform.position - parent.transform.position;
+                //Console.WriteLine(diff.Length());
+                
+            }
         }
         public override void AffectSelf()
         {
             if (activated)
             {
-                
-                foreach (Node n in outgoing)
+                foreach (Node other in outgoing)
                 {
-                    Vector2 diff = n.transform.position - parent.transform.position;
+                    Vector2 diff = other.transform.position - parent.transform.position;
                     float len;
                     if (locked)
                     {
-                        len = lockedVals[n];
+                        len = lockedVals[other];
                     }
                     else
                     {
@@ -119,40 +169,40 @@ namespace OrbItProcs.Components
                     {
                         if (confining)
                         {
-                            n.transform.position = parent.transform.position + confiningVects[n] * maxdist;
+                            other.transform.position = parent.transform.position + confiningVects[other] * maxdist;
                         }
                         else
                         {
                             float percent = maxdist / len;
                             diff *= percent;
-                            n.transform.position = parent.transform.position + diff;
+                            other.transform.position = parent.transform.position + diff;
                         }
                     }
                     else if (len < mindist)
                     {
                         if (confining)
                         {
-                            n.transform.position = parent.transform.position + confiningVects[n] * mindist;
+                            other.transform.position = parent.transform.position + confiningVects[other] * mindist;
                         }
                         else
                         {
                             float percent = mindist / len;
                             diff *= percent;
-                            n.transform.position = parent.transform.position + diff;
+                            other.transform.position = parent.transform.position + diff;
                         }
                     }
                     else
                     {
                         if (confining)
                         {
-                            n.transform.position = parent.transform.position + confiningVects[n] * len;
-                            Console.WriteLine("{0}, {1}, {2}", confiningVects[n], n.transform.position, len);
+                            other.transform.position = parent.transform.position + confiningVects[other] * len;
+                            Console.WriteLine("{0}, {1}, {2}", confiningVects[other], other.transform.position, len);
                         }
                     }
 
                     
                     
-                    //diff = n.transform.position - parent.transform.position;
+                    //diff = other.transform.position - parent.transform.position;
                     //Console.WriteLine(diff.Length());
                 }
             }
@@ -162,11 +212,11 @@ namespace OrbItProcs.Components
         {
             if (parent == null) return;
             confiningVects = new Dictionary<Node, Vector2>();
-            foreach (Node n in outgoing.ToList())
+            foreach (Node other in outgoing.ToList())
             {
-                Vector2 len = n.transform.position - parent.transform.position;
+                Vector2 len = other.transform.position - parent.transform.position;
                 len.Normalize();
-                confiningVects[n] = len;
+                confiningVects[other] = len;
             }
         }
 
@@ -174,10 +224,10 @@ namespace OrbItProcs.Components
         {
             if (parent == null) return;
             lockedVals = new Dictionary<Node, int>();
-            foreach (Node n in outgoing.ToList())
+            foreach (Node other in outgoing.ToList())
             {
-                Vector2 len = n.transform.position - parent.transform.position;
-                lockedVals[n] = (int)len.Length();
+                Vector2 len = other.transform.position - parent.transform.position;
+                lockedVals[other] = (int)len.Length();
             }
         }
 
@@ -225,15 +275,26 @@ namespace OrbItProcs.Components
 
             foreach (Node receiver in outgoing)
             {
-                Utils.DrawLine(spritebatch, parent.transform.position, receiver.transform.position, 2f, col, room);
-                Vector2 center = (receiver.transform.position + parent.transform.position) / 2;
-                Vector2 perp = new Vector2(center.Y, -center.X);
+                Vector2 diff = receiver.transform.position - parent.transform.position;
+                Vector2 perp = new Vector2(diff.Y, -diff.X);
                 perp.Normalize();
-                perp *= 10;
-                //center += perp;
-                Utils.DrawLine(spritebatch, center + perp, receiver.transform.position, 2f, col, room);
-                Utils.DrawLine(spritebatch, center - perp, receiver.transform.position, 2f, col, room);
-                //count++;
+                perp *= 2;
+
+                Utils.DrawLine(spritebatch, parent.transform.position, receiver.transform.position, 2f, col, room);
+
+                Utils.DrawLine(spritebatch, parent.transform.position + perp, receiver.transform.position + perp, 2f, Color.Red, room);
+                Utils.DrawLine(spritebatch, parent.transform.position - perp, receiver.transform.position - perp, 2f, Color.Green, room);
+                
+                perp *= 20;
+
+                Vector2 center = (receiver.transform.position + parent.transform.position) / 2;
+                
+                //Utils.DrawLine(spritebatch, center + perp, receiver.transform.position, 1f, col, room);
+                //Utils.DrawLine(spritebatch, center - perp, receiver.transform.position, 1f, col, room);
+
+                Vector2 point = receiver.transform.position - (diff / 5);
+                Utils.DrawLine(spritebatch, point + perp, receiver.transform.position, 2f, col, room);
+                Utils.DrawLine(spritebatch, point - perp, receiver.transform.position, 2f, col, room);
             }
 
             //spritebatch.DrawString(room.game.font, gatestring, parent.transform.position / mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);

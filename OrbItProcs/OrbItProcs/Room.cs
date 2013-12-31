@@ -27,6 +27,10 @@ namespace OrbItProcs {
     public class Room {
 
 
+        public Link linkTest;
+
+        public event EventHandler AfterIteration;
+        
         public Game1 game;
         public ProcessManager processManager { get; set; }
         public float mapzoom { get; set; }
@@ -88,6 +92,7 @@ namespace OrbItProcs {
         */
         public void Update(GameTime gametime)
         {
+
             //these make it convienient to check values after pausing the game my mouseing over
             if (defaultNode == null) defaultNode = null;
             //if (game.ui.sidebar.lstComp == null) game.ui.sidebar.lstComp = null;
@@ -102,7 +107,7 @@ namespace OrbItProcs {
 
                 HashSet<Node> toDelete = new HashSet<Node>();
                 //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
-                masterGroup.ForEachFullSet(delegate(Node o) 
+                masterGroup.childGroups["General Groups"].ForEachFullSet(delegate(Node o) 
                 {
                     Node n = (Node)o; 
                     gridsystem.insert(n);
@@ -121,10 +126,12 @@ namespace OrbItProcs {
                     {
                         toDelete.Add(n);
                         if (n == game.targetNode) game.targetNode = null;
-                        if (n == game.ui.editNode) game.ui.editNode = null;
+                        if (n == game.ui.sidebar.inspectorArea.editNode) game.ui.sidebar.inspectorArea.editNode = null;
                         if (n == game.ui.spawnerNode) game.ui.spawnerNode = null;
                     }
                 });
+                
+
 
                 toDelete.ToList().ForEach(delegate(Node n) 
                 {
@@ -140,6 +147,10 @@ namespace OrbItProcs {
                     });
                     */
                 });
+
+                if (AfterIteration != null) AfterIteration(this, null);
+
+                //if (linkTest != null) linkTest.UpdateAction();
                 
                 //addGridSystemLines(gridsystem);
                 addBorderLines();
@@ -210,7 +221,6 @@ namespace OrbItProcs {
 
         public void Draw(SpriteBatch spritebatch)
         {
-            
             if (game.targetNode != null)
             {
                 targetNodeGraphic.Draw(spritebatch);
@@ -250,8 +260,24 @@ namespace OrbItProcs {
             PropertiesDict.Add("friction", false);
         }
 
+        public void makelink()
+        {
+            Node n1 = masterGroup.fullSet.ElementAt(0);
+            Node n2 = masterGroup.fullSet.ElementAt(1);
+            Tether t1 = new Tether();
+            t1.activated = true;
 
+            linkTest = new Link(n1,n2,t1);
+
+
+
+        }
         
+        public void tether()
+        {
+            Group g = masterGroup.FindGroup(game.ui.sidebar.cbListPicker.SelectedItem());
+            g.defaultNode.comps[comp.tether].methods = mtypes.affectother | mtypes.draw;
+        }
 
         public void hide()
         {

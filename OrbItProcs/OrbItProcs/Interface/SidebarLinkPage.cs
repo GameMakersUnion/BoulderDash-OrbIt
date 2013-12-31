@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrbItProcs.Processes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,23 @@ namespace OrbItProcs.Interface
         public Panel backPanel;
         public int HeightCounter3;
         public int VertPadding3;
+
+
+        //panels
+        CollapsePanel SourceTarget;
+        CollapsePanel LinkGenerator;
+        CollapsePanel LinkPalette;
+        CollapsePanel c4, c5, c6, c7, c8;
+        //SourceTarget
+        Label lblSource, lblTarget, lblGroupS, lblGroupT, lblNodeS, lblNodeT;
+        ComboBox cbGroupS, cbGroupT, cbNodeS, cbNodeT;
+        RadioButton rdGroupS, rdGroupT, rdNodeS, rdNodeT, rdSelectionS, rdSelectionT;
+        
+        //LinkPalette
+        ComboBox cbLinkList;
+        Button btnCreateLink, btnOpenGenerator;
+        InspectorArea insArea2;
+
 
         public void InitializeSecondPage()
         {
@@ -30,23 +48,18 @@ namespace OrbItProcs.Interface
             HeightCounter3 = 0;
             VertPadding3 = 0;
 
-            CollapsePanel SourceTarget = new CollapsePanel(manager, backPanel, "Source      |   Target"); stackview.AddPanel(SourceTarget);
-            CollapsePanel LinkSelect = new CollapsePanel(manager, backPanel, "second"); stackview.AddPanel(LinkSelect);
-            CollapsePanel LinkPalette = new CollapsePanel(manager, backPanel, "third"); stackview.AddPanel(LinkPalette);
-            CollapsePanel c4 = new CollapsePanel(manager, backPanel, "fourth"); stackview.AddPanel(c4);
-            CollapsePanel c5 = new CollapsePanel(manager, backPanel, "first"); stackview.AddPanel(c5);
-            CollapsePanel c6 = new CollapsePanel(manager, backPanel, "second"); stackview.AddPanel(c6);
-            CollapsePanel c7 = new CollapsePanel(manager, backPanel, "third"); stackview.AddPanel(c7);
-            CollapsePanel c8 = new CollapsePanel(manager, backPanel, "fourth"); stackview.AddPanel(c8);
+            SourceTarget = new CollapsePanel(manager, backPanel, "Source      |   Target"); stackview.AddPanel(SourceTarget);
+            LinkPalette = new CollapsePanel(manager, backPanel, "Link Palette"); stackview.AddPanel(LinkPalette);
+            LinkGenerator = new CollapsePanel(manager, backPanel, "Link Generator"); stackview.AddPanel(LinkGenerator);
+            c4 = new CollapsePanel(manager, backPanel, "fourth"); stackview.AddPanel(c4);
+            c5 = new CollapsePanel(manager, backPanel, "fifth"); stackview.AddPanel(c5);
+            c6 = new CollapsePanel(manager, backPanel, "sixth"); stackview.AddPanel(c6);
+            c7 = new CollapsePanel(manager, backPanel, "seventh"); stackview.AddPanel(c7);
+            c8 = new CollapsePanel(manager, backPanel, "eighth"); stackview.AddPanel(c8);
 
             tbcMain.SelectedPage = tbcMain.TabPages[1];
 
-
             #region /// Source | Target ///
-
-            Label lblSource, lblTarget, lblGroupS, lblGroupT, lblNodeS, lblNodeT;
-            ComboBox cbGroupS, cbGroupT, cbNodeS, cbNodeT;
-            RadioButton rdGroupS, rdGroupT, rdNodeS, rdNodeT, rdSelectionS, rdSelectionT;
 
             int left = backPanel.Left;
             int middle = backPanel.Left + backPanel.Width / 2 - 7;
@@ -76,6 +89,7 @@ namespace OrbItProcs.Interface
             cbGroupS.Top = HeightCounter3; HeightCounter3 += cbGroupS.Height + VertPadding3;
             cbGroupS.Width = middle;
             cbGroupS.Parent = SourceTarget.panel;
+            cbGroupS.ItemIndexChanged += cbGroupS_ItemIndexChanged;
 
             lblNodeS = new Label(manager);
             lblNodeS.Init();
@@ -109,6 +123,7 @@ namespace OrbItProcs.Interface
             rdGroupS.Width = middle;
             rdGroupS.Text = "Group";
             rdGroupS.Parent = radioBoxSource;
+            rdGroupS.Click += rdGroupS_Click;
 
             rdNodeS = new RadioButton(manager);
             rdNodeS.Init();
@@ -117,6 +132,7 @@ namespace OrbItProcs.Interface
             rdNodeS.Width = middle;
             rdNodeS.Text = "Node";
             rdNodeS.Parent = radioBoxSource;
+            rdNodeS.Click += rdNodeS_Click;
 
             rdSelectionS = new RadioButton(manager);
             rdSelectionS.Init();
@@ -125,6 +141,7 @@ namespace OrbItProcs.Interface
             rdSelectionS.Width = middle;
             rdSelectionS.Text = "Selection";
             rdSelectionS.Parent = radioBoxSource;
+            rdSelectionS.Click += rdSelectionS_Click;
 
             #endregion
 
@@ -152,6 +169,7 @@ namespace OrbItProcs.Interface
             cbGroupT.Top = HeightCounter3; HeightCounter3 += cbGroupT.Height + VertPadding3;
             cbGroupT.Width = middle;
             cbGroupT.Parent = SourceTarget.panel;
+            cbGroupT.ItemIndexChanged += cbGroupT_ItemIndexChanged;
 
             lblNodeT = new Label(manager);
             lblNodeT.Init();
@@ -166,6 +184,7 @@ namespace OrbItProcs.Interface
             cbNodeT.Top = HeightCounter3; HeightCounter3 += cbNodeT.Height + VertPadding3;
             cbNodeT.Width = middle;
             cbNodeT.Parent = SourceTarget.panel;
+
 
             GroupBox radioBoxTarget = new GroupBox(manager);
             radioBoxTarget.Init();
@@ -185,6 +204,7 @@ namespace OrbItProcs.Interface
             rdGroupT.Width = middle;
             rdGroupT.Text = "Group";
             rdGroupT.Parent = radioBoxTarget;
+            rdGroupT.Click += rdGroupT_Click;
 
             rdNodeT = new RadioButton(manager);
             rdNodeT.Init();
@@ -193,6 +213,7 @@ namespace OrbItProcs.Interface
             rdNodeT.Width = middle;
             rdNodeT.Text = "Node";
             rdNodeT.Parent = radioBoxTarget;
+            rdNodeT.Click += rdNodeT_Click;
 
             rdSelectionT = new RadioButton(manager);
             rdSelectionT.Init();
@@ -201,115 +222,54 @@ namespace OrbItProcs.Interface
             rdSelectionT.Width = middle;
             rdSelectionT.Text = "Selection";
             rdSelectionT.Parent = radioBoxTarget;
+            rdSelectionT.Click += rdSelectionT_Click;
 
             #endregion
-
-            #endregion
-
-            #region /// Link Select ///
-
-            ComboBox cbLinkType, cbLinkPresets, cbLinkPalette, cbLinkFormat;
-            Label lblGenerateLink, lblLinkType, lblLinkPresets, lblLinkPalette, lblLinkFormat;
-            CheckBox chkEntangled;
-            Button btnAddToPalette;
-
-            LinkSelect.ExpandedHeight += 30;
-            HeightCounter3 = 0;
-            GroupPanel parent2 = LinkSelect.panel;
-
-            lblGenerateLink = new Label(manager);
-            lblGenerateLink.Init();
-            lblGenerateLink.Left = left + middle / 2;
-            lblGenerateLink.Top = HeightCounter3; HeightCounter3 += lblGenerateLink.Height;
-            lblGenerateLink.Text = "Generate Link";
-            lblGenerateLink.Width += 40;
-            lblGenerateLink.Parent = parent2;
-
-            lblLinkType = new Label(manager);
-            lblLinkType.Init();
-            lblLinkType.Left = left;
-            lblLinkType.Text = "Link Type";
-            lblLinkType.Parent = parent2;
-            lblLinkType.Top = HeightCounter3; HeightCounter3 += lblLinkType.Height;
-
-            cbLinkType = new ComboBox(manager);
-            cbLinkType.Init();
-            cbLinkType.Left = left;
-            cbLinkType.Width += 20;
-            cbLinkType.Parent = parent2;
-            cbLinkType.Top = HeightCounter3; HeightCounter3 += cbLinkType.Height;
-
-            lblLinkFormat = new Label(manager);
-            lblLinkFormat.Init();
-            lblLinkFormat.Left = left;
-            lblLinkFormat.Text = "Format";
-            lblLinkFormat.Parent = parent2;
-            lblLinkFormat.Top = HeightCounter3; HeightCounter3 += lblLinkFormat.Height;
-
-            cbLinkFormat = new ComboBox(manager);
-            cbLinkFormat.Init();
-            cbLinkFormat.Left = left;
-            cbLinkFormat.Width += 20;
-            cbLinkFormat.Parent = parent2;
-            cbLinkFormat.Top = HeightCounter3; HeightCounter3 += cbLinkFormat.Height;
-
-            chkEntangled = new CheckBox(manager);
-            chkEntangled.Init();
-            chkEntangled.Left = left;
-            chkEntangled.Width += 20;
-            chkEntangled.Text = "Entangled";
-            chkEntangled.Parent = parent2;
-            chkEntangled.Top = HeightCounter3; HeightCounter3 += chkEntangled.Height;
-
-            HeightCounter3 = lblGenerateLink.Height;
-
-            lblLinkPresets = new Label(manager);
-            lblLinkPresets.Init();
-            lblLinkPresets.Left = left + middle;
-            lblLinkPresets.Text = "Preset";
-            lblLinkPresets.Parent = parent2;
-            lblLinkPresets.Top = HeightCounter3; HeightCounter3 += lblLinkPresets.Height;
-
-            cbLinkPresets = new ComboBox(manager);
-            cbLinkPresets.Init();
-            cbLinkPresets.Left = left + middle;
-            cbLinkPresets.Width += 20;
-            cbLinkPresets.Parent = parent2;
-            cbLinkPresets.Top = HeightCounter3; HeightCounter3 += cbLinkPresets.Height;
-
-            btnAddToPalette = new Button(manager);
-            btnAddToPalette.Init();
-            btnAddToPalette.Left = left + middle;
-            btnAddToPalette.Width = middle;
-            btnAddToPalette.Text = "Add to\nPalette";
-            btnAddToPalette.Height = btnAddToPalette.Height * 2 - 10;
-            btnAddToPalette.Parent = parent2;
-            btnAddToPalette.Top = HeightCounter3 + 10; HeightCounter3 += btnAddToPalette.Height + 10;
-
-
 
             #endregion
 
             #region /// Link Palette ///
 
-            LinkPalette.ExpandedHeight += 60;
-            HeightCounter3 = 0;
+            LinkPalette.ExpandedHeight += 130;
+            HeightCounter3 = 5;
             GroupPanel parent3 = LinkPalette.panel;
 
-            Label lblPaletteTitle;
-            ComboBox cbLinkList;
-            InspectorBox LinkInspectorBox;
-            Button btnCreateLink;
+            cbLinkList = new ComboBox(manager);
+            cbLinkList.Init();
+            cbLinkList.Top = HeightCounter3; HeightCounter3 += cbLinkList.Height;
+            cbLinkList.Left = 0;
+            cbLinkList.Width = 150; 
+            cbLinkList.Parent = parent3;
+            cbLinkList.ItemIndexChanged += cbLinkList_ItemIndexChanged;
+
+
+            btnCreateLink = new Button(manager);
+            btnCreateLink.Init();
+            btnCreateLink.Top = HeightCounter3; //HeightCounter3 += btnCreateLink.Height;
+            btnCreateLink.Left = 0;
+            btnCreateLink.Width = (parent3.Width - 10) / 2;
+            btnCreateLink.Text = "Attach Link";
+            btnCreateLink.Parent = parent3;
+            btnCreateLink.Click += btnCreateLink_Click;
+
+            btnOpenGenerator = new Button(manager);
+            btnOpenGenerator.Init();
+            btnOpenGenerator.Top = HeightCounter3; HeightCounter3 += btnOpenGenerator.Height;
+            btnOpenGenerator.Left = btnCreateLink.Width;
+            btnOpenGenerator.Width = btnCreateLink.Width;
+            btnOpenGenerator.Text = "Generator";
+            btnOpenGenerator.Parent = parent3;
+            btnOpenGenerator.Click += btnOpenGenerator_Click;
+            
+            insArea2 = new InspectorArea(this, parent3, 0, HeightCounter3);
+            //insArea2.backPanel.AutoScroll = true;
+            LinkPalette.ExpandedHeight = HeightCounter3 + insArea2.Height + 20;
+
 
             #endregion
 
-
-            //stackview.MovePanel(0, 1);
-
             backPanel.Refresh();
-            tbcMain.SelectedPage = tbcMain.TabPages[0];
-
-            
+            //tbcMain.SelectedPage = tbcMain.TabPages[0];
 
             #region tests
             /*
@@ -348,6 +308,87 @@ namespace OrbItProcs.Interface
             #endregion
 
         }
+
+        void cbGroupS_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            if (cbGroupS.ItemIndex == -1) return;
+            string name = cbGroupS.Items.ElementAt(cbGroupS.ItemIndex).ToString();
+            if (name.Equals("")) return;
+
+            Group g = room.masterGroup.FindGroup(name);
+            if (g == null) return;
+
+            cbNodeS.Items.RemoveRange(0, cbNodeS.Items.Count);
+            g.ForEachFullSet((Node n) => cbNodeS.Items.Add(n));
+
+
+        }
+
+        void cbGroupT_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            if (cbGroupT.ItemIndex == -1) return;
+            string name = cbGroupT.Items.ElementAt(cbGroupT.ItemIndex).ToString();
+            if (name.Equals("")) return;
+
+            Group g = room.masterGroup.FindGroup(name);
+            if (g == null) return;
+
+            cbNodeT.Items.RemoveRange(0, cbNodeT.Items.Count);
+            g.ForEachFullSet((Node n) => cbNodeT.Items.Add(n));
+        }
+
+        void rdGroupS_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            cbGroupS.Enabled = true;
+            cbNodeS.Enabled = false;
+        }
+
+        void rdNodeS_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            cbGroupS.Enabled = true;
+            cbNodeS.Enabled = true;
+        }
+
+        void rdSelectionS_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            cbGroupS.Enabled = false;
+            cbNodeS.Enabled = false;
+        }
+
+        void rdGroupT_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            cbGroupT.Enabled = true;
+            cbNodeT.Enabled = false;
+        }
+
+        void rdNodeT_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            cbGroupT.Enabled = true;
+            cbNodeT.Enabled = true;
+        }
+
+        void rdSelectionT_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            cbGroupT.Enabled = false;
+            cbNodeT.Enabled = false;
+        }
+        //palette
+        void cbLinkList_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            
+        }
+
+        void btnCreateLink_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            
+        }
+
+        void btnOpenGenerator_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            LinkGeneratorWindow gen = new LinkGeneratorWindow(manager);
+        }
+
+        
 
         void b_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {

@@ -8,10 +8,10 @@ using Microsoft.Xna.Framework.Graphics;
 namespace OrbItProcs.Components {
     public class Gravity : Component {
 
-        private float _multiplier = 200f;
+        private float _multiplier = 100f;
         public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
 
-        private float _radius = 300f;
+        private float _radius = 800f;
         public float radius { get { return _radius; } set { _radius = value; } }
 
         private int _lowerbound = 20;
@@ -19,6 +19,9 @@ namespace OrbItProcs.Components {
 
         private bool _constant = false;
         public bool constant { get { return _constant; } set { _constant = value; } }
+
+        private bool _AffectsOnlyGravity = false;
+        public bool AffectsOnlyGravity { get { return _AffectsOnlyGravity; } set { _AffectsOnlyGravity = value; } }
 
         public Gravity() : this(null) { }
         public Gravity(Node parent = null)
@@ -39,25 +42,32 @@ namespace OrbItProcs.Components {
 
         public override void AffectOther(Node other)
         {
-
             if (!active)
             {
                 return;
             }
             if (exclusions.Contains(other)) return;
 
-            if (!other.comps.ContainsKey(comp.gravity)) return; //controversial: what the fuck do we do
+            bool otherHasGravity = false;
+            if (other.comps.ContainsKey(comp.gravity))
+            {
+                otherHasGravity = true;
+            }
+            else
+            {
+                if (AffectsOnlyGravity)
+                {
+                    return;
+                }
+            }
 
-            //assuming other has been checked for 'active' from caller
+            
+
             float distVects = Vector2.Distance(other.transform.position, parent.transform.position);
 
-            // INSTEAD of checking all distances between all nodes (expensive; needs to take roots)
-            // do this: find all nodes within the SQUARE (radius = width/2), then find distances to remove nodes in the corners of square
             if (distVects < radius)
             {
-                //Console.WriteLine("YEP");
                 if (distVects < lowerbound) distVects = lowerbound;
-                //if (distVects < (parent.transform.mass * 10)) distVects = (parent.transform.mass * 10);
                 double angle = Math.Atan2((parent.transform.position.Y - other.transform.position.Y), (parent.transform.position.X - other.transform.position.X));
                 //float counterforce = 100 / distVects;
                 float counterforce = 1;
@@ -73,23 +83,37 @@ namespace OrbItProcs.Components {
                 other.transform.velocity += delta;
                 //*/
                 //*
-                delta /= 2;
 
-                if (constant)
+                if (otherHasGravity)
                 {
-                    other.transform.velocity = delta / other.transform.mass;
-                    parent.transform.velocity = -delta / parent.transform.mass;
+                    //delta /= 2;
+
+                    if (constant)
+                    {
+                        other.transform.velocity = delta / other.transform.mass;
+                        parent.transform.velocity = -delta / parent.transform.mass;
+                    }
+                    else
+                    {
+                        other.transform.velocity += delta / other.transform.mass;
+                        parent.transform.velocity -= delta / parent.transform.mass;
+                    }
                 }
                 else
                 {
-                    other.transform.velocity += delta / other.transform.mass;
-                    parent.transform.velocity -= delta / parent.transform.mass;
+                    //delta /= 2;
+                    if (constant)
+                    {
+                        other.transform.velocity = delta / other.transform.mass;
+                    }
+                    else
+                    {
+                        other.transform.velocity += delta / other.transform.mass;
+                    }
                 }
-
                 
                 
                 //*/
-
                 //other.transform.velocity.X += velX;
                 //other.transform.velocity.Y += velY;
                 //other.transform.velocity /=  other.transform.mass; //creates snakelike effect when put below increments

@@ -30,19 +30,22 @@ namespace OrbItProcs.Interface
         public Game1 game;
         public Room room;
         public UserInterface ui;
-        private Group _ActiveGroup;
-        public Group ActiveGroup { 
+        //private Group _ActiveGroup;
+        public Group ActiveGroupFirst { 
             get 
             { 
-                if (cmbListPicker != null && cmbListPicker.ItemIndex != -1 && room != null && room.masterGroup != null)
+                if (cbListPicker != null && cbListPicker.ItemIndex != -1 && room != null && room.masterGroup != null)
                 {
-                    string name = cmbListPicker.Text;
+                    string name = cbListPicker.Text;
+                    
+                    /*
                     if (room.masterGroup.childGroups.ContainsKey(name))
                     {
                         return room.masterGroup.childGroups[name];
                     }
-                    //Console.WriteLine("Group couldn't be found while getting ActiveGroup property.");
                     return room.masterGroup;
+                    */
+                    return room.masterGroup.FindGroup(name);
                 }
                 else
                 {
@@ -56,6 +59,7 @@ namespace OrbItProcs.Interface
         {
             get
             {
+                /*
                 if (cmbListPicker != null && cmbListPicker.ItemIndex != -1 && room != null && room.masterGroup != null)
                 {
                     string name = cmbListPicker.Text;
@@ -65,6 +69,8 @@ namespace OrbItProcs.Interface
                     }
                 }
                 return room.masterGroup.defaultNode;
+                */
+                return ActiveGroupFirst.defaultNode;
             }
         }
         //public InspectorItem ActiveInspectorParent;
@@ -77,10 +83,10 @@ namespace OrbItProcs.Interface
         public Label title1;
         TextBox consoletextbox;
         public ListBox lstMain;
-        public ComboBox cmbListPicker;
+        public ComboBox cbListPicker;
         Button btnRemoveNode, btnRemoveAllNodes, btnAddComponent, btnDefaultNode, btnApplyToAll, btnSaveNode;
         public ListBox lstPresets;
-        public ComboBox cmbPresets;
+        public ComboBox cbPresets;
         public ContextMenu presetContextMenu;
         public MenuItem deletePresetMenuItem;
 
@@ -215,17 +221,17 @@ namespace OrbItProcs.Interface
 
             #region  /// List Picker ///
 
-            cmbListPicker = new ComboBox(manager);
-            cmbListPicker.Init();
-            cmbListPicker.Parent = first;
-            cmbListPicker.MaxItems = 20;
+            cbListPicker = new ComboBox(manager);
+            cbListPicker.Init();
+            cbListPicker.Parent = first;
+            cbListPicker.MaxItems = 20;
 
-            cmbListPicker.Width = first.Width - LeftPadding * 6;
-            cmbListPicker.Left = LeftPadding;
-            cmbListPicker.Top = HeightCounter; HeightCounter += VertPadding + cmbListPicker.Height;
-            cmbListPicker.Items.Add("Other Objects");
-            cmbListPicker.ItemIndex = 0;
-            cmbListPicker.ItemIndexChanged += cmbListPicker_ItemIndexChanged;
+            cbListPicker.Width = first.Width - LeftPadding * 6;
+            cbListPicker.Left = LeftPadding;
+            cbListPicker.Top = HeightCounter; HeightCounter += VertPadding + cbListPicker.Height;
+            cbListPicker.Items.Add("Other Objects");
+            cbListPicker.ItemIndex = 0;
+            cbListPicker.ItemIndexChanged += cbListPicker_ItemIndexChanged;
 
             #endregion
 
@@ -287,16 +293,16 @@ namespace OrbItProcs.Interface
             #endregion
 
             #region  /// Presets Dropdown ///
-            cmbPresets = new ComboBox(manager);
-            cmbPresets.Init();
-            cmbPresets.Parent = first;
-            cmbPresets.MaxItems = 20;
-            cmbPresets.Width = 160;
-            cmbPresets.Left = LeftPadding;
-            cmbPresets.Top = HeightCounter; HeightCounter += cmbPresets.Height;
+            cbPresets = new ComboBox(manager);
+            cbPresets.Init();
+            cbPresets.Parent = first;
+            cbPresets.MaxItems = 20;
+            cbPresets.Width = 160;
+            cbPresets.Left = LeftPadding;
+            cbPresets.Top = HeightCounter; HeightCounter += cbPresets.Height;
             game.NodePresets.CollectionChanged += NodePresets_Sync;
-            cmbPresets.ItemIndexChanged += cmbPresets_ItemIndexChanged;
-            cmbPresets.Click += cmbPresets_Click;
+            cbPresets.ItemIndexChanged += cbPresets_ItemIndexChanged;
+            cbPresets.Click += cmbPresets_Click;
             #endregion
 
 
@@ -532,7 +538,6 @@ namespace OrbItProcs.Interface
         {
             Console.WriteLine("resized");
         }
-
         void b2_Click(object sender, EventArgs e)
         {
             Button b = (Button)sender;
@@ -547,33 +552,6 @@ namespace OrbItProcs.Interface
             stackpanel.Refresh();
         }
 
-        void PromoteToDefault_Click(object sender, EventArgs e)
-        {
-            Node n = (Node)lstMain.Items.ElementAt(lstMain.ItemIndex);
-            Node newdefault = new Node();
-            Node.cloneObject(n, newdefault);
-            Group g = ActiveGroup;
-            g.defaultNode = newdefault;
-            g.fullSet.Remove(n);
-            SetDefaultNodeAsEdit();
-        }
-
-        void ConvertIntoList_Click(object sender, EventArgs e)
-        {
-            Node n = (Node)lstMain.Items.ElementAt(lstMain.ItemIndex);
-            Node newdefault = new Node();
-            Node.cloneObject(n, newdefault);
-            newdefault.transform.velocity = new Vector2(0, 0);
-            Group g = new Group(newdefault, parentGroup: room.masterGroup, Name: newdefault.name);
-            room.masterGroup.AddGroup(g.Name, g);
-            Group active = ActiveGroup;
-            active.fullSet.Remove(n);
-            
-            g.fullSet.Add(n);
-
-            int index = cmbListPicker.Items.IndexOf(newdefault.name);
-            cmbListPicker.ItemIndex = index;
-        }
 
         void lstMain_Click(object sender, EventArgs e)
         {
@@ -587,7 +565,7 @@ namespace OrbItProcs.Interface
             //}
             Color c = listbox.ContextMenu.Color;
             listbox.ContextMenu.Color = new Color(0f, 0f, 0f, 0f);
-            if(listbox.ItemIndex >= 0 && listbox.Items.ElementAt(listbox.ItemIndex) is Node)
+            if (listbox.ItemIndex >= 0 && listbox.Items.ElementAt(listbox.ItemIndex) is Node)
             {
                 listbox.ContextMenu.Color = new Color(1f, 1f, 1f, 1.0f);
                 listbox.ContextMenu.Items.Add(ConvertIntoList);
@@ -595,7 +573,66 @@ namespace OrbItProcs.Interface
             }
         }
 
-        void cmbListPicker_ItemIndexChanged(object sender, EventArgs e)
+        void PromoteToDefault_Click(object sender, EventArgs e)
+        {
+            Node n = (Node)lstMain.Items.ElementAt(lstMain.ItemIndex);
+            Node newdefault = new Node();
+            Node.cloneObject(n, newdefault);
+            Group g = ActiveGroupFirst;
+            g.defaultNode = newdefault;
+            g.fullSet.Remove(n);
+            SetDefaultNodeAsEdit();
+        }
+
+        void ConvertIntoList_Click(object sender, EventArgs e)
+        {
+            Node n = (Node)lstMain.Items.ElementAt(lstMain.ItemIndex);
+            Node newdefault = new Node();
+            Node.cloneObject(n, newdefault);
+            newdefault.transform.velocity = new Vector2(0, 0);
+            Group g = new Group(newdefault, parentGroup: room.masterGroup.childGroups["General Groups"]);
+            newdefault.name = g.Name;
+            room.masterGroup.childGroups["General Groups"].AddGroup(g.Name, g);
+            //room.masterGroup.UpdateComboBox();
+            UpdateGroupComboBoxes();
+
+            Group active = ActiveGroupFirst;
+            active.fullSet.Remove(n);
+            
+            g.fullSet.Add(n);
+
+            int index = cbListPicker.Items.IndexOf(newdefault.name);
+            cbListPicker.ItemIndex = index;
+            //cmbListPicker.Refresh();
+            //cmbListPicker.ItemIndex = 0;
+        }
+
+        public void UpdateGroupComboBoxes()
+        {
+            UpdateGroupComboBox(cbListPicker, "Other Objects");
+
+            UpdateGroupComboBox(cbGroupS);
+            UpdateGroupComboBox(cbGroupT);
+        }
+
+        public void UpdateGroupComboBox(ComboBox cb, params string[] additionalItems)
+        {
+            string tempName = "";
+            if (cb.ItemIndex >= 0) tempName = cb.Items.ElementAt(cb.ItemIndex).ToString();
+            cb.ItemIndex = 0;
+            List<object> list = cb.Items;
+            list.ToList().ForEach((o) => list.Remove(o));
+            room.masterGroup.GroupNamesToList(list);
+
+            for (int i = 0; i < additionalItems.Length; i++)
+            {
+                list.Add(additionalItems[i]);
+            }
+
+            if (!tempName.Equals("")) cb.ItemIndex = cb.Items.IndexOf(tempName);
+        }
+
+        void cbListPicker_ItemIndexChanged(object sender, EventArgs e)
         {
             
             ComboBox cmb = (ComboBox)sender;
@@ -619,7 +656,7 @@ namespace OrbItProcs.Interface
 
                 Group find = room.masterGroup.FindGroup(item);
                 if (find == null) return;
-                lstMain.Items.AddRange(find.entities);
+                lstMain.Items.AddRange(find.fullSet);
                 SyncTitleNumber(find);
 
                 SetDefaultNodeAsEdit();
@@ -632,21 +669,22 @@ namespace OrbItProcs.Interface
         {
             if (((ObservableCollection<Object>)sender).Count() < 1) presetContextMenu.Enabled = false;
             else presetContextMenu.Enabled = true;
-            cmbPresets.Items.syncToOCDelegate(e);
+            cbPresets.Items.syncToOCDelegate(e);
             lstPresets.Items.syncToOCDelegate(e);
         }
 
         void nodes_Sync(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            int count = ActiveGroup == null ? 0 : ActiveGroup.entities.Count;
+            int count = ActiveGroupFirst == null ? 0 : ActiveGroupFirst.entities.Count;
             title1.Text = "Node List : " + count;
-            if (cmbListPicker.Text.Equals("Nodes"))
+            if (cbListPicker.Text.Equals("Nodes"))
                 lstMain.Items.syncToOCDelegate(e);
+            
         }
 
         public void SyncTitleNumber(Group caller)
         {
-            Group g = ActiveGroup;
+            Group g = ActiveGroupFirst;
             if (g != caller) return;
             int count = g == null ? 0 : g.entities.Count;
             title1.Text = g.Name + " : " + count;
@@ -654,12 +692,12 @@ namespace OrbItProcs.Interface
 
         void btnSaveNode_Click(object sender, EventArgs e)
         {
-            if (ui.editNode == null)
+            if (inspectorArea.editNode == null)
                 PopUp.Toast(ui, "You haven't selected a Node.");
             else
                 PopUp.Text(ui, "Pick a preset name", "Name preset",
                                 delegate(bool c, object input) {
-                                    if (c) ui.game.saveNode(ui.editNode, (string)input);
+                                    if (c) ui.game.saveNode(inspectorArea.editNode, (string)input);
                                         return true; });
         }
 
@@ -671,7 +709,7 @@ namespace OrbItProcs.Interface
 
             BuildItemsPath(item, itemspath);
 
-            Group activeGroup = ActiveGroup;
+            Group activeGroup = ActiveGroupFirst;
             activeGroup.ForEachAllSets(delegate(Node o)
             {
                 Node n = (Node)o;
@@ -881,13 +919,14 @@ namespace OrbItProcs.Interface
             //if (game.targetNode == target) return;
             game.targetNode = target;
             
-            if (ui.editNode != target)
+            if (inspectorArea.editNode != target)
             {
                 //ResetInspectorBox(inspectorArea.InsBox, game.targetNode);
                 inspectorArea.ResetInspectorBox(game.targetNode);
             }
                 
-            ui.editNode = target;
+            //ui.editNode = target;
+
             //lblEditNodeName.Text = ui.editNode.name;
             //lblInspectorAddress.Text = "/" + ui.editNode.ToString();
             
@@ -902,17 +941,17 @@ namespace OrbItProcs.Interface
                 inspectorArea.propertyEditPanel.DisableControls();
             }
             if (listbox.ItemIndex < 0) return;
-            ui.editNode = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
+            Node newEdit = (Node)listbox.Items.ElementAt(listbox.ItemIndex);
             //lblEditNodeName.Text = ui.editNode.name;
-            inspectorArea.lblInspectorAddress.Text = "/" + ui.editNode.ToString();
-            ui.spawnerNode = ui.editNode;
+            inspectorArea.lblInspectorAddress.Text = "/" + newEdit.ToString();
+            ui.spawnerNode = newEdit;
 
             //ResetInspectorBox(inspectorArea.InsBox, ui.editNode);
-            inspectorArea.ResetInspectorBox(ui.editNode);
+            inspectorArea.ResetInspectorBox(newEdit);
 
-            if (cmbPresets.ItemIndex != lstPresets.ItemIndex)
+            if (cbPresets.ItemIndex != lstPresets.ItemIndex)
             {
-                cmbPresets.ItemIndex = lstPresets.ItemIndex;
+                cbPresets.ItemIndex = lstPresets.ItemIndex;
             }
 
         }
@@ -942,7 +981,7 @@ namespace OrbItProcs.Interface
             }
         }
 
-        void cmbPresets_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        void cbPresets_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
 
             ComboBox combobox = (ComboBox)sender;
@@ -954,15 +993,15 @@ namespace OrbItProcs.Interface
         
         void btnAddComponent_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            if (ui.editNode == null)
+            if (inspectorArea.editNode == null)
                 PopUp.Toast(ui, "You haven't selected a Node.");
             else
             {
-                ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !ui.editNode.comps.ContainsKey(c))));
-                List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => ui.editNode.comps.ContainsKey(c)));
+                ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !inspectorArea.editNode.comps.ContainsKey(c))));
+                List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => inspectorArea.editNode.comps.ContainsKey(c)));
 
                 PopUp.opt[] options = new PopUp.opt[]{
-                    new PopUp.opt(PopUp.OptType.info, "Add component to: " + ui.editNode.name),
+                    new PopUp.opt(PopUp.OptType.info, "Add component to: " + inspectorArea.editNode.name),
                     new PopUp.opt(PopUp.OptType.dropDown, nodecomplist),
                     new PopUp.opt(PopUp.OptType.checkBox, "Add to all", 
                         delegate(object s, TomShane.Neoforce.Controls.EventArgs a){
@@ -982,25 +1021,25 @@ namespace OrbItProcs.Interface
             bool writeable = false;
             if ((bool)o[2])
             {
-                foreach (Object n in ActiveGroup.fullSet)
+                foreach (Object n in ActiveGroupFirst.fullSet)
                     if (!((Node)n).comps.ContainsKey((comp)o[1]))
                         ((Node)n).addComponent((comp)o[1], true);
-                Node def = ActiveGroup.defaultNode;
+                Node def = ActiveGroupFirst.defaultNode;
                 if (!(def).comps.ContainsKey((comp)o[1]))
                     (def).addComponent((comp)o[1], true);
                 return true;
             }
             else
             {
-                if (!ui.editNode.comps.ContainsKey((comp)o[1]))
-                    ui.editNode.addComponent((comp)o[1], true);
+                if (!inspectorArea.editNode.comps.ContainsKey((comp)o[1]))
+                    inspectorArea.editNode.addComponent((comp)o[1], true);
                 else PopUp.Prompt(ui,
                             "The node already contains this component. Overwrite to default component?",
                             action: delegate(bool k, object ans) { writeable = k; return true; });
 
                 if (writeable)
                 {
-                    ui.editNode.addComponent((comp)o[1], true);
+                    inspectorArea.editNode.addComponent((comp)o[1], true);
                     inspectorArea.InsBox.rootitem.RefrestMasterList();
                     return true;
                 }
@@ -1018,25 +1057,26 @@ namespace OrbItProcs.Interface
 
         public void SetDefaultNodeAsEdit()
         {
-            if (ui.editNode == ActiveDefaultNode) return;
-            ui.editNode = ActiveDefaultNode;
-            ui.spawnerNode = ui.editNode;
+            Node activeDef = ActiveDefaultNode;
+            if (inspectorArea.editNode == activeDef) return;
+            //inspectorArea.editNode = ActiveDefaultNode;
+            ui.spawnerNode = activeDef;
 
-            inspectorArea.ResetInspectorBox(ActiveDefaultNode);
+            inspectorArea.ResetInspectorBox(activeDef);
 
-            //lblEditNodeName.Text = ui.editNode.name + "(DEFAULT)";
-            inspectorArea.lblInspectorAddress.Text = "/" + ui.editNode.ToString();
+            //lblEditNodeName.Text = inspectorArea.editNode.name + "(DEFAULT)";
+            inspectorArea.lblInspectorAddress.Text = "/" + activeDef.ToString();
         }
 
         void btnRemoveAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            Group g = ActiveGroup;
+            Group g = ActiveGroupFirst;
             if (g.fullSet.Contains(game.targetNode)) game.targetNode = null;
-            if (g.fullSet.Contains(ui.editNode) && ui.editNode != g.defaultNode)
+            if (g.fullSet.Contains(inspectorArea.editNode) && inspectorArea.editNode != g.defaultNode)
             {
                 inspectorArea.InsBox.Items.Clear();
                 inspectorArea.InsBox.rootitem = null;
-                ui.editNode = null;
+                inspectorArea.editNode = null;
             }
             g.fullSet.ToList().ForEach(delegate(Node o) 
             {
@@ -1048,7 +1088,7 @@ namespace OrbItProcs.Interface
 
         void btnRemoveNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            Group g = ActiveGroup;
+            Group g = ActiveGroupFirst;
             if (g != null && g.fullSet.Contains(game.targetNode))
                 g.DeleteEntity(game.targetNode);
             if (game.targetNode != null)
@@ -1057,11 +1097,11 @@ namespace OrbItProcs.Interface
                 game.targetNode.IsDeleted = true;
                 game.targetNode = null;
             }
-            if (ui.editNode != ActiveDefaultNode && !lstPresets.Items.Contains(ui.editNode))
+            if (inspectorArea.editNode != ActiveDefaultNode && !lstPresets.Items.Contains(inspectorArea.editNode))
             {
                 inspectorArea.InsBox.Items.Clear();
                 inspectorArea.InsBox.rootitem = null;
-                ui.editNode = null;
+                inspectorArea.editNode = null;
             }
             inspectorArea.propertyEditPanel.DisableControls();
         }

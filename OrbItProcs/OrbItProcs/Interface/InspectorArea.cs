@@ -20,6 +20,7 @@ namespace OrbItProcs.Interface
         public UserInterface ui;
         public Sidebar sidebar;
         public InspectorItem ActiveInspectorParent;
+        public Node editNode;
 
         public int Left;
         public int Top;
@@ -33,7 +34,8 @@ namespace OrbItProcs.Interface
         public Manager manager;
         public Control parent;
 
-        public GroupBox backPanel;
+        //public GroupBox backPanel;
+        public Panel backPanel;
         public Label lblInspectorAddress;
         public InspectorBox InsBox;
         public PropertyEditPanel propertyEditPanel;
@@ -67,13 +69,15 @@ namespace OrbItProcs.Interface
             Width = parent.Width - LeftPadding * 2;
 
             #region /// GroupBox (back panel) ///
-            backPanel = new GroupBox(manager);
+            backPanel = new Panel(manager);
             backPanel.Init();
             backPanel.Left = Left;
             backPanel.Top = Top;
             backPanel.Width = Width;
             backPanel.Parent = parent;
             backPanel.Text = "";
+            backPanel.Color = sidebar.master.BackColor;
+            
             #endregion
 
             int WidthReduction = 5;
@@ -82,9 +86,9 @@ namespace OrbItProcs.Interface
             lblInspectorAddress = new Label(manager);
             lblInspectorAddress.Init();
             lblInspectorAddress.Parent = backPanel;
-            lblInspectorAddress.Top = HeightCounter; HeightCounter += VertPadding + lblInspectorAddress.Height + 10;
+            lblInspectorAddress.Top = HeightCounter; //HeightCounter += VertPadding + lblInspectorAddress.Height + 10;
             lblInspectorAddress.Width = Width - WidthReduction;
-            lblInspectorAddress.Height = lblInspectorAddress.Height * 2;
+            lblInspectorAddress.Height = lblInspectorAddress.Height * 2; HeightCounter += lblInspectorAddress.Height;
             //lblInspectorAddress.Left = LeftPadding;
             //lblInspectorAddress.Anchor = Anchors.Left;
             lblInspectorAddress.Text = ">No Node Selected<\u2190";
@@ -96,7 +100,6 @@ namespace OrbItProcs.Interface
                     changed = true;
                     Label l = (Label)s;
                     l.Text = l.Text.wordWrap(25);
-
                 }
                 changed = false;
             };
@@ -105,14 +108,12 @@ namespace OrbItProcs.Interface
             #region  /// Component List ///
             InsBox = new InspectorBox(manager);
             InsBox.Init();
-            manager.Add(InsBox); // TODO : WTF
+            manager.Add(InsBox);
             InsBox.Parent = backPanel;
 
             InsBox.Top = HeightCounter;
-            //InsBox.Left = LeftPadding;
             InsBox.Width = Width - WidthReduction;
-            InsBox.Height = 140; HeightCounter += VertPadding*2 + InsBox.Height;
-            //InsBox.Anchor = Anchors.Top | Anchors.Left | Anchors.Bottom;
+            InsBox.Height = 140; HeightCounter += InsBox.Height;
 
             InsBox.HideSelection = false;
             InsBox.ItemIndexChanged += InsBox_ItemIndexChanged;
@@ -123,12 +124,9 @@ namespace OrbItProcs.Interface
             contextMenuInsBox = new ContextMenu(manager);
             applyToAllNodesMenuItem = new MenuItem("Apply to Group");
             applyToAllNodesMenuItem.Click += applyToAllNodesMenuItem_Click;
-            //applyToAllNodesMenuItem.Click += NotImplemented;
             toggleComponentMenuItem = new MenuItem("Toggle Component");
-            //toggleComponentMenuItem.Click += NotImplemented;
             toggleComponentMenuItem.Click += toggleComponentMenuItem_Click;
             removeComponentMenuItem = new MenuItem("Remove Component");
-            //removeComponentMenuItem.Click += NotImplemented;
             removeComponentMenuItem.Click += removeComponentMenuItem_Click;
             toggleBoolMenuItem = new MenuItem("Toggle");
             toggleBoolMenuItem.Click += toggleBoolMenuItem_Click;
@@ -150,14 +148,13 @@ namespace OrbItProcs.Interface
             groupPanel.Width = Width - WidthReduction;
             groupPanel.Top = HeightCounter;
             groupPanel.Height = 90; HeightCounter += VertPadding + groupPanel.Height;
-            //groupPanel.Left = LeftPadding;
 
-            groupPanel.Text = "InsProperty";
+            groupPanel.Text = "Inspector Property";
             #endregion
 
 
             #region  /// PropertyEditPanel ///
-            propertyEditPanel = new PropertyEditPanel(groupPanel, sidebar);
+            propertyEditPanel = new PropertyEditPanel(groupPanel);
             #endregion
 
             backPanel.Height = groupPanel.Top + groupPanel.Height;
@@ -173,6 +170,7 @@ namespace OrbItProcs.Interface
             InsBox.rootitem = rootitem;
             rootitem.GenerateChildren();
             ActiveInspectorParent = rootitem;
+            
 
             foreach (object o in InsBox.Items.ToList())
             {
@@ -184,13 +182,11 @@ namespace OrbItProcs.Interface
             }
             if (rootobj is Node)
             {
-                ui.editNode = (Node)rootobj;
-                //lblEditNodeName.Text = ui.editNode.name;
-                lblInspectorAddress.Text = "/" + ui.editNode.ToString();
+                editNode = (Node)rootobj;
+                lblInspectorAddress.Text = "/" + editNode.ToString();
             }
             else
             {
-                //lblEditNodeName.Text = rootobj.GetType().ToString();
                 lblInspectorAddress.Text = rootobj.GetType().ToString();
             }
 
@@ -295,7 +291,7 @@ namespace OrbItProcs.Interface
 
             BuildItemsPath(item, itemspath);
 
-            Group activeGroup = sidebar.ActiveGroup;
+            Group activeGroup = sidebar.ActiveGroupFirst;
             activeGroup.ForEachAllSets(delegate(Node o)
             {
                 Node n = (Node)o;
@@ -394,7 +390,7 @@ namespace OrbItProcs.Interface
 
             Component component = (Component)item.obj;
             component.active = false;
-            ui.editNode.RemoveComponent(item.component);
+            editNode.RemoveComponent(item.component);
             item.RemoveChildren();
             InsBox.Items.Remove(item);
         }

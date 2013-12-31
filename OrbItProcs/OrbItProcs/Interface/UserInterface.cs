@@ -43,8 +43,10 @@ namespace OrbItProcs.Interface {
         #endregion
 
         public float zoomfactor { get; set; }
+        public bool GameInputDisabled { get; set; }
 
-        public Node editNode, spawnerNode;
+        //public Node editNode;
+        public Node spawnerNode;
         public Sidebar sidebar;
 
         public UserInterface(Game1 game)
@@ -55,6 +57,7 @@ namespace OrbItProcs.Interface {
             sidebar = new Sidebar(this);
             sidebar.Initialize();
             zoomfactor = 0.9f;
+            GameInputDisabled = false;
         }
 
         public void Update(GameTime gameTime)
@@ -150,6 +153,8 @@ namespace OrbItProcs.Interface {
                 oldMouseState = mouseState;
                 return;
             }
+
+            if (GameInputDisabled) return;
 
             int worldMouseX = (int)(mouseState.X * room.mapzoom);
             int worldMouseY = (int)(mouseState.Y * room.mapzoom);

@@ -205,8 +205,8 @@ namespace OrbItProcs
                     //{ comp.tree, true },
                     //{ comp.queuer, true },
                     //{ comp.flow, true },
-                    { comp.waver, false },
-                    { comp.tether, false },
+                    //{ comp.waver, false },
+                    //{ comp.tether, false },
                     
                 };
             #endregion
@@ -224,18 +224,22 @@ namespace OrbItProcs
 
             Node firstdefault = new Node();
             Node.cloneObject(room.defaultNode, firstdefault);
-            firstdefault.name = "first";
+            firstdefault.name = "[G0]0";
             firstdefault.IsDefault = true;
 
 
 
-            Group masterGroup = new Group(room.defaultNode, Name: room.defaultNode.name);
+            Group masterGroup = new Group(room.defaultNode, Name: room.defaultNode.name, Spawnable: false);
             room.masterGroup = masterGroup;
-            Group firstGroup = new Group(firstdefault, parentGroup: masterGroup, Name: firstdefault.name);
-            room.masterGroup.AddGroup(firstGroup.Name, firstGroup, false);
 
-            
-            
+            Group generalGroup = new Group(room.defaultNode, parentGroup: masterGroup, Name: "General Groups", Spawnable: false);
+            room.masterGroup.AddGroup(generalGroup.Name, generalGroup);
+
+            Group linkGroup = new Group(room.defaultNode, parentGroup: masterGroup, Name: "Link Groups", Spawnable: false);
+            room.masterGroup.AddGroup(linkGroup.Name, linkGroup);
+
+            Group firstGroup = new Group(firstdefault, parentGroup: generalGroup);
+            generalGroup.AddGroup(firstGroup.Name, firstGroup);
 
             
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
@@ -255,8 +259,10 @@ namespace OrbItProcs
 
             ui = new UserInterface(this);
             //ui.sidebar.ActiveGroup = firstGroup;
-            room.masterGroup.UpdateComboBox();
-            room.game.ui.sidebar.cmbListPicker.ItemIndex = 1;
+            //room.masterGroup.UpdateComboBox();
+            ui.sidebar.UpdateGroupComboBoxes();
+            
+            room.game.ui.sidebar.cbListPicker.ItemIndex = 2;
             InitializePresets();
 
             Movement movement = new Movement();
@@ -311,7 +317,6 @@ namespace OrbItProcs
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            
             base.Update(gameTime);
             if (!IsFixedTimeStep)
             {
@@ -346,8 +351,9 @@ namespace OrbItProcs
             //testing.ColorsTest();
             //
 
-            Group activegroup = ui.sidebar.ActiveGroup;
-            if (activegroup.Name.Equals("master")) return;
+            Group activegroup = ui.sidebar.ActiveGroupFirst;
+            //if (activegroup.Name.Equals("master")) return;
+            if (!activegroup.Spawnable) return;
             Node newNode = new Node();
             if (ui.spawnerNode != null)
             {
@@ -393,9 +399,9 @@ namespace OrbItProcs
             name = name.Trim();
             string filename = "Presets//Nodes//" + name + ".xml";
             Action completeSave = delegate{
-            ui.editNode.name = name;
+            ui.sidebar.inspectorArea.editNode.name = name;
             Node serializenode = new Node();
-            Node.cloneObject(ui.editNode, serializenode);
+            Node.cloneObject(ui.sidebar.inspectorArea.editNode, serializenode);
                 room.serializer.Serialize(serializenode, filename);
                 ui.game.NodePresets.Add(serializenode);
             };
