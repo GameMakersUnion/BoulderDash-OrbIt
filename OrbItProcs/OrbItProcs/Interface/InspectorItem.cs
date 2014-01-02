@@ -21,6 +21,7 @@ namespace OrbItProcs.Interface {
         field,
         property,
         dictentry,
+        collectionentry,
         previouslevel,
         unimplemented,
         
@@ -29,6 +30,7 @@ namespace OrbItProcs.Interface {
     public enum data_type {
         none,
         dict,
+        collection,
         list,
         obj,
         enm,
@@ -52,6 +54,9 @@ namespace OrbItProcs.Interface {
             typeof(Room),
             typeof(GridSystem),
             typeof(Group),
+            typeof(Link),
+            typeof(Formation),
+            typeof(ILinkable),
         };
         public static List<Type> PanelTypes = new List<Type>()
         {
@@ -128,7 +133,7 @@ namespace OrbItProcs.Interface {
             if (parentItem != null) this.whitespace += parentItem.whitespace;
             this.parentItem = parentItem;
             this.obj = obj;
-            this.masterList = masterList; 
+            this.masterList = masterList;
             this.fpinfo = null;
             this.children = new List<object>();
             Type t = parentItem.obj.GetType();
@@ -147,6 +152,32 @@ namespace OrbItProcs.Interface {
                 membertype = member_type.unimplemented;
             }
         }
+        //a IEnumberable entry
+        public InspectorItem(IList<object> masterList, InspectorItem parentItem, object obj) //obj = null
+        {
+            this.whitespace = "|";
+            if (parentItem != null) this.whitespace += parentItem.whitespace;
+            this.parentItem = parentItem;
+            this.obj = obj;
+            this.masterList = masterList;
+            this.fpinfo = null;
+            this.children = new List<object>();
+            Type t = parentItem.obj.GetType();
+
+            if (t.GetInterfaces()
+                .Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
+            {
+                //Console.WriteLine("IEnumerable : {0}", obj.GetType());
+                membertype = member_type.collectionentry;
+                CheckItemType();
+                prefix = "" + ((char)164);
+            }
+            else
+            {
+                System.Console.WriteLine("Unexpected: InspectorItem with no obj reference was not a collection entry");
+                membertype = member_type.unimplemented;
+            }
+        }
         /*
         public InspectorItem(object parent, FieldInfo fieldInfo, InspectorItem parentItem)
         {
@@ -158,8 +189,6 @@ namespace OrbItProcs.Interface {
             //CheckItemType();
         }
         */
-
-        
 
         public bool ReferenceExists(InspectorItem parent, object reference)
         {
@@ -176,14 +205,6 @@ namespace OrbItProcs.Interface {
 
         public void GenerateChildren()
         {
-            /*
-            if (ReferenceExists(parentItem, obj))
-            {
-                children = new List<object>();
-                return;
-            }
-            */
-            //System.Console.WriteLine(this);
             children = GenerateList(obj, this);
         }
 
@@ -268,9 +289,6 @@ namespace OrbItProcs.Interface {
                         if (iitem.CheckForChildren()) iitem.prefix = "+";
                         InsertItemSorted(children, iitem);
                     }
-
-
-                    
                 }
                 foreach (object child in children)
                 {
@@ -294,9 +312,16 @@ namespace OrbItProcs.Interface {
             data_type dt = data_type.obj; //if this item is the root, we should give it it's real type insteam of assuming it's an object
             if (parentItem != null) dt = parentItem.datatype;
 
-            if (dt == data_type.list)
+            if (dt == data_type.collection)
             {
-                //do nothing for now
+                dynamic collection = parent;
+                foreach (object o in collection)
+                {
+                    InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, o);
+                    if (iitem.CheckForChildren()) iitem.prefix = "+";
+                    InsertItemSorted(list, iitem);
+                }
+
             }
             else if (dt == data_type.dict)
             {
@@ -349,6 +374,12 @@ namespace OrbItProcs.Interface {
                 if (dict.Count > 0) return true;
                 else return false;
             }
+            if (datatype == data_type.collection)
+            {
+                dynamic collection = obj;
+                if (collection.Count > 0) return true;
+                else return false;
+            }
             if (datatype == data_type.obj)
             {
                 List<PropertyInfo> propertyInfos = obj.GetType().GetProperties().ToList();
@@ -398,6 +429,20 @@ namespace OrbItProcs.Interface {
                 }
                 return result + key + ":" + obj;
             }
+            if (membertype == member_type.collectionentry)
+            {
+                if (datatype == data_type.obj || datatype == data_type.none)
+                {
+                    PropertyInfo pinfo = obj.GetType().GetProperty("name");
+                    if (pinfo != null) return pinfo.GetValue(obj, null).ToString();
+
+                    if (obj is Link) return obj.ToString();
+
+                    string ts = obj.GetType().ToString().Split('.').ToList().ElementAt(obj.GetType().ToString().Split('.').ToList().Count - 1);
+                    return result + key + "[" + ts + "]";
+                }
+                return result + key + ":" + obj;
+            }
 
             if (fpinfo != null)
             {
@@ -410,6 +455,16 @@ namespace OrbItProcs.Interface {
                     //System.Console.WriteLine(obj.GetType());
                     //System.Console.WriteLine(result + fpinfo.Name + " <" + ks + "," + vs + ">");
                     return result + fpinfo.Name + " <" + ks + "," + vs + ">";
+                }
+                if (datatype == data_type.collection)
+                {
+                    Type k = obj.GetType().GetGenericArguments()[0];
+                    //Type v = obj.GetType().GetGenericArguments()[1];
+                    string ks = k.ToString().Split('.').ToList().ElementAt(k.ToString().Split('.').ToList().Count - 1);
+                    //string vs = v.ToString().Split('.').ToList().ElementAt(v.ToString().Split('.').ToList().Count - 1);
+                    //System.Console.WriteLine(obj.GetType());
+                    //System.Console.WriteLine(result + fpinfo.Name + " <" + ks + "," + vs + ">");
+                    return result + fpinfo.Name + " <" + ks + ">";
                 }
 
                 return result + fpinfo.Name + " : " + fpinfo.GetValue(parentItem.obj);
@@ -575,7 +630,7 @@ namespace OrbItProcs.Interface {
             }
             else if (obj == null)
             {
-                Console.WriteLine("Object was null when checking inspectoritem obj type.");
+                //Console.WriteLine("Object was null when checking inspectoritem obj type.");
             }
             else if (obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(Dictionary<,>))
             {
@@ -585,9 +640,16 @@ namespace OrbItProcs.Interface {
                 //Type keyType = t.GetGenericArguments()[0];
                 //Type valueType = t.GetGenericArguments()[1];
             }
+            else if (obj.GetType().GetInterfaces()
+                .Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
+            {
+                //Console.WriteLine("IEnumerable : {0}", obj.GetType());
+                dt = data_type.collection;
+            }
             //might need to be more specific than List
             else if (obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(List<>))
             {
+                Console.WriteLine("List(What?)");
                 //System.Console.WriteLine("List found.");
                 dt = data_type.list;
 
@@ -726,14 +788,6 @@ namespace OrbItProcs.Interface {
         public bool hasChildren()
         {
             return CheckForChildren();
-
-            /*
-            if (children != null)
-            {
-                return (children.Count > 0);
-            }
-            return false;
-            */
         }
 
         public int childCount()

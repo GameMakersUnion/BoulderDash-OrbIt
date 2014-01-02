@@ -56,10 +56,6 @@ namespace OrbItProcs.Components
             b1 = Utils.random.Next(255) / 255f;
         }
 
-        public override void AffectOther(Node other)
-        {
-
-        }
         public override void AffectSelf()
         {
             if (depth == -1)

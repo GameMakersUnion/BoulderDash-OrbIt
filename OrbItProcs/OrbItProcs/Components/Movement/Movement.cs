@@ -41,10 +41,7 @@ namespace OrbItProcs.Components
             //movementmode = movemode.wallbounce;
         }
 
-        public override void AffectOther(Node other)
-        {
-            
-        }
+
         public override void AffectSelf()
         {
             parent.transform.position.X += parent.transform.velocity.X;

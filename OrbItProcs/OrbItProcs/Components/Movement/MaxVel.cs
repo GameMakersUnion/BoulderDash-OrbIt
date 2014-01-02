@@ -28,9 +28,6 @@ namespace OrbItProcs.Components
             this.parent = parent;
         }
 
-        public override void AffectOther(Node other)
-        {
-        }
         public override void AffectSelf()
         {
             if ((Math.Pow(parent.transform.velocity.X, 2) + Math.Pow(parent.transform.velocity.Y, 2)) > Math.Pow(maxvel, 2))

@@ -50,11 +50,10 @@ namespace OrbItProcs.Components
             {
                 angle = (float)Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X);
             }
-        }
-
-        public override void AffectOther(Node other)
-        {
         }
+
+
+
         public override void AffectSelf()
         {
             angle += delta;

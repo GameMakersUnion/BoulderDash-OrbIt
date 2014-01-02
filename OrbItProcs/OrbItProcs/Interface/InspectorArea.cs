@@ -247,8 +247,9 @@ namespace OrbItProcs.Interface
             }
             else if (mouseArgs.Button == MouseButton.Left)
             {
-                if (InsBox.ItemIndex < 0 || InsBox.Items.Count == 0) return;
+                if (InsBox.ItemIndex < 0 || InsBox.Items.Count == 0 || InsBox.ItemIndex > InsBox.Items.Count) return;
                 InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+                if (item.obj == null) return;
                 //item.ClickItem(InsBox.ItemIndex);
                 Type t = item.obj.GetType();
 
@@ -263,7 +264,7 @@ namespace OrbItProcs.Interface
             MouseEventArgs mouseArgs = (MouseEventArgs)e;
             if (mouseArgs.Button == MouseButton.Left)
             {
-                if (InsBox.ItemIndex < 0 || InsBox.Items.Count == 0) return;
+                if (InsBox.ItemIndex < 0 || InsBox.Items.Count == 0 || InsBox.ItemIndex > InsBox.Items.Count) return;
                 InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
                 item.DoubleClickItem(this);
                 InspectorItem temp = ActiveInspectorParent;

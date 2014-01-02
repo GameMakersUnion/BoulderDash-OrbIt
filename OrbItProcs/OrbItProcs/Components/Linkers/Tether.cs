@@ -267,7 +267,7 @@ namespace OrbItProcs.Components
             //Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
             Color col;
             if (activated)
-                col = Color.Blue;
+                col = parent.transform.color;
             else
                 col = Color.White;
 

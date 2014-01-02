@@ -10,6 +10,7 @@ namespace OrbItProcs.Components
     {
         Node parent { get; set; }
 
+        bool active { get; set; }
         
         void AffectSelf();
         void AffectOther(Node other);

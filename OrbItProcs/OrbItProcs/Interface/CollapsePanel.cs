@@ -62,7 +62,7 @@ namespace OrbItProcs.Interface
             set { panel.Text = "  " + value.Trim(); }
         }
 
-        public CollapsePanel(Manager manager, Control parent, string Name, int expandedHeight = 100)
+        public CollapsePanel(Manager manager, Control parent, string Name, int expandedHeight = 100, bool extended = true)
         {
             this.panel = new GroupPanel(manager);
             panel.Init();
@@ -83,6 +83,7 @@ namespace OrbItProcs.Interface
             this.parent = parent;
             parent.Add(panel);
             parent.Add(collapseButton);
+            this.IsExtended = extended;
 
             parent.Refresh();
         }

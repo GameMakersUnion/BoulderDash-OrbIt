@@ -13,6 +13,22 @@ namespace OrbItProcs.Processes
     public class Group
     {
         public static int GroupNumber = 0;
+        public static Dictionary<int, Color> IntToColor = new Dictionary<int, Color>()
+        {
+            { 0, Color.Red },
+            { 1, Color.Yellow },
+            { 2, Color.Green },
+            { 3, Color.Blue },
+            { 4, Color.Purple },
+            { 5, Color.RosyBrown },
+            { 6, Color.YellowGreen },
+            { 7, Color.DarkGreen },
+            { 8, Color.LightBlue },
+            { 9, Color.Violet },
+
+        };
+
+        public int GroupId = -1;
 
         public Group parentGroup { get; set; }
         public ObservableHashSet<Node> entities { get; set; }
@@ -36,6 +52,12 @@ namespace OrbItProcs.Processes
         public string Name { get { return _Name; } set { if (_Name != null && _Name.Equals("master")) return; _Name = value; } } //cannot rename main group
         public bool Spawnable;
         public GroupState groupState { get; set; }
+
+        private ObservableHashSet<Link> _SourceLinks = new ObservableHashSet<Link>();
+        public ObservableHashSet<Link> SourceLinks { get { return _SourceLinks; } set { _SourceLinks = value; } }
+
+        private ObservableHashSet<Link> _TargetLinks = new ObservableHashSet<Link>();
+        public ObservableHashSet<Link> TargetLinks { get { return _TargetLinks; } set { _TargetLinks = value; } }
 
         public Group() : this(null)
         {
@@ -63,6 +85,7 @@ namespace OrbItProcs.Processes
 
             if (Name.Equals("")) 
             {
+                this.GroupId = GroupNumber;
                 Name = "[G" + GroupNumber + "]"; //maybe a check that the name is unique
                 GroupNumber++; 
             }

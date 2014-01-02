@@ -19,7 +19,6 @@ namespace OrbItProcs {
         active,
         position,
         velocity,
-        velMultiplier,
         multiplier,
         effectiveRadius,
         radius,
@@ -135,10 +134,6 @@ namespace OrbItProcs {
         public int sentinelp { get { return _sentinel; } set { _sentinel = value; } }
 
         public Room room = Program.getRoom();
-        
-
-        private float _velMultiplier = 1f;
-        public float velMultiplier { get { return _velMultiplier; } set { _velMultiplier = value; } }
 
         private Dictionary<comp, dynamic> _comps = new Dictionary<comp, dynamic>();
         public Dictionary<comp, dynamic> comps { get { return _comps; } set { _comps = value; } }
@@ -156,12 +151,17 @@ namespace OrbItProcs {
         public Transform transform;
         public Transform TRANSFORM { get { return transform; } set { transform = value; } }
 
+        private ObservableHashSet<Link> _SourceLinks = new ObservableHashSet<Link>();
+        public ObservableHashSet<Link> SourceLinks { get { return _SourceLinks; } set { _SourceLinks = value; } }
+
+        private ObservableHashSet<Link> _TargetLinks = new ObservableHashSet<Link>();
+        public ObservableHashSet<Link> TargetLinks { get { return _TargetLinks; } set { _TargetLinks = value; } }
+
         public void storeInInstance(node val, Dictionary<dynamic,dynamic> dict)
         {
             if (val == node.active)             active                      = dict[val];
             if (val == node.position)           transform.position          = dict[val];
             if (val == node.velocity)           transform.velocity          = dict[val];
-            if (val == node.velMultiplier)      velMultiplier               = dict[val];
             if (val == node.multiplier)         multiplier                  = dict[val];
             if (val == node.effectiveRadius)    effectiveRadius             = dict[val];
             if (val == node.radius)             transform.radius            = dict[val];

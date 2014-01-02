@@ -382,9 +382,17 @@ namespace OrbItProcs
             }
             index = index % (Enumsize - 1);
 
-            System.Drawing.Color syscolor = System.Drawing.Color.FromKnownColor((KnownColor)index);
-            Color xnacol = new Color(syscolor.R, syscolor.G, syscolor.B, syscolor.A);
-            //newNode.transform.color = xnacol;
+            
+            if (Group.IntToColor.ContainsKey(activegroup.GroupId))
+            {
+                newNode.transform.color = Group.IntToColor[activegroup.GroupId];
+            }
+            else
+            {
+                System.Drawing.Color syscolor = System.Drawing.Color.FromKnownColor((KnownColor)index);
+                Color xnacol = new Color(syscolor.R, syscolor.G, syscolor.B, syscolor.A);
+                newNode.transform.color = xnacol;
+            }
         }
         public void spawnNode(int worldMouseX, int worldMouseY)
         {

@@ -27,7 +27,10 @@ namespace OrbItProcs {
     public class Room {
 
 
-        public Link linkTest;
+        public Link linkTest { get; set; }
+
+        public ObservableHashSet<Link> _AllActiveLinks = new ObservableHashSet<Link>();
+        public ObservableHashSet<Link> AllActiveLinks { get { return _AllActiveLinks; } set { _AllActiveLinks = value; } }
 
         public event EventHandler AfterIteration;
         
@@ -232,6 +235,12 @@ namespace OrbItProcs {
             });
             int linecount = 0;
 
+            foreach (Link link in AllActiveLinks)
+            {
+                link.GenericDraw(spritebatch);
+            }
+            //if (linkTest != null) linkTest.GenericDraw(spritebatch);
+
             foreach (Rectangle rect in gridSystemLines)
             {
                 //float scale = 1 / mapzoom;
@@ -268,15 +277,22 @@ namespace OrbItProcs {
             t1.activated = true;
 
             linkTest = new Link(n1,n2,t1);
+        }
 
-
-
+        public void grouplink()
+        {
+            Group g0 = masterGroup.FindGroup("[G0]"); 
+            Group g1 = masterGroup.FindGroup("[G1]");
+            Tether t1 = new Tether();
+            t1.active = true;
+            t1.activated = true;
+            linkTest = new Link(g0, g1, t1,formationtype.NearestN);
         }
         
         public void tether()
         {
-            Group g = masterGroup.FindGroup(game.ui.sidebar.cbListPicker.SelectedItem());
-            g.defaultNode.comps[comp.tether].methods = mtypes.affectother | mtypes.draw;
+            Group g1 = masterGroup.FindGroup(game.ui.sidebar.cbListPicker.SelectedItem());
+            g1.defaultNode.comps[comp.tether].methods = mtypes.affectother | mtypes.draw;
         }
 
         public void hide()

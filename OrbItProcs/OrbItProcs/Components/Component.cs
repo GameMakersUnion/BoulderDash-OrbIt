@@ -76,7 +76,7 @@ namespace OrbItProcs.Components
         public virtual void Initialize(Node parent) { this.parent = parent; }
         public virtual void AfterCloning() { }
         public virtual void OnSpawn() { }
-        public abstract void AffectOther(Node other);
+        public virtual void AffectOther(Node other) { }
         public abstract void AffectSelf();
         public abstract void Draw(SpriteBatch spritebatch);
 

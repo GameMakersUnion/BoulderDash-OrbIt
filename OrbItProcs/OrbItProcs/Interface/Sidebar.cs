@@ -849,6 +849,7 @@ namespace OrbItProcs.Interface
                 catch (Exception e)
                 {
                     PopUp.Toast(ui, "Casting exception: " + e.Message);
+                    throw e;
                     return;
                 }
 
@@ -861,6 +862,7 @@ namespace OrbItProcs.Interface
             catch (Exception e)
             {
                 PopUp.Toast(ui, "Invoking exception: " + e.Message);
+                throw e;
                 return;
             }
         }

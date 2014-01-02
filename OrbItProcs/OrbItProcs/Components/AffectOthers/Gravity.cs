@@ -6,7 +6,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs.Components {
-    public class Gravity : Component {
+    public class Gravity : Component, ILinkable
+    {
 
         private float _multiplier = 100f;
         public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
@@ -42,10 +43,7 @@ namespace OrbItProcs.Components {
 
         public override void AffectOther(Node other)
         {
-            if (!active)
-            {
-                return;
-            }
+            //if (!active) { return; }
             if (exclusions.Contains(other)) return;
 
             bool otherHasGravity = false;

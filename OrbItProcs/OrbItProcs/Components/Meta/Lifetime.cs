@@ -60,10 +60,7 @@ namespace OrbItProcs.Components
             lifeleft = maxlife;
         }
 
-        public override void AffectOther(Node other)
-        {
 
-        }
         public override void AffectSelf()
         {
             

@@ -7,8 +7,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs.Components
 {
-    public class LinearPull : Component
+    public class LinearPull : Component, ILinkable
     {
+
         private float _multiplier = 20f;
         public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
 
@@ -31,8 +32,8 @@ namespace OrbItProcs.Components
             {
                 this.targetPuller = targetPuller;
             }
-            com = comp.linearpull; 
-            methods = mtypes.affectother; 
+            com = comp.linearpull;
+            methods = mtypes.affectother;
         }
 
 
@@ -44,14 +45,13 @@ namespace OrbItProcs.Components
 
         public override void AffectOther(Node other)
         {
-            if (!active) return;
+            //if (!active) return;
             if (exclusions.Contains(other)) return;
 
             float distVects = Vector2.Distance(other.transform.position, parent.transform.position);
             
             if (distVects < radius)
             {
-
                 double angle = Math.Atan2((parent.transform.position.Y - other.transform.position.Y), (parent.transform.position.X - other.transform.position.X));
 
                 float velX = (float)Math.Cos(angle) * multiplier;

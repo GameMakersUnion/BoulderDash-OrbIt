@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using TomShane.Neoforce.Controls;
 
+using Component = OrbItProcs.Components.Component;
+
 namespace OrbItProcs.Interface
 {
     public partial class Sidebar
@@ -14,21 +16,23 @@ namespace OrbItProcs.Interface
         public int HeightCounter3;
         public int VertPadding3;
 
+        public ObservableHashSet<Link> PaletteLinks = new ObservableHashSet<Link>();
+        public ObservableHashSet<Link> AllActiveLinks = new ObservableHashSet<Link>();
+
 
         //panels
         CollapsePanel SourceTarget;
-        CollapsePanel LinkGenerator;
         CollapsePanel LinkPalette;
-        CollapsePanel c4, c5, c6, c7, c8;
+        CollapsePanel c3, c4, c5, c6, c7, c8;
         //SourceTarget
         Label lblSource, lblTarget, lblGroupS, lblGroupT, lblNodeS, lblNodeT;
         ComboBox cbGroupS, cbGroupT, cbNodeS, cbNodeT;
         RadioButton rdGroupS, rdGroupT, rdNodeS, rdNodeT, rdSelectionS, rdSelectionT;
         
         //LinkPalette
-        ComboBox cbLinkList;
+        public ComboBox cbLinkList;
         Button btnCreateLink, btnOpenGenerator;
-        InspectorArea insArea2;
+        public InspectorArea insArea2;
 
 
         public void InitializeSecondPage()
@@ -50,12 +54,12 @@ namespace OrbItProcs.Interface
 
             SourceTarget = new CollapsePanel(manager, backPanel, "Source      |   Target"); stackview.AddPanel(SourceTarget);
             LinkPalette = new CollapsePanel(manager, backPanel, "Link Palette"); stackview.AddPanel(LinkPalette);
-            LinkGenerator = new CollapsePanel(manager, backPanel, "Link Generator"); stackview.AddPanel(LinkGenerator);
-            c4 = new CollapsePanel(manager, backPanel, "fourth"); stackview.AddPanel(c4);
-            c5 = new CollapsePanel(manager, backPanel, "fifth"); stackview.AddPanel(c5);
-            c6 = new CollapsePanel(manager, backPanel, "sixth"); stackview.AddPanel(c6);
-            c7 = new CollapsePanel(manager, backPanel, "seventh"); stackview.AddPanel(c7);
-            c8 = new CollapsePanel(manager, backPanel, "eighth"); stackview.AddPanel(c8);
+            c3 = new CollapsePanel(manager, backPanel, "third", extended: false); stackview.AddPanel(c3);
+            c4 = new CollapsePanel(manager, backPanel, "fourth", extended: false); stackview.AddPanel(c4);
+            c5 = new CollapsePanel(manager, backPanel, "fifth", extended: false); stackview.AddPanel(c5);
+            c6 = new CollapsePanel(manager, backPanel, "sixth", extended: false); stackview.AddPanel(c6);
+            c7 = new CollapsePanel(manager, backPanel, "seventh", extended: false); stackview.AddPanel(c7);
+            c8 = new CollapsePanel(manager, backPanel, "eighth", extended: false); stackview.AddPanel(c8);
 
             tbcMain.SelectedPage = tbcMain.TabPages[1];
 
@@ -240,7 +244,9 @@ namespace OrbItProcs.Interface
             cbLinkList.Left = 0;
             cbLinkList.Width = 150; 
             cbLinkList.Parent = parent3;
+            cbLinkList.Items.AddRange(new List<object>() { "Palette Links", "Source's Links", "Target's Links", "All Active Links" });
             cbLinkList.ItemIndexChanged += cbLinkList_ItemIndexChanged;
+            
 
 
             btnCreateLink = new Button(manager);
@@ -248,7 +254,7 @@ namespace OrbItProcs.Interface
             btnCreateLink.Top = HeightCounter3; //HeightCounter3 += btnCreateLink.Height;
             btnCreateLink.Left = 0;
             btnCreateLink.Width = (parent3.Width - 10) / 2;
-            btnCreateLink.Text = "Attach Link";
+            btnCreateLink.Text = "Create Link";
             btnCreateLink.Parent = parent3;
             btnCreateLink.Click += btnCreateLink_Click;
 
@@ -265,6 +271,12 @@ namespace OrbItProcs.Interface
             //insArea2.backPanel.AutoScroll = true;
             LinkPalette.ExpandedHeight = HeightCounter3 + insArea2.Height + 20;
 
+            cbLinkList.ItemIndex = 0;
+
+            rdGroupS.Checked = true;
+            rdGroupT.Checked = true;
+            rdGroupS_Click(null, null);
+            rdGroupT_Click(null, null);
 
             #endregion
 
@@ -375,17 +387,147 @@ namespace OrbItProcs.Interface
         //palette
         void cbLinkList_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            
+            string str = cbLinkList.SelectedItem();
+            //remove panelControl elements (from groupPanel at the bottom)
+            if (insArea2.propertyEditPanel.panelControls.Keys.Count > 0)
+            {
+                insArea2.propertyEditPanel.DisableControls();
+            }
+
+            if (str.Equals("Palette Links"))
+            {
+                insArea2.ResetInspectorBox(PaletteLinks);
+            }
+            else if (str.Equals("Source's Links"))
+            {
+                if (rdGroupS.Checked)
+                {
+                    string s = cbGroupS.SelectedItem();
+                    if (s == null || s.Equals("")) return;
+                    Group g = room.masterGroup.FindGroup(s);
+                    if (g == null) return;
+
+                    insArea2.ResetInspectorBox(g.SourceLinks);
+                }
+                else if (rdNodeS.Checked)
+                {
+                    if (cbNodeS.ItemIndex < 0 || cbNodeS.ItemIndex > cbNodeS.Items.Count) return;
+                    object o = cbNodeS.Items.ElementAt(cbNodeS.ItemIndex);
+                    if (!(o is Node)) return;
+                    Node n = (Node)o;
+
+                    insArea2.ResetInspectorBox(n.SourceLinks);
+                }
+                else if (rdSelectionS.Checked)
+                {
+                    //todo: implement selection linking
+                }
+            }
+            else if (str.Equals("Target's Links"))
+            {
+                if (rdGroupT.Checked)
+                {
+                    string s = cbGroupT.SelectedItem();
+                    if (s == null || s.Equals("")) return;
+                    Group g = room.masterGroup.FindGroup(s);
+                    if (g == null) return;
+
+                    insArea2.ResetInspectorBox(g.TargetLinks);
+                }
+                else if (rdNodeT.Checked)
+                {
+                    if (cbNodeT.ItemIndex < 0 || cbNodeT.ItemIndex > cbNodeT.Items.Count) return;
+                    object o = cbNodeT.Items.ElementAt(cbNodeT.ItemIndex);
+                    if (!(o is Node)) return;
+                    Node n = (Node)o;
+
+                    insArea2.ResetInspectorBox(n.TargetLinks);
+                }
+                else if (rdSelectionT.Checked)
+                {
+                    //todo: implement selection linkin
+                }
+            }
+            else if (str.Equals("All Active Links"))
+            {
+                insArea2.ResetInspectorBox(room.AllActiveLinks);
+            }
         }
 
         void btnCreateLink_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            
+            InspectorBox box = insArea2.InsBox;
+            if (box.ItemIndex < 0 || box.ItemIndex > box.Items.Count) return;
+
+            object i = box.Items.ElementAt(box.ItemIndex);
+            if (!(i is InspectorItem)) return;
+            InspectorItem item = (InspectorItem)i;
+            if (!(item.obj is Link)) return;
+            Link link = (Link)item.obj;
+
+            //source
+            dynamic source = null;
+            if (rdGroupS.Checked)
+            {
+                string s = cbGroupS.SelectedItem();
+                if (s == null || s.Equals("")) return;
+                Group g = room.masterGroup.FindGroup(s);
+                if (g == null) return;
+
+                source = g;
+            }
+            else if (rdNodeS.Checked)
+            {
+                if (cbNodeS.ItemIndex < 0 || cbNodeS.ItemIndex > cbNodeS.Items.Count) return;
+                object o = cbNodeS.Items.ElementAt(cbNodeS.ItemIndex);
+                if (!(o is Node)) return;
+                Node n = (Node)o;
+                source = n;
+            }
+            else if (rdSelectionS.Checked)
+            {
+                //todo: implement selection linking
+            }
+
+            //target
+            dynamic target = null;
+            if (rdGroupT.Checked)
+            {
+                string s = cbGroupT.SelectedItem();
+                if (s == null || s.Equals("")) return;
+                Group g = room.masterGroup.FindGroup(s);
+                if (g == null) return;
+
+                target = g;
+            }
+            else if (rdNodeT.Checked)
+            {
+                if (cbNodeT.ItemIndex < 0 || cbNodeT.ItemIndex > cbNodeT.Items.Count) return;
+                object o = cbNodeT.Items.ElementAt(cbNodeT.ItemIndex);
+                if (!(o is Node)) return;
+                Node n = (Node)o;
+                target = n;
+            }
+            else if (rdSelectionT.Checked)
+            {
+                //todo: implement selection linkin
+            }
+            //create link
+            if (source == null || target == null) return;
+
+            dynamic newComponent = Activator.CreateInstance(link.linkComponent.GetType());
+            Component.CloneComponent((Component)link.linkComponent, newComponent);
+            //newComponent.Initialize();
+            newComponent.active = true;
+            if (newComponent.GetType().GetProperty("activated") != null) newComponent.activated = true;
+
+            Link newLink = new Link(source, target, newComponent, link.FormationType);
+            room.AllActiveLinks.Add(newLink);
         }
 
         void btnOpenGenerator_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            LinkGeneratorWindow gen = new LinkGeneratorWindow(manager);
+            LinkGeneratorWindow gen = new LinkGeneratorWindow(manager,this);
         }
 
         

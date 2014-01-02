@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs.Components
 {
-    public class Collision : Component
+    public class Collision : Component, ILinkable
     {
         public Collision() : this(null) { }
         public Collision(Node parent = null)
@@ -23,10 +23,7 @@ namespace OrbItProcs.Components
 
         public override void AffectOther(Node other)
         {
-            if (!active)
-            {
-                return;
-            }
+            //if (!active) { return; }
             //assuming other has been checked for 'active' from caller
             if (exclusions.Contains(other)) return;
 

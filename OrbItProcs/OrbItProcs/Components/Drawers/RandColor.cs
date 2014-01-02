@@ -63,10 +63,6 @@ namespace OrbItProcs.Components {
             }
         }
 
-        public override void AffectOther(Node other)
-        {
-
-        }
         public override void AffectSelf()
         {
         }

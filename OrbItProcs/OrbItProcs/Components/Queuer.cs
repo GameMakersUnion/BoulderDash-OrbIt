@@ -81,10 +81,7 @@ namespace OrbItProcs.Components
             if (customqueues.Count > 0) qs = qs | queues.customs;
         }
 
-        public override void AffectOther(Node other)
-        {
 
-        }
         public override void AffectSelf()
         {
             

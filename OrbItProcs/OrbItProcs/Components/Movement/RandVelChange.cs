@@ -24,10 +24,6 @@ namespace OrbItProcs.Components
             this.parent = parent;
         }
 
-        public override void AffectOther(Node other)
-        {
-
-        }
         public override void AffectSelf()
         {
             float counterVelocity = 40f;

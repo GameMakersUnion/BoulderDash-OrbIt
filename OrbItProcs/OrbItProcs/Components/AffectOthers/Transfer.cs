@@ -7,7 +7,8 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.Serialization;
 namespace OrbItProcs.Components
 {
-    public class Transfer : Component{
+    public class Transfer : Component, ILinkable
+    {
 
         private float _radius = 25f;
         public float radius { get { return _radius; } set { _radius = value; } }
@@ -27,7 +28,7 @@ namespace OrbItProcs.Components
 
         public override void AffectOther(Node other)
         {
-            if (!active) return;
+            //if (!active) return;
             if (exclusions.Contains(other)) return;
 
             float distVects = Vector2.Distance(other.transform.position, parent.transform.position);
