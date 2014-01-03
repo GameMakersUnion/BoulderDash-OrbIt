@@ -21,6 +21,7 @@ namespace OrbItProcs
         public Link link { get; set; }
         public formationtype FormationType { get { return link.FormationType; } set { link.FormationType = value; } }
         public bool Uninhabited { get; set; }
+        
         private int _UpdateFrequency = -1;
         public int UpdateFrequency
         {
@@ -50,7 +51,7 @@ namespace OrbItProcs
         {
             this.room = Program.getRoom();
             this.link = link;
-            this.FormationType = FormationType;
+            //this.FormationType = FormationType;
             this.Uninhabited = Uninhabited;
             this.UpdateFrequency = UpdateFrequency;
             this.NearestNValue = NearestNValue;
@@ -103,6 +104,8 @@ namespace OrbItProcs
         public void NearestN()
         {
             //not effecient if NearestNValue == 1 because it sorts the entire list of distances
+            HashSet<Node> AlreadyInhabited = new HashSet<Node>();
+
             link.sources.ToList().ForEach(delegate(Node source)
             {
                 AffectionSets[source] = new ObservableHashSet<Node>();
@@ -125,9 +128,34 @@ namespace OrbItProcs
 
                 int min = Math.Min(NearestNValue,DistancesList.Count);
 
+                /*
                 for (int i = 0; i < min; i++)
                 {
                     set.Add(DistancesList.ElementAt(i).Item2);
+                }
+                */
+                int count = 0;
+                int it = 0;
+                while (count < min)
+                {
+                    if (it >= DistancesList.Count) break;
+                    Node nn = DistancesList.ElementAt(it).Item2;
+                    if (Uninhabited)
+                    {
+                        if (AlreadyInhabited.Contains(nn))
+                        {
+                            it++;
+                            continue;
+                        }
+                        else
+                        {
+                            AlreadyInhabited.Add(nn);
+                        }
+                    }
+
+                    set.Add(nn);
+                    count++;
+                    it++;
                 }
             });
         }

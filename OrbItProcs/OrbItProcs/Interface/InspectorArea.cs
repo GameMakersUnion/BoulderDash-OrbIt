@@ -41,6 +41,7 @@ namespace OrbItProcs.Interface
         public PropertyEditPanel propertyEditPanel;
         public ContextMenu contextMenuInsBox;
         public MenuItem applyToAllNodesMenuItem, toggleComponentMenuItem, removeComponentMenuItem, toggleBoolMenuItem;
+        public MenuItem toggleLinkMenuItem, removeLinkMenuItem;
         
 
 
@@ -130,6 +131,10 @@ namespace OrbItProcs.Interface
             removeComponentMenuItem.Click += removeComponentMenuItem_Click;
             toggleBoolMenuItem = new MenuItem("Toggle");
             toggleBoolMenuItem.Click += toggleBoolMenuItem_Click;
+            toggleLinkMenuItem = new MenuItem("Toggle link");
+            toggleLinkMenuItem.Click += toggleLinkMenuItem_Click;
+            removeLinkMenuItem = new MenuItem("Delete link");
+            removeLinkMenuItem.Click += removeLinkMenuItem_Click;
 
 
             contextMenuInsBox.Items.Add(applyToAllNodesMenuItem);
@@ -161,7 +166,17 @@ namespace OrbItProcs.Interface
 
         }
 
-        
+        public void ClearInspectorBox()
+        {
+            InsBox.ItemIndex = 0;
+            InsBox.rootitem = null;
+            ActiveInspectorParent = null;
+            foreach (object o in InsBox.Items.ToList())
+            {
+                InsBox.Items.Remove(o);
+            }
+            lblInspectorAddress.Text = "/";
+        }
 
         public void ResetInspectorBox(object rootobj)
         {
@@ -233,6 +248,11 @@ namespace OrbItProcs.Interface
                     contextMenuInsBox.Items.Add(toggleComponentMenuItem);
                     contextMenuInsBox.Items.Add(removeComponentMenuItem);
                     contextMenuInsBox.Items.Add(applyToAllNodesMenuItem);
+                }
+                else if (litem.obj is Link)
+                {
+                    contextMenuInsBox.Items.Add(toggleLinkMenuItem);
+                    contextMenuInsBox.Items.Add(removeLinkMenuItem);
                 }
                 else
                 {
@@ -352,6 +372,42 @@ namespace OrbItProcs.Interface
                     count++;
                 }
             });
+        }
+
+        void removeLinkMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+            if (!(item.obj is Link))
+            {
+                Console.WriteLine("Error: The list item was not a link.");
+                return;
+            }
+
+            Link link = (Link)item.obj;
+            if (item.parentItem.obj is ObservableHashSet<Link>)
+            {
+                Console.WriteLine("ObservableHashSet<Link> has been observed.");
+                ObservableHashSet<Link> set = (ObservableHashSet<Link>)item.parentItem.obj;
+                set.Remove(link);
+                link.DeleteLink();
+
+                item.parentItem.DoubleClickItem(this);
+                
+            }
+        }
+
+        void toggleLinkMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+            if (!(item.obj is Link))
+            {
+                Console.WriteLine("Error: The list item was not a link.");
+                return;
+            }
+
+            Link link = (Link)item.obj;
+            //link.linkComponent.active = !link.linkComponent.active;
+            link.active = !link.active;
         }
 
         void toggleComponentMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)

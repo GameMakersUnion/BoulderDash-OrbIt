@@ -240,8 +240,8 @@ namespace OrbItProcs {
             o2.transform.velocity.X = o2.transform.velocity.X + pvalue * normal.X * o1.transform.mass;
             o2.transform.velocity.Y = o2.transform.velocity.Y + pvalue * normal.Y * o1.transform.mass;
 
-            float loss1 = 0.899999f;
-            float loss2 = 0.899999f;
+            float loss1 = 0.98f;
+            float loss2 = 0.98f;
             o1.transform.velocity *= loss1;
             o2.transform.velocity *= loss2;
 

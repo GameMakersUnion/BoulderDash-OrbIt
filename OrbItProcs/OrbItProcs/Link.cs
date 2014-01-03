@@ -43,8 +43,22 @@ namespace OrbItProcs
         public updatetime updateTime { get; set; }
         public Action UpdateAction { get; set; }
         public Formation formation { get; set; }
-        public formationtype FormationType { get; set; }
-
+        private formationtype _FormationType;
+        public formationtype FormationType { get { return _FormationType; } 
+            set {
+                if (_FormationType != value && formation != null)
+                {
+                    _FormationType = value;
+                    formation.UpdateFormation();
+                }
+                else
+                {
+                    _FormationType = value; 
+                }
+                
+            } 
+        }
+        public bool Reversed { get; set; }
         public Node sourceNode { get; set; }
         public Node targetNode { get; set; }
 
@@ -96,6 +110,7 @@ namespace OrbItProcs
 
             //sourceNode.room.AfterIteration += delegate { linkComponent.AffectOther(targetNode); };
 
+            this._FormationType = ftype;
             formation = new Formation(this, ftype);
             //this.FormationType = formation.FormationType;
 
@@ -125,6 +140,7 @@ namespace OrbItProcs
 
             sourceNode.room.masterGroup.childGroups["Link Groups"].AddGroup(ts.Name, ts);
 
+            this._FormationType = ftype;
             formation = new Formation(this, ftype);
             //this.FormationType = formation.FormationType;
 
@@ -171,6 +187,7 @@ namespace OrbItProcs
             sourceNode.room.masterGroup.childGroups["Link Groups"].AddGroup(ts.Name, ts);
 
             //sourceNode.OnAffectOthers += delegate { UpdateGroupToGroup(); };
+            this._FormationType = ftype;
             formation = new Formation(this, ftype);
             //this.FormationType = formation.FormationType;
 
@@ -207,6 +224,7 @@ namespace OrbItProcs
             sourceNode.OnAffectOthers += NodeToGroupHandler;
             sourceNode.SourceLinks.Add(this);
 
+            this._FormationType = ftype;
             formation = new Formation(this, ftype);
             //this.FormationType = formation.FormationType;
 
@@ -234,6 +252,7 @@ namespace OrbItProcs
             this.targetGroup.TargetLinks.Add(this);
             this.sourceGroup.SourceLinks.Add(this);
 
+            this._FormationType = ftype;
             formation = new Formation(this, ftype);
             //this.FormationType = formation.FormationType;
 
@@ -434,12 +453,14 @@ namespace OrbItProcs
                 col = Color.White;
             */
             //col = Color.Blue;
+            Component lcomp = (Component)linkComponent;
+            col = Group.IntToColor[(int)lcomp.com % Group.IntToColor.Count];
 
             foreach (Node source in sources)
             {
-                col = source.transform.color;
+                //col = source.transform.color;
 
-                spritebatch.Draw(source.getTexture(), source.transform.position / mapzoom, null, col, 0, source.TextureCenter(), (source.transform.scale / mapzoom) * 1.2f, SpriteEffects.None, 0);
+                //spritebatch.Draw(source.getTexture(), source.transform.position / mapzoom, null, col, 0, source.TextureCenter(), (source.transform.scale / mapzoom) * 1.2f, SpriteEffects.None, 0);
 
                 if (!formation.AffectionSets.ContainsKey(source)) continue;
                 foreach (Node target in formation.AffectionSets[source])
@@ -451,8 +472,8 @@ namespace OrbItProcs
 
                     Utils.DrawLine(spritebatch, source.transform.position, target.transform.position, 2f, col, room);
 
-                    Utils.DrawLine(spritebatch, source.transform.position + perp, target.transform.position + perp, 2f, Color.Red, room);
-                    Utils.DrawLine(spritebatch, source.transform.position - perp, target.transform.position - perp, 2f, Color.Green, room);
+                    //Utils.DrawLine(spritebatch, source.transform.position + perp, target.transform.position + perp, 2f, col, room);
+                    //Utils.DrawLine(spritebatch, source.transform.position - perp, target.transform.position - perp, 2f, col, room);
 
                     perp *= 20;
 
@@ -476,34 +497,33 @@ namespace OrbItProcs
 
         public void DeleteLink()
         {
-            if (ltype == linktype.NodeToNode)
-            {
-                if (sourceNode != null)
-                { 
-                    sourceNode.SourceLinks.Remove(this);
-                    sourceNode.OnAffectOthers -= NodeToNodeHandler;
-                }
-                if (targetNode != null) targetNode.TargetLinks.Remove(this);
 
-                
+            if (sourceNode != null)
+            { 
+                sourceNode.SourceLinks.Remove(this);
+                sourceNode.OnAffectOthers -= NodeToNodeHandler;
             }
-            else
+            if (targetNode != null) targetNode.TargetLinks.Remove(this);
+
+            if (sources != null)
             {
-                foreach(Node n in sources)
+                foreach (Node n in sources)
                 {
                     n.OnAffectOthers -= NodeToGroupHandler;
                     n.SourceLinks.Remove(this);
                 }
-                foreach(Node n in targets)
+            }
+            if (targets != null)
+            {
+                foreach (Node n in targets)
                 {
                     n.TargetLinks.Remove(this);
                 }
-
-                if (sourceGroup != null) sourceGroup.SourceLinks.Remove(this);
-                if (targetGroup != null) targetGroup.TargetLinks.Remove(this);
-
             }
+            if (sourceGroup != null) sourceGroup.SourceLinks.Remove(this);
+            if (targetGroup != null) targetGroup.TargetLinks.Remove(this);
 
+            room.AllActiveLinks.Remove(this);
         }
 
         

@@ -67,8 +67,8 @@ namespace OrbItProcs.Components
                 this.parent = parent;
             }
             com = comp.tether;
-            //methods = mtypes.affectself | mtypes.draw | mtypes.minordraw;
-            methods = mtypes.affectother | mtypes.draw | mtypes.minordraw;
+            methods = mtypes.affectself | mtypes.draw | mtypes.minordraw;
+            //methods = mtypes.affectother | mtypes.draw | mtypes.minordraw;
             //InitializeLists();
         }
 
@@ -140,7 +140,7 @@ namespace OrbItProcs.Components
                     if (confining)
                     {
                         other.transform.position = parent.transform.position + confiningVects[other] * len;
-                        Console.WriteLine("{0}, {1}, {2}", confiningVects[other], other.transform.position, len);
+                        //Console.WriteLine("{0}, {1}, {2}", confiningVects[other], other.transform.position, len);
                     }
                 }
                 //diff = other.transform.position - parent.transform.position;
@@ -173,7 +173,9 @@ namespace OrbItProcs.Components
                         }
                         else
                         {
-                            float percent = maxdist / len;
+                            float percent;
+                            if (locked) percent = len / diff.Length();
+                            else percent = maxdist / len;
                             diff *= percent;
                             other.transform.position = parent.transform.position + diff;
                         }
@@ -186,7 +188,9 @@ namespace OrbItProcs.Components
                         }
                         else
                         {
-                            float percent = mindist / len;
+                            float percent;
+                            if (locked) percent = len / diff.Length();
+                            else percent = mindist / len;
                             diff *= percent;
                             other.transform.position = parent.transform.position + diff;
                         }
@@ -196,7 +200,14 @@ namespace OrbItProcs.Components
                         if (confining)
                         {
                             other.transform.position = parent.transform.position + confiningVects[other] * len;
-                            Console.WriteLine("{0}, {1}, {2}", confiningVects[other], other.transform.position, len);
+                            //Console.WriteLine("{0}, {1}, {2}", confiningVects[other], other.transform.position, len);
+                        }
+                        if (locked)
+                        {
+                            float percent = len / diff.Length();
+                            //else percent = mindist / len;
+                            diff *= percent;
+                            other.transform.position = parent.transform.position + diff;
                         }
                     }
 

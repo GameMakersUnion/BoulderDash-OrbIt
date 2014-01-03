@@ -387,6 +387,7 @@ namespace OrbItProcs.Interface
         //palette
         void cbLinkList_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
+            insArea2.ClearInspectorBox();
             string str = cbLinkList.SelectedItem();
             //remove panelControl elements (from groupPanel at the bottom)
             if (insArea2.propertyEditPanel.panelControls.Keys.Count > 0)

@@ -44,6 +44,7 @@ namespace OrbItProcs.Interface {
 
         public float zoomfactor { get; set; }
         public bool GameInputDisabled { get; set; }
+        public bool IsPaused { get; set; }
 
         //public Node editNode;
         public Node spawnerNode;
@@ -58,6 +59,7 @@ namespace OrbItProcs.Interface {
             sidebar.Initialize();
             zoomfactor = 0.9f;
             GameInputDisabled = false;
+            IsPaused = false;
         }
 
         public void Update(GameTime gameTime)
@@ -99,13 +101,8 @@ namespace OrbItProcs.Interface {
                 isShiftDown = false;
             }
 
-
-
-
-            if (keybState.IsKeyDown(Keys.F) && currentSelection.Equals("pause") && !oldKeyBState.IsKeyDown(Keys.F))
-                currentSelection = "placeNode";
-            else if (keybState.IsKeyDown(Keys.F) && !oldKeyBState.IsKeyDown(Keys.F))
-                currentSelection = "pause";
+            if (keybState.IsKeyDown(Keys.F) && !oldKeyBState.IsKeyDown(Keys.F))
+                IsPaused = !IsPaused;
 
             oldKeyBState = Keyboard.GetState();
         }
@@ -135,6 +132,7 @@ namespace OrbItProcs.Interface {
                 }
 
                 sidebar.inspectorArea.ScrollInsBox(mouseState, oldMouseState);
+                sidebar.insArea2.ScrollInsBox(mouseState, oldMouseState);
 
                 /*
                 if (mouseState.Y > sidebar.lstComp.Top + 24 && mouseState.Y < sidebar.lstComp.Top + sidebar.lstComp.Height + 24)

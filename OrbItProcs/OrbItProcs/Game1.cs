@@ -195,6 +195,7 @@ namespace OrbItProcs
                     //{ comp.maxvel, true },
                     //{ comp.randvelchange, true },
                     { comp.randinitialvel, true },
+                    { comp.maxvel, true },
                     //{ comp.gravity, false },
                     //{ comp.linearpull, true },
                     //{ comp.laser, true },
@@ -334,11 +335,14 @@ namespace OrbItProcs
 
             ui.Update(gameTime);
 
-            if (!ui.currentSelection.Equals("pause"))
+            if (!ui.IsPaused)
+            {
                 room.Update(gameTime);
+            }
             else
             {
                 room.colorEffectedNodes();
+                room.updateTargetNodeGraphic();
             }
         }
         public void spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null)

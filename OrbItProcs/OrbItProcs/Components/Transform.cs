@@ -55,11 +55,17 @@ namespace OrbItProcs.Components
                 }
             }
         }
-        public float mass 
+        public float mass
         {
-            get { return _mass; } 
-            set { _mass = value; } 
+            get { return _mass; }
+            set { _mass = value; if (value == 0) invmass = 0; else invmass = 1 / value; } //infinite mass is represented by 0
         }
+        public float invmass
+        {
+            get;
+            protected set;
+        }
+
         public textures texture 
         {
             get { return _texture; } 
@@ -72,6 +78,7 @@ namespace OrbItProcs.Components
             if (parent != null) this.parent = parent;
             com = comp.transform;
             methods = mtypes.none;
+            invmass = 1 / mass;
         }
 
         public override void Initialize(Node parent)
