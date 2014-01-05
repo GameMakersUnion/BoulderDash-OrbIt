@@ -32,6 +32,8 @@ namespace OrbItProcs.Interface {
 
         public Game1 game;
         public Room room;
+
+        public KeybindSet Keybindset;
         
         KeyboardState oldKeyBState;
         MouseState oldMouseState;
@@ -70,19 +72,23 @@ namespace OrbItProcs.Interface {
             zoomfactor = 0.9f;
             GameInputDisabled = false;
             IsPaused = false;
+            this.Keybindset = new KeybindSet(this);
         }
 
         public void Update(GameTime gameTime)
         {
             ProcessKeyboard();
             ProcessMouse();
-            
-            
+
+            Keybindset.Update();
+
         }
 
         public void ProcessKeyboard()
         {
             KeyboardState keybState = Keyboard.GetState();
+
+            
 
             if (keybState.IsKeyDown(Keys.Y))
             {

@@ -75,6 +75,13 @@ namespace OrbItProcs
             Console.WriteLine(count);
         }
 
+        public void KeyPresses(KeybindSet kbs)
+        {
+            StartTimer();
+            kbs.Update();
+            StopTimer("keypresses:");
+        }
+
         public void TestHashSet()
         {
             StartTimer();
@@ -174,6 +181,7 @@ namespace OrbItProcs
                 Console.WriteLine(i);
             }
         }
+
 
 
         public void TestOnClick()

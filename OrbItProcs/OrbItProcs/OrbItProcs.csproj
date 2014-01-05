@@ -154,6 +154,7 @@
     <Compile Include="GridSystem.cs" />
     <Compile Include="Interface\CollapsePanel.cs" />
     <Compile Include="Interface\InspectorArea.cs" />
+    <Compile Include="Interface\KeybindSet.cs" />
     <Compile Include="Interface\LinkGeneratorWindow.cs" />
     <Compile Include="Interface\NeoForceOverrides\InspectorBox.cs" />
     <Compile Include="Interface\PropertyEditPanel.cs" />
