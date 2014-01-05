@@ -41,7 +41,7 @@ namespace OrbItProcs
         public ILinkable linkComponent { get; set; }
         public linktype ltype { get; set; }
         public updatetime updateTime { get; set; }
-        public Action UpdateAction { get; set; }
+        //public Action UpdateAction { get; set; }
         public Formation formation { get; set; }
         private formationtype _FormationType;
         public formationtype FormationType { get { return _FormationType; } 
@@ -85,11 +85,157 @@ namespace OrbItProcs
         {
             this.room = Program.getRoom();
             this.linkComponent = linkComponent;
-            this.FormationType = ftype;
+            this._FormationType = ftype;
+            this.formation = new Formation(this, ftype, InitializeFormation: false);
+
         }
 
-        public Link(Node sourceNode, Node targetNode, ILinkable linkComponent = null, formationtype ftype = formationtype.AllToAll)
+        private void Initialize(dynamic src, dynamic trg, ILinkable linkComponent, dynamic formation)
         {
+            this.room = Program.getRoom();
+            this.updateTime = updatetime.SourceUpdate;
+            this.linkComponent = linkComponent;
+
+            if (src is Node && trg is Node) this.ltype = linktype.NodeToNode;
+            else if (src is Node && (trg is HashSet<Node> || trg is Group)) this.ltype = linktype.NodeToGroup;
+            else this.ltype = linktype.GroupToGroup;
+
+            bool EqualSets = false;
+
+            //source
+            if (src is Node)
+            {
+                this.sourceNode = src;
+                this.sources = new ObservableHashSet<Node>() { sourceNode };
+                sourceNode.SourceLinks.Add(this);
+                linkComponent.parent = sourceNode;
+                sourceNode.OnAffectOthers += NodeToNodeHandler;
+            }
+            else if (src is HashSet<Node>)
+            {
+                Group ss = new Group();
+                foreach (Node s in src)
+                {
+                    ss.entities.Add(s);
+                }
+
+                this.sourceGroup = ss;
+                this.sourceGroup.SourceLinks.Add(this);
+                this.sources = this.sourceGroup.fullSet;
+
+                room.masterGroup.childGroups["Link Groups"].AddGroup(ss.Name, ss);
+
+                foreach (Node s in this.sources)
+                {
+                    s.OnAffectOthers += NodeToGroupHandler;
+                    s.SourceLinks.Add(this);
+                }
+                this.sources.CollectionChanged += sourceGroup_CollectionChanged;
+
+                if (src == trg)
+                {
+                    EqualSets = true;
+                    this.targetGroup = this.sourceGroup;
+                    this.targetGroup.TargetLinks.Add(this);
+                    this.targets = this.targetGroup.fullSet;
+                    foreach (Node t in this.targets)
+                    {
+                        t.TargetLinks.Add(this);
+                    }
+                }
+
+                
+            }
+            else if (src is Group)
+            {
+                this.sourceGroup = src;
+                this.sources = this.sourceGroup.fullSet;
+
+                this.sourceGroup.SourceLinks.Add(this);
+
+
+                foreach (Node s in sources)
+                {
+                    s.OnAffectOthers += NodeToGroupHandler;
+                    s.SourceLinks.Add(this);
+
+                }
+                this.sourceGroup.fullSet.CollectionChanged += sourceGroup_CollectionChanged;
+
+                
+            }
+            else
+            {
+                Console.WriteLine("Unrecongized source type when creating link");
+            }
+
+            //target
+            if (trg is Node)
+            {
+                this.targetNode = trg;
+                this.targets = new ObservableHashSet<Node>() { targetNode };
+                targetNode.TargetLinks.Add(this);
+            }
+            else if (trg is HashSet<Node> && !EqualSets)
+            {
+                Group ts = new Group();
+                foreach (Node t in trg)
+                {
+                    ts.entities.Add(t);
+                }
+                this.targetGroup = ts;
+                this.targets = this.targetGroup.fullSet;
+                this.targetGroup.TargetLinks.Add(this);
+
+                room.masterGroup.childGroups["Link Groups"].AddGroup(ts.Name, ts);
+
+                foreach (Node t in this.targets)
+                {
+                    t.TargetLinks.Add(this);
+                }
+                this.targets.CollectionChanged += targetGroup_CollectionChanged;
+            }
+            else if (trg is Group)
+            {
+                this.targetGroup = trg;
+                this.targets = this.targetGroup.fullSet;
+                this.targetGroup.TargetLinks.Add(this);
+
+                foreach (Node t in targets)
+                {
+                    t.TargetLinks.Add(this);
+                }
+                this.targetGroup.fullSet.CollectionChanged += targetGroup_CollectionChanged;
+            }
+            else
+            {
+                Console.WriteLine("Unrecongized target type when creating link");
+            }
+
+            if (formation == null)
+            {
+                this._FormationType = formationtype.AllToAll;
+                this.formation = new Formation(this, formationtype.AllToAll);
+            }
+            else if (formation is formationtype)
+            {
+                this._FormationType = formation;
+                this.formation = new Formation(this, formation);
+            }
+            else if (formation is Formation)
+            {
+                this._FormationType = formation.FormationType;
+                this.formation = new Formation(this, formation);
+            }
+
+            
+        }
+
+        public Link(Node sourceNode, Node targetNode, ILinkable linkComponent = null, dynamic formation = null)
+        {
+            Initialize(sourceNode, targetNode, linkComponent, formation);
+
+            /*
             this.room = Program.getRoom();
             this.sourceNode = sourceNode;
             this.targetNode = targetNode;
@@ -101,14 +247,10 @@ namespace OrbItProcs
             this.sources = new ObservableHashSet<Node>() { sourceNode };
             this.targets = new ObservableHashSet<Node>() { targetNode };
 
-            sourceNode.transform.color = Microsoft.Xna.Framework.Color.Blue;
-            targetNode.transform.color = Microsoft.Xna.Framework.Color.Blue;
+            //sourceNode.transform.color = Microsoft.Xna.Framework.Color.Blue;
+            //targetNode.transform.color = Microsoft.Xna.Framework.Color.Blue;
 
-            //sourceNode.OnAffectOthers += delegate { linkComponent.AffectOther(targetNode); };
-            //sourceNode.OnAffectOthers += delegate { UpdateNodeToNode(); };
             sourceNode.OnAffectOthers += NodeToNodeHandler;
-
-            //sourceNode.room.AfterIteration += delegate { linkComponent.AffectOther(targetNode); };
 
             this._FormationType = ftype;
             formation = new Formation(this, ftype);
@@ -116,10 +258,12 @@ namespace OrbItProcs
 
             sourceNode.SourceLinks.Add(this);
             targetNode.TargetLinks.Add(this);
-            
+            */
         }
-        public Link(Node sourceNode, HashSet<Node> targets, ILinkable linkComponent = null, formationtype ftype = formationtype.AllToAll)
+        public Link(Node sourceNode, HashSet<Node> targets, ILinkable linkComponent = null, dynamic formation = null)
         {
+            Initialize(sourceNode, targets, linkComponent, formation);
+            /*
             this.room = Program.getRoom();
             this.sourceNode = sourceNode;
 
@@ -142,9 +286,7 @@ namespace OrbItProcs
 
             this._FormationType = ftype;
             formation = new Formation(this, ftype);
-            //this.FormationType = formation.FormationType;
 
-            //sourceNode.OnAffectOthers += delegate { UpdateNodeToGroup(); };
             sourceNode.OnAffectOthers += NodeToGroupHandler;
             sourceNode.SourceLinks.Add(this);
 
@@ -154,10 +296,16 @@ namespace OrbItProcs
             }
             this.targets.CollectionChanged += targetGroup_CollectionChanged;
 
-
+            */
         }
-        public Link(HashSet<Node> sources, HashSet<Node> targets, ILinkable linkComponent = null, formationtype ftype = formationtype.AllToAll)
+        public Link(HashSet<Node> sources, Node targetNode, ILinkable linkComponent = null, dynamic formation = null)
         {
+            Initialize(sources, targetNode, linkComponent, formation);
+        }
+        public Link(HashSet<Node> sources, HashSet<Node> targets, ILinkable linkComponent = null, dynamic formation = null)
+        {
+            Initialize(sources, targets, linkComponent, formation);
+            /*
             this.room = Program.getRoom();
             Group ss = new Group();
             foreach (Node s in sources)
@@ -204,9 +352,22 @@ namespace OrbItProcs
                 t.TargetLinks.Add(this);
             }
             this.targets.CollectionChanged += targetGroup_CollectionChanged;
+            */
         }
-        public Link(Node sourceNode, Group targetGroup, ILinkable linkComponent = null, formationtype ftype = formationtype.AllToAll)
+        public Link(HashSet<Node> sources, Group targetGroup, ILinkable linkComponent = null, dynamic formation = null)
         {
+            Initialize(sources, targetGroup, linkComponent, formation);
+        }
+        public Link(Group sourceGroup, HashSet<Node> targets, ILinkable linkComponent = null, dynamic formation = null)
+        {
+            Initialize(sourceGroup, targets, linkComponent, formation);
+        }
+
+
+        public Link(Node sourceNode, Group targetGroup, ILinkable linkComponent = null, dynamic formation = null)
+        {
+            Initialize(sourceNode, targetGroup, linkComponent, formation);
+            /*
             this.room = Program.getRoom();
             this.sourceNode = sourceNode;
             this.targetGroup = targetGroup;
@@ -234,11 +395,17 @@ namespace OrbItProcs
                 t.TargetLinks.Add(this);
             }
             this.targets.CollectionChanged += targetGroup_CollectionChanged;
+            */
         }
-        
-
-        public Link(Group sourceGroup, Group targetGroup, ILinkable linkComponent = null, formationtype ftype = formationtype.AllToAll)
+        public Link(Group sourceGroup, Node targetNode, ILinkable linkComponent = null, dynamic formation = null)
         {
+            Initialize(sourceGroup, targetNode, linkComponent, formation);
+        }
+
+        public Link(Group sourceGroup, Group targetGroup, ILinkable linkComponent = null, dynamic formation = null)
+        {
+            Initialize(sourceGroup, targetGroup, linkComponent, formation);
+            /*
             this.room = Program.getRoom();
             this.sourceGroup = sourceGroup;
             this.targetGroup = targetGroup;
@@ -254,11 +421,9 @@ namespace OrbItProcs
 
             this._FormationType = ftype;
             formation = new Formation(this, ftype);
-            //this.FormationType = formation.FormationType;
 
             foreach (Node s in sources)
             {
-                //s.OnAffectOthers += (o, e) => UpdateNodeToGroup((Node)o);
                 s.OnAffectOthers += NodeToGroupHandler;
                 s.SourceLinks.Add(this);
                 
@@ -270,6 +435,7 @@ namespace OrbItProcs
                 t.TargetLinks.Add(this);
             }
             targetGroup.fullSet.CollectionChanged += targetGroup_CollectionChanged;
+            */
 
         }
         //handlers

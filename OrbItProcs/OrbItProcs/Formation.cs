@@ -10,6 +10,7 @@ namespace OrbItProcs
     {
         AllToAll,
         NearestN,
+        FurthestN,
         //Nearest,
         //Random,
         //Special,
@@ -47,7 +48,8 @@ namespace OrbItProcs
                             formationtype FormationType = formationtype.AllToAll,
                             bool Uninhabited = false,
                             int UpdateFrequency = -1,
-                            int NearestNValue = 1)
+                            int NearestNValue = 1,
+                            bool InitializeFormation = true)
         {
             this.room = Program.getRoom();
             this.link = link;
@@ -57,8 +59,22 @@ namespace OrbItProcs
             this.NearestNValue = NearestNValue;
             this.AffectionSets = new Dictionary<Node, ObservableHashSet<Node>>();
             
+            if (InitializeFormation) UpdateFormation();
+        }
 
-            UpdateFormation();
+        public Formation(Link link,
+                            Formation form,
+                            bool InitializeFormation = true)
+        {
+            this.room = Program.getRoom();
+            this.link = link;
+            //this.FormationType = FormationType;
+            this.Uninhabited = form.Uninhabited;
+            this.UpdateFrequency = form.UpdateFrequency;
+            this.NearestNValue = form.NearestNValue;
+            this.AffectionSets = new Dictionary<Node, ObservableHashSet<Node>>();
+
+            if (InitializeFormation) UpdateFormation();
         }
 
         public void UpdateHandler(object sender, EventArgs e)
@@ -83,7 +99,7 @@ namespace OrbItProcs
             {
                 AllToAll();
             }
-            else if (FormationType == formationtype.NearestN)
+            else if (FormationType == formationtype.NearestN || FormationType == formationtype.FurthestN)
             {
                 NearestN();
             }
@@ -91,73 +107,95 @@ namespace OrbItProcs
 
         public void AllToAll()
         {
-            link.sources.ToList().ForEach(delegate(Node source) {
-                AffectionSets[source] = link.targets;
-                //HashSet<Node> set = AffectionSets[source];
-                //set = new HashSet<Node>();
-                //link.targets.ToList().ForEach(delegate(Node target) {
-                //    set.Add(target);
-                //});
-            });
+            if (link.sources != null)
+            {
+                link.sources.ToList().ForEach(delegate(Node source)
+                {
+                    AffectionSets[source] = link.targets;
+                    //HashSet<Node> set = AffectionSets[source];
+                    //set = new HashSet<Node>();
+                    //link.targets.ToList().ForEach(delegate(Node target) {
+                    //    set.Add(target);
+                    //});
+                });
+            }
         }
-
+        //used for NearestN or FurthestN
         public void NearestN()
         {
-            //not effecient if NearestNValue == 1 because it sorts the entire list of distances
-            HashSet<Node> AlreadyInhabited = new HashSet<Node>();
-
-            link.sources.ToList().ForEach(delegate(Node source)
+            if (link.sources != null)
             {
-                AffectionSets[source] = new ObservableHashSet<Node>();
-                ObservableHashSet<Node> set = AffectionSets[source];
+                //not effecient if NearestNValue == 1 because it sorts the entire list of distances
+                HashSet<Node> AlreadyInhabited = new HashSet<Node>();
 
-                List<Tuple<float, Node>> DistancesList = new List<Tuple<float, Node>>();
-                Comparison<Tuple<float, Node>> comparer = delegate(Tuple<float, Node> first, Tuple<float, Node> second)
+                link.sources.ToList().ForEach(delegate(Node source)
                 {
-                    if (first.Item1 < second.Item1) return -1;
-                    else if (first.Item1 > second.Item1) return 1;
-                    return 0;
-                };
+                    AffectionSets[source] = new ObservableHashSet<Node>();
+                    ObservableHashSet<Node> set = AffectionSets[source];
 
-                link.targets.ToList().ForEach(delegate(Node target) {
-                    if (source == target) return;
-                    DistancesList.Add(new Tuple<float, Node>(Vector2.DistanceSquared(source.transform.position, target.transform.position), target));
-                });
-
-                DistancesList.Sort(comparer);
-
-                int min = Math.Min(NearestNValue,DistancesList.Count);
-
-                /*
-                for (int i = 0; i < min; i++)
-                {
-                    set.Add(DistancesList.ElementAt(i).Item2);
-                }
-                */
-                int count = 0;
-                int it = 0;
-                while (count < min)
-                {
-                    if (it >= DistancesList.Count) break;
-                    Node nn = DistancesList.ElementAt(it).Item2;
-                    if (Uninhabited)
+                    List<Tuple<float, Node>> DistancesList = new List<Tuple<float, Node>>();
+                    Comparison<Tuple<float, Node>> comparer;
+                    if (FormationType == formationtype.NearestN)
                     {
-                        if (AlreadyInhabited.Contains(nn))
+                        comparer = delegate(Tuple<float, Node> first, Tuple<float, Node> second)
                         {
-                            it++;
-                            continue;
-                        }
-                        else
-                        {
-                            AlreadyInhabited.Add(nn);
-                        }
+                            if (first.Item1 < second.Item1) return -1;
+                            else if (first.Item1 > second.Item1) return 1;
+                            return 0;
+                        };
                     }
+                    else if (FormationType == formationtype.FurthestN)
+                    {
+                        comparer = delegate(Tuple<float, Node> first, Tuple<float, Node> second)
+                        {
+                            if (first.Item1 > second.Item1) return -1;
+                            else if (first.Item1 < second.Item1) return 1;
+                            return 0;
+                        };
+                    }
+                    else return;
 
-                    set.Add(nn);
-                    count++;
-                    it++;
-                }
-            });
+                    link.targets.ToList().ForEach(delegate(Node target)
+                    {
+                        if (source == target) return;
+                        DistancesList.Add(new Tuple<float, Node>(Vector2.DistanceSquared(source.transform.position, target.transform.position), target));
+                    });
+
+                    DistancesList.Sort(comparer);
+
+                    int min = Math.Min(NearestNValue, DistancesList.Count);
+
+                    /*
+                    for (int i = 0; i < min; i++)
+                    {
+                        set.Add(DistancesList.ElementAt(i).Item2);
+                    }
+                    */
+                    int count = 0;
+                    int it = 0;
+                    while (count < min)
+                    {
+                        if (it >= DistancesList.Count) break;
+                        Node nn = DistancesList.ElementAt(it).Item2;
+                        if (Uninhabited)
+                        {
+                            if (AlreadyInhabited.Contains(nn))
+                            {
+                                it++;
+                                continue;
+                            }
+                            else
+                            {
+                                AlreadyInhabited.Add(nn);
+                            }
+                        }
+
+                        set.Add(nn);
+                        count++;
+                        it++;
+                    }
+                });
+            }
         }
 
                          

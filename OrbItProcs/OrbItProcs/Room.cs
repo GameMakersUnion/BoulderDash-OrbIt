@@ -28,6 +28,7 @@ namespace OrbItProcs {
 
 
         public Link linkTest { get; set; }
+        public bool DrawLinks { get; set; }
 
         public ObservableHashSet<Link> _AllActiveLinks = new ObservableHashSet<Link>();
         public ObservableHashSet<Link> AllActiveLinks { get { return _AllActiveLinks; } set { _AllActiveLinks = value; } }
@@ -76,7 +77,7 @@ namespace OrbItProcs {
             gridsystem = new GridSystem(this, 40, 4);
             //gridsystem = new GridSystem(this, 40, 70, 4);
             gridSystemLines = new List<Rectangle>();
-
+            DrawLinks = true;
             
             
         }
@@ -172,9 +173,11 @@ namespace OrbItProcs {
         {
             if (game.targetNode != null)
             {
+                targetNodeGraphic.transform.color = Color.White;
                 targetNodeGraphic.transform.position = game.targetNode.transform.position;
                 targetNodeGraphic.transform.scale = game.targetNode.transform.scale * 1.5f;
             }
+            
         }
 
         // color the nodes that targetnode is affecting
@@ -222,12 +225,36 @@ namespace OrbItProcs {
             gridSystemLines.Add(new Rectangle(game.worldWidth, 0, game.worldWidth, game.worldHeight));
         }
 
+        public void addRectangleLines(int x, int y, int width, int height)
+        {
+            gridSystemLines.Add(new Rectangle(x, y, width, y));
+            gridSystemLines.Add(new Rectangle(x, y, x, height));
+            gridSystemLines.Add(new Rectangle(x, height, width, height));
+            gridSystemLines.Add(new Rectangle(width, y, width, height));
+        }
+        public void addRectangleLines(float x, float y, float width, float height)
+        {
+            addRectangleLines((int)x, (int)y, (int)width, (int)height);
+        }
+
         public void Draw(SpriteBatch spritebatch)
         {
             if (game.targetNode != null)
             {
+                updateTargetNodeGraphic();
                 targetNodeGraphic.Draw(spritebatch);
             }
+            if (game.ui.groupSelectSet != null)
+            {
+                targetNodeGraphic.transform.color = Color.LimeGreen;
+                foreach (Node n in game.ui.groupSelectSet.ToList())
+                {
+                    targetNodeGraphic.transform.position = n.transform.position;
+                    targetNodeGraphic.transform.scale = n.transform.scale * 1.5f;
+                    targetNodeGraphic.Draw(spritebatch);
+                }
+            }
+
             masterGroup.ForEachFullSet(delegate(Node o)
             {
                 Node n = (Node)o;
@@ -235,9 +262,12 @@ namespace OrbItProcs {
             });
             int linecount = 0;
 
-            foreach (Link link in AllActiveLinks)
+            if (DrawLinks)
             {
-                link.GenericDraw(spritebatch);
+                foreach (Link link in AllActiveLinks)
+                {
+                    link.GenericDraw(spritebatch);
+                }
             }
             //if (linkTest != null) linkTest.GenericDraw(spritebatch);
 
@@ -245,7 +275,8 @@ namespace OrbItProcs {
             {
                 //float scale = 1 / mapzoom;
                 Rectangle maprect = new Rectangle((int)(rect.X / mapzoom), (int)(rect.Y / mapzoom), (int)(rect.Width / mapzoom), (int)(rect.Height / mapzoom));
-                spritebatch.DrawLine(new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), Color.Green);
+                spritebatch.DrawLine(new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), Color.Green, 2);
+                
                 linecount++;
             }   
             

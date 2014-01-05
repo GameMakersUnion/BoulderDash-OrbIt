@@ -21,6 +21,13 @@ using System.IO;
 namespace OrbItProcs.Interface {
     public class UserInterface {
 
+        public enum selection
+        {
+            placeNode,
+            targetSelection,
+            groupSelection,
+        }
+
         #region /// Fields ///
 
         public Game1 game;
@@ -29,7 +36,8 @@ namespace OrbItProcs.Interface {
         KeyboardState oldKeyBState;
         MouseState oldMouseState;
         
-        public string currentSelection = "placeNode";//
+        //public string currentSelection = "placeNode";//
+        public selection currentSelection = selection.placeNode;
         int oldMouseScrollValue = 0;//
         bool hovertargetting = false;//
         int rightClickCount = 0;//
@@ -39,6 +47,8 @@ namespace OrbItProcs.Interface {
         bool isShiftDown = false;
         bool isTargeting = false;
         public Vector2 spawnPos;
+        Vector2 groupSelectionBoxOrigin = new Vector2(0, 0);
+        public HashSet<Node> groupSelectSet = new HashSet<Node>();
 
         #endregion
 
@@ -82,9 +92,11 @@ namespace OrbItProcs.Interface {
                 hovertargetting = false;
 
             if (keybState.IsKeyDown(Keys.D1))
-                currentSelection = "placeNode";
+                currentSelection = selection.placeNode;
             if (keybState.IsKeyDown(Keys.Q))
-                currentSelection = "targeting";
+                currentSelection = selection.targetSelection;
+            if (keybState.IsKeyDown(Keys.W))
+                currentSelection = selection.groupSelection;
 
 
             if (keybState.IsKeyDown(Keys.LeftShift))
@@ -157,13 +169,8 @@ namespace OrbItProcs.Interface {
             int worldMouseX = (int)(mouseState.X * room.mapzoom);
             int worldMouseY = (int)(mouseState.Y * room.mapzoom);
 
-            if (isTargeting)
-            {
-                
-            }
 
-
-            if (currentSelection.Equals("placeNode"))
+            if (currentSelection == selection.placeNode)
             {
                 if (mouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Released)
                 {
@@ -242,7 +249,7 @@ namespace OrbItProcs.Interface {
 
                 }
             }
-            else if (currentSelection.Equals("targeting"))
+            else if (currentSelection == selection.targetSelection)
             {
                 if (mouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Released)
                 {
@@ -343,6 +350,69 @@ namespace OrbItProcs.Interface {
                 //oldMouseScrollValue = mouseState.ScrollWheelValue;
                 //oldMouseState = mouseState;
                 //return;
+            }
+            else if (currentSelection == selection.groupSelection)
+            {
+                
+
+                if (mouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Released)
+                {
+                    groupSelectionBoxOrigin = new Vector2(mouseState.X, mouseState.Y);
+                    groupSelectionBoxOrigin *= room.mapzoom;
+                }
+                else if (mouseState.LeftButton == ButtonState.Released && oldMouseState.LeftButton == ButtonState.Pressed)
+                {
+                    bool ctrlDown = oldKeyBState.IsKeyDown(Keys.LeftControl);
+                    bool altDown = oldKeyBState.IsKeyDown(Keys.LeftAlt);
+                    if (altDown) ctrlDown = false;
+
+                    Vector2 mousePos = new Vector2(mouseState.X, mouseState.Y);
+                    mousePos *= room.mapzoom;
+                    //groupSelectionBoxOrigin *= room.mapzoom;
+
+                    float lowerx = Math.Min(mousePos.X, groupSelectionBoxOrigin.X);
+                    float upperx = Math.Max(mousePos.X, groupSelectionBoxOrigin.X);
+                    float lowery = Math.Min(mousePos.Y, groupSelectionBoxOrigin.Y);
+                    float uppery = Math.Max(mousePos.Y, groupSelectionBoxOrigin.Y);
+
+                    if (!ctrlDown && !altDown) groupSelectSet = new HashSet<Node>();
+
+                    foreach(Node n in room.masterGroup.fullSet.ToList())
+                    {
+                        float xx = n.transform.position.X;
+                        float yy = n.transform.position.Y;
+
+                        if (xx >= lowerx && xx <= upperx
+                         && yy >= lowery && yy <= uppery)
+                        {
+                            if (altDown)
+                            {
+                                if (groupSelectSet.Contains(n)) groupSelectSet.Remove(n);
+                                else groupSelectSet.Add(n);
+                            }
+                            else
+                            {
+                                groupSelectSet.Add(n);
+                            }
+                        }
+                    }
+                    //System.Console.WriteLine(groupSelectSet.Count);
+
+                    room.addRectangleLines(lowerx, lowery, upperx, uppery);
+                }
+
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    Vector2 mousePos = new Vector2(mouseState.X, mouseState.Y);
+                    mousePos *= room.mapzoom;
+
+                    float lowerx = Math.Min(mousePos.X, groupSelectionBoxOrigin.X);
+                    float upperx = Math.Max(mousePos.X, groupSelectionBoxOrigin.X);
+                    float lowery = Math.Min(mousePos.Y, groupSelectionBoxOrigin.Y);
+                    float uppery = Math.Max(mousePos.Y, groupSelectionBoxOrigin.Y);
+
+                    room.addRectangleLines(lowerx, lowery, upperx, uppery);
+                }
             }
             
             if (hovertargetting)

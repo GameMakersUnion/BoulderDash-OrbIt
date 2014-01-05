@@ -27,8 +27,9 @@ namespace OrbItProcs.Interface
         //SourceTarget
         Label lblSource, lblTarget, lblGroupS, lblGroupT, lblNodeS, lblNodeT;
         ComboBox cbGroupS, cbGroupT, cbNodeS, cbNodeT;
-        RadioButton rdGroupS, rdGroupT, rdNodeS, rdNodeT, rdSelectionS, rdSelectionT;
-        
+        RadioButton rdGroupS, rdGroupT, rdNodeS, rdNodeT;//, rdSelectionS, rdSelectionT;
+        CheckBox chSelectionS, chSelectionT;
+
         //LinkPalette
         public ComboBox cbLinkList;
         Button btnCreateLink, btnOpenGenerator;
@@ -138,14 +139,14 @@ namespace OrbItProcs.Interface
             rdNodeS.Parent = radioBoxSource;
             rdNodeS.Click += rdNodeS_Click;
 
-            rdSelectionS = new RadioButton(manager);
-            rdSelectionS.Init();
-            rdSelectionS.Left = left;
-            rdSelectionS.Top = HeightCounter3; HeightCounter3 += rdSelectionS.Height + VertPadding3;
-            rdSelectionS.Width = middle;
-            rdSelectionS.Text = "Selection";
-            rdSelectionS.Parent = radioBoxSource;
-            rdSelectionS.Click += rdSelectionS_Click;
+            chSelectionS = new CheckBox(manager);
+            chSelectionS.Init();
+            chSelectionS.Left = left;
+            chSelectionS.Top = HeightCounter3; HeightCounter3 += chSelectionS.Height + VertPadding3;
+            chSelectionS.Width = middle;
+            chSelectionS.Text = "Selection";
+            chSelectionS.Parent = radioBoxSource;
+            chSelectionS.Click += chSelectionS_Click;
 
             #endregion
 
@@ -219,14 +220,14 @@ namespace OrbItProcs.Interface
             rdNodeT.Parent = radioBoxTarget;
             rdNodeT.Click += rdNodeT_Click;
 
-            rdSelectionT = new RadioButton(manager);
-            rdSelectionT.Init();
-            rdSelectionT.Left = left;
-            rdSelectionT.Top = HeightCounter3; HeightCounter3 += rdSelectionT.Height + VertPadding3;
-            rdSelectionT.Width = middle;
-            rdSelectionT.Text = "Selection";
-            rdSelectionT.Parent = radioBoxTarget;
-            rdSelectionT.Click += rdSelectionT_Click;
+            chSelectionT = new CheckBox(manager);
+            chSelectionT.Init();
+            chSelectionT.Left = left;
+            chSelectionT.Top = HeightCounter3; HeightCounter3 += chSelectionT.Height + VertPadding3;
+            chSelectionT.Width = middle;
+            chSelectionT.Text = "Selection";
+            chSelectionT.Parent = radioBoxTarget;
+            chSelectionT.Click += chSelectionT_Click;
 
             #endregion
 
@@ -351,38 +352,74 @@ namespace OrbItProcs.Interface
 
         void rdGroupS_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
+            if (chSelectionS.Checked) return;
             cbGroupS.Enabled = true;
             cbNodeS.Enabled = false;
         }
 
         void rdNodeS_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
+            if (chSelectionS.Checked) return;
             cbGroupS.Enabled = true;
             cbNodeS.Enabled = true;
         }
 
-        void rdSelectionS_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        void chSelectionS_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            cbGroupS.Enabled = false;
-            cbNodeS.Enabled = false;
+            if (chSelectionS.Checked)
+            {
+                cbGroupS.Enabled = false;
+                cbNodeS.Enabled = false;
+            }
+            else
+            {
+                if (rdGroupS.Checked)
+                {
+                    cbGroupS.Enabled = true;
+                    cbNodeS.Enabled = false;
+                }
+                else if (rdNodeS.Checked)
+                {
+                    cbGroupS.Enabled = true;
+                    cbNodeS.Enabled = true;
+                }
+            }
         }
 
         void rdGroupT_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
+            if (chSelectionT.Checked) return;
             cbGroupT.Enabled = true;
             cbNodeT.Enabled = false;
         }
 
         void rdNodeT_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
+            if (chSelectionT.Checked) return;
             cbGroupT.Enabled = true;
             cbNodeT.Enabled = true;
         }
 
-        void rdSelectionT_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        void chSelectionT_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            cbGroupT.Enabled = false;
-            cbNodeT.Enabled = false;
+            if (chSelectionT.Checked)
+            {
+                cbGroupT.Enabled = false;
+                cbNodeT.Enabled = false;
+            }
+            else
+            {
+                if (rdGroupT.Checked)
+                {
+                    cbGroupT.Enabled = true;
+                    cbNodeT.Enabled = false;
+                }
+                else if (rdNodeT.Checked)
+                {
+                    cbGroupT.Enabled = true;
+                    cbNodeT.Enabled = true;
+                }
+            }
         }
         //palette
         void cbLinkList_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
@@ -419,7 +456,7 @@ namespace OrbItProcs.Interface
 
                     insArea2.ResetInspectorBox(n.SourceLinks);
                 }
-                else if (rdSelectionS.Checked)
+                else if (chSelectionS.Checked)
                 {
                     //todo: implement selection linking
                 }
@@ -444,7 +481,7 @@ namespace OrbItProcs.Interface
 
                     insArea2.ResetInspectorBox(n.TargetLinks);
                 }
-                else if (rdSelectionT.Checked)
+                else if (chSelectionT.Checked)
                 {
                     //todo: implement selection linkin
                 }
@@ -468,7 +505,26 @@ namespace OrbItProcs.Interface
 
             //source
             dynamic source = null;
-            if (rdGroupS.Checked)
+            if (chSelectionS.Checked)
+            {
+                //todo: implement selection linking
+                if (rdGroupS.Checked)
+                {
+                    if (ui.groupSelectSet != null && ui.groupSelectSet.Count > 0)
+                    {
+                        source = ui.groupSelectSet;
+                    }
+                }
+                else if (rdNodeS.Checked)
+                {
+                    if (game.targetNode != null)
+                    {
+                        source = game.targetNode;
+                    }
+                }
+
+            }
+            else if (rdGroupS.Checked)
             {
                 string s = cbGroupS.SelectedItem();
                 if (s == null || s.Equals("")) return;
@@ -485,14 +541,29 @@ namespace OrbItProcs.Interface
                 Node n = (Node)o;
                 source = n;
             }
-            else if (rdSelectionS.Checked)
-            {
-                //todo: implement selection linking
-            }
+            
 
             //target
             dynamic target = null;
-            if (rdGroupT.Checked)
+            if (chSelectionT.Checked)
+            {
+                //todo: implement selection linking
+                if (rdGroupT.Checked)
+                {
+                    if (ui.groupSelectSet != null && ui.groupSelectSet.Count > 0)
+                    {
+                        target = ui.groupSelectSet;
+                    }
+                }
+                else if (rdNodeT.Checked)
+                {
+                    if (game.targetNode != null)
+                    {
+                        target = game.targetNode;
+                    }
+                }
+            }
+            else if (rdGroupT.Checked)
             {
                 string s = cbGroupT.SelectedItem();
                 if (s == null || s.Equals("")) return;
@@ -509,10 +580,8 @@ namespace OrbItProcs.Interface
                 Node n = (Node)o;
                 target = n;
             }
-            else if (rdSelectionT.Checked)
-            {
-                //todo: implement selection linkin
-            }
+            
+
             //create link
             if (source == null || target == null) return;
 
@@ -522,7 +591,7 @@ namespace OrbItProcs.Interface
             newComponent.active = true;
             if (newComponent.GetType().GetProperty("activated") != null) newComponent.activated = true;
 
-            Link newLink = new Link(source, target, newComponent, link.FormationType);
+            Link newLink = new Link(source, target, newComponent, link.formation);
             room.AllActiveLinks.Add(newLink);
         }
 

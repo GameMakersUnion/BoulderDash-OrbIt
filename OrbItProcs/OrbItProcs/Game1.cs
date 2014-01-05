@@ -333,7 +333,9 @@ namespace OrbItProcs
                 }
             }
 
-            ui.Update(gameTime);
+
+
+            
 
             if (!ui.IsPaused)
             {
@@ -341,9 +343,12 @@ namespace OrbItProcs
             }
             else
             {
-                room.colorEffectedNodes();
-                room.updateTargetNodeGraphic();
+                //room.colorEffectedNodes();
+                //room.updateTargetNodeGraphic();
+                room.gridSystemLines = new List<Microsoft.Xna.Framework.Rectangle>();
             }
+
+            ui.Update(gameTime);
         }
         public void spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null)
         {
