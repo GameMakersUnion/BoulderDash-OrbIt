@@ -12,6 +12,7 @@ namespace OrbItProcs.Components
         public Color color = new Color(255,255,255);
         public Vector2 position = new Vector2(0,0);
         public Vector2 velocity = new Vector2(0,0);
+        public Vector2 effvelocity = new Vector2(0, 0);
         //private float _X = 0;
         //private float _Y = 0;
         private float _scale = 1f;
@@ -78,7 +79,9 @@ namespace OrbItProcs.Components
             if (parent != null) this.parent = parent;
             com = comp.transform;
             methods = mtypes.none;
-            invmass = 1 / mass;
+            //invmass = 1 / mass;
+            mass = _mass; //sets the inverse mass
+
         }
 
         public override void Initialize(Node parent)

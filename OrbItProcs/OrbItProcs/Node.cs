@@ -46,7 +46,7 @@ namespace OrbItProcs {
         public event EventHandler OnAffectOthers;
 
         public event ProcessMethod Collided;
-        public Dictionary<dynamic, dynamic> CollideArgs;
+        //public Dictionary<dynamic, dynamic> CollideArgs;
 
         static Dictionary<dynamic, dynamic> defaultProps = new Dictionary<dynamic, dynamic>() { };
 
@@ -130,7 +130,6 @@ namespace OrbItProcs {
 
 
         private int _sentinel = -10;
-
         public int sentinelp { get { return _sentinel; } set { _sentinel = value; } }
 
         public Room room = Program.getRoom();
@@ -206,9 +205,6 @@ namespace OrbItProcs {
                 // if the key is a node type, (and not a bool) we need to update the instance variable value
                 if (p is node)// && !(userProps[p] is bool))
                     storeInInstance(p, userProps);
-
-                
-
             }
             // fill in remaining defaultProps
             foreach (dynamic p in defaultProps.Keys)
@@ -234,6 +230,24 @@ namespace OrbItProcs {
             if (Program.getGame() == null) Console.WriteLine("gnull");
             if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0,5);
             else name = name + nodeCounter;
+
+            /*
+            comp key = comp.tree;
+            dynamic value = comps[key];
+
+            value.maxdepth = 3;
+
+
+            Dictionary<string, int> birthdays = new Dictionary<string, int>();
+
+            birthdays["ian"] = 1934;
+            birthdays["zack"] = 1933;
+
+            birthdays.Add("tom", 22);
+
+            int year = birthdays["ian"];
+            */
+
             
         }
 
@@ -464,7 +478,8 @@ namespace OrbItProcs {
 
             List<Node> returnObjectsFinal = new List<Node>();
             List<Node> collisionList = new List<Node>();
-            returnObjectsFinal = room.gridsystem.retrieve(this);
+            if (aOtherProps.Count > 0)
+                returnObjectsFinal = room.gridsystem.retrieve(this);
 
             int cellReach = (int)(transform.radius * 2) / room.gridsystem.cellwidth * 2;
 
@@ -549,16 +564,16 @@ namespace OrbItProcs {
             }
         }
 
-        public void OnCollidePublic()
+        public void OnCollidePublic(Dictionary<dynamic, dynamic> dict)
         {
-            OnCollideInvoker();
+            OnCollideInvoker(dict);
         }
 
-        protected virtual void OnCollideInvoker()
+        protected virtual void OnCollideInvoker(Dictionary<dynamic,dynamic> dict)
         {
             if (Collided != null)
             {
-                Collided(CollideArgs);
+                Collided(dict);
             }
         }
 

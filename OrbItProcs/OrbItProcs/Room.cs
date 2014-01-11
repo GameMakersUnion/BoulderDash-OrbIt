@@ -24,6 +24,8 @@ namespace OrbItProcs {
         whitepixel,
     }
 
+    
+
     public class Room {
 
 
@@ -50,11 +52,11 @@ namespace OrbItProcs {
 
         public ObservableCollection<object> nodes = new ObservableCollection<object>();
 
-        public Queue<object> nodesToAdd = new Queue<object>();
+        //public Queue<object> nodesToAdd = new Queue<object>();
 
         public Node defaultNode, targetNodeGraphic;
         //public NodeList<Node> nodes = new NodeList<Node>();
-        public int dtimerMax = 0, dtimerCount = 0;
+        public int dtimerMax = -1, dtimerCount = 0;
 
         public SharpSerializer serializer = new SharpSerializer();
 
@@ -72,9 +74,10 @@ namespace OrbItProcs {
             processManager = new ProcessManager(this);
             
             this.game = game;
+            this.mapzoom = 2f;
 
             // grid System
-            gridsystem = new GridSystem(this, 40, 4);
+            gridsystem = new GridSystem(this, 40, 15);
             //gridsystem = new GridSystem(this, 40, 70, 4);
             gridSystemLines = new List<Rectangle>();
             DrawLinks = true;
@@ -101,69 +104,64 @@ namespace OrbItProcs {
             if (defaultNode == null) defaultNode = null;
             //if (game.ui.sidebar.lstComp == null) game.ui.sidebar.lstComp = null;
 
-            if (dtimerCount > dtimerMax)
+
+            processManager.Update();
+
+            gridsystem.clear();
+            gridSystemLines = new List<Rectangle>();
+
+            HashSet<Node> toDelete = new HashSet<Node>();
+            //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
+            masterGroup.childGroups["General Groups"].ForEachFullSet(delegate(Node o) 
             {
-                dtimerCount = 0;
-                processManager.Update();
+                Node n = (Node)o; 
+                gridsystem.insert(n);
+            });
 
-                gridsystem.clear();
-                gridSystemLines = new List<Rectangle>();
+            //fullset.ToList().ForEach(delegate(Node n) { gridsystem.insert(n); });
 
-                HashSet<Node> toDelete = new HashSet<Node>();
-                //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
-                masterGroup.childGroups["General Groups"].ForEachFullSet(delegate(Node o) 
+            masterGroup.ForEachFullSet(delegate(Node o)
+            {
+                Node n = (Node)o;
+                if (n.active)
                 {
-                    Node n = (Node)o; 
-                    gridsystem.insert(n);
-                });
-
-                //fullset.ToList().ForEach(delegate(Node n) { gridsystem.insert(n); });
-
-                masterGroup.ForEachFullSet(delegate(Node o)
+                    n.Update(gametime);
+                }
+                if (n.IsDeleted)
                 {
-                    Node n = (Node)o;
-                    if (n.active)
-                    {
-                        n.Update(gametime);
-                    }
-                    if (n.IsDeleted)
-                    {
-                        toDelete.Add(n);
-                        if (n == game.targetNode) game.targetNode = null;
-                        if (n == game.ui.sidebar.inspectorArea.editNode) game.ui.sidebar.inspectorArea.editNode = null;
-                        if (n == game.ui.spawnerNode) game.ui.spawnerNode = null;
-                    }
-                });
+                    toDelete.Add(n);
+                    if (n == game.targetNode) game.targetNode = null;
+                    if (n == game.ui.sidebar.inspectorArea.editNode) game.ui.sidebar.inspectorArea.editNode = null;
+                    if (n == game.ui.spawnerNode) game.ui.spawnerNode = null;
+                }
+            });
                 
 
 
-                toDelete.ToList().ForEach(delegate(Node n) 
-                {
-                    if (masterGroup.fullSet.Contains(n)) //masterGroup.entities.Remove(n);
-                    {
-                        masterGroup.DeleteEntity(n);
-                    }
-                    /*
-                    groups.Keys.ToList().ForEach(delegate(string key)
-                    {
-                        Group g = groups[key];
-                        if (g.entities.Contains(n)) g.entities.Remove(n);
-                    });
-                    */
-                });
-
-                if (AfterIteration != null) AfterIteration(this, null);
-
-                //if (linkTest != null) linkTest.UpdateAction();
-                
-                //addGridSystemLines(gridsystem);
-                addBorderLines();
-                //colorEffectedNodes();
-            }
-            else
+            toDelete.ToList().ForEach(delegate(Node n) 
             {
-                dtimerCount++;
-            }
+                if (masterGroup.fullSet.Contains(n)) //masterGroup.entities.Remove(n);
+                {
+                    masterGroup.DeleteEntity(n);
+                }
+                /*
+                groups.Keys.ToList().ForEach(delegate(string key)
+                {
+                    Group g = groups[key];
+                    if (g.entities.Contains(n)) g.entities.Remove(n);
+                });
+                */
+            });
+
+            if (AfterIteration != null) AfterIteration(this, null);
+
+            //if (linkTest != null) linkTest.UpdateAction();
+                
+            //addGridSystemLines(gridsystem);
+            addBorderLines();
+            //colorEffectedNodes();
+            
+
 
             updateTargetNodeGraphic();
 
@@ -284,7 +282,7 @@ namespace OrbItProcs {
 
         public void setDefaultProperties()
         {
-            mapzoom = 2f;
+            //mapzoom = 2f;
 
             PropertiesDict.Add("wallBounce", true);
             PropertiesDict.Add("gravityFreeze", false);

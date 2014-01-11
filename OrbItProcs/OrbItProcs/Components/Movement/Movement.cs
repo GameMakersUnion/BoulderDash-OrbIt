@@ -24,6 +24,12 @@ namespace OrbItProcs.Components
         private bool _pushable = true;
         public bool pushable { get { return _pushable; } set { _pushable = value; } }
 
+        private float _VelocityModifier = 1f;
+        public float VelocityModifier { get { return _VelocityModifier; } set { _VelocityModifier = value; } }
+
+        public Vector2 tempPosition = new Vector2(0, 0);
+
+
         private movemode _movementmode = movemode.wallbounce;
         public movemode movementmode { get { return _movementmode; } set { _movementmode = value; } }
 
@@ -44,8 +50,13 @@ namespace OrbItProcs.Components
 
         public override void AffectSelf()
         {
-            parent.transform.position.X += parent.transform.velocity.X;
-            parent.transform.position.Y += parent.transform.velocity.Y;
+            //if (parent.comps[comp.collision].active == false) return;
+
+            parent.transform.effvelocity = parent.transform.position - tempPosition;
+            tempPosition = parent.transform.position;
+
+            parent.transform.position.X += parent.transform.velocity.X * VelocityModifier;
+            parent.transform.position.Y += parent.transform.velocity.Y * VelocityModifier;
 
             //test (holy SHIT that looks cool)
             //PropertyInfo pi = parent.GetType().GetProperty("scale");
@@ -113,26 +124,26 @@ namespace OrbItProcs.Components
             {
                 parent.transform.position.X = levelwidth - parent.transform.radius;
                 parent.transform.velocity.X *= -1;
-                parent.OnCollidePublic();
+                parent.OnCollidePublic(null);
 
             }
             if (parent.transform.position.X < parent.transform.radius)
             {
                 parent.transform.position.X = parent.transform.radius;
                 parent.transform.velocity.X *= -1;
-                parent.OnCollidePublic();
+                parent.OnCollidePublic(null);
             }
             if (parent.transform.position.Y >= (levelheight - parent.transform.radius))
             {
                 parent.transform.position.Y = levelheight - parent.transform.radius;
                 parent.transform.velocity.Y *= -1;
-                parent.OnCollidePublic();
+                parent.OnCollidePublic(null);
             }
             if (parent.transform.position.Y < parent.transform.radius)
             {
                 parent.transform.position.Y = parent.transform.radius;
                 parent.transform.velocity.Y *= -1;
-                parent.OnCollidePublic();
+                parent.OnCollidePublic(null);
             }
 
 

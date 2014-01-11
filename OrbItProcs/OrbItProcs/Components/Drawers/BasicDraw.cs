@@ -37,8 +37,10 @@ namespace OrbItProcs.Components
             Room room = parent.room;
             float mapzoom = room.mapzoom;
 
+            //spritebatch.Draw()
             spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, parent.transform.color, 0, parent.TextureCenter(), parent.transform.scale / mapzoom, SpriteEffects.None, 0);
 
+            
         }
 
     }

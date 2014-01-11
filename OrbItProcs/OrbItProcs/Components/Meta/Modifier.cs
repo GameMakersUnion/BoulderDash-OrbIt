@@ -81,8 +81,7 @@ namespace OrbItProcs.Components
                     {
                         object[] parameters = new object[2] { modifierInfo.args, modifierInfo };
 
-                        meth.Invoke(null, parameters);
-                        //Console.WriteLine(modifierInfo.args["test"]);
+                        meth.Invoke(null, parameters); // this call is extremely slow; use a delegate
                         return;
                     }
                 }

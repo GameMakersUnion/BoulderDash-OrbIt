@@ -31,8 +31,11 @@ namespace OrbItProcs.Processes
         //this will start it.... for now...
         public void Add(Process p)
         {
-            processes.Add(p);
-            p.OnCreate();
+            if (!processes.Contains(p))
+            {
+                processes.Add(p);
+                p.OnCreate();
+            }
             //System.Console.WriteLine("heyo pre-emptive strike");
         }
 

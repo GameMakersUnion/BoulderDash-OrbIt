@@ -9,6 +9,9 @@ namespace OrbItProcs.Components
 {
     public class Collision : Component, ILinkable
     {
+        public bool _AffectOnlyColliders = true;
+        public bool AffectOnlyColliders { get { return _AffectOnlyColliders; } set { _AffectOnlyColliders = value; } }
+
         public Collision() : this(null) { }
         public Collision(Node parent = null)
         {
@@ -27,10 +30,19 @@ namespace OrbItProcs.Components
             //assuming other has been checked for 'active' from caller
             if (exclusions.Contains(other)) return;
 
+            if (AffectOnlyColliders && (!other.comps.ContainsKey(comp.collision) || !other.isCompActive(comp.collision)))
+            {
+                return;
+            }
+
             if (Utils.checkCollision(parent, other))
             {
-                parent.OnCollidePublic();
-                other.OnCollidePublic();
+                Dictionary<dynamic, dynamic> dict = new Dictionary<dynamic, dynamic>() { 
+                { "collidee", other },
+                };
+                parent.OnCollidePublic(dict);
+                dict["collidee"] = parent;
+                other.OnCollidePublic(dict);
                 Utils.resolveCollision(parent, other);
             }
             

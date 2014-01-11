@@ -84,7 +84,7 @@ namespace OrbItProcs.Interface
         TextBox consoletextbox;
         public ListBox lstMain;
         public ComboBox cbListPicker;
-        Button btnRemoveNode, btnRemoveAllNodes, btnAddComponent, btnDefaultNode, btnApplyToAll, btnSaveNode;
+        Button btnRemoveNode, btnRemoveAllNodes, btnAddComponent, btnDefaultNode, btnApplyToAll, btnSaveNode, btnDeleteGroup;
         public ListBox lstPresets;
         public ComboBox cbPresets;
         public ContextMenu presetContextMenu;
@@ -201,24 +201,6 @@ namespace OrbItProcs.Interface
             lstMain.ContextMenu = mainNodeContextMenu;
             #endregion
 
-            #region /// CheckBox ///
-            /*
-            chkTempNodes = new CheckBox(manager);
-            chkTempNodes.Init();
-            chkTempNodes.Parent = first;
-
-            chkTempNodes.Left = LeftPadding;
-            chkTempNodes.Top = HeightCounter;
-            chkTempNodes.Width = first.Width - LeftPadding * 2; HeightCounter += VertPadding + chkTempNodes.Height;
-            chkTempNodes.Anchor = Anchors.Left | Anchors.Bottom | Anchors.Right;
-
-            chkTempNodes.Checked = false; // TODO : Nessecary?
-            chkTempNodes.Text = "Show TempNodes";
-            chkTempNodes.ToolTip.Text = "Enables or disables \nshowing temp nodes \nin the list.";
-            // TODO : IMPLEMENT: chkTempNodes.CheckedChanged += chkTempNodes_CheckedChanged);
-            */
-            #endregion
-
             #region  /// List Picker ///
 
             cbListPicker = new ComboBox(manager);
@@ -228,10 +210,26 @@ namespace OrbItProcs.Interface
 
             cbListPicker.Width = first.Width - LeftPadding * 6;
             cbListPicker.Left = LeftPadding;
-            cbListPicker.Top = HeightCounter; HeightCounter += VertPadding + cbListPicker.Height;
+            cbListPicker.Top = HeightCounter; 
             cbListPicker.Items.Add("Other Objects");
             cbListPicker.ItemIndex = 0;
+            //cbListPicker.
+            cbListPicker.Click += cbListPicker_Click;
             cbListPicker.ItemIndexChanged += cbListPicker_ItemIndexChanged;
+
+            #endregion
+
+            #region /// Delete Group Button ///
+
+            btnDeleteGroup = new Button(manager);
+            btnDeleteGroup.Init();
+            btnDeleteGroup.Parent = first;
+            btnDeleteGroup.Left = LeftPadding + cbListPicker.Width + 5;
+            btnDeleteGroup.Width = 15;
+            btnDeleteGroup.Height = cbListPicker.Height;
+            btnDeleteGroup.Top = HeightCounter; HeightCounter += VertPadding + cbListPicker.Height;
+            btnDeleteGroup.Text = "X";
+            btnDeleteGroup.Click += btnDeleteGroup_Click;
 
             #endregion
 
@@ -534,6 +532,34 @@ namespace OrbItProcs.Interface
             #endregion
         }
 
+        void btnDeleteGroup_Click(object sender, EventArgs e)
+        {
+
+            string item = cbListPicker.Items.ElementAt(cbListPicker.ItemIndex).ToString();
+            if (item.Equals("Other Objects") || item.Equals("master") || item.Equals("Link Groups") || item.Equals("Normal Groups"))
+            {
+                return;
+            }
+            else if (!item.Equals(""))
+            {
+                foreach (object o in lstMain.Items.ToList())
+                {
+                    lstMain.Items.Remove(o);
+                }
+
+                Group find = room.masterGroup.FindGroup(item);
+                if (find == null) return;
+
+                
+
+                SyncTitleNumber(find);
+
+                
+
+            }
+            lstMain.ScrollTo(0);
+        }
+
         void stackpanel_Resize(object sender, ResizeEventArgs e)
         {
             Console.WriteLine("resized");
@@ -587,6 +613,11 @@ namespace OrbItProcs.Interface
         void ConvertIntoList_Click(object sender, EventArgs e)
         {
             Node n = (Node)lstMain.Items.ElementAt(lstMain.ItemIndex);
+            if (n == game.targetNode)
+            {
+                game.targetNode = null;
+            }
+
             Node newdefault = new Node();
             Node.cloneObject(n, newdefault);
             newdefault.transform.velocity = new Vector2(0, 0);
@@ -597,9 +628,10 @@ namespace OrbItProcs.Interface
             UpdateGroupComboBoxes();
 
             Group active = ActiveGroupFirst;
-            active.fullSet.Remove(n);
-            
-            g.fullSet.Add(n);
+            //active.fullSet.Remove(n);
+            active.DeleteEntity(n);
+
+            //g.fullSet.Add(n);
 
             int index = cbListPicker.Items.IndexOf(newdefault.name);
             cbListPicker.ItemIndex = index;
@@ -632,6 +664,14 @@ namespace OrbItProcs.Interface
             if (!tempName.Equals("")) cb.ItemIndex = cb.Items.IndexOf(tempName);
         }
 
+        
+            
+        void cbListPicker_Click(object sender, EventArgs e)
+        {
+            int t = cbListPicker.ItemIndex;
+            cbListPicker.ItemIndex = 0;
+            cbListPicker.ItemIndex = t;
+        }
         void cbListPicker_ItemIndexChanged(object sender, EventArgs e)
         {
             
@@ -1030,6 +1070,7 @@ namespace OrbItProcs.Interface
                 if (!(def).comps.ContainsKey((comp)o[1]))
                     (def).addComponent((comp)o[1], true);
                 return true;
+                
             }
             else
             {

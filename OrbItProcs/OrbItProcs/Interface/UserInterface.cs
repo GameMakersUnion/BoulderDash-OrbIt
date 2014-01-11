@@ -104,6 +104,11 @@ namespace OrbItProcs.Interface {
             if (keybState.IsKeyDown(Keys.W))
                 currentSelection = selection.groupSelection;
 
+            if (keybState.IsKeyDown(Keys.Space) && oldKeyBState.IsKeyUp(Keys.Space))
+            {
+                System.Console.WriteLine("Yeah");
+                room.Update(null);
+            }
 
             if (keybState.IsKeyDown(Keys.LeftShift))
             {
@@ -225,8 +230,8 @@ namespace OrbItProcs.Interface {
                                 { node.velocity, diff },
                             };
 
-                            game.spawnNode(userP);
-                            //Action<Node> after = delegate(Node n) { n.transform.velocity = diff; }; game.spawnNode(userP, after);
+                            //game.spawnNode(userP);
+                            Action<Node> after = delegate(Node n) { n.transform.velocity = diff; }; game.spawnNode(userP, after);
 
                             
                             rightClickCount = 0;
@@ -274,12 +279,22 @@ namespace OrbItProcs.Interface {
                                 found = n;
                                 shortedDistance = distsquared;
                             }
-                            //room.processManager.Add(new TripSpawnOnCollide(game.targetNode));
+                            
                         }
                     }
                     if (found != null)
                     {
                         sidebar.SetTargetNode(found);
+
+                        TripSpawnOnCollide ts = new TripSpawnOnCollide(game.targetNode);
+                        ProcessMethod pm = (d) => {
+                            System.Console.WriteLine(ts.triggerNode.name + ts.colCount);
+                            
+                        };
+                        ts.Collision += pm;
+
+
+                        room.processManager.Add(ts);
                     }
                     else
                     {

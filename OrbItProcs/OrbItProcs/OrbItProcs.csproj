@@ -123,6 +123,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\AffectOthers\Displace.cs" />
     <Compile Include="Components\Drawers\BasicDraw.cs" />
     <Compile Include="Components\ILinkable.cs" />
     <Compile Include="Components\Linkers\Flow.cs" />
@@ -133,6 +134,7 @@
     <Compile Include="Components\Movement\Circler.cs" />
     <Compile Include="Components\Redirector.cs" />
     <Compile Include="Components\Linkers\Tether.cs" />
+    <Compile Include="Components\RelativeMotion.cs" />
     <Compile Include="Components\Tracers\Laser.cs" />
     <Compile Include="Components\Meta\Lifetime.cs" />
     <Compile Include="Components\AffectOthers\LinearPull.cs" />
@@ -152,6 +154,8 @@
     <Compile Include="Formation.cs" />
     <Compile Include="FrameRateCounter.cs" />
     <Compile Include="GridSystem.cs" />
+    <Compile Include="Interface\ActionBar.cs" />
+    <Compile Include="Interface\ActionBox.cs" />
     <Compile Include="Interface\CollapsePanel.cs" />
     <Compile Include="Interface\InspectorArea.cs" />
     <Compile Include="Interface\KeybindSet.cs" />

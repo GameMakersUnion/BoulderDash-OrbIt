@@ -9,7 +9,7 @@ namespace OrbItProcs.Components
 {
     public class MaxVel : Component {
 
-        private float _maxvel = 50f;
+        private float _maxvel = 30f;
         public float maxvel { get { return _maxvel; } set { _maxvel = value; if (maxvel < _minvel) _maxvel = _minvel; } }
 
         private float _minvel = 0f;

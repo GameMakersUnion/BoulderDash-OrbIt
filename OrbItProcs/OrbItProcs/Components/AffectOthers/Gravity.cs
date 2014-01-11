@@ -24,6 +24,12 @@ namespace OrbItProcs.Components {
         private bool _AffectsOnlyGravity = false;
         public bool AffectsOnlyGravity { get { return _AffectsOnlyGravity; } set { _AffectsOnlyGravity = value; } }
 
+        private bool _AffectBoth = false;
+        public bool AffectBoth { get { return _AffectBoth; } set { _AffectBoth = value; } }
+
+        private bool _StrongGravity = false;
+        public bool StrongGravity { get { return _StrongGravity; } set { _StrongGravity = value; } }
+
         public Gravity() : this(null) { }
         public Gravity(Node parent = null)
         {
@@ -46,20 +52,11 @@ namespace OrbItProcs.Components {
             //if (!active) { return; }
             if (exclusions.Contains(other)) return;
 
-            bool otherHasGravity = false;
-            if (other.comps.ContainsKey(comp.gravity))
+            if (!other.comps.ContainsKey(comp.gravity) && AffectsOnlyGravity)
             {
-                otherHasGravity = true;
-            }
-            else
-            {
-                if (AffectsOnlyGravity)
-                {
-                    return;
-                }
+                return;
             }
 
-            
 
             float distVects = Vector2.Distance(other.transform.position, parent.transform.position);
 
@@ -68,9 +65,14 @@ namespace OrbItProcs.Components {
                 if (distVects < lowerbound) distVects = lowerbound;
                 double angle = Math.Atan2((parent.transform.position.Y - other.transform.position.Y), (parent.transform.position.X - other.transform.position.X));
                 //float counterforce = 100 / distVects;
-                float counterforce = 1;
                 //float gravForce = multiplier / (distVects * distVects * counterforce);
-                float gravForce = (multiplier * parent.transform.mass * other.transform.mass) / (distVects * distVects * counterforce);
+
+                //float gravForce = (multiplier * parent.transform.mass * other.transform.mass) / (distVects * distVects * counterforce);
+                float gravForce = (multiplier * parent.transform.mass * other.transform.mass) / (distVects);
+
+                if (!StrongGravity) gravForce /= distVects;
+
+
                 //float gravForce = gnode1.GravMultiplier;
                 float velX = (float)Math.Cos(angle) * gravForce;
                 float velY = (float)Math.Sin(angle) * gravForce;
@@ -82,9 +84,9 @@ namespace OrbItProcs.Components {
                 //*/
                 //*
 
-                if (otherHasGravity)
+                if (AffectBoth)
                 {
-                    //delta /= 2;
+                    delta /= 2;
 
                     if (constant)
                     {

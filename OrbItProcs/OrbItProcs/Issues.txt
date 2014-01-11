@@ -1,5 +1,14 @@
 ﻿ISSUES LIST.
 
+- make the retrieve function more efficient in the amount of retrieves that are called: 
+	only one retrieve per cell that has >1 affect others nodes.
+
+
+
+
+
+
+
 - need to make priority listings for draw, affect loops
 - add 'reset to default' button when right clicking component (or fields: get the default value in the class)
 - make sure that components that have costly 'affectself' methods (that only produce graphical effects) are not
@@ -8,9 +17,6 @@
 ---
 - the PopUp doesn't work correctly when incorrect input is given (example, you AddComponent, but don't pick one from the dropdown.)
 - The InspectorBox doesn't have a horizontal scroll bar, AND the scrolling needs to be done inside neoforce (instead of in the game logic)
-
-
-
 
 ============================== Fixed =================================
 - the defaultNode and NodePreset nodes don't fully remove their components from comps when using the RemoveComponent function

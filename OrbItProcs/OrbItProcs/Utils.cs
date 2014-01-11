@@ -46,7 +46,7 @@ namespace OrbItProcs {
             return total;
         }
 
-        public static bool In<T>(this T x, params T[] args) {return args.Contains(x);}
+        public static bool In<T>(this T x, params T[] args) where T : struct, IConvertible {return args.Contains(x);}
 
         public static string SelectedItem(this TomShane.Neoforce.Controls.ComboBox cb)
         {
@@ -242,8 +242,8 @@ namespace OrbItProcs {
 
             float loss1 = 0.98f;
             float loss2 = 0.98f;
-            o1.transform.velocity *= loss1;
-            o2.transform.velocity *= loss2;
+            //o1.transform.velocity *= loss1;
+            //o2.transform.velocity *= loss2;
 
             //if (game.fixCollisionOn)
             fixCollision(o1, o2);

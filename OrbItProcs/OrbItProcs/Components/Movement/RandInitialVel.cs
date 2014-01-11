@@ -26,7 +26,7 @@ namespace OrbItProcs.Components
             }
         }
 
-        private float _multiplier = 16f;
+        private float _multiplier = 8f;
         
         public float multiplier
         {

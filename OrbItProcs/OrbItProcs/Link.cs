@@ -39,12 +39,14 @@ namespace OrbItProcs
         }
         public Room room;
         public ILinkable linkComponent { get; set; }
+        public HashSet<ILinkable> components { get; set; }
+
         public linktype ltype { get; set; }
         public updatetime updateTime { get; set; }
         //public Action UpdateAction { get; set; }
         public Formation formation { get; set; }
         private formationtype _FormationType;
-        public formationtype FormationType { get { return _FormationType; } 
+        public formationtype FormationType { get { return _FormationType; }
             set {
                 if (_FormationType != value && formation != null)
                 {
@@ -109,7 +111,15 @@ namespace OrbItProcs
                 this.sources = new ObservableHashSet<Node>() { sourceNode };
                 sourceNode.SourceLinks.Add(this);
                 linkComponent.parent = sourceNode;
-                sourceNode.OnAffectOthers += NodeToNodeHandler;
+                if (trg is Node)
+                {
+                    sourceNode.OnAffectOthers += NodeToNodeHandler;
+                }
+                else
+                {
+                    sourceNode.OnAffectOthers += NodeToGroupHandler;
+                }
+
             }
             else if (src is HashSet<Node>)
             {

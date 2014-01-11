@@ -15,9 +15,9 @@ namespace OrbItProcs.Processes
         public static int GroupNumber = 0;
         public static Dictionary<int, Color> IntToColor = new Dictionary<int, Color>()
         {
-            { 0, Color.Red },
-            { 1, Color.Yellow },
-            { 2, Color.Green },
+            { 0, Color.White },
+            { 1, Color.Green },
+            { 2, Color.Red },
             { 3, Color.Blue },
             { 4, Color.Purple },
             { 5, Color.RosyBrown },
@@ -125,6 +125,11 @@ namespace OrbItProcs.Processes
                         fullSet.Remove(n);
                 }
             }
+        }
+
+        public void EmptyGroup()
+        {
+
         }
 
         public void ForEachFullSet(Action<Node> action)

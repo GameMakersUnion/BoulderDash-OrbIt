@@ -33,16 +33,21 @@ namespace OrbItProcs
         transform,
         queuer,
         linearpull,
-        movement,
+        maxvel,
+        
         collision,
         gravity,
+        displace,
         randcolor,
         randvelchange,
         randinitialvel,
+        relativemotion,
         transfer,
         circler, //if this goes after maxvel instead, it should have an impact on circler.
-        maxvel,
+        
         modifier,
+
+        movement,
         
         hueshifter,
         lifetime,
@@ -76,6 +81,7 @@ namespace OrbItProcs
             {comp.basicdraw,        typeof(BasicDraw)           },
             {comp.circler,          typeof(Circler)             },
             {comp.collision,        typeof(Collision)           },
+            {comp.displace,         typeof(Displace)            },
             {comp.flow,             typeof(Flow)                },
             {comp.gravity,          typeof(Gravity)             },
             {comp.hueshifter,       typeof(HueShifter)          },
@@ -90,6 +96,7 @@ namespace OrbItProcs
             {comp.randcolor,        typeof(RandColor)           },
             {comp.randinitialvel,   typeof(RandInitialVel)      },
             {comp.randvelchange,    typeof(RandVelChange)       },
+            {comp.relativemotion,   typeof(RelativeMotion)      },
             {comp.tether,           typeof(Tether)              },
             {comp.transfer,         typeof(Transfer)            },
             {comp.transform,        typeof(Transform)           },
@@ -133,8 +140,11 @@ namespace OrbItProcs
         //string currentSelection = "placeNode";
         public Node targetNode = null;
 
-        TimeSpan elapsedTime = new TimeSpan();
-        TimeSpan targetElapsedTime = new TimeSpan(0, 0, 0, 0, 16);
+        TimeSpan elapsedTimeUpdate = new TimeSpan();
+        TimeSpan targetElapsedTimeUpdate = new TimeSpan(0, 0, 0, 0, 16);
+
+        TimeSpan elapsedTimeDraw = new TimeSpan();
+        TimeSpan targetElapsedTimeDraw = new TimeSpan(0, 0, 0, 0, 16);
 
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
         //public List<FileInfo> presetFileInfos = new List<FileInfo>();
@@ -143,15 +153,20 @@ namespace OrbItProcs
         public Redirector redirector;
         public Testing testing;
 
-        public Game1()
+        public bool TimeToDraw;
+
+        public Game1() : base(true)
         {
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            Graphics.SynchronizeWithVerticalRetrace = true;
             IsFixedTimeStep = false;
+            //TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 5);
 
             worldWidth = 1580;
-            //worldHeight = 960;
             worldHeight = 1175;
+            //worldWidth = sWidth;
+            //worldHeight = sHeight;
 
             Graphics.PreferredBackBufferWidth = sWidth;
             Graphics.PreferredBackBufferHeight = sHeight;
@@ -161,14 +176,22 @@ namespace OrbItProcs
             ExitConfirmation = false;
 
             Manager.AutoUnfocus = false;
+            //MainWindow.Visible = false;
+            
+            //Manager.TargetFrames = 60;
 
             compEnums = new Dictionary<Type, comp>();
             foreach (comp key in compTypes.Keys.ToList())
             {
                 compEnums.Add(compTypes[key], key);
             }
-            
-            
+
+            TimeToDraw = false;
+
+            //Collision col = new Collision();
+            //col.AffectOther(null);
+            //typeof(Collision).GetMethod("AffectOther").Invoke();
+
         }
 
         protected override void Initialize()
@@ -188,7 +211,7 @@ namespace OrbItProcs
             Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {
                     { node.position, new Vector2(0, 0) },
                     { node.texture, textures.whitecircle },
-                    { node.radius, 50 },
+                    //{ node.radius, 50 },
                     { comp.basicdraw, true },
                     //{ comp.collision, false },
                     { comp.movement, true },
@@ -196,7 +219,7 @@ namespace OrbItProcs
                     //{ comp.randvelchange, true },
                     { comp.randinitialvel, true },
                     { comp.maxvel, true },
-                    //{ comp.gravity, false },
+                    //{ comp.gravity, true },
                     //{ comp.linearpull, true },
                     //{ comp.laser, true },
                     //{ comp.wideray, true },
@@ -206,7 +229,7 @@ namespace OrbItProcs
                     //{ comp.tree, true },
                     //{ comp.queuer, true },
                     //{ comp.flow, true },
-                    //{ comp.waver, false },
+                    { comp.waver, false },
                     //{ comp.tether, false },
                     
                 };
@@ -255,6 +278,7 @@ namespace OrbItProcs
 
             frameRateCounter = new FrameRateCounter(this);
             base.Initialize();
+            MainWindow.Visible = false;            
 
             testing = new Testing();
 
@@ -262,14 +286,16 @@ namespace OrbItProcs
             //ui.sidebar.ActiveGroup = firstGroup;
             //room.masterGroup.UpdateComboBox();
             ui.sidebar.UpdateGroupComboBoxes();
-            
+            room.game.ui.sidebar.cbListPicker.ItemIndex = 0;
             room.game.ui.sidebar.cbListPicker.ItemIndex = 2;
             InitializePresets();
+            
 
             Movement movement = new Movement();
             movement.active = true;
             Console.WriteLine("::" + movement.active);
 
+           
             
         }
 
@@ -298,7 +324,8 @@ namespace OrbItProcs
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            //spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteBatch = new SpriteBatch(Graphics.GraphicsDevice);
             // TODO: use this.Content to load your game content here
         }
 
@@ -319,13 +346,13 @@ namespace OrbItProcs
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            if (!IsFixedTimeStep)
+            if (false && !IsFixedTimeStep)
             {
-                elapsedTime += gameTime.ElapsedGameTime;
-                if (elapsedTime >= targetElapsedTime)
+                elapsedTimeUpdate += gameTime.ElapsedGameTime;
+                if (elapsedTimeUpdate >= targetElapsedTimeUpdate)
                 {
-                    frameRateCounter.UpdateElapsed(elapsedTime);
-                    elapsedTime = TimeSpan.Zero;
+                    frameRateCounter.UpdateElapsed(elapsedTimeUpdate);
+                    elapsedTimeUpdate = TimeSpan.Zero;
                 }
                 else
                 {
@@ -333,8 +360,8 @@ namespace OrbItProcs
                 }
             }
 
-
-
+            //frameRateCounter.UpdateElapsed(gameTime.ElapsedGameTime);
+            frameRateCounter.Update(gameTime);
             
 
             if (!ui.IsPaused)
@@ -349,7 +376,82 @@ namespace OrbItProcs
             }
 
             ui.Update(gameTime);
+
+            TimeToDraw = true;
         }
+        /// <summary>
+        /// This is called when the game should draw itself.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Draw(GameTime gameTime)
+        {
+            /*
+            if (!IsFixedTimeStep)
+            {
+                elapsedTimeDraw += gameTime.ElapsedGameTime;
+                if (elapsedTimeDraw >= targetElapsedTimeDraw)
+                {
+                    //frameRateCounter.UpdateElapsed(elapsedTimeDraw);
+                    elapsedTimeDraw = TimeSpan.Zero;
+                }
+                else
+                {
+                    //Manager.EndDraw();
+                    //return;
+                }
+            }
+            */
+
+            //if (!TimeToDraw) return;
+
+            Manager.BeginDraw(gameTime);
+            base.Draw(gameTime);
+
+
+            BlendState bs = new BlendState();
+            
+            //bs.AlphaBlendFunction = BlendFunction.ReverseSubtract;
+            //bs.AlphaSourceBlend = bs.AlphaDestinationBlend = Blend.One;
+
+            bs.AlphaBlendFunction = BlendState.AlphaBlend.AlphaBlendFunction;
+            bs.AlphaDestinationBlend = BlendState.AlphaBlend.AlphaDestinationBlend;
+            bs.AlphaSourceBlend = BlendState.AlphaBlend.AlphaSourceBlend;
+            bs.BlendFactor = BlendState.AlphaBlend.BlendFactor;
+            bs.ColorBlendFunction = BlendState.AlphaBlend.ColorBlendFunction;
+            bs.ColorDestinationBlend = BlendState.AlphaBlend.ColorDestinationBlend;
+            bs.ColorSourceBlend = BlendState.AlphaBlend.ColorSourceBlend;
+            bs.ColorWriteChannels = BlendState.AlphaBlend.ColorWriteChannels;
+            bs.ColorWriteChannels1 = BlendState.AlphaBlend.ColorWriteChannels1;
+            bs.ColorWriteChannels2 = BlendState.AlphaBlend.ColorWriteChannels2;
+            bs.ColorWriteChannels3 = BlendState.AlphaBlend.ColorWriteChannels3;
+
+            //bs.ColorBlendFunction = BlendFunction.Max;
+            bs.ColorDestinationBlend = Blend.One;
+            bs.ColorSourceBlend = Blend.Zero;
+            
+
+            GraphicsDevice.Clear(Color.Black);
+            //spriteBatch.Begin();
+            //spriteBatch.Begin(SpriteSortMode.Deferred, bs, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone);
+            spriteBatch.Begin();
+
+            room.Draw(spriteBatch);
+            frameRateCounter.Draw(spriteBatch, font);
+
+            //spriteBatch.Draw(whiteTexture, new Vector2(100, 100), null, Color.Black, 0, Vector2.Zero, new Vector2(10, 1), SpriteEffects.None, 0);
+
+            spriteBatch.End();
+
+            Manager.EndDraw();
+
+            TimeToDraw = false;
+
+            
+
+        }
+
+
+
         public void spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null)
         {
             //
@@ -433,29 +535,7 @@ namespace OrbItProcs
 
         
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Draw(GameTime gameTime)
-        {
-            
-            Manager.BeginDraw(gameTime);
-            base.Draw(gameTime);
-            GraphicsDevice.Clear(Color.Black);
-            spriteBatch.Begin();
-            
-            room.Draw(spriteBatch);
-            frameRateCounter.Draw(spriteBatch, font);
-
-            //spriteBatch.Draw(whiteTexture, new Vector2(100, 100), null, Color.Black, 0, Vector2.Zero, new Vector2(10, 1), SpriteEffects.None, 0);
-
-            spriteBatch.End();
-
-            Manager.EndDraw();
-
-
-        }
+        
 
         internal void deletePreset(Node p)
         {
