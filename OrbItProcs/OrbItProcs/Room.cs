@@ -78,7 +78,6 @@ namespace OrbItProcs {
 
             // grid System
             gridsystem = new GridSystem(this, 40, 15);
-            //gridsystem = new GridSystem(this, 40, 70, 4);
             gridSystemLines = new List<Rectangle>();
             DrawLinks = true;
             
@@ -160,8 +159,6 @@ namespace OrbItProcs {
             //addGridSystemLines(gridsystem);
             addBorderLines();
             //colorEffectedNodes();
-            
-
 
             updateTargetNodeGraphic();
 

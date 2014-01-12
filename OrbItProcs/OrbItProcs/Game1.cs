@@ -267,12 +267,8 @@ namespace OrbItProcs
 
             
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
-                    { node.position, new Vector2(0, 0) },
-                    { comp.basicdraw, true },
-                    { comp.hueshifter, true },
-                    { comp.phaseorb, false },
-                    { node.texture, textures.whitecircle }
-                };
+                    { comp.basicdraw, true }, { node.texture, textures.whitecircle } };
+
             room.targetNodeGraphic = new Node(room, userPropsTarget);
             room.targetNodeGraphic.name = "TargetNodeGraphic";
 
@@ -288,15 +284,14 @@ namespace OrbItProcs
             ui.sidebar.UpdateGroupComboBoxes();
             room.game.ui.sidebar.cbListPicker.ItemIndex = 0;
             room.game.ui.sidebar.cbListPicker.ItemIndex = 2;
+            room.game.ui.sidebar.cbGroupS.ItemIndex = 2;
+            room.game.ui.sidebar.cbGroupT.ItemIndex = 2;
             InitializePresets();
             
 
             Movement movement = new Movement();
             movement.active = true;
             Console.WriteLine("::" + movement.active);
-
-           
-            
         }
 
         public void InitializePresets()

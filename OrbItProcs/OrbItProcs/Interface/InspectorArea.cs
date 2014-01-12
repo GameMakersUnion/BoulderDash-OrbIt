@@ -10,6 +10,8 @@ using Console = System.Console;
 using EventHandler = TomShane.Neoforce.Controls.EventHandler;
 using EventArgs = TomShane.Neoforce.Controls.EventArgs;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.ObjectModel;
+using OrbItProcs.Components;
 
 namespace OrbItProcs.Interface
 {
@@ -41,7 +43,7 @@ namespace OrbItProcs.Interface
         public PropertyEditPanel propertyEditPanel;
         public ContextMenu contextMenuInsBox;
         public MenuItem applyToAllNodesMenuItem, toggleComponentMenuItem, removeComponentMenuItem, toggleBoolMenuItem;
-        public MenuItem toggleLinkMenuItem, removeLinkMenuItem;
+        public MenuItem toggleLinkMenuItem, removeLinkMenuItem, addComponentToLinkMenuItem;
         
 
 
@@ -135,6 +137,8 @@ namespace OrbItProcs.Interface
             toggleLinkMenuItem.Click += toggleLinkMenuItem_Click;
             removeLinkMenuItem = new MenuItem("Delete link");
             removeLinkMenuItem.Click += removeLinkMenuItem_Click;
+            addComponentToLinkMenuItem = new MenuItem("Add Link Component");
+            addComponentToLinkMenuItem.Click += AddComponentToLinkMenuItem_Click;
 
 
             contextMenuInsBox.Items.Add(applyToAllNodesMenuItem);
@@ -252,7 +256,9 @@ namespace OrbItProcs.Interface
                 else if (litem.obj is Link)
                 {
                     contextMenuInsBox.Items.Add(toggleLinkMenuItem);
+                    contextMenuInsBox.Items.Add(addComponentToLinkMenuItem);
                     contextMenuInsBox.Items.Add(removeLinkMenuItem);
+                    
                 }
                 else
                 {
@@ -386,12 +392,13 @@ namespace OrbItProcs.Interface
             Link link = (Link)item.obj;
             if (item.parentItem.obj is ObservableHashSet<Link>)
             {
-                Console.WriteLine("ObservableHashSet<Link> has been observed.");
+                //Console.WriteLine("ObservableHashSet<Link> has been observed.");
                 ObservableHashSet<Link> set = (ObservableHashSet<Link>)item.parentItem.obj;
                 set.Remove(link);
                 link.DeleteLink();
 
                 item.parentItem.DoubleClickItem(this);
+
                 
             }
         }
@@ -444,12 +451,24 @@ namespace OrbItProcs.Interface
                 Console.WriteLine("Error: The list item was not a component.");
                 return;
             }
+            if (item.parentItem.parentItem.obj is Node)
+            {
+                Component component = (Component)item.obj;
+                component.active = false;
+                editNode.RemoveComponent(item.component);
+                item.RemoveChildren();
+                InsBox.Items.Remove(item);
+            }
+            else if (item.parentItem.parentItem.obj is Link)
+            {
+                Component component = (Component)item.obj;
 
-            Component component = (Component)item.obj;
-            component.active = false;
-            editNode.RemoveComponent(item.component);
-            item.RemoveChildren();
-            InsBox.Items.Remove(item);
+                component.active = false;
+                Link link = (Link)item.parentItem.parentItem.obj;
+                link.components.Remove(component as ILinkable);
+                item.RemoveChildren();
+                InsBox.Items.Remove(item);
+            }
         }
 
         public void ScrollInsBox(MouseState mouseState, MouseState oldMouseState)
@@ -474,6 +493,76 @@ namespace OrbItProcs.Interface
             else ScrollPosition += change;
             InsBox.ScrollTo(InsBox.Items.Count - 1);
             InsBox.ScrollTo(ScrollPosition);
+        }
+
+
+        void AddComponentToLinkMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+            if (!(item.obj is Link))
+            {
+                //Console.WriteLine("Error: The list item was not a link.");
+                PopUp.Toast(ui, "You haven't selected a Link.");
+                return;
+            }
+            Link link = (Link)item.obj;
+
+
+            ObservableCollection<dynamic> Ilinkables = new ObservableCollection<dynamic>();
+            List<object> list = new List<object>();
+            Link.GetILinkableEnumVals(list);
+            foreach (object obj in list) Ilinkables.Add(obj);
+
+
+            PopUp.opt[] options = new PopUp.opt[]{
+                new PopUp.opt(PopUp.OptType.info, "Add link component to: " + link.ToString()),
+                new PopUp.opt(PopUp.OptType.dropDown, Ilinkables)};
+                /*new PopUp.opt(PopUp.OptType.checkBox, "Add to all", 
+                    delegate(object s, TomShane.Neoforce.Controls.EventArgs a){
+                        if ((s as CheckBox).Checked) nodecomplist.AddRange(missingcomps);
+                        else nodecomplist.RemoveRange(missingcomps);})};
+                */
+            PopUp.makePopup(ui, options, "Add Link Component", delegate(bool a, object[] o)
+            {
+                if (a) return AddLinkComponent(o, link);
+                else return false;
+            });
+            
+        }
+        private bool AddLinkComponent(object[] o, Link link)
+        {
+            //bool writeable = false;
+            comp c = (comp)o[1];
+            Type t = Game1.compTypes[c];
+
+            object linkComp = Activator.CreateInstance(t);
+
+            ILinkable l = (ILinkable)linkComp;
+            link.components.Add(l);
+
+            ActiveInspectorParent.DoubleClickItem(this);
+            return true;
+            /*
+            if (!inspectorArea.editNode.comps.ContainsKey((comp)o[1]))
+            {
+                inspectorArea.editNode.addComponent((comp)o[1], true);
+                inspectorArea.ActiveInspectorParent.DoubleClickItem(inspectorArea);
+            }
+            else PopUp.Prompt(ui,
+                        "The node already contains this component. Overwrite to default component?",
+                        action: delegate(bool k, object ans) { writeable = k; return true; });
+            
+            if (writeable)
+            {
+                inspectorArea.editNode.addComponent((comp)o[1], true);
+                inspectorArea.ActiveInspectorParent.DoubleClickItem(inspectorArea);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            */
         }
     }
 }

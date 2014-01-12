@@ -1041,7 +1041,7 @@ namespace OrbItProcs.Interface
             {
                 ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !inspectorArea.editNode.comps.ContainsKey(c))));
                 List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => inspectorArea.editNode.comps.ContainsKey(c)));
-
+                
                 PopUp.opt[] options = new PopUp.opt[]{
                     new PopUp.opt(PopUp.OptType.info, "Add component to: " + inspectorArea.editNode.name),
                     new PopUp.opt(PopUp.OptType.dropDown, nodecomplist),
@@ -1054,7 +1054,7 @@ namespace OrbItProcs.Interface
                 {
                     if (a) return addComponent(o);
                     else return false;
-                    });
+                });
             }
         }
 
@@ -1069,13 +1069,18 @@ namespace OrbItProcs.Interface
                 Node def = ActiveGroupFirst.defaultNode;
                 if (!(def).comps.ContainsKey((comp)o[1]))
                     (def).addComponent((comp)o[1], true);
+
+                inspectorArea.ActiveInspectorParent.DoubleClickItem(inspectorArea);
                 return true;
                 
             }
             else
             {
                 if (!inspectorArea.editNode.comps.ContainsKey((comp)o[1]))
+                {
                     inspectorArea.editNode.addComponent((comp)o[1], true);
+                    inspectorArea.ActiveInspectorParent.DoubleClickItem(inspectorArea);
+                }
                 else PopUp.Prompt(ui,
                             "The node already contains this component. Overwrite to default component?",
                             action: delegate(bool k, object ans) { writeable = k; return true; });
@@ -1083,7 +1088,7 @@ namespace OrbItProcs.Interface
                 if (writeable)
                 {
                     inspectorArea.editNode.addComponent((comp)o[1], true);
-                    inspectorArea.InsBox.rootitem.RefrestMasterList();
+                    inspectorArea.ActiveInspectorParent.DoubleClickItem(inspectorArea);
                     return true;
                 }
                 else

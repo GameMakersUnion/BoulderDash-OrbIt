@@ -528,7 +528,8 @@ namespace OrbItProcs.Interface {
         }
         public void DoubleClickItem(InspectorArea inspectorArea)
         {
-            if (hasChildren())
+            bool haschildren = hasChildren();
+            if (haschildren)
             {
                 if (extended)
                 {
@@ -568,6 +569,14 @@ namespace OrbItProcs.Interface {
                 if (parentItem != null && parentItem.parentItem != null)
                 {
                     parentItem.parentItem.DoubleClickItem(inspectorArea);
+                }
+            }
+            else if (!haschildren)
+            {
+                foreach (InspectorItem subitem in children)
+                {
+                    //masterList.Insert(position + i++, subitem);
+                    masterList.Remove(subitem);
                 }
             }
 

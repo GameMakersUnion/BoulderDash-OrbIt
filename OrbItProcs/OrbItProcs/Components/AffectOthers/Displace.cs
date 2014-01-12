@@ -10,8 +10,8 @@ namespace OrbItProcs.Components
     public class Displace : Component, ILinkable
     {
 
-        private float _multiplier = 100f;
-        public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
+        //private float _multiplier = 100f;
+        //public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
 
         private float _radius = 800f;
         public float radius { get { return _radius; } set { _radius = value; } }
@@ -24,6 +24,9 @@ namespace OrbItProcs.Components
 
         private int _angledelta = 0;
         public int angledelta { get { return _angledelta; } set { _angledelta = value; } }
+
+        private bool _IsLinear = false;
+        public bool IsLinear { get { return _IsLinear; } set { _IsLinear = value; } }
 
         //private bool _constant = false;
         //public bool constant { get { return _constant; } set { _constant = value; } }
@@ -72,15 +75,19 @@ namespace OrbItProcs.Components
                 
 
                 //float gravForce = (multiplier * parent.transform.mass * other.transform.mass) / (distVects * distVects * counterforce);
-                float gravForce = (pushfactor * parent.transform.mass * other.transform.mass) / (distVects);
+                float gravForce;
+                if (IsLinear) gravForce = pushfactor;// * 10;
+                else gravForce = (pushfactor * parent.transform.mass * other.transform.mass) / (distVects);
 
                 if (angledelta != 0)
-                    angle = (angle + Math.PI + (Math.PI * (float)(angledelta / 100.0f)) % (Math.PI * 2)) - Math.PI;
+                    angle = (angle + Math.PI + (Math.PI * (float)(angledelta / 180.0f)) % (Math.PI * 2)) - Math.PI;
 
                 //float gravForce = gnode1.GravMultiplier;
                 float velX = (float)Math.Cos(angle) * gravForce;
                 float velY = (float)Math.Sin(angle) * gravForce;
                 Vector2 delta = new Vector2(velX, velY);
+
+                if (IsLinear) delta /= other.transform.mass;
 
                 other.transform.position -= delta;
 

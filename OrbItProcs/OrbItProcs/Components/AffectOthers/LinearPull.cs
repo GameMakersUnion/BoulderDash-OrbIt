@@ -49,7 +49,8 @@ namespace OrbItProcs.Components
             if (exclusions.Contains(other)) return;
 
             float distVects = Vector2.Distance(other.transform.position, parent.transform.position);
-            
+
+            //todo: if this component is on a link, radius is not checked
             if (distVects < radius)
             {
                 double angle = Math.Atan2((parent.transform.position.Y - other.transform.position.Y), (parent.transform.position.X - other.transform.position.X));

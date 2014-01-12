@@ -67,7 +67,9 @@ namespace OrbItProcs.Interface
             cbLinkType.MaxItems = 15;
             cbLinkType.Top = HeightCounter3; HeightCounter3 += cbLinkType.Height;
             //cbLinkType.Items.AddRange(new List<object>() { });
+            Link.GetILinkableEnumVals(cbLinkType.Items);
 
+            /*
             foreach (comp key in Enum.GetValues(typeof(comp)))
             {
                 Type compType = Game1.compTypes[key];
@@ -83,8 +85,9 @@ namespace OrbItProcs.Interface
                 {
                     cbLinkType.Items.Add(key);
                 }
-                */
+                //
             }
+            */
 
             lblLinkFormation = new Label(manager);
             lblLinkFormation.Init();
@@ -150,8 +153,8 @@ namespace OrbItProcs.Interface
 
             if (cbLinkPresets.SelectedItem().Equals("Default"))
             {
-                try
-                {
+                //try
+                //{
                     string ltype = cbLinkType.SelectedItem();
                     comp c = (comp)Enum.Parse(typeof(comp), ltype);
                     //System.Console.WriteLine((int)c);
@@ -176,7 +179,8 @@ namespace OrbItProcs.Interface
 
 
                     window.Close();
-                }
+                //}
+                    /*
                 catch(Exception ex)
                 {
                     string ltype = cbLinkType.SelectedItem();
@@ -184,7 +188,9 @@ namespace OrbItProcs.Interface
                     //System.Console.WriteLine((int)c);
                     Type t = Game1.compTypes[c];
                     System.Console.WriteLine(t);
+                    throw ex;
                 }
+                */
             }
         }
     }

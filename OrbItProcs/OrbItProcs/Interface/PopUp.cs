@@ -158,6 +158,7 @@ namespace OrbItProcs
                     int qq = i; answer[qq] = false;
                     cb.Text = (string)opt.content;
                     cb.Click += delegate { answer[qq] = cb.Checked; };
+                    cb.Click += opt.action;
                 }
                 i++;
             }

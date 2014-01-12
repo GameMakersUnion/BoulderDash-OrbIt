@@ -26,7 +26,7 @@ namespace OrbItProcs.Interface
         CollapsePanel c3, c4, c5, c6, c7, c8;
         //SourceTarget
         Label lblSource, lblTarget, lblGroupS, lblGroupT, lblNodeS, lblNodeT;
-        ComboBox cbGroupS, cbGroupT, cbNodeS, cbNodeT;
+        public ComboBox cbGroupS, cbGroupT, cbNodeS, cbNodeT;
         RadioButton rdGroupS, rdGroupT, rdNodeS, rdNodeT;//, rdSelectionS, rdSelectionT;
         CheckBox chSelectionS, chSelectionT;
 
@@ -282,43 +282,7 @@ namespace OrbItProcs.Interface
             #endregion
 
             backPanel.Refresh();
-            //tbcMain.SelectedPage = tbcMain.TabPages[0];
-
-            #region tests
-            /*
-            Window w = new Window(manager);
-            manager.Add(w);
-            w.Top = w.Left = 100;
-            w.Height = w.Width = 200;
-            w.Init();
-
-            Panel c = new Panel(manager);
-            c.AutoScroll = true;
-            c.Init();
-            c.Width = c.Height = 50;
-            
-            w.Add(c);
-
-            Button b = new Button(manager);
-            b.Init();
-            b.Width = 20;
-            b.Height = 20;
-            b.Top = 150;
-            b.Click += b_Click;
-            c.Add(b);
-
-            GroupBox box = new GroupBox(manager);
-            box.Init();
-            box.Left = 100;
-            box.Parent = w;
-            box.Width = 150;
-            box.Height = 100;
-            box.Text = "";
-            
-
-
-            //*/
-            #endregion
+            tbcMain.SelectedPage = tbcMain.TabPages[0];
 
         }
 
@@ -584,15 +548,19 @@ namespace OrbItProcs.Interface
 
             //create link
             if (source == null || target == null) return;
-
+            /*
             dynamic newComponent = Activator.CreateInstance(link.linkComponent.GetType());
             Component.CloneComponent((Component)link.linkComponent, newComponent);
             //newComponent.Initialize();
             newComponent.active = true;
             if (newComponent.GetType().GetProperty("activated") != null) newComponent.activated = true;
+            */
 
-            Link newLink = new Link(source, target, newComponent, link.formation);
+            Link newLink = new Link(link, source, target);
+            //Link newLink = new Link(source, target, newComponent, link.formation);
             room.AllActiveLinks.Add(newLink);
+
+            cbLinkList.ItemIndex = 1;
         }
 
         void btnOpenGenerator_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
