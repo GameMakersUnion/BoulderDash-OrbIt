@@ -4,6 +4,7 @@ namespace OrbItProcs
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections;
     using System.Linq;
     using System.Text;
     using System.Collections.Specialized;
@@ -13,10 +14,31 @@ namespace OrbItProcs
     /// Represents an observable set of values.
     /// </summary>
     /// <typeparam name="T">The type of elements in the hash set.</typeparam>    
-    public sealed class ObservableHashSet<T> : ISet<T>, ICollection<T>, INotifyCollectionChanged, INotifyPropertyChanged, IDisposable
+    public sealed class ObservableHashSet<T> : ISet<T>, System.Collections.ICollection, INotifyCollectionChanged, INotifyPropertyChanged, IDisposable
     {
         private SimpleMonitor monitor = new SimpleMonitor();
         public HashSet<T> hashSet;
+
+        object ICollection.SyncRoot
+        {
+            get
+            {
+                ICollection c = hashSet.ToList(); return c.SyncRoot;
+                /*
+                if (this._syncRoot == null)
+                {
+                    Interlocked.CompareExchange(ref this._syncRoot, new object(), null);
+                }
+                return this._syncRoot;
+                */
+            }
+        }
+        public bool IsSynchronized { get; set; }
+
+        public void CopyTo(System.Array array, int index)
+        {
+            ICollection c = hashSet.ToList(); c.CopyTo(array, index);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObservableHashSet&lt;T&gt;"/> class.

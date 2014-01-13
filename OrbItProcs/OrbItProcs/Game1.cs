@@ -520,6 +520,7 @@ namespace OrbItProcs
 
         public void saveNode(Node node, string name)
         {
+
             name = name.Trim();
             string filename = "Presets//Nodes//" + name + ".xml";
             Action completeSave = delegate{
