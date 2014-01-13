@@ -284,6 +284,14 @@ namespace OrbItProcs.Interface {
                     Random random = Utils.random;
                     int compsToAdd = random.Next(total);
 
+                    int a = 21 * 21;
+                    int randLog = random.Next(a);
+                    int root = (int)Math.Ceiling(Math.Sqrt(randLog));
+                    root = 21 - root;
+                    compsToAdd = root;
+
+                    System.Console.WriteLine(compsToAdd + " " + root);
+
                     int counter = 0;
                     while (compsToAdd > 0)
                     {
@@ -305,7 +313,7 @@ namespace OrbItProcs.Interface {
 
                     UserProps = userP;
 
-                    game.spawnNode(userP, blank: true);
+                    game.spawnNode(userP, blank: true, lifetime: 300);
                 }
                 if (mouseState.RightButton == ButtonState.Pressed && oldMouseState.RightButton == ButtonState.Released)
                 {
@@ -316,7 +324,7 @@ namespace OrbItProcs.Interface {
                     if (UserProps != null)
                     {
                         UserProps[node.position] = pos;
-                        game.spawnNode(UserProps);
+                        game.spawnNode(UserProps, blank: true, lifetime: 600);
                     }
                 }
             }

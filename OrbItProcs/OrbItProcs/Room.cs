@@ -103,6 +103,8 @@ namespace OrbItProcs {
             if (defaultNode == null) defaultNode = null;
             //if (game.ui.sidebar.lstComp == null) game.ui.sidebar.lstComp = null;
 
+            ObservableHashSet<Node> hs = new ObservableHashSet<Node>();
+            ICollection<Node> i = hs;
 
             processManager.Update();
 

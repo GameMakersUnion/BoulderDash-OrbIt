@@ -70,7 +70,7 @@ namespace OrbItProcs.Components
             //if (parent.comps.ContainsKey(comp.queuer)) 
             //parent.comps[comp.queuer].qs = parent.comps[comp.queuer].qs | queues.scale | queues.position;
 
-            parent.comps[comp.lifetime].immortal = true;
+            //parent.comps[comp.lifetime].immortal = true;
 
             //MODIFIER
             ModifierInfo modinfo = new ModifierInfo();

@@ -117,7 +117,9 @@ namespace OrbItProcs
             Component component = (Component)Activator.CreateInstance(compTypes[c]);
             return component;
         }
-        
+
+        public static GameTime GlobalGameTime;
+
         public UserInterface ui;
         public Room room;
         SpriteBatch spriteBatch;
@@ -340,6 +342,7 @@ namespace OrbItProcs
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            GlobalGameTime = gameTime;
             base.Update(gameTime);
             if (false && !IsFixedTimeStep)
             {
@@ -447,7 +450,7 @@ namespace OrbItProcs
 
 
 
-        public void spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null, bool blank = false)
+        public void spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null, bool blank = false, int lifetime = -1)
         {
             //
             //testing.TestOnClick();
@@ -478,7 +481,11 @@ namespace OrbItProcs
             newNode.OnSpawn();
             if (afterSpawnAction != null) afterSpawnAction(newNode);
             
-
+            if (lifetime != -1)
+            {
+                newNode.comps[comp.lifetime].maxlife = lifetime;
+                newNode.comps[comp.lifetime].immortal = false;
+            }
             //activegroup.entities.Add(newNode);
             activegroup.IncludeEntity(newNode);
             int Enumsize = Enum.GetValues(typeof(KnownColor)).Length;
@@ -528,6 +535,8 @@ namespace OrbItProcs
                     delegate(bool c, object a) { if (c) {completeSave(); PopUp.Toast(ui, "Node was overridden"); } return true; });
             }
             else { PopUp.Toast(ui, "Node Saved"); completeSave(); }
+
+            
 
         }
 

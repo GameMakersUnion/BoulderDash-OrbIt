@@ -137,7 +137,7 @@ namespace OrbItProcs.Components
                     OrbItProcs.Processes.Group g = parent.room.masterGroup.FindGroup(cmb.Items.ElementAt(cmb.ItemIndex).ToString());
                     g.IncludeEntity(newNode);
                 }
-                parent.nodeState = state.drawOnly;
+                //parent.nodeState = state.drawOnly;
 
                 HashSet<Node> hs = new HashSet<Node>();
                 

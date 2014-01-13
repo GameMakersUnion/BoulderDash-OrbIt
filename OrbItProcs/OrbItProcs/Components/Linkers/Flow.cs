@@ -75,7 +75,7 @@ namespace OrbItProcs.Components
             if (!parent.comps.ContainsKey(comp.lifetime))
                 parent.addComponent(comp.lifetime, true);
 
-            parent.comps[comp.lifetime].immortal = true;
+            //parent.comps[comp.lifetime].immortal = true;
 
 
         }

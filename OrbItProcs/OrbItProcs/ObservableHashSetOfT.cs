@@ -13,7 +13,7 @@ namespace OrbItProcs
     /// Represents an observable set of values.
     /// </summary>
     /// <typeparam name="T">The type of elements in the hash set.</typeparam>    
-    public sealed class ObservableHashSet<T> : ISet<T>, INotifyCollectionChanged, INotifyPropertyChanged, IDisposable
+    public sealed class ObservableHashSet<T> : ISet<T>, ICollection<T>, INotifyCollectionChanged, INotifyPropertyChanged, IDisposable
     {
         private SimpleMonitor monitor = new SimpleMonitor();
         public HashSet<T> hashSet;
