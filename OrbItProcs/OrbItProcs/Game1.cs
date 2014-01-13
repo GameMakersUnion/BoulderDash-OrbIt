@@ -447,7 +447,7 @@ namespace OrbItProcs
 
 
 
-        public void spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null)
+        public void spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null, bool blank = false)
         {
             //
             //testing.TestOnClick();
@@ -461,13 +461,16 @@ namespace OrbItProcs
             //if (activegroup.Name.Equals("master")) return;
             if (!activegroup.Spawnable) return;
             Node newNode = new Node();
-            if (ui.spawnerNode != null)
+            if (!blank)
             {
-                Node.cloneObject(ui.spawnerNode, newNode);
-            }
-            else
-            {
-                Node.cloneObject(ui.sidebar.ActiveDefaultNode, newNode);
+                if (ui.spawnerNode != null)
+                {
+                    Node.cloneObject(ui.spawnerNode, newNode);
+                }
+                else
+                {
+                    Node.cloneObject(ui.sidebar.ActiveDefaultNode, newNode);
+                }
             }
             newNode.name = activegroup.Name + Node.nodeCounter;
 

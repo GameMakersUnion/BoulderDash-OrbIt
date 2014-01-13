@@ -60,6 +60,7 @@ namespace OrbItProcs.Components
         {
             if (depth == -1)
             {
+                //parent.nodeState = state.drawOnly;
                 return;
             }
             if (depth > maxdepth)
@@ -69,7 +70,7 @@ namespace OrbItProcs.Components
                 depth = -1;
                 //return;
             }
- 
+
             //angle = Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2);
             float scaledown = 1.0f - 0.01f;
             parent.transform.scale *= scaledown;

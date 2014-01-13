@@ -32,6 +32,7 @@ namespace OrbItProcs.Interface
         public int LeftPadding = 5;
         public int VertPadding = 4;
         public int ScrollPosition = 0;
+        public int InsBoxParentTop = 0;
 
         public Manager manager;
         public Control parent;
@@ -473,7 +474,16 @@ namespace OrbItProcs.Interface
 
         public void ScrollInsBox(MouseState mouseState, MouseState oldMouseState)
         {
-            if (mouseState.Y > Top + InsBox.Top + 24 && mouseState.Y < Top + InsBox.Top + InsBox.Height + 24)
+            int top = InsBox.Top;
+            Control par = InsBox.Parent;
+            while (par != null)
+            {
+                
+                top += par.Top;
+                par = par.Parent;
+            }
+
+            if (mouseState.Y > top && mouseState.Y < top + InsBox.Height)
             {
                 if (mouseState.ScrollWheelValue < oldMouseState.ScrollWheelValue)
                 {

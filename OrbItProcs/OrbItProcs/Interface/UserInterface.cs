@@ -26,6 +26,7 @@ namespace OrbItProcs.Interface {
             placeNode,
             targetSelection,
             groupSelection,
+            randomNode,
         }
 
         #region /// Fields ///
@@ -57,6 +58,8 @@ namespace OrbItProcs.Interface {
         public float zoomfactor { get; set; }
         public bool GameInputDisabled { get; set; }
         public bool IsPaused { get; set; }
+
+        public Dictionary<dynamic, dynamic> UserProps;
 
         //public Node editNode;
         public Node spawnerNode;
@@ -103,10 +106,11 @@ namespace OrbItProcs.Interface {
                 currentSelection = selection.targetSelection;
             if (keybState.IsKeyDown(Keys.W))
                 currentSelection = selection.groupSelection;
+            if (keybState.IsKeyDown(Keys.E))
+                currentSelection = selection.randomNode;
 
             if (keybState.IsKeyDown(Keys.Space) && oldKeyBState.IsKeyUp(Keys.Space))
             {
-                System.Console.WriteLine("Yeah");
                 room.Update(null);
             }
 
@@ -156,20 +160,6 @@ namespace OrbItProcs.Interface {
 
                 sidebar.inspectorArea.ScrollInsBox(mouseState, oldMouseState);
                 sidebar.insArea2.ScrollInsBox(mouseState, oldMouseState);
-
-                /*
-                if (mouseState.Y > sidebar.lstComp.Top + 24 && mouseState.Y < sidebar.lstComp.Top + sidebar.lstComp.Height + 24)
-                {
-                    if (mouseState.ScrollWheelValue < oldMouseState.ScrollWheelValue)
-                    {
-                        sidebar.inspectorArea.InsBox_ChangeScrollPosition(1);
-                    }
-                    else if (mouseState.ScrollWheelValue > oldMouseState.ScrollWheelValue)
-                    {
-                        sidebar.inspectorArea.InsBox_ChangeScrollPosition(-1);
-                    }
-                }
-                */
 
                 oldMouseState = mouseState;
                 return;
@@ -230,8 +220,16 @@ namespace OrbItProcs.Interface {
                                 { node.velocity, diff },
                             };
 
-                            //game.spawnNode(userP);
-                            Action<Node> after = delegate(Node n) { n.transform.velocity = diff; }; game.spawnNode(userP, after);
+                            if (oldKeyBState.IsKeyDown(Keys.LeftControl))
+                            {
+                                Action<Node> after = delegate(Node n) { n.transform.velocity = diff; }; game.spawnNode(userP, after);
+                            }
+                            else
+                            {
+                                game.spawnNode(userP);
+                            }
+                            
+                            
 
                             
                             rightClickCount = 0;
@@ -258,6 +256,68 @@ namespace OrbItProcs.Interface {
                         }
                     }
 
+                }
+            }
+            else if (currentSelection == selection.randomNode)
+            {
+                if (mouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Released)
+                {
+                    //random node
+                    Vector2 pos = new Vector2(mouseState.X, mouseState.Y);
+                    pos *= room.mapzoom;
+
+                    //new node(s)
+                    Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
+                                { node.position, pos },
+                    };
+                    HashSet<comp> comps = new HashSet<comp>() { comp.basicdraw, comp.randcolor, comp.movement, comp.lifetime };
+                    HashSet<comp> allComps = new HashSet<comp>();
+                    foreach (comp c in Enum.GetValues(typeof(comp)))
+                    {
+                        allComps.Add(c);
+                    }
+
+                    int enumsize = allComps.Count;
+                    int total = enumsize - comps.Count;
+
+                    
+                    Random random = Utils.random;
+                    int compsToAdd = random.Next(total);
+
+                    int counter = 0;
+                    while (compsToAdd > 0)
+                    {
+                        if (counter++ > enumsize) break;
+                        int compNum = random.Next(enumsize - 1);
+                        comp newcomp = (comp)compNum;
+                        if (comps.Contains(newcomp))
+                        {
+                            continue;
+                        }
+                        comps.Add(newcomp);
+                        compsToAdd--;
+                    }
+
+                    foreach (comp c in comps)
+                    {
+                        userP.Add(c, true);
+                    }
+
+                    UserProps = userP;
+
+                    game.spawnNode(userP, blank: true);
+                }
+                if (mouseState.RightButton == ButtonState.Pressed && oldMouseState.RightButton == ButtonState.Released)
+                {
+                    //random node
+                    Vector2 pos = new Vector2(mouseState.X, mouseState.Y);
+                    pos *= room.mapzoom;
+
+                    if (UserProps != null)
+                    {
+                        UserProps[node.position] = pos;
+                        game.spawnNode(UserProps);
+                    }
                 }
             }
             else if (currentSelection == selection.targetSelection)
