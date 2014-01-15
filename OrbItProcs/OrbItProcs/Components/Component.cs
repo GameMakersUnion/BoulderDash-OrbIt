@@ -5,12 +5,12 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Reflection;
-using OrbItProcs.Processes;
-using OrbItProcs.Interface;
 
-using Component = OrbItProcs.Components.Component;
 
-namespace OrbItProcs.Components
+
+using Component = OrbItProcs.Component;
+
+namespace OrbItProcs
 {
     [Flags]
     public enum mtypes
@@ -29,7 +29,7 @@ namespace OrbItProcs.Components
     public abstract class Component {
 
         protected bool _active = false;
-        public bool active
+        public virtual bool active
         {
             get
             {

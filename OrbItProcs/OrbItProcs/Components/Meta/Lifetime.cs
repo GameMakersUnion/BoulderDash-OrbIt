@@ -5,13 +5,11 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.Serialization;
-namespace OrbItProcs.Components
+namespace OrbItProcs
 {
     public class Lifetime : Component
     {
-
-
-        public bool active
+        public override bool active
         {
             get
             {
@@ -28,17 +26,17 @@ namespace OrbItProcs.Components
             }
         }
 
-        private int _maxlife = 100;
-        public int maxlife { get { return _maxlife; } set { _maxlife = value; } }
-        private int _lifeleft = 100;
-        public int lifeleft { get { return _lifeleft; } set { _lifeleft = value; } }
+        //private int _maxlife = 100;
+        //public int maxlife { get { return _maxlife; } set { _maxlife = value; } }
+        //private int _lifeleft = 100;
+        //public int lifeleft { get { return _lifeleft; } set { _lifeleft = value; } }
 
         private int _maxmseconds = 5000;
         public int maxmseconds { get { return _maxmseconds; } set { _maxmseconds = value; } }
         private int mseconds = 0;
         //public int msecondsleft { get { return _msecondsleft; } set { _msecondsleft = value; } }
 
-        private bool _immortal = false;
+        private bool _immortal = true;
         public bool immortal { get { return _immortal; } set { _immortal = value; } }
 
         private int _timer = 0;
@@ -61,7 +59,9 @@ namespace OrbItProcs.Components
         public override void Initialize(Node parent)
         {
             this.parent = parent;
-            lifeleft = maxlife;
+            //lifeleft = maxlife;
+            mseconds = 0;
+            alive = true;
         }
 
 

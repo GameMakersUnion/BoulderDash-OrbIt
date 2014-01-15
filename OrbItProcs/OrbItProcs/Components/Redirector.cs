@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace OrbItProcs.Components
+namespace OrbItProcs
 {
     public class Redirector
     {

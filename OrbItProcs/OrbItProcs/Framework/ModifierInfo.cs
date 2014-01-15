@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using System.Reflection;
-using OrbItProcs.Interface;
 
-namespace OrbItProcs.Processes
+
+namespace OrbItProcs
 {
     public delegate void ModifierDelegate(Dictionary<string, dynamic> args, ModifierInfo modifierInfo);
 

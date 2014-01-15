@@ -6,10 +6,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.Serialization;
 using System.Reflection;
-using OrbItProcs.Processes;
-using OrbItProcs.Interface;
 
-namespace OrbItProcs.Components
+
+
+namespace OrbItProcs
 {
     public class Modifier : Component
     {

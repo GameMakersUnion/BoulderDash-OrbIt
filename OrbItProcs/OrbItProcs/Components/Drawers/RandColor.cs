@@ -5,9 +5,9 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using Component = OrbItProcs.Components.Component;
+using Component = OrbItProcs.Component;
 
-namespace OrbItProcs.Components {
+namespace OrbItProcs {
     public class RandColor : Component {
 
         new public bool active

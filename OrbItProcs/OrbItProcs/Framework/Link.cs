@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using OrbItProcs.Processes;
-using OrbItProcs.Components;
+
+
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
@@ -153,7 +153,7 @@ namespace OrbItProcs
                 this.sourceNode = src;
                 this.sources = new ObservableHashSet<Node>() { sourceNode };
                 sourceNode.SourceLinks.Add(this);
-                linkComponent.parent = sourceNode;
+                //linkComponent.parent = sourceNode;
                 if (trg is Node)
                 {
                     sourceNode.OnAffectOthers += NodeToNodeHandler;
@@ -177,6 +177,7 @@ namespace OrbItProcs
                 this.sources = this.sourceGroup.fullSet;
 
                 room.masterGroup.childGroups["Link Groups"].AddGroup(ss.Name, ss);
+                room.game.ui.sidebar.UpdateGroupComboBoxes();
 
                 foreach (Node s in this.sources)
                 {
@@ -185,7 +186,7 @@ namespace OrbItProcs
                 }
                 this.sources.CollectionChanged += sourceGroup_CollectionChanged;
 
-                if (src == trg)
+                if (trg is HashSet<Node> && src == trg)
                 {
                     EqualSets = true;
                     this.targetGroup = this.sourceGroup;
@@ -241,6 +242,7 @@ namespace OrbItProcs
                 this.targetGroup.TargetLinks.Add(this);
 
                 room.masterGroup.childGroups["Link Groups"].AddGroup(ts.Name, ts);
+                room.game.ui.sidebar.UpdateGroupComboBoxes();
 
                 foreach (Node t in this.targets)
                 {
@@ -590,6 +592,7 @@ namespace OrbItProcs
 
             if (sources != null)
             {
+                sources.CollectionChanged -= sourceGroup_CollectionChanged;
                 foreach (Node n in sources)
                 {
                     n.OnAffectOthers -= NodeToGroupHandler;
@@ -598,6 +601,7 @@ namespace OrbItProcs
             }
             if (targets != null)
             {
+                targets.CollectionChanged -= targetGroup_CollectionChanged;
                 foreach (Node n in targets)
                 {
                     n.TargetLinks.Remove(this);
@@ -605,6 +609,8 @@ namespace OrbItProcs
             }
             if (sourceGroup != null) sourceGroup.SourceLinks.Remove(this);
             if (targetGroup != null) targetGroup.TargetLinks.Remove(this);
+
+            
 
             room.AllActiveLinks.Remove(this);
         }

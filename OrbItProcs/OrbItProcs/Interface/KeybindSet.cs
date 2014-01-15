@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using OrbItProcs.Processes;
 
-namespace OrbItProcs.Interface
+
+namespace OrbItProcs
 {
     public enum MouseEvents
     {

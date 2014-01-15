@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
-namespace OrbItProcs.Processes
+namespace OrbItProcs
 {
     public enum GroupState { off, drawingOnly, updatingOnly, on };
 

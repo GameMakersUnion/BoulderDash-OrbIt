@@ -5,9 +5,9 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using TomShane.Neoforce.Controls;
 using System.Reflection;
-using Component = OrbItProcs.Components.Component;
+using Component = OrbItProcs.Component;
 
-namespace OrbItProcs.Interface {
+namespace OrbItProcs {
 
     public enum treeitem {
         fieldinfo,

@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.Serialization;
-namespace OrbItProcs.Components
+namespace OrbItProcs
 {
     public class Transfer : Component, ILinkable
     {
@@ -28,7 +28,7 @@ namespace OrbItProcs.Components
 
         public override void AffectOther(Node other)
         {
-            //if (!active) return;
+            if (!active) return;
             if (exclusions.Contains(other)) return;
 
             float distVects = Vector2.Distance(other.transform.position, parent.transform.position);

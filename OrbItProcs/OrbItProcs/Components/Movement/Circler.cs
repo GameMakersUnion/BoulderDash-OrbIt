@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.Serialization;
-namespace OrbItProcs.Components
+namespace OrbItProcs
 {
     public class Circler : Component {
 

@@ -15,13 +15,13 @@ using System.Runtime.Serialization;
 using System.Drawing;
 using SColor = System.Drawing.Color;
 using Color = Microsoft.Xna.Framework.Color;
-using Component = OrbItProcs.Components.Component;
+using Component = OrbItProcs.Component;
 using Console = System.Console;
 using sc = System.Console;
 
-using OrbItProcs.Interface;
-using OrbItProcs.Components;
-using OrbItProcs.Processes;
+
+
+
 using System.IO;
 using System.Collections.ObjectModel;
 
@@ -130,6 +130,8 @@ namespace OrbItProcs
 
         public static int sWidth = 1000;
         public static int sHeight = 600;
+        public static int fullWidth = 1680;
+        public static int fullHeight = 1050;
         public static string filepath = "Presets//Nodes/";
 
         public Dictionary<textures, Texture2D> textureDict;
@@ -167,11 +169,12 @@ namespace OrbItProcs
 
             worldWidth = 1580;
             worldHeight = 1175;
-            //worldWidth = sWidth;
-            //worldHeight = sHeight;
 
             Graphics.PreferredBackBufferWidth = sWidth;
             Graphics.PreferredBackBufferHeight = sHeight;
+            ////
+            
+
 
             ClearBackground = true;
             BackgroundColor = Color.White;
@@ -194,6 +197,29 @@ namespace OrbItProcs
             //col.AffectOther(null);
             //typeof(Collision).GetMethod("AffectOther").Invoke();
 
+            
+        }
+
+        public void ToggleFullScreen(bool on)
+        {
+            if (on)
+            {
+                //SystemBorder = false;
+                //FullScreenBorder = false;
+                Manager.Graphics.PreferredBackBufferWidth = fullWidth;
+                Manager.Graphics.PreferredBackBufferHeight = fullHeight;
+                Graphics.IsFullScreen = true;
+                Graphics.ApplyChanges();
+            }
+            else
+            {
+                //SystemBorder = true;
+                //FullScreenBorder = true;
+                Manager.Graphics.PreferredBackBufferWidth = sWidth;
+                Manager.Graphics.PreferredBackBufferHeight = sHeight;
+                Graphics.IsFullScreen = false;
+                Graphics.ApplyChanges();
+            }
         }
 
         protected override void Initialize()
@@ -208,7 +234,7 @@ namespace OrbItProcs
             font = Content.Load<SpriteFont>("Courier New");
 
             room = new Room(this);
-
+            room.processManager = new ProcessManager(room);
             #region ///Default User props///
             Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {
                     { node.position, new Vector2(0, 0) },
@@ -284,10 +310,10 @@ namespace OrbItProcs
             //ui.sidebar.ActiveGroup = firstGroup;
             //room.masterGroup.UpdateComboBox();
             ui.sidebar.UpdateGroupComboBoxes();
-            room.game.ui.sidebar.cbListPicker.ItemIndex = 0;
-            room.game.ui.sidebar.cbListPicker.ItemIndex = 2;
-            room.game.ui.sidebar.cbGroupS.ItemIndex = 2;
-            room.game.ui.sidebar.cbGroupT.ItemIndex = 2;
+            ui.sidebar.cbListPicker.ItemIndex = 0;
+            ui.sidebar.cbListPicker.ItemIndex = 2;
+            ui.sidebar.cbGroupS.ItemIndex = 2;
+            ui.sidebar.cbGroupT.ItemIndex = 2;
             InitializePresets();
             
 
@@ -450,7 +476,7 @@ namespace OrbItProcs
 
 
 
-        public void spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null, bool blank = false, int lifetime = -1)
+        public Node spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null, bool blank = false, int lifetime = -1)
         {
             //
             //testing.TestOnClick();
@@ -462,7 +488,7 @@ namespace OrbItProcs
 
             Group activegroup = ui.sidebar.ActiveGroupFirst;
             //if (activegroup.Name.Equals("master")) return;
-            if (!activegroup.Spawnable) return;
+            if (!activegroup.Spawnable) return null;
             Node newNode = new Node();
             if (!blank)
             {
@@ -483,7 +509,8 @@ namespace OrbItProcs
             
             if (lifetime != -1)
             {
-                newNode.comps[comp.lifetime].maxlife = lifetime;
+                
+                newNode.comps[comp.lifetime].maxmseconds = lifetime;
                 newNode.comps[comp.lifetime].immortal = false;
             }
             //activegroup.entities.Add(newNode);
@@ -509,6 +536,7 @@ namespace OrbItProcs
                 Color xnacol = new Color(syscolor.R, syscolor.G, syscolor.B, syscolor.A);
                 newNode.transform.color = xnacol;
             }
+            return newNode;
         }
         public void spawnNode(int worldMouseX, int worldMouseY)
         {

@@ -10,7 +10,8 @@
     <RootNamespace>OrbItProcs</RootNamespace>
     <AssemblyName>OrbItProcs</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile></TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
     <XnaPlatform>Windows</XnaPlatform>
     <XnaProfile>HiDef</XnaProfile>
@@ -151,7 +152,7 @@
     <Compile Include="Components\Tracers\Waver.cs" />
     <Compile Include="Components\Tracers\WideRay.cs" />
     <Compile Include="Components\Transform.cs" />
-    <Compile Include="Formation.cs" />
+    <Compile Include="Framework\Formation.cs" />
     <Compile Include="FrameRateCounter.cs" />
     <Compile Include="GridSystem.cs" />
     <Compile Include="Interface\ActionBar.cs" />
@@ -164,26 +165,30 @@
     <Compile Include="Interface\PropertyEditPanel.cs" />
     <Compile Include="Interface\Sidebar.cs" />
     <Compile Include="Interface\SidebarLinkPage.cs" />
+    <Compile Include="Interface\SidebarThirdPage.cs" />
     <Compile Include="Interface\StackView.cs" />
     <Compile Include="IRedirectable.cs" />
-    <Compile Include="Link.cs" />
+    <Compile Include="Framework\Link.cs" />
     <Compile Include="lists.cs" />
     <Compile Include="ObservableHashSetOfT.cs" />
     <Compile Include="Physics\AABB.cs" />
     <Compile Include="Physics\Circle.cs" />
-    <Compile Include="Processes\DelegateManager.cs" />
-    <Compile Include="Processes\Group.cs" />
-    <Compile Include="Processes\FPInfo.cs" />
+    <Compile Include="Framework\DelegateManager.cs" />
+    <Compile Include="Framework\Group.cs" />
+    <Compile Include="Framework\FPInfo.cs" />
     <Compile Include="Interface\PopUp.cs" />
     <Compile Include="Interface\InspectorItem.cs" />
     <Compile Include="Interface\TreeListItem.cs" />
     <Compile Include="Interface\UserInterface.cs" />
     <Compile Include="Node.cs" />
-    <Compile Include="Processes\ModifierInfo.cs" />
+    <Compile Include="Framework\ModifierInfo.cs" />
+    <Compile Include="Processes\GroupSelect.cs" />
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Processes\ProcessManager.cs" />
-    <Compile Include="Processes\Procs.cs" />
-    <Compile Include="Processes\QueueInfo.cs" />
+    <Compile Include="Framework\QueueInfo.cs" />
+    <Compile Include="Processes\Randomizer.cs" />
+    <Compile Include="Processes\SingleSelect.cs" />
+    <Compile Include="Processes\SpawnNodes.cs" />
     <Compile Include="Processes\TripSpawnOnCollide.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />

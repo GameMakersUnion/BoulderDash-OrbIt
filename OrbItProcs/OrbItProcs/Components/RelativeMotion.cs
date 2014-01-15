@@ -5,9 +5,9 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Reflection;
-using OrbItProcs.Processes;
 
-namespace OrbItProcs.Components
+
+namespace OrbItProcs
 {
     public class RelativeMotion : Component, ILinkable
     {

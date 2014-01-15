@@ -1,4 +1,4 @@
-﻿using OrbItProcs.Components;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using TomShane.Neoforce.Controls;
 
-namespace OrbItProcs.Interface
+namespace OrbItProcs
 {
     public class LinkGeneratorWindow
     {

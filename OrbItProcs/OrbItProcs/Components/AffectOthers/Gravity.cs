@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace OrbItProcs.Components {
+namespace OrbItProcs {
     public class Gravity : Component, ILinkable
     {
 
@@ -49,7 +49,7 @@ namespace OrbItProcs.Components {
 
         public override void AffectOther(Node other)
         {
-            //if (!active) { return; }
+            if (!active) { return; }
             if (exclusions.Contains(other)) return;
 
             if (!other.comps.ContainsKey(comp.gravity) && AffectsOnlyGravity)

@@ -5,16 +5,16 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using TomShane.Neoforce.Controls;
 using System.Reflection;
-using OrbItProcs.Processes;
-using OrbItProcs.Components;
-using Component = OrbItProcs.Components.Component;
+
+
+using Component = OrbItProcs.Component;
 using Console = System.Console;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using Color = Microsoft.Xna.Framework.Color;
 using SysColor = System.Drawing.Color;
 
-namespace OrbItProcs.Interface {
+namespace OrbItProcs {
 
     public enum member_type {
         none,

@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TomShane.Neoforce.Controls;
-using OrbItProcs.Processes;
 
-using Component = OrbItProcs.Components.Component;
+
+using Component = OrbItProcs.Component;
 using Console = System.Console;
 using EventHandler = TomShane.Neoforce.Controls.EventHandler;
 using EventArgs = TomShane.Neoforce.Controls.EventArgs;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.ObjectModel;
-using OrbItProcs.Components;
 
-namespace OrbItProcs.Interface
+
+namespace OrbItProcs
 {
     public class InspectorArea
     {

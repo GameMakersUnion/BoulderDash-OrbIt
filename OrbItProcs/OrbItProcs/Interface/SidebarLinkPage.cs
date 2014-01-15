@@ -1,13 +1,13 @@
-﻿using OrbItProcs.Processes;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TomShane.Neoforce.Controls;
 
-using Component = OrbItProcs.Components.Component;
+using Component = OrbItProcs.Component;
 
-namespace OrbItProcs.Interface
+namespace OrbItProcs
 {
     public partial class Sidebar
     {
@@ -71,6 +71,8 @@ namespace OrbItProcs.Interface
             int right = backPanel.Width;
 
             SourceTarget.ExpandedHeight += 60;
+
+            
 
             #region /// Source Side ///
 
@@ -474,9 +476,10 @@ namespace OrbItProcs.Interface
                 //todo: implement selection linking
                 if (rdGroupS.Checked)
                 {
-                    if (ui.groupSelectSet != null && ui.groupSelectSet.Count > 0)
+                    HashSet<Node> groupset = (room.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
+                    if (groupset != null && groupset.Count > 0)
                     {
-                        source = ui.groupSelectSet;
+                        source = groupset;
                     }
                 }
                 else if (rdNodeS.Checked)
@@ -514,9 +517,10 @@ namespace OrbItProcs.Interface
                 //todo: implement selection linking
                 if (rdGroupT.Checked)
                 {
-                    if (ui.groupSelectSet != null && ui.groupSelectSet.Count > 0)
+                    HashSet<Node> groupset = (room.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
+                    if (groupset != null && groupset.Count > 0)
                     {
-                        target = ui.groupSelectSet;
+                        target = groupset;
                     }
                 }
                 else if (rdNodeT.Checked)

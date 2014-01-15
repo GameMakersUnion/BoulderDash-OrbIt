@@ -5,7 +5,7 @@ using System.Text;
 using TomShane.Neoforce.Controls;
 
 
-namespace OrbItProcs.Interface
+namespace OrbItProcs
 {
     public class CollapsePanel
     {

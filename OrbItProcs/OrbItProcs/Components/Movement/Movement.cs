@@ -7,9 +7,9 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.Serialization;
 using System.Reflection;
 
-using OrbItProcs.Processes;
 
-namespace OrbItProcs.Components
+
+namespace OrbItProcs
 {
     public enum movemode
     {

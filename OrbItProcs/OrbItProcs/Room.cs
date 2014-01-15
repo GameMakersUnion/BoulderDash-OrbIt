@@ -7,10 +7,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Polenter.Serialization;
 
-using OrbItProcs.Components;
-using OrbItProcs.Processes;
 
-using Component = OrbItProcs.Components.Component;
+
+
+using Component = OrbItProcs.Component;
 using System.Collections.ObjectModel;
 
 namespace OrbItProcs {
@@ -71,7 +71,7 @@ namespace OrbItProcs {
         {
             setDefaultProperties();
 
-            processManager = new ProcessManager(this);
+            
             
             this.game = game;
             this.mapzoom = 2f;
@@ -106,10 +106,12 @@ namespace OrbItProcs {
             ObservableHashSet<Node> hs = new ObservableHashSet<Node>();
             ICollection<Node> i = hs;
 
-            processManager.Update();
+            
 
             gridsystem.clear();
             gridSystemLines = new List<Rectangle>();
+
+            processManager.Update();
 
             HashSet<Node> toDelete = new HashSet<Node>();
             //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
@@ -241,10 +243,11 @@ namespace OrbItProcs {
                 updateTargetNodeGraphic();
                 targetNodeGraphic.Draw(spritebatch);
             }
-            if (game.ui.groupSelectSet != null)
+            HashSet<Node> groupset = (processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
+            if (groupset != null)
             {
                 targetNodeGraphic.transform.color = Color.LimeGreen;
-                foreach (Node n in game.ui.groupSelectSet.ToList())
+                foreach (Node n in groupset.ToList())
                 {
                     targetNodeGraphic.transform.position = n.transform.position;
                     targetNodeGraphic.transform.scale = n.transform.scale * 1.5f;

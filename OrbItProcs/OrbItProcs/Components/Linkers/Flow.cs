@@ -5,9 +5,9 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Reflection;
-using OrbItProcs.Processes;
 
-namespace OrbItProcs.Components
+
+namespace OrbItProcs
 {
     public class Flow : Component, ILinkable
     {
@@ -94,7 +94,7 @@ namespace OrbItProcs.Components
 
         public override void AffectOther(Node other)
         {
-
+            if (!active) { return; }
         }
         public override void AffectSelf()
         {

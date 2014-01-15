@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using TomShane.Neoforce.Controls;
-using Component = OrbItProcs.Components.Component;
+using Component = OrbItProcs.Component;
 using Console = System.Console;
 
-namespace OrbItProcs.Interface
+namespace OrbItProcs
 {
     public class PropertyEditPanel
     {

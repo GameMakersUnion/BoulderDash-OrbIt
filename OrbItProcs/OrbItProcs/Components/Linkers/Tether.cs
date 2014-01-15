@@ -5,9 +5,9 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Reflection;
-using OrbItProcs.Processes;
 
-namespace OrbItProcs.Components
+
+namespace OrbItProcs
 {
     public class Tether : Component, ILinkable
     {
@@ -96,6 +96,7 @@ namespace OrbItProcs.Components
 
         public override void AffectOther(Node other) // called when used as a link
         {
+            if (!active) { return; }
             if (activated)
             {
                 Vector2 diff = other.transform.position - parent.transform.position;

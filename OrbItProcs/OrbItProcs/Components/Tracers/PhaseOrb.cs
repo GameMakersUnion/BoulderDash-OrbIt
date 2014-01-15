@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Reflection;
 
-namespace OrbItProcs.Components
+namespace OrbItProcs
 {
     public class PhaseOrb : Component
     {

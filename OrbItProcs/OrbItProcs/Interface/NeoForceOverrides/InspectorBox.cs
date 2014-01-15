@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using TomShane.Neoforce.Controls;
-using OrbItProcs.Interface;
+using OrbItProcs;
 
 namespace TomShane.Neoforce.Controls
 {
