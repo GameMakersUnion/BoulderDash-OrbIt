@@ -1,0 +1,136 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+
+using Microsoft.Xna.Framework;
+using TomShane.Neoforce.Controls;
+using OrbItProcs;
+using Microsoft.Xna.Framework.Input;
+
+
+namespace OrbItProcs
+{
+    public class Randomizer : Process
+    {
+        public Queue<Group> savedGroups = new Queue<Group>();
+        public Queue<Dictionary<dynamic, dynamic>> savedDicts = new Queue<Dictionary<dynamic, dynamic>>();
+        int queuePos = 0;
+
+        public Randomizer()
+            : base()
+        {
+            LeftClick += CreateNode;
+            KeyEvent += KeyEv;
+            RightClick += SpawnFromQueue;
+        }
+
+        public void SpawnFromQueue(ButtonState buttonState)
+        {
+            if (buttonState == ButtonState.Pressed)
+            {
+                System.Console.WriteLine(queuePos + " " + savedDicts.Count);
+                if (queuePos >= savedDicts.Count) return;
+
+                Dictionary<dynamic, dynamic> dict = savedDicts.ElementAt(savedDicts.Count - queuePos - 1);
+                Group g = savedGroups.ElementAt(savedDicts.Count - queuePos - 1);
+
+                dict[node.position] = UserInterface.WorldMousePos;
+
+                Node n = room.game.spawnNode(dict, blank: true, lifetime: 5000);
+                if (n != null) g.entities.Add(n);
+            }
+        }
+
+        public void KeyEv(Dictionary<dynamic, dynamic> args)
+        {
+            if (DetectKeyPress(Keys.OemPlus))
+            {
+                queuePos = Math.Min(savedDicts.Count - 1, queuePos + 1);
+            }
+            else if (DetectKeyPress(Keys.OemMinus))
+            {
+                queuePos = Math.Max(0, queuePos - 1);
+            }
+            else if (DetectKeyPress(Keys.Enter))
+            {
+
+            }
+
+        }
+
+
+
+        public void CreateNode(ButtonState buttonState)
+        {
+
+            if (buttonState == ButtonState.Released) return;
+
+            Vector2 pos = UserInterface.WorldMousePos;
+
+            //new node(s)
+            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
+                                { node.position, pos },
+            };
+            HashSet<comp> comps = new HashSet<comp>() { comp.basicdraw, comp.randcolor, comp.movement, comp.lifetime };
+            HashSet<comp> allComps = new HashSet<comp>();
+            foreach (comp c in Enum.GetValues(typeof(comp)))
+            {
+                allComps.Add(c);
+            }
+
+            int enumsize = allComps.Count;
+            int total = enumsize - comps.Count;
+
+
+            Random random = Utils.random;
+            int compsToAdd = random.Next(total);
+
+            int a = 21 * 21;
+            int randLog = random.Next(a);
+            int root = (int)Math.Ceiling(Math.Sqrt(randLog));
+            root = 21 - root;
+            compsToAdd = root;
+
+            //System.Console.WriteLine(compsToAdd + " " + root);
+
+            int counter = 0;
+            while (compsToAdd > 0)
+            {
+                if (counter++ > enumsize) break;
+                int compNum = random.Next(enumsize - 1);
+                comp newcomp = (comp)compNum;
+                if (comps.Contains(newcomp))
+                {
+                    continue;
+                }
+                comps.Add(newcomp);
+                compsToAdd--;
+            }
+
+            foreach (comp c in comps)
+            {
+                userP.Add(c, true);
+            }
+
+
+            Node n = room.game.spawnNode(userP, blank: true, lifetime: 5000);
+            if (n != null)
+            {
+                savedDicts.Enqueue(userP);
+                Group p = room.masterGroup.childGroups["Link Groups"];
+                Group g = new Group(n, parentGroup: p, Name: n.name);
+                p.AddGroup(g.Name, g);
+                room.game.ui.sidebar.UpdateGroupComboBoxes();
+                savedGroups.Enqueue(g);
+
+            }
+            //ListBox lst = room.game.ui.sidebar.lstMain;
+            //Node newNode = (Node)lst.Items.ElementAt(lst.ItemIndex + 1);
+            //System.Console.WriteLine(newNode.name);
+        }
+
+
+    }
+}
