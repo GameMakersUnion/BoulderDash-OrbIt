@@ -9,11 +9,16 @@ namespace OrbItProcs
 {
     public class SingleSelect : Process
     {
+        
+
         public SingleSelect() : base()
         {
-            LeftClick += LeftC;
-            RightClick += RightC;
-            MiddleClick += MiddleC;
+            //LeftClick += LeftC;
+            //RightClick += RightC;
+            //MiddleClick += MiddleC;
+            addProcessKeyAction("SingleSel", KeyCodes.LeftClick, OnPress: SingleSel);
+            addProcessKeyAction("MakeLink", KeyCodes.RightClick, OnPress: MakeLink);
+            addProcessKeyAction("StartLink", KeyCodes.MiddleClick, OnPress: StartLink);
 
         }
 
@@ -39,9 +44,9 @@ namespace OrbItProcs
             return found;
         }
 
-        public void LeftC(ButtonState buttonState)
+        public void SingleSel()
         {
-            if (buttonState == ButtonState.Released) return;
+            //if (buttonState == ButtonState.Released) return;
             Node found = SelectNode(UserInterface.WorldMousePos);
             if (found != null)
             {
@@ -62,9 +67,9 @@ namespace OrbItProcs
                 room.game.targetNode = null;
             }
         }
-        public void RightC(ButtonState buttonState)
+        public void MakeLink()
         {
-            if (buttonState == ButtonState.Released) return;
+            //if (buttonState == ButtonState.Released) return;
             Node found = SelectNode(UserInterface.WorldMousePos);
             if (found != null)
             {
@@ -81,9 +86,9 @@ namespace OrbItProcs
             {
             }
         }
-        public void MiddleC(ButtonState buttonState)
+        public void StartLink()
         {
-            if (buttonState == ButtonState.Released) return;
+            //if (buttonState == ButtonState.Released) return;
             Node found = SelectNode(UserInterface.WorldMousePos);
             if (found != null)
             {

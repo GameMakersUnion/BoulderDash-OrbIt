@@ -126,6 +126,7 @@
   <ItemGroup>
     <Compile Include="Components\AffectOthers\Displace.cs" />
     <Compile Include="Components\Drawers\BasicDraw.cs" />
+    <Compile Include="Components\FieldGravity.cs" />
     <Compile Include="Components\ILinkable.cs" />
     <Compile Include="Components\Linkers\Flow.cs" />
     <Compile Include="Components\AffectOthers\Collision.cs" />
@@ -159,7 +160,7 @@
     <Compile Include="Interface\ActionBox.cs" />
     <Compile Include="Interface\CollapsePanel.cs" />
     <Compile Include="Interface\InspectorArea.cs" />
-    <Compile Include="Interface\KeybindSet.cs" />
+    <Compile Include="Interface\KeyManager.cs" />
     <Compile Include="Interface\LinkGeneratorWindow.cs" />
     <Compile Include="Interface\NeoForceOverrides\InspectorBox.cs" />
     <Compile Include="Interface\PropertyEditPanel.cs" />
@@ -182,6 +183,8 @@
     <Compile Include="Interface\UserInterface.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Framework\ModifierInfo.cs" />
+    <Compile Include="Player.cs" />
+    <Compile Include="Processes\AxisMovement.cs" />
     <Compile Include="Processes\GroupSelect.cs" />
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Processes\ProcessManager.cs" />

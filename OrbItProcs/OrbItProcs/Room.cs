@@ -60,6 +60,8 @@ namespace OrbItProcs {
 
         public SharpSerializer serializer = new SharpSerializer();
 
+        public Player player1 { get; set; }
+
         //public tree treeProp = tree.gridsystem;
 
         public Room()
@@ -157,7 +159,6 @@ namespace OrbItProcs {
             });
 
             if (AfterIteration != null) AfterIteration(this, null);
-
             //if (linkTest != null) linkTest.UpdateAction();
                 
             //addGridSystemLines(gridsystem);
@@ -166,6 +167,7 @@ namespace OrbItProcs {
 
             updateTargetNodeGraphic();
 
+            player1.Update(gametime);
         }
 
         public void updateTargetNodeGraphic()
@@ -174,6 +176,11 @@ namespace OrbItProcs {
             {
                 targetNodeGraphic.transform.color = Color.White;
                 targetNodeGraphic.transform.position = game.targetNode.transform.position;
+                //if (game.targetNode.comps.ContainsKey(comp.gravity))
+                //{
+                //    float rad = game.targetNode.GetComponent<Gravity>().radius;
+                //    targetNodeGraphic.transform.radius = rad;
+                //}
                 targetNodeGraphic.transform.scale = game.targetNode.transform.scale * 1.5f;
             }
             
@@ -238,6 +245,8 @@ namespace OrbItProcs {
 
         public void Draw(SpriteBatch spritebatch)
         {
+            //spritebatch.Draw(game.textureDict[textures.whitepixel], new Vector2(300, 300), null, Color.Black, 0f, Vector2.Zero, 100f, SpriteEffects.None, 0);
+
             if (game.targetNode != null)
             {
                 updateTargetNodeGraphic();
@@ -278,7 +287,9 @@ namespace OrbItProcs {
                 spritebatch.DrawLine(new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), Color.Green, 2);
                 
                 linecount++;
-            }   
+            }
+
+            player1.Draw(spritebatch);
             
         } 
 

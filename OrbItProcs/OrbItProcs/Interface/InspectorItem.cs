@@ -46,6 +46,7 @@ namespace OrbItProcs {
         public static List<Type> ValidTypes = new List<Type>()
         {
             typeof(Node),
+            typeof(Player),
             typeof(Component),
             typeof(ModifierInfo),
             typeof(Vector2),
@@ -263,7 +264,7 @@ namespace OrbItProcs {
             {
                 List<PropertyInfo> propertyInfos;
                 //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                if (!(this.obj is Component))
+                if (!(this.obj is Component || this.obj is Player))
                 {
                     propertyInfos = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
                 }
@@ -341,7 +342,7 @@ namespace OrbItProcs {
             {
                 List<PropertyInfo> propertyInfos;
                 //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                if (!(parent is Component))
+                if (!(parent is Component || parent is Player))
                 {
                     propertyInfos = parent.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
                 }

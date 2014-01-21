@@ -21,29 +21,35 @@ namespace OrbItProcs
         public Randomizer()
             : base()
         {
-            LeftClick += CreateNode;
-            KeyEvent += KeyEv;
-            RightClick += SpawnFromQueue;
+            //LeftClick += CreateNode;
+            //KeyEvent += KeyEv;
+            //RightClick += SpawnFromQueue;
+            addProcessKeyAction("createrandom", KeyCodes.LeftClick, OnPress: CreateNode);
+            addProcessKeyAction("plus", KeyCodes.OemPlus, OnPress: SpawnFromQueue);
+            addProcessKeyAction("minus", KeyCodes.OemMinus, OnPress: SpawnFromQueue);
         }
 
-        public void SpawnFromQueue(ButtonState buttonState)
+        public void SpawnFromQueue()
         {
-            if (buttonState == ButtonState.Pressed)
-            {
-                System.Console.WriteLine(queuePos + " " + savedDicts.Count);
-                if (queuePos >= savedDicts.Count) return;
+            System.Console.WriteLine(queuePos + " " + savedDicts.Count);
+            if (queuePos >= savedDicts.Count) return;
 
-                Dictionary<dynamic, dynamic> dict = savedDicts.ElementAt(savedDicts.Count - queuePos - 1);
-                Group g = savedGroups.ElementAt(savedDicts.Count - queuePos - 1);
+            Dictionary<dynamic, dynamic> dict = savedDicts.ElementAt(savedDicts.Count - queuePos - 1);
+            Group g = savedGroups.ElementAt(savedDicts.Count - queuePos - 1);
 
-                dict[node.position] = UserInterface.WorldMousePos;
+            dict[node.position] = UserInterface.WorldMousePos;
 
-                Node n = room.game.spawnNode(dict, blank: true, lifetime: 5000);
-                if (n != null) g.entities.Add(n);
-            }
+            Node n = room.game.spawnNode(dict, blank: true, lifetime: 5000);
+            if (n != null) g.entities.Add(n);
         }
 
-        public void KeyEv(Dictionary<dynamic, dynamic> args)
+        public void Plus() { queuePos = Math.Min(savedDicts.Count - 1, queuePos + 1); }
+        public void Minus() { queuePos = Math.Max(0, queuePos - 1); }
+        //public void Enter() { }
+
+
+        /*
+        public void KeyEv()
         {
             if (DetectKeyPress(Keys.OemPlus))
             {
@@ -53,19 +59,12 @@ namespace OrbItProcs
             {
                 queuePos = Math.Max(0, queuePos - 1);
             }
-            else if (DetectKeyPress(Keys.Enter))
-            {
-
-            }
-
         }
+        */
 
 
-
-        public void CreateNode(ButtonState buttonState)
+        public void CreateNode()
         {
-
-            if (buttonState == ButtonState.Released) return;
 
             Vector2 pos = UserInterface.WorldMousePos;
 

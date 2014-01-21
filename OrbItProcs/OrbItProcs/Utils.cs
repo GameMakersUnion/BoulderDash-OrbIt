@@ -48,6 +48,13 @@ namespace OrbItProcs {
 
         public static bool In<T>(this T x, params T[] args) where T : struct, IConvertible {return args.Contains(x);}
 
+        public static T Pop<T>(this List<T> list)
+        {
+            T item = list.ElementAt(list.Count);
+            list.Remove(item);
+            return item;
+        }
+
         public static string SelectedItem(this TomShane.Neoforce.Controls.ComboBox cb)
         {
             if (cb == null || cb.ItemIndex == -1) return null;

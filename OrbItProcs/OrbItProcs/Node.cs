@@ -231,23 +231,6 @@ namespace OrbItProcs {
             if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0,5);
             else name = name + nodeCounter;
 
-            /*
-            comp key = comp.tree;
-            dynamic value = comps[key];
-
-            value.maxdepth = 3;
-
-
-            Dictionary<string, int> birthdays = new Dictionary<string, int>();
-
-            birthdays["ian"] = 1934;
-            birthdays["zack"] = 1933;
-
-            birthdays.Add("tom", 22);
-
-            int year = birthdays["ian"];
-            */
-
             
         }
 
@@ -472,7 +455,7 @@ namespace OrbItProcs {
 
         
         
-        public void Update(GameTime gametime)
+        public virtual void Update(GameTime gametime)
         {
             if (nodeState == state.off || nodeState == state.drawOnly) return;
 

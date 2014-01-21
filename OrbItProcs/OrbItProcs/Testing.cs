@@ -75,7 +75,7 @@ namespace OrbItProcs
             Console.WriteLine(count);
         }
 
-        public void KeyPresses(KeybindSet kbs)
+        public void KeyPresses(KeyManager kbs)
         {
             StartTimer();
             kbs.Update();

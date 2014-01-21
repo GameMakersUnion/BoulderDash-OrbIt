@@ -13,6 +13,7 @@ namespace OrbItProcs
         singleselect,
         groupselect,
         randomizer,
+        axismovement,
 
     }
 
@@ -67,7 +68,7 @@ namespace OrbItProcs
 
             //room.game.ui.
         }
-
+        /*
         public void PollKeyboard()
         {
             if (activeInputProcess != null)
@@ -75,7 +76,7 @@ namespace OrbItProcs
                 activeInputProcess.InvokeKeyEvent(null);
             }
         }
-
+        
         public void PollMouse(MouseState mS, MouseState oMS)
         {
             //return;
@@ -124,7 +125,7 @@ namespace OrbItProcs
                     activeInputProcess.InvokeScroll(-1);
             }
         }
-
+        */
 
         /*public void SetInputStates(MouseState mS, MouseState oMS, KeyboardState kS, KeyboardState oKS)
         {

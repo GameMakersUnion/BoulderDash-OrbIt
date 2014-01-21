@@ -181,7 +181,8 @@ namespace OrbItProcs {
             {
                 for (int j = 0; j < cellsY; j++)
                 {
-                    grid[i, j] = new List<Node>();
+                    //grid[i, j] = new List<Node>();
+                    grid[i, j].RemoveRange(0, grid[i, j].Count);
                 }
             }
         }

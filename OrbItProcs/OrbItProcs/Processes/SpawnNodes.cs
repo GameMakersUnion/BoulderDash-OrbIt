@@ -11,109 +11,95 @@ namespace OrbItProcs
         private Vector2 spawnPos;
         int rightClickCount = 0;//
         int rightClickMax = 1;//
+        public int batchSpawnNum { get; set; }
 
         public SpawnNodes() : base()
         {
-            LeftClick += LeftC;
-            KeyEvent += KeyEv;
-            RightHold += RightH;
+            addProcessKeyAction("SpawnNode", KeyCodes.LeftClick, OnPress: SpawnNode);
+            addProcessKeyAction("SetSpawnPosition", KeyCodes.LeftShift, OnPress: SetSpawnPosition);
+            addProcessKeyAction("BatchSpawn", KeyCodes.RightClick, OnHold: BatchSpawn);
+            addProcessKeyAction("DirectionalLaunch", KeyCodes.LeftShift, KeyCodes.RightClick, OnHold: DirectionalLaunch);
+            batchSpawnNum = 2;
         }
 
-        public void KeyEv (Dictionary<dynamic,dynamic> args)
+        public void SetSpawnPosition ()
         {
-            if (UserInterface.keybState.IsKeyDown(Keys.LeftShift) && !UserInterface.oldKeyBState.IsKeyDown(Keys.LeftShift))
-            {
-                spawnPos = UserInterface.WorldMousePos;
-            }
-
+            spawnPos = UserInterface.WorldMousePos;
         }
 
-        public void LeftC(ButtonState buttonState)
+        public void SpawnNode()
         {
-            if (buttonState == ButtonState.Released) return;
-
-            if (!UserInterface.keybState.IsKeyDown(Keys.LeftShift))
-            {
-                room.game.spawnNode((int)UserInterface.WorldMousePos.X, (int)UserInterface.WorldMousePos.Y);
-            }
+            room.game.spawnNode((int)UserInterface.WorldMousePos.X, (int)UserInterface.WorldMousePos.Y);
         }
 
-        public void RightH()
+        public void DirectionalLaunch()
         {
-            if (UserInterface.keybState.IsKeyDown(Keys.LeftShift))
+            rightClickCount++;
+            if (rightClickCount % rightClickMax == 0)
             {
-                rightClickCount++;
-                if (rightClickCount % rightClickMax == 0)
-                {
-                    //Vector2 positionToSpawn = new Vector2(Game1.sWidth, Game1.sHeight);
-                    Vector2 positionToSpawn = spawnPos;
-                    //positionToSpawn /= (game.room.mapzoom * 2);
-                    //positionToSpawn /= (2);
-                    Vector2 diff = UserInterface.MousePos;
-                    diff *= room.mapzoom;
-                    diff = diff - positionToSpawn;
-                    //diff.Normalize();
+                //Vector2 positionToSpawn = new Vector2(Game1.sWidth, Game1.sHeight);
+                Vector2 positionToSpawn = spawnPos;
+                //positionToSpawn /= (game.room.mapzoom * 2);
+                //positionToSpawn /= (2);
+                Vector2 diff = UserInterface.MousePos;
+                diff *= room.mapzoom;
+                diff = diff - positionToSpawn;
+                //diff.Normalize();
 
-                    //new node(s)
-                    Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
+                //new node(s)
+                Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
                                 
-                                //{ node.texture, textures.whitecircle },
-                                //{ node.radius, 12 },
-                                { comp.randcolor, true },
-                                { comp.movement, true },
-                                //{ comp.randvelchange, true },
-                                { comp.randinitialvel, true },
-                                //{ comp.gravity, false },
-                                { comp.lifetime, true },
-                                //{ comp.transfer, true },
-                                //{ comp.lasertimers, true },
-                                //{ comp.laser, true },
-                                //{ comp.wideray, true },
-                                //{ comp.hueshifter, true },
-                                //{ comp.phaseorb, true },
-                                //{ comp.collision, false },
-                                { node.position, positionToSpawn },
-                                { node.velocity, diff },
-                            };
+                            //{ node.texture, textures.whitecircle },
+                            //{ node.radius, 12 },
+                            { comp.randcolor, true },
+                            { comp.movement, true },
+                            //{ comp.randvelchange, true },
+                            { comp.randinitialvel, true },
+                            //{ comp.gravity, false },
+                            { comp.lifetime, true },
+                            //{ comp.transfer, true },
+                            //{ comp.lasertimers, true },
+                            //{ comp.laser, true },
+                            //{ comp.wideray, true },
+                            //{ comp.hueshifter, true },
+                            //{ comp.phaseorb, true },
+                            //{ comp.collision, false },
+                            { node.position, positionToSpawn },
+                            { node.velocity, diff },
+                        };
 
-                    if (UserInterface.oldKeyBState.IsKeyDown(Keys.LeftControl))
-                    {
-                        Action<Node> after = delegate(Node n) { n.transform.velocity = diff; }; room.game.spawnNode(userP, after);
-                    }
-                    else
-                    {
-                        room.game.spawnNode(userP);
-                    }
-
-
-
-
-                    rightClickCount = 0;
-                }
-            }
-            else
-            {
-                if (rightClickCount > rightClickMax)
+                if (UserInterface.oldKeyBState.IsKeyDown(Keys.LeftControl))
                 {
-                    //new node(s)
-                    int rad = 100;
-                    for (int i = 0; i < 10; i++)
-                    {
-                        int rx = Utils.random.Next(rad * 2) - rad;
-                        int ry = Utils.random.Next(rad * 2) - rad;
-                        room.game.spawnNode((int)UserInterface.WorldMousePos.X + rx, (int)UserInterface.WorldMousePos.Y + ry);
-                    }
-
-                    rightClickCount = 0;
+                    Action<Node> after = delegate(Node n) { n.transform.velocity = diff; }; 
+                    room.game.spawnNode(userP, after);
                 }
                 else
                 {
-                    rightClickCount++;
+                    room.game.spawnNode(userP);
                 }
+                rightClickCount = 0;
             }
         }
 
+        public void BatchSpawn()
+        {
+            if (rightClickCount > rightClickMax)
+            {
+                //new node(s)
+                int rad = 100;
+                for (int i = 0; i < batchSpawnNum; i++)
+                {
+                    int rx = Utils.random.Next(rad * 2) - rad;
+                    int ry = Utils.random.Next(rad * 2) - rad;
+                    room.game.spawnNode((int)UserInterface.WorldMousePos.X + rx, (int)UserInterface.WorldMousePos.Y + ry);
+                }
 
-
+                rightClickCount = 0;
+            }
+            else
+            {
+                rightClickCount++;
+            }
+        }
     }
 }

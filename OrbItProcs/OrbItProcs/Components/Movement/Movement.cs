@@ -28,8 +28,7 @@ namespace OrbItProcs
         public float VelocityModifier { get { return _VelocityModifier; } set { _VelocityModifier = value; } }
 
         public Vector2 tempPosition = new Vector2(0, 0);
-
-
+        
         private movemode _movementmode = movemode.wallbounce;
         public movemode movementmode { get { return _movementmode; } set { _movementmode = value; } }
 
@@ -38,7 +37,8 @@ namespace OrbItProcs
         {
             if (parent != null) this.parent = parent;
             com = comp.movement; 
-            methods = mtypes.affectself; 
+            methods = mtypes.affectself;
+
         }
 
         public override void Initialize(Node parent)

@@ -35,7 +35,7 @@ namespace OrbItProcs {
         public Game1 game;
         public Room room;
 
-        public KeybindSet Keybindset;
+        public KeyManager Keybindset;
 
         
         public static KeyboardState keybState, oldKeyBState;
@@ -79,12 +79,38 @@ namespace OrbItProcs {
             zoomfactor = 0.9f;
             GameInputDisabled = false;
             IsPaused = false;
-            this.Keybindset = new KeybindSet(this);
+            this.Keybindset = new KeyManager(this);
 
-            Keybindset.Add(new KeyBundle(Keys.D1), delegate { room.processManager.activeInputProcess = room.processManager.processDict[proc.spawnnodes]; });
-            Keybindset.Add(new KeyBundle(Keys.Q), delegate { room.processManager.activeInputProcess = room.processManager.processDict[proc.singleselect]; });
-            Keybindset.Add(new KeyBundle(Keys.W), delegate { room.processManager.activeInputProcess = room.processManager.processDict[proc.groupselect]; });
-            Keybindset.Add(new KeyBundle(Keys.E), delegate { room.processManager.activeInputProcess = room.processManager.processDict[proc.randomizer]; });
+            Keybindset.Add("spawnnodes", delegate
+            {
+                Keybindset.AddProcess(room.processManager.processDict[proc.spawnnodes],KeySwitchMethod.Overwrite); 
+            },
+            new KeyBundle(KeyCodes.D1));
+
+            Keybindset.Add("singleselect", delegate
+            {
+                Keybindset.AddProcess(room.processManager.processDict[proc.singleselect], KeySwitchMethod.Overwrite);
+            },
+            new KeyBundle(KeyCodes.D4));
+
+            Keybindset.Add("groupselect", delegate
+            {
+                Keybindset.AddProcess(room.processManager.processDict[proc.groupselect], KeySwitchMethod.Overwrite);
+            },
+            new KeyBundle(KeyCodes.D3));
+
+            Keybindset.Add("randomizer", delegate
+            {
+                Keybindset.AddProcess(room.processManager.processDict[proc.randomizer], KeySwitchMethod.Overwrite);
+            },
+            new KeyBundle(KeyCodes.D2));
+
+            //Keybindset.Add("singleselect", new KeyBundle(Keys.Q),
+            //    delegate { room.processManager.activeInputProcess = room.processManager.processDict[proc.singleselect]; });
+            //Keybindset.Add("groupselect", new KeyBundle(Keys.W),
+            //    delegate { room.processManager.activeInputProcess = room.processManager.processDict[proc.groupselect]; });
+            //Keybindset.Add("randomizer", new KeyBundle(Keys.E),
+            //    delegate { room.processManager.activeInputProcess = room.processManager.processDict[proc.randomizer]; });
 
             groupSelectSet = (room.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet; //syncs group select set to process set
         }
@@ -105,7 +131,7 @@ namespace OrbItProcs {
             keybState = Keyboard.GetState();
 
             if (GameInputDisabled) return;
-            room.processManager.PollKeyboard();
+            //room.processManager.PollKeyboard();
 
             if (keybState.IsKeyDown(Keys.Y))
             {
@@ -166,6 +192,12 @@ namespace OrbItProcs {
         {
             mouseState = Mouse.GetState();
 
+            if (mouseState.XButton1 == ButtonState.Pressed)
+                System.Console.WriteLine("X1");
+
+            if (mouseState.XButton2 == ButtonState.Pressed)
+                System.Console.WriteLine("X2");
+
             MousePos = new Vector2(mouseState.X, mouseState.Y);
             WorldMousePos = MousePos * room.mapzoom;
             //ignore mouse clicks outside window
@@ -197,7 +229,7 @@ namespace OrbItProcs {
             }
 
             if (GameInputDisabled) return;
-            room.processManager.PollMouse(mouseState, oldMouseState);
+            //room.processManager.PollMouse(mouseState, oldMouseState);
 
 
             int worldMouseX = (int)WorldMousePos.X;

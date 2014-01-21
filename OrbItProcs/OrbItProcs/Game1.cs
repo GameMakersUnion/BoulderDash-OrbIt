@@ -37,6 +37,7 @@ namespace OrbItProcs
         
         collision,
         gravity,
+        fieldgravity,
         displace,
         randcolor,
         randvelchange,
@@ -82,6 +83,7 @@ namespace OrbItProcs
             {comp.circler,          typeof(Circler)             },
             {comp.collision,        typeof(Collision)           },
             {comp.displace,         typeof(Displace)            },
+            {comp.fieldgravity,     typeof(FieldGravity)        },
             {comp.flow,             typeof(Flow)                },
             {comp.gravity,          typeof(Gravity)             },
             {comp.hueshifter,       typeof(HueShifter)          },
@@ -315,11 +317,19 @@ namespace OrbItProcs
             ui.sidebar.cbGroupS.ItemIndex = 2;
             ui.sidebar.cbGroupT.ItemIndex = 2;
             InitializePresets();
-            
 
-            Movement movement = new Movement();
-            movement.active = true;
-            Console.WriteLine("::" + movement.active);
+            room.player1 = new Player(new Vector2(200, 200));
+            room.processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
+
+            ui.Keybindset.Add("axismovement", delegate
+            {
+                ui.Keybindset.AddProcess(room.processManager.processDict[proc.axismovement], KeySwitchMethod.Overwrite);
+            },
+            new KeyBundle(KeyCodes.D0));
+
+            //byte b = 255;
+            //float f = b;
+            
         }
 
         public void InitializePresets()
@@ -432,26 +442,26 @@ namespace OrbItProcs
             base.Draw(gameTime);
 
 
-            BlendState bs = new BlendState();
-            
-            //bs.AlphaBlendFunction = BlendFunction.ReverseSubtract;
-            //bs.AlphaSourceBlend = bs.AlphaDestinationBlend = Blend.One;
-
-            bs.AlphaBlendFunction = BlendState.AlphaBlend.AlphaBlendFunction;
-            bs.AlphaDestinationBlend = BlendState.AlphaBlend.AlphaDestinationBlend;
-            bs.AlphaSourceBlend = BlendState.AlphaBlend.AlphaSourceBlend;
-            bs.BlendFactor = BlendState.AlphaBlend.BlendFactor;
-            bs.ColorBlendFunction = BlendState.AlphaBlend.ColorBlendFunction;
-            bs.ColorDestinationBlend = BlendState.AlphaBlend.ColorDestinationBlend;
-            bs.ColorSourceBlend = BlendState.AlphaBlend.ColorSourceBlend;
-            bs.ColorWriteChannels = BlendState.AlphaBlend.ColorWriteChannels;
-            bs.ColorWriteChannels1 = BlendState.AlphaBlend.ColorWriteChannels1;
-            bs.ColorWriteChannels2 = BlendState.AlphaBlend.ColorWriteChannels2;
-            bs.ColorWriteChannels3 = BlendState.AlphaBlend.ColorWriteChannels3;
-
-            //bs.ColorBlendFunction = BlendFunction.Max;
-            bs.ColorDestinationBlend = Blend.One;
-            bs.ColorSourceBlend = Blend.Zero;
+            //BlendState bs = new BlendState();
+            //
+            ////bs.AlphaBlendFunction = BlendFunction.ReverseSubtract;
+            ////bs.AlphaSourceBlend = bs.AlphaDestinationBlend = Blend.One;
+            //
+            //bs.AlphaBlendFunction = BlendState.AlphaBlend.AlphaBlendFunction;
+            //bs.AlphaDestinationBlend = BlendState.AlphaBlend.AlphaDestinationBlend;
+            //bs.AlphaSourceBlend = BlendState.AlphaBlend.AlphaSourceBlend;
+            //bs.BlendFactor = BlendState.AlphaBlend.BlendFactor;
+            //bs.ColorBlendFunction = BlendState.AlphaBlend.ColorBlendFunction;
+            //bs.ColorDestinationBlend = BlendState.AlphaBlend.ColorDestinationBlend;
+            //bs.ColorSourceBlend = BlendState.AlphaBlend.ColorSourceBlend;
+            //bs.ColorWriteChannels = BlendState.AlphaBlend.ColorWriteChannels;
+            //bs.ColorWriteChannels1 = BlendState.AlphaBlend.ColorWriteChannels1;
+            //bs.ColorWriteChannels2 = BlendState.AlphaBlend.ColorWriteChannels2;
+            //bs.ColorWriteChannels3 = BlendState.AlphaBlend.ColorWriteChannels3;
+            //
+            ////bs.ColorBlendFunction = BlendFunction.Max;
+            //bs.ColorDestinationBlend = Blend.One;
+            //bs.ColorSourceBlend = Blend.Zero;
             
 
             GraphicsDevice.Clear(Color.Black);
@@ -474,6 +484,50 @@ namespace OrbItProcs
 
         }
 
+        public void spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1)
+        {
+            Group activegroup = ui.sidebar.ActiveGroupFirst;
+            //if (activegroup.Name.Equals("master")) return;
+            if (!activegroup.Spawnable) return;
+
+            newNode.name = "bullet" + Node.nodeCounter;
+            newNode.OnSpawn();
+
+            if (afterSpawnAction != null) afterSpawnAction(newNode);
+
+            if (lifetime != -1)
+            {
+                if (!newNode.comps.ContainsKey(comp.lifetime))
+                {
+                    newNode.addComponent(comp.lifetime, true);
+                }
+                newNode.comps[comp.lifetime].maxmseconds = lifetime;
+                newNode.comps[comp.lifetime].immortal = false;
+            }
+
+            activegroup.IncludeEntity(newNode);
+
+            if (Group.IntToColor.ContainsKey(activegroup.GroupId))
+            {
+                newNode.transform.color = Group.IntToColor[activegroup.GroupId];
+            }
+            else
+            {
+                int Enumsize = Enum.GetValues(typeof(KnownColor)).Length;
+
+                //int rand = Utils.random.Next(size - 1);
+                int index = 0;
+                foreach (char c in activegroup.Name.ToCharArray().ToList())
+                {
+                    index += (int)c;
+                }
+                index = index % (Enumsize - 1);
+
+                System.Drawing.Color syscolor = System.Drawing.Color.FromKnownColor((KnownColor)index);
+                Color xnacol = new Color(syscolor.R, syscolor.G, syscolor.B, syscolor.A);
+                newNode.transform.color = xnacol;
+            }
+        }
 
 
         public Node spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null, bool blank = false, int lifetime = -1)
@@ -515,15 +569,7 @@ namespace OrbItProcs
             }
             //activegroup.entities.Add(newNode);
             activegroup.IncludeEntity(newNode);
-            int Enumsize = Enum.GetValues(typeof(KnownColor)).Length;
-
-            //int rand = Utils.random.Next(size - 1);
-            int index = 0;
-            foreach(char c in activegroup.Name.ToCharArray().ToList())
-            {
-                index += (int)c;
-            }
-            index = index % (Enumsize - 1);
+            
 
             
             if (Group.IntToColor.ContainsKey(activegroup.GroupId))
@@ -532,6 +578,16 @@ namespace OrbItProcs
             }
             else
             {
+                int Enumsize = Enum.GetValues(typeof(KnownColor)).Length;
+
+                //int rand = Utils.random.Next(size - 1);
+                int index = 0;
+                foreach (char c in activegroup.Name.ToCharArray().ToList())
+                {
+                    index += (int)c;
+                }
+                index = index % (Enumsize - 1);
+
                 System.Drawing.Color syscolor = System.Drawing.Color.FromKnownColor((KnownColor)index);
                 Color xnacol = new Color(syscolor.R, syscolor.G, syscolor.B, syscolor.A);
                 newNode.transform.color = xnacol;

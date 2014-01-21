@@ -28,6 +28,7 @@ namespace OrbItProcs
 
         private Color color;
 
+        private int alternating = 1;
 
         private int _queuecount = 10;
         public int queuecount { get { return _queuecount; } set { _queuecount = value; } }
@@ -40,6 +41,11 @@ namespace OrbItProcs
 
         private double angle = 0;
 
+        public float lineXScale { get; set; }
+        public float lineYScale { get; set; }
+        public float alphaFade { get; set; }
+        public float beamRatio { get; set; }
+
         public Laser() : this(null) { }
         public Laser(Node parent = null)
         {
@@ -50,7 +56,11 @@ namespace OrbItProcs
             }
             com = comp.laser; 
             methods = mtypes.affectself | mtypes.draw; 
-            InitializeLists(); 
+            InitializeLists();
+            lineXScale = -1;
+            lineYScale = -1;
+            alphaFade = 0.1f;
+            beamRatio = 0.5f;
         }
 
         public override void AfterCloning()
@@ -112,7 +122,7 @@ namespace OrbItProcs
             for (int i = 1; i <= min; i++)
             {
                 //Vector2 pos = positions.ElementAt(i);
-                float red = (float)i * (255f / queuecount) / 255f;
+                //float red = (float)i * (255f / queuecount) / 255f;
                 //col = new Color(red, red, red);
                 //col = Utils.randomColor();
 
@@ -124,11 +134,30 @@ namespace OrbItProcs
                 Vector2 centerpoint = (end + start) / 2;
                 centerpoint /= mapzoom;
                 float len = diff.Length();
-                Vector2 scalevect = new Vector2(len, scales.ElementAt(i-1) * 3);
+                Vector2 scalevect;
+                float xscale = len;
+                float yscale = scales.ElementAt(i - 1) * 3;
+                float outerscale = yscale;
+                float beamdist = 1f;
+                if (lineXScale >= 0)
+                {
+                    xscale = lineXScale;
+                }
+                if (lineYScale >= 0)
+                {
+                    yscale = lineYScale;
+                    outerscale = yscale * beamRatio;
+                    
+
+                }
+                scalevect = new Vector2(xscale, yscale);
+
                 float testangle = (float)(Math.Atan2(diff.Y, diff.X));// + (Math.PI / 2));
                 
                 diff.Normalize();
-                diff = new Vector2(diff.Y, diff.X);
+                diff = new Vector2(-diff.Y, diff.X);
+                //diff *= beamdist;
+
 
                 //uncommet later when not using direction based color shit
                 //color = new Color(color.R, color.G, color.B, 255/queuecount * i);
@@ -143,33 +172,36 @@ namespace OrbItProcs
                 {
                     coll = parent.transform.color;
                 }
-                spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint, null, new Color(1f, 1f, 1f, 255 / queuecount * i), testangle, centerTexture, scalevect, SpriteEffects.None, 0);
-                spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint + diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
-                spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint - diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+
+                //if (alphaFade > 0) coll.A = (byte)(alphaFade * i * 255);
+
+                //coll.A = (byte)i;
+                //Console.WriteLine("{0} + {1}", i, coll.A);
+                //coll = new Color(0.5f, 0.5f, 0.5f, 0.01f);
+
+                spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint, null, new Color(255, 255, 255, coll.A), testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+                scalevect.Y = outerscale * 0.9f;
+                //spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint + diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+                //spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint - diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+
+                for (int j = 0; j < 4; j++)
+                {
+                    beamdist = (outerscale + j * yscale) / 2f;
+                    //coll = new Color(new Vector4(coll.R, coll.G, coll.B, coll.A) - new Vector4(5, 5, 5, 0));
+                    spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint + diff * beamdist, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+                    spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint - diff * beamdist, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+
+                }
+
+                //spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint + diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+                //spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint - diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+
+                //alternating *= -1;
+                //diff *= alternating * 3;
+                //spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint + diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
                 count++;
             }
-            //spritebatch.Draw(parent.room.game.whitepixelTexture, new Vector2(screenx, screeny), null, Color.White, (float)angle, center, scaling, SpriteEffects.None, 0);
-            //spritebatch.Draw(parent.room.game.whitepixelTexture, screenPos, null, Color.White, (float)angle, center, scalesVects[queuecount - 1], SpriteEffects.None, 0);
-
-            //test
-            /*
-            Vector2 start = new Vector2(200, 200);
-            Vector2 end = new Vector2(room.Game1.sWidth, room.Game1.sHeight);
-
-            //Vector2 diff = (end - start) / mapzoom;
-            Vector2 centerpoint = (end + start) / 2;
-            centerpoint /= mapzoom;
-            float len = diff.Length();
-
-            Vector2 scalevect = new Vector2(len, 1);
-            float testangle = (float)(Math.Atan2(diff.Y, diff.X));// + (Math.PI / 2));
-            spritebatch.Draw(parent.room.game.colororbTexture, start / mapzoom, null, Color.White, 0f, new Vector2(25f, 25f), 1 / mapzoom, SpriteEffects.None, 0);
-            spritebatch.Draw(parent.room.game.colororbTexture, end / mapzoom, null, Color.White, 0f, new Vector2(25f, 25f), 1 / mapzoom, SpriteEffects.None, 0);
-            spritebatch.Draw(parent.room.game.colororbTexture, centerpoint, null, Color.White, 0f, new Vector2(25f, 25f), 1 / mapzoom, SpriteEffects.None, 0);
-            spritebatch.Draw(parent.room.game.whitepixelTexture, centerpoint, null, Color.White, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
-            */
-            //spritebatch.Draw(parent.texture, new Vector2(screenx, screeny), null, Color.White, 0, new Vector2(parent.texture.Width / 2, parent.texture.Height / 2), parent.transform.scale, SpriteEffects.None, 0);
-            //spritebatch.Draw(parent.props[properties.core_texture], parent.props[properties.core_position], null, Color.White, 0, new Vector2(parent.props[properties.core_texture].Width / 2, parent.props[properties.core_texture].Height / 2), 1f, SpriteEffects.None, 0);
+            
         }
 
         public void onCollision(Dictionary<dynamic, dynamic> args)

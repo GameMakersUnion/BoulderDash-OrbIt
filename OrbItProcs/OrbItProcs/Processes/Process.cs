@@ -20,23 +20,25 @@ namespace OrbItProcs
         public event ProcessMethod Collision;
         public event ProcessMethod OutOfBounds;
 
-        public event Action<ButtonState> LeftClick;
-        public event Action<ButtonState> RightClick;
-        public event Action<ButtonState> MiddleClick;
-        public event Action<int> Scroll;
+        //Fuck no
+        //
+        //public event Action<ButtonState> LeftClick;
+        //public event Action<ButtonState> RightClick;
+        //public event Action<ButtonState> MiddleClick;
+        //public event Action<int> Scroll;
+        //
+        //public event Action LeftHold;
+        //public event Action RightHold;
+        //public event Action MiddleHold;
+        //
+        //public event ProcessMethod KeyEvent;
+        //
+        //private bool leftHold = false, rightHold = false, middleHold = false;
 
-        public event Action LeftHold;
-        public event Action RightHold;
-        public event Action MiddleHold;
-
-        
-
-        public event ProcessMethod KeyEvent;
-
-        private bool leftHold = false, rightHold = false, middleHold = false;
+        public Dictionary<KeyAction, KeyBundle> processKeyActions = new Dictionary<KeyAction,KeyBundle>();
 
         public List<Process> procs = new List<Process>();
-        //Process parentprocess; //I bet you a coke -Dante
+        //Process parentprocess; //I bet you a coke -Dante (resolved section 33.32 of the skeet bible studies)
         public Dictionary<dynamic, dynamic> pargs;
         public Dictionary<dynamic, ProcessMethod> pmethods;
 
@@ -46,6 +48,23 @@ namespace OrbItProcs
             room = Program.getRoom();
         }
 
+        protected void addProcessKeyAction(String name, KeyCodes k1, KeyCodes? k2 = null, KeyCodes? k3 = null, Action OnPress = null, Action OnRelease = null, Action OnHold = null)
+        {
+            KeyBundle keyBundle;
+            if (k2 == null) keyBundle = new KeyBundle(k1);
+            else if (k3 == null) keyBundle = new KeyBundle((KeyCodes)k2, k1);
+            else keyBundle = new KeyBundle((KeyCodes)k3, (KeyCodes) k2, k1);
+
+            var keyAction = new KeyAction(name, OnPress, new HashSet<KeyBundle>() { keyBundle });
+
+            keyAction.releaseAction = OnRelease;
+            keyAction.holdAction = OnHold;
+
+            processKeyActions.Add(keyAction, keyBundle);
+        }
+
+        
+
         public void OnUpdate()
         {
             foreach (Process p in procs)
@@ -53,88 +72,12 @@ namespace OrbItProcs
                 p.OnUpdate();
             }
             if (Update != null) Update(pargs);
-
-            if (leftHold) InvokeLeftHold();
-            if (rightHold) InvokeRightHold();
-            if (middleHold) InvokeMiddleHold();
-            
-
-        }
-
-        public void InvokeKeyEvent(Dictionary<dynamic,dynamic> args)
-        {
-            if (KeyEvent != null)
-            {
-                KeyEvent(args);
-            }
-        }
-
-        public void InvokeLeftClick(ButtonState buttonState)
-        {
-            if (buttonState == ButtonState.Pressed) leftHold = true;
-            else leftHold = false;
-
-            if (LeftClick != null)
-            {
-                LeftClick(buttonState);
-            }
-            //probably update all the child process clicks, but make sure they aren't already being handled by the manager
-        }
-        public void InvokeRightClick(ButtonState buttonState)
-        {
-            if (buttonState == ButtonState.Pressed) rightHold = true;
-            else rightHold = false;
-
-            if (RightClick != null)
-            {
-                RightClick(buttonState);
-            }
-        }
-        public void InvokeMiddleClick(ButtonState buttonState)
-        {
-            if (buttonState == ButtonState.Pressed) middleHold = true;
-            else middleHold = false;
-
-            if (MiddleClick != null)
-            {
-                MiddleClick(buttonState);
-            }
-        }
-        public void InvokeScroll(int scrollval)
-        {
-            if (Scroll != null)
-            {
-                Scroll(scrollval);
-            }
-        }
-        public void InvokeLeftHold()
-        {
-            if (LeftHold != null)
-            {
-                LeftHold();
-            }
-            //probably update all the child process clicks, but make sure they aren't already being handled by the manager
-        }
-        public void InvokeRightHold()
-        {
-            if (RightHold != null)
-            {
-                RightHold();
-            }
-        }
-        public void InvokeMiddleHold()
-        {
-            if (MiddleHold != null)
-            {
-                MiddleHold();
-            }
         }
 
         public void Add(Process p)
         {
             procs.Add(p);
             p.OnCreate();
-
         }
 
         public void OnCreate()
