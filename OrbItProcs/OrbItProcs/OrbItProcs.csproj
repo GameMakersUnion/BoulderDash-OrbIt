@@ -125,6 +125,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\AffectOthers\Displace.cs" />
+    <Compile Include="Components\AffectOthers\Orbiter.cs" />
     <Compile Include="Components\Drawers\BasicDraw.cs" />
     <Compile Include="Components\FieldGravity.cs" />
     <Compile Include="Components\ILinkable.cs" />

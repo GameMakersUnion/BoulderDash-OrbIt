@@ -39,6 +39,8 @@ namespace OrbItProcs
         gravity,
         fieldgravity,
         displace,
+        orbiter,
+
         randcolor,
         randvelchange,
         randinitialvel,
@@ -93,6 +95,7 @@ namespace OrbItProcs
             {comp.maxvel,           typeof(MaxVel)              },
             {comp.modifier,         typeof(Modifier)            },
             {comp.movement,         typeof(Movement)            },
+            {comp.orbiter,          typeof(Orbiter)             },
             {comp.phaseorb,         typeof(PhaseOrb)            },
             {comp.queuer,           typeof(Queuer)              },
             {comp.randcolor,        typeof(RandColor)           },
@@ -232,9 +235,11 @@ namespace OrbItProcs
             {textures.whiteorb, Content.Load<Texture2D>("Textures/whitesphere"      )},
             {textures.colororb, Content.Load<Texture2D>("Textures/colororb"         )},
             {textures.whitepixel, Content.Load<Texture2D>("Textures/whitepixel"     )},
+            {textures.whitepixeltrans, Content.Load<Texture2D>("Textures/whitepixeltrans")},
             {textures.whitecircle, Content.Load<Texture2D>("Textures/whitecircle"   )}};
             font = Content.Load<SpriteFont>("Courier New");
 
+            
             room = new Room(this);
             room.processManager = new ProcessManager(room);
             #region ///Default User props///

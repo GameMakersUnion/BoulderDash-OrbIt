@@ -177,9 +177,9 @@ namespace OrbItProcs
 
                 //coll.A = (byte)i;
                 //Console.WriteLine("{0} + {1}", i, coll.A);
-                //coll = new Color(0.5f, 0.5f, 0.5f, 0.01f);
+                //coll = new Color(0.5f, 0.5f, 0.5f, 0f);
 
-                spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint, null, new Color(255, 255, 255, coll.A), testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+                spritebatch.Draw(parent.getTexture(textures.whitepixeltrans), centerpoint, null, new Color(255, 255, 255, coll.A), testangle, centerTexture, scalevect, SpriteEffects.None, 0);
                 scalevect.Y = outerscale * 0.9f;
                 //spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint + diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
                 //spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint - diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
@@ -188,8 +188,8 @@ namespace OrbItProcs
                 {
                     beamdist = (outerscale + j * yscale) / 2f;
                     //coll = new Color(new Vector4(coll.R, coll.G, coll.B, coll.A) - new Vector4(5, 5, 5, 0));
-                    spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint + diff * beamdist, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
-                    spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint - diff * beamdist, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+                    spritebatch.Draw(parent.getTexture(textures.whitepixeltrans), centerpoint + diff * beamdist, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+                    spritebatch.Draw(parent.getTexture(textures.whitepixeltrans), centerpoint - diff * beamdist, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
 
                 }
 

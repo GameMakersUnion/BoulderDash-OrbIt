@@ -11,6 +11,8 @@ namespace OrbItProcs
 {
     public class Tether : Component, ILinkable
     {
+        private Link _link = null;
+        public Link link { get { return _link; } set { _link = value; } }
         new public bool active
         {
             get { return _active; }

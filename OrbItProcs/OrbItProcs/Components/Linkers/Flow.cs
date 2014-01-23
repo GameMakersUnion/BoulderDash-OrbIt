@@ -11,6 +11,8 @@ namespace OrbItProcs
 {
     public class Flow : Component, ILinkable
     {
+        private Link _link = null;
+        public Link link { get { return _link; } set { _link = value; } }
         public enum gate
         {
             None,

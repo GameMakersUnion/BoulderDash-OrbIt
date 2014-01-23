@@ -120,6 +120,7 @@ namespace OrbItProcs {
             ProcessKeyboard();
             ProcessMouse();
 
+            //game.testing.KeyManagerTest(() => Keybindset.Update());
             Keybindset.Update();
 
             //randomizerProcess = new Randomizer();

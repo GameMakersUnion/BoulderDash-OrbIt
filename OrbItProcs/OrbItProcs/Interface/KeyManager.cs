@@ -891,12 +891,17 @@ namespace OrbItProcs
         {   
             newKeyboardState = Keyboard.GetState();
             newMouseState = Mouse.GetState();
-            
-            ProcessKeyboard();
-            ProcessMouse();
 
-            ProcessHolds();
-            
+
+            Vector2 mousePos = UserInterface.MousePos;
+            if (mousePos.X < Game1.sWidth - ui.sidebar.master.Width)
+            {
+                ProcessKeyboard();
+                ProcessMouse();
+
+                ProcessHolds();
+            }
+
             oldKeyboardState = Keyboard.GetState();
             oldMouseState = Mouse.GetState();
 

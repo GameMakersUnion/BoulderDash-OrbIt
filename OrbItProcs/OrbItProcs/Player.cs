@@ -49,12 +49,12 @@ namespace OrbItProcs
                 { comp.basicdraw, true },
                 { comp.maxvel, true },
                 { comp.laser, true },
-                { comp.linearpull, true },
+                //{ comp.linearpull, true },
             };
 
             launchNode = new Node(room, userP);
             //launchNode.comps[comp.laser].lineXScale = 0.5f;
-            launchNode.comps[comp.laser].lineYScale = 15f;
+            launchNode.comps[comp.laser].lineYScale = 1f;
             launchNode.GetComponent<MaxVel>().maxvel = 15;
             bulletlife = 1500;
             firefreq = 1;
@@ -170,7 +170,21 @@ namespace OrbItProcs
                 if (firefreqCounter++ % firefreq != 0)
                     return;
             }
-            FireNode();
+            //FireNode();
+
+            Vector2 pos = UserInterface.WorldMousePos;
+            Node newNode = new Node();
+            Node.cloneObject(launchNode, newNode);
+            newNode.transform.velocity = pos - transform.position;
+            newNode.transform.position = transform.position + transform.velocity * 5;
+
+            if (UserInterface.keybState.IsKeyDown(Keys.LeftControl))
+            {
+                if (newNode.comps.ContainsKey(comp.maxvel))
+                    newNode.comps[comp.maxvel].active = false;
+
+            }
+            room.game.spawnNode(newNode, lifetime: bulletlife);
         }
 
         public void MaxVelocityUpdate()

@@ -82,6 +82,13 @@ namespace OrbItProcs
             StopTimer("keypresses:");
         }
 
+        public void KeyManagerTest(Action a)
+        {
+            StartTimer();
+            a();
+            StopTimer("KeyManager");
+        }
+
         public void TestHashSet()
         {
             StartTimer();

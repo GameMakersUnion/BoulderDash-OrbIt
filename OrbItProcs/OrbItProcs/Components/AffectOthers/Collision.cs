@@ -9,6 +9,9 @@ namespace OrbItProcs
 {
     public class Collision : Component, ILinkable
     {
+        private Link _link = null;
+        public Link link { get { return _link; } set { _link = value; } }
+
         public bool _AffectOnlyColliders = true;
         public bool AffectOnlyColliders { get { return _AffectOnlyColliders; } set { _AffectOnlyColliders = value; } }
 

@@ -9,7 +9,8 @@ namespace OrbItProcs
 {
     public class FieldGravity : Component, ILinkable
     {
-
+        private Link _link = null;
+        public Link link { get { return _link; } set { _link = value; } }
         private float _multiplier = 100f;
         public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
 

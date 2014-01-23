@@ -547,8 +547,10 @@ namespace OrbItProcs
 
             object linkComp = Activator.CreateInstance(t);
 
-            ILinkable l = (ILinkable)linkComp;
-            link.components.Add(l);
+
+            link.AddLinkComponent((ILinkable)linkComp);
+            //ILinkable l = (ILinkable)linkComp;
+            //link.components.Add(l);
 
             ActiveInspectorParent.DoubleClickItem(this);
             return true;

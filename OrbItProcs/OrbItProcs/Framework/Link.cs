@@ -116,6 +116,7 @@ namespace OrbItProcs
                 dynamic newComponent = Activator.CreateInstance(component.GetType());
                 Component.CloneComponent((Component)component, newComponent);
                 newComponent.active = true;
+                newComponent.link = this;
                 if (newComponent.GetType().GetProperty("activated") != null) newComponent.activated = true;
 
                 this.components.Add(newComponent);
@@ -137,6 +138,7 @@ namespace OrbItProcs
             }
             if (linkComponent != null)
             {
+                linkComponent.link = this;
                 this.components.Add(linkComponent);
             }
 
@@ -379,6 +381,12 @@ namespace OrbItProcs
                     n.TargetLinks.Remove(this);
                 }
             }
+        }
+
+        public void AddLinkComponent(ILinkable linkC)
+        {
+            linkC.link = this;
+            components.Add(linkC);
         }
 
         public void UpdateNodeToNode()

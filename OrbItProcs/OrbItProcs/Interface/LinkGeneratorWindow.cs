@@ -29,8 +29,8 @@ namespace OrbItProcs
             this.sidebar = sidebar;
             window = new Window(manager);
             window.Init();
-            window.Left = game.ui.sidebar.master.Left - 50;
-            window.Width = 240;
+            window.Left = game.ui.sidebar.master.Left;
+            window.Width = game.ui.sidebar.master.Width;
             window.Top = 200;
             window.Height = 200;
             window.Text = "Link Generator";
@@ -129,7 +129,7 @@ namespace OrbItProcs
             cbLinkPresets = new ComboBox(manager);
             cbLinkPresets.Init();
             cbLinkPresets.Left = left + middle;
-            cbLinkPresets.Width += 20;
+            //cbLinkPresets.Width += 20;
             cbLinkPresets.Parent = parent2;
             cbLinkPresets.Top = HeightCounter3; HeightCounter3 += cbLinkPresets.Height;
 
@@ -139,7 +139,7 @@ namespace OrbItProcs
             btnAddToPalette = new Button(manager);
             btnAddToPalette.Init();
             btnAddToPalette.Left = left + middle;
-            btnAddToPalette.Width = middle;
+            btnAddToPalette.Width = middle - 20;
             btnAddToPalette.Text = "Add to\nPalette";
             btnAddToPalette.Height = btnAddToPalette.Height * 2 - 10;
             btnAddToPalette.Parent = parent2;

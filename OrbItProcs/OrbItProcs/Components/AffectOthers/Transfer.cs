@@ -9,7 +9,8 @@ namespace OrbItProcs
 {
     public class Transfer : Component, ILinkable
     {
-
+        private Link _link = null;
+        public Link link { get { return _link; } set { _link = value; } }
         private float _radius = 25f;
         public float radius { get { return _radius; } set { _radius = value; } }
 

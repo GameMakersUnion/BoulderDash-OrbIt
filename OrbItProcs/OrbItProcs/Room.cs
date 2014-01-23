@@ -22,6 +22,7 @@ namespace OrbItProcs {
         colororb,
         whitecircle,
         whitepixel,
+        whitepixeltrans,
     }
 
     
