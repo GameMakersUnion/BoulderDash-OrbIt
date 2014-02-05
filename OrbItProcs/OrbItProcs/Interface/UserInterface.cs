@@ -80,30 +80,26 @@ namespace OrbItProcs {
             GameInputDisabled = false;
             IsPaused = false;
             this.Keybindset = new KeyManager(this);
-
-            Keybindset.Add("spawnnodes", delegate
+            //
+            Keybindset.Add("spawnnodes", new KeyBundle(KeyCodes.D1), delegate
             {
                 Keybindset.AddProcess(room.processManager.processDict[proc.spawnnodes],KeySwitchMethod.Overwrite); 
-            },
-            new KeyBundle(KeyCodes.D1));
-
-            Keybindset.Add("singleselect", delegate
-            {
-                Keybindset.AddProcess(room.processManager.processDict[proc.singleselect], KeySwitchMethod.Overwrite);
-            },
-            new KeyBundle(KeyCodes.D4));
-
-            Keybindset.Add("groupselect", delegate
-            {
-                Keybindset.AddProcess(room.processManager.processDict[proc.groupselect], KeySwitchMethod.Overwrite);
-            },
-            new KeyBundle(KeyCodes.D3));
-
-            Keybindset.Add("randomizer", delegate
+            });
+            //
+            Keybindset.Add("randomizer", new KeyBundle(KeyCodes.D2), delegate
             {
                 Keybindset.AddProcess(room.processManager.processDict[proc.randomizer], KeySwitchMethod.Overwrite);
-            },
-            new KeyBundle(KeyCodes.D2));
+            });
+            //
+            Keybindset.Add("groupselect", new KeyBundle(KeyCodes.D3), delegate
+            {
+                Keybindset.AddProcess(room.processManager.processDict[proc.groupselect], KeySwitchMethod.Overwrite);
+            });
+            //
+            Keybindset.Add("singleselect", new KeyBundle(KeyCodes.D4), delegate
+            {
+                Keybindset.AddProcess(room.processManager.processDict[proc.singleselect], KeySwitchMethod.Overwrite);
+            });
 
             //Keybindset.Add("singleselect", new KeyBundle(Keys.Q),
             //    delegate { room.processManager.activeInputProcess = room.processManager.processDict[proc.singleselect]; });

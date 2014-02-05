@@ -332,11 +332,10 @@ namespace OrbItProcs
             room.player1 = new Player(new Vector2(200, 200));
             room.processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
 
-            ui.Keybindset.Add("axismovement", delegate
+            ui.Keybindset.Add("axismovement", new KeyBundle(KeyCodes.D0), delegate
             {
                 ui.Keybindset.AddProcess(room.processManager.processDict[proc.axismovement], KeySwitchMethod.Overwrite);
-            },
-            new KeyBundle(KeyCodes.D0));
+            });
 
             //byte b = 255;
             //float f = b;

@@ -114,21 +114,29 @@ namespace OrbItProcs {
         //a property
         public InspectorItem(IList<object> masterList, InspectorItem parentItem, object obj, PropertyInfo propertyInfo)
         {
+            this.membertype = member_type.property;
+            this.fpinfo = new FPInfo(propertyInfo);
+            FieldOrPropertyInitilize(masterList, parentItem, obj);
+        }
+        //a field
+        public InspectorItem(IList<object> masterList, InspectorItem parentItem, object obj, FieldInfo fieldInfo)
+        {
+            this.membertype = member_type.field;
+            this.fpinfo = new FPInfo(fieldInfo);
+            FieldOrPropertyInitilize(masterList, parentItem, obj);
+        }
+        private void FieldOrPropertyInitilize(IList<object> masterList, InspectorItem parentItem, object obj)
+        {
             this.whitespace = "|";
             if (parentItem != null) this.whitespace += parentItem.whitespace;
             this.obj = obj;
             this.parentItem = parentItem;
-            //this.fieldInfo = fieldInfo;
-            this.fpinfo = new FPInfo(propertyInfo);
-            this.masterList = masterList; 
-            this.membertype = member_type.property;
+            this.masterList = masterList;
             this.children = new List<object>();
             CheckItemType();
             prefix = "" + ((char)164);
-            //System.Console.WriteLine(this);
-            //children = GenerateList(obj, whitespace, this);
-
         }
+
         //a dictionary entry
         public InspectorItem(IList<object> masterList, InspectorItem parentItem, object obj, object key) //obj = null
         {
@@ -344,6 +352,7 @@ namespace OrbItProcs {
             }
             else if (dt == data_type.obj)
             {
+                ///// PROPERTIES
                 List<PropertyInfo> propertyInfos;
                 //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
                 if (!(parent is Component || parent is Player || parent is Process))
@@ -357,11 +366,25 @@ namespace OrbItProcs {
 
                 foreach (PropertyInfo pinfo in propertyInfos)
                 {
-                    //if (pinfo.PropertyType == typeof(Node)) continue; //don't infinitely recurse on nodes
-
                     InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, pinfo.GetValue(parent, null), pinfo);
-                    //iitem.GenerateChildren();
-                    //list.Add(iitem);
+                    if (iitem.CheckForChildren()) iitem.prefix = "+";
+                    InsertItemSorted(list, iitem);
+                }
+                ////// FIELDS
+                List<FieldInfo> fieldInfos;
+                //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
+                if (!(parent is Component || parent is Player || parent is Process))
+                {
+                    fieldInfos = parent.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
+                }
+                else
+                {
+                    fieldInfos = parent.GetType().GetFields().ToList();
+                }
+
+                foreach (FieldInfo finfo in fieldInfos)
+                {
+                    InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, finfo.GetValue(parent), finfo);
                     if (iitem.CheckForChildren()) iitem.prefix = "+";
                     InsertItemSorted(list, iitem);
                 }

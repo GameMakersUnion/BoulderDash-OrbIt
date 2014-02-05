@@ -19,6 +19,7 @@ namespace OrbItProcs
         public Link link { get { return _link; } set { _link = value; } }
 
         //public int gridx = 0, gridy = 0;
+        public bool OldCollision { get; set; }
 
         public override bool active
         {
@@ -50,6 +51,7 @@ namespace OrbItProcs
             if (parent != null) this.parent = parent;
             com = comp.collision; 
             methods = mtypes.affectother;
+            OldCollision = true;
         }
         public override void Initialize(Node parent)
         {
@@ -65,17 +67,29 @@ namespace OrbItProcs
             //assuming other has been checked for 'active' from caller
             if (exclusions.Contains(other)) return;
 
-            
 
-            if (Utils.checkCollision(parent, other))
+            if (OldCollision)
             {
-                Dictionary<dynamic, dynamic> dict = new Dictionary<dynamic, dynamic>() { 
+                if (Utils.checkCollision(parent, other))
+                {
+                    Dictionary<dynamic, dynamic> dict = new Dictionary<dynamic, dynamic>() { 
                     { "collidee", other },
                 };
-                parent.OnCollidePublic(dict);
-                dict["collidee"] = parent;
-                other.OnCollidePublic(dict);
-                Utils.resolveCollision(parent, other);
+                    parent.OnCollidePublic(dict);
+                    dict["collidee"] = parent;
+                    other.OnCollidePublic(dict);
+                    Utils.resolveCollision(parent, other);
+                }
+            }
+            else
+            {
+                if (parent.body.invmass == 0 && other.body.invmass == 0)
+                    return;
+
+                Manifold m = new Manifold(parent.body, other.body);
+                m.Solve();
+                if (m.contact_count > 0)
+                    parent.room.AddManifold(m);
             }
             
         }

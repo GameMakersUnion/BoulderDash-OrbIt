@@ -835,12 +835,12 @@ namespace OrbItProcs
 
         }
 
-        public void Add(string name, Action action, KeyBundle bundle, Action holdAction = null)
+        public void Add(string name, KeyBundle bundle, Action action, Action holdAction = null)
         {
             KeyAction ka = new KeyAction(name, action, new HashSet<KeyBundle>() { bundle });
             Keybinds.Add(bundle, ka);
         }
-        public void Add(string name, Action action, HashSet<KeyBundle> bundles)
+        public void Add(string name, HashSet<KeyBundle> bundles, Action action)
         {
             KeyAction ka = new KeyAction(name, action, bundles);
             

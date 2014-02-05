@@ -47,7 +47,7 @@ namespace OrbItProcs
             //movementmode = movemode.wallbounce;
         }
 
-        public void IntegrateForces()
+        private void IntegrateForces()
         {
             if (parent.body.invmass == 0)
                 return;
@@ -59,6 +59,7 @@ namespace OrbItProcs
         }
         public void IntegrateVelocity()
         {
+            if (!active) return;
             if (parent.body.invmass == 0)
                 return;
             Body b = parent.body;

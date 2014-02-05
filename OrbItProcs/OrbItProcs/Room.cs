@@ -33,7 +33,7 @@ namespace OrbItProcs {
         public Link linkTest { get; set; }
         public bool DrawLinks { get; set; }
 
-        public HashSet<Manifold> contacts = new HashSet<Manifold>();
+
 
         public ObservableHashSet<Link> _AllActiveLinks = new ObservableHashSet<Link>();
         public ObservableHashSet<Link> AllActiveLinks { get { return _AllActiveLinks; } set { _AllActiveLinks = value; } }
@@ -66,6 +66,8 @@ namespace OrbItProcs {
         public SharpSerializer serializer = new SharpSerializer();
 
         public Player player1 { get; set; }
+
+        private List<Manifold> contacts = new List<Manifold>();
 
         //public tree treeProp = tree.gridsystem;
 
@@ -132,8 +134,8 @@ namespace OrbItProcs {
                 Node n = (Node)o; 
                 gridsystem.insert(n);
             });
-            
-            
+
+            UpdateCollision(); //this collision detection may need to go after the full room (components) update
 
             //game.testing.StartTimer();
             masterGroup.ForEachFullSet(delegate(Node o)
@@ -169,10 +171,29 @@ namespace OrbItProcs {
                 */
             });
 
-            UpdateCollision();
+            //COLLISION
+            foreach (Manifold m in contacts)
+                m.Initialize();
+            int iterations = 1; //he has this at 10 to make the system more inter-affective
+            for (int ii = 0; ii < iterations; ii++)
+            {
+                foreach (Manifold m in contacts)
+                    m.ApplyImpulse();
+            }
+            foreach(Node n in masterGroup.fullSet)
+            {
+                if (n.comps.ContainsKey(comp.movement))
+                {
+                    n.comps[comp.movement].IntegrateVelocity();
+                    n.body.force.Set(0, 0);
+                    n.body.torque = 0;
+                }
+            }
+            foreach (Manifold m in contacts)
+                m.PositionalCorrection();
+            // \COLLISION
 
             if (AfterIteration != null) AfterIteration(this, null);
-            //if (linkTest != null) linkTest.UpdateAction();
                 
             //addGridSystemLines(gridsystem);
             addBorderLines();
@@ -181,6 +202,11 @@ namespace OrbItProcs {
             updateTargetNodeGraphic();
 
             player1.Update(gametime);
+        }
+
+        public void AddManifold(Manifold m)
+        {
+            contacts.Add(m);
         }
 
         public void UpdateCollision()
