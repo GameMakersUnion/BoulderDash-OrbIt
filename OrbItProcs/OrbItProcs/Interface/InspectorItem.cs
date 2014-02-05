@@ -57,6 +57,8 @@ namespace OrbItProcs {
             typeof(Group),
             typeof(Link),
             typeof(Formation),
+            typeof(ProcessManager),
+            typeof(Process),
             typeof(ILinkable),
         };
         public static List<Type> PanelTypes = new List<Type>()
@@ -209,16 +211,7 @@ namespace OrbItProcs {
             children = GenerateList(obj, this);
         }
 
-        public void RefrestMasterList()
-        {
-            AddMissingChildren();
-            foreach (object o in masterList.ToList())
-            {
-                masterList.Remove(o);
-            }
-            AddChildrenToMasterDeep();
-
-        }
+        
 
         public void AddChildrenToMasterDeep()
         {
@@ -233,7 +226,17 @@ namespace OrbItProcs {
             }
 
         }
+        /*
+        public void RefrestMasterList()
+        {
+            AddMissingChildren();
+            foreach (object o in masterList.ToList())
+            {
+                masterList.Remove(o);
+            }
+            AddChildrenToMasterDeep();
 
+        }
         public void AddMissingChildren()
         {
             if (datatype == data_type.dict)
@@ -301,6 +304,7 @@ namespace OrbItProcs {
                 }
             }
         }
+        */
 
         public static List<object> GenerateList(object parent, InspectorItem parentItem = null)
         {
@@ -342,7 +346,7 @@ namespace OrbItProcs {
             {
                 List<PropertyInfo> propertyInfos;
                 //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                if (!(parent is Component || parent is Player))
+                if (!(parent is Component || parent is Player || parent is Process))
                 {
                     propertyInfos = parent.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
                 }
@@ -672,13 +676,17 @@ namespace OrbItProcs {
             }
             else
             {
-                foreach (Type type in ValidTypes)
-                {
-                    if (obj.GetType() == type)
-                    {
-                        dt = data_type.obj;
-                    }
-                }
+
+                //foreach (Type type in ValidTypes)
+                //{
+                //    if (obj.GetType() == type)
+                //    {
+                //        dt = data_type.obj;
+                //    }
+                //}
+                dt = data_type.obj; //this should be ok (we don't need to specific validtypes anymore)
+
+
                 //datatype = data_type.none; //support more types in the future
             }
 

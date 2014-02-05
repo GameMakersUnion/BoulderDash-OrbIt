@@ -44,7 +44,7 @@ namespace OrbItProcs
         //    ScrollValue,
         //}
 
-        public Dictionary<proc, Process> processDict;
+        public Dictionary<proc, Process> processDict { get; set; }
         public Process activeInputProcess;
         public HashSet<Process> processes;
         public Room room;

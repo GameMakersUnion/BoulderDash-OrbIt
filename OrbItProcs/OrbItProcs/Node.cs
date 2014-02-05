@@ -150,6 +150,12 @@ namespace OrbItProcs {
         public Transform transform;
         public Transform TRANSFORM { get { return transform; } set { transform = value; } }
 
+        public Collision collision;
+        public Collision COLLISION { get { return collision; } set { collision = value; } }
+
+        public Body body;
+        public Body BODY { get { return body; } set { body = value; } }
+
         private ObservableHashSet<Link> _SourceLinks = new ObservableHashSet<Link>();
         public ObservableHashSet<Link> SourceLinks { get { return _SourceLinks; } set { _SourceLinks = value; } }
 
@@ -185,6 +191,8 @@ namespace OrbItProcs {
             nodeCounter++;
             room = Program.getRoom();
             transform = new Transform(this);
+            collision = new Collision(this);
+            body = new Body(parent: this);
         }
 
         public Node(Room room1, Dictionary<dynamic, dynamic> userProps = null) : this()
@@ -459,35 +467,33 @@ namespace OrbItProcs {
         {
             if (nodeState == state.off || nodeState == state.drawOnly) return;
 
-            List<Node> returnObjectsFinal = new List<Node>();
-            List<Node> collisionList = new List<Node>();
             if (aOtherProps.Count > 0)
+            {
+                List<Node> returnObjectsFinal = new List<Node>();
+
                 returnObjectsFinal = room.gridsystem.retrieve(this);
 
-            int cellReach = (int)(transform.radius * 2) / room.gridsystem.cellwidth * 2;
+                int cellReach = (int)(transform.radius * 2) / room.gridsystem.cellwidth * 2;
 
-            if (comps.ContainsKey(comp.collision) && comps[comp.collision].active) collisionList = room.gridsystem.retrieve(this, cellReach);
-            HashSet<Node> hashlist = new HashSet<Node>();
-            hashlist.UnionWith(returnObjectsFinal);//bad
-            hashlist.UnionWith(collisionList);
-            
-            if (comps.ContainsKey(comp.flow) && comps[comp.flow].active)
-            {
-                hashlist = new HashSet<Node>();
-                if (comps[comp.flow].activated)
-                {
-                    hashlist.UnionWith(comps[comp.flow].outgoing);
-                }
-            }
-            hashlist.Remove(this);
 
-            foreach (Node other in hashlist)
-            {
-                if (other.active)
+                if (comps.ContainsKey(comp.flow) && comps[comp.flow].active)
                 {
-                    foreach (comp c in aOtherProps)
+                    returnObjectsFinal = new List<Node>();
+                    if (comps[comp.flow].activated)
                     {
-                        comps[c].AffectOther(other);
+                        returnObjectsFinal = comps[comp.flow].outgoing.ToList();
+                    }
+                }
+                returnObjectsFinal.Remove(this);
+
+                foreach (Node other in returnObjectsFinal)
+                {
+                    if (other.active)
+                    {
+                        foreach (comp c in aOtherProps)
+                        {
+                            comps[c].AffectOther(other);
+                        }
                     }
                 }
             }
@@ -701,6 +707,10 @@ namespace OrbItProcs {
                 {
                     Component.CloneComponent(sourceNode.transform, destNode.transform);
                 }
+                else if (field.FieldType == (typeof(Collision)))
+                {
+                    Component.CloneComponent(sourceNode.collision, destNode.collision);
+                }
                 else
                 {
                     //this would be an object field
@@ -718,6 +728,8 @@ namespace OrbItProcs {
             }
 
         }
+        
+        
 
 
         /*

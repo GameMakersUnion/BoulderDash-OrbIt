@@ -33,7 +33,8 @@ namespace OrbItProcs
                 {OptType.textBox,      typeof(String)},
                 {OptType.dropDown,     typeof(ObservableCollection<object>)},
                 {OptType.radialButton, typeof(String[])},
-                {OptType.checkBox,     typeof(String)}};
+                {OptType.checkBox,     typeof(String)},
+            };
 
             public OptType type;
             public object content;
@@ -172,7 +173,6 @@ namespace OrbItProcs
                 btnCancel.Text = "Cancel";
                 btnCancel.Left = VertPadding * 2 + btnOk.Width;
                 btnCancel.Click += delegate { window.Close(); action(false, answer); };
-
             }
 
             btnOk.Click += delegate {

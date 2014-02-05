@@ -383,9 +383,10 @@ namespace OrbItProcs
             }
         }
 
-        public void AddLinkComponent(ILinkable linkC)
+        public void AddLinkComponent(ILinkable linkC, bool active = true)
         {
             linkC.link = this;
+            linkC.active = active;
             components.Add(linkC);
         }
 
@@ -555,7 +556,7 @@ namespace OrbItProcs
                     perp.Normalize();
                     perp *= 2;
 
-                    Utils.DrawLine(spritebatch, source.transform.position, target.transform.position, 2f, color1, room);
+                    Utils.DrawLine(room, source.transform.position, target.transform.position, 2f, color1);
 
                     //Utils.DrawLine(spritebatch, source.transform.position + perp, target.transform.position + perp, 2f, col, room);
                     //Utils.DrawLine(spritebatch, source.transform.position - perp, target.transform.position - perp, 2f, col, room);
@@ -566,8 +567,8 @@ namespace OrbItProcs
                     Vector2 center = (target.transform.position + source.transform.position) / 2;
 
                     Vector2 point = target.transform.position - (diff / 5);
-                    Utils.DrawLine(spritebatch, point + perp, target.transform.position, 2f, color1, room);
-                    Utils.DrawLine(spritebatch, point - perp, target.transform.position, 2f, color1, room);
+                    Utils.DrawLine(room, point + perp, target.transform.position, 2f, color1);
+                    Utils.DrawLine(room, point - perp, target.transform.position, 2f, color1);
                 }
             }
 

@@ -294,10 +294,10 @@ namespace OrbItProcs
                 perp.Normalize();
                 perp *= 2;
 
-                Utils.DrawLine(spritebatch, parent.transform.position, receiver.transform.position, 2f, col, room);
+                Utils.DrawLine(room, parent.transform.position, receiver.transform.position, 2f, col);
 
-                Utils.DrawLine(spritebatch, parent.transform.position + perp, receiver.transform.position + perp, 2f, Color.Red, room);
-                Utils.DrawLine(spritebatch, parent.transform.position - perp, receiver.transform.position - perp, 2f, Color.Green, room);
+                Utils.DrawLine(room, parent.transform.position + perp, receiver.transform.position + perp, 2f, Color.Red);
+                Utils.DrawLine(room, parent.transform.position - perp, receiver.transform.position - perp, 2f, Color.Green);
                 
                 perp *= 20;
 
@@ -307,8 +307,8 @@ namespace OrbItProcs
                 //Utils.DrawLine(spritebatch, center - perp, receiver.transform.position, 1f, col, room);
 
                 Vector2 point = receiver.transform.position - (diff / 5);
-                Utils.DrawLine(spritebatch, point + perp, receiver.transform.position, 2f, col, room);
-                Utils.DrawLine(spritebatch, point - perp, receiver.transform.position, 2f, col, room);
+                Utils.DrawLine(room, point + perp, receiver.transform.position, 2f, col);
+                Utils.DrawLine(room, point - perp, receiver.transform.position, 2f, col);
             }
 
             //spritebatch.DrawString(room.game.font, gatestring, parent.transform.position / mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);

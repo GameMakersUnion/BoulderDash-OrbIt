@@ -25,8 +25,9 @@ namespace OrbItProcs
             //KeyEvent += KeyEv;
             //RightClick += SpawnFromQueue;
             addProcessKeyAction("createrandom", KeyCodes.LeftClick, OnPress: CreateNode);
-            addProcessKeyAction("plus", KeyCodes.OemPlus, OnPress: SpawnFromQueue);
-            addProcessKeyAction("minus", KeyCodes.OemMinus, OnPress: SpawnFromQueue);
+            addProcessKeyAction("plus", KeyCodes.OemPlus, OnPress: Plus);
+            addProcessKeyAction("minus", KeyCodes.OemMinus, OnPress: Minus);
+            addProcessKeyAction("spawnfromqueue", KeyCodes.RightClick, OnPress: SpawnFromQueue);
         }
 
         public void SpawnFromQueue()

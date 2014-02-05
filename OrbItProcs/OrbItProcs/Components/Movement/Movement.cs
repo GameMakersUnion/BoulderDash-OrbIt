@@ -47,10 +47,30 @@ namespace OrbItProcs
             //movementmode = movemode.wallbounce;
         }
 
+        public void IntegrateForces()
+        {
+            if (parent.body.invmass == 0)
+                return;
+            Body b = parent.body;
+            b.velocity += VMath.MultVectDouble(b.force, b.invmass); //* dt / 2.0;
+            b.angularVelocity += b.torque * b.invinertia; // * dt / 2.0;
+
+            //b.GetType().GetProperties()[0].
+        }
+        public void IntegrateVelocity()
+        {
+            if (parent.body.invmass == 0)
+                return;
+            Body b = parent.body;
+            b.position += b.velocity;
+            b.orient += b.angularVelocity;
+            b.SetOrient(b.orient);
+            IntegrateForces(); //not sure we should do this twice??
+        }
+
 
         public override void AffectSelf()
         {
-            //if (parent.comps[comp.collision].active == false) return;
 
             parent.transform.effvelocity = parent.transform.position - tempPosition;
             tempPosition = parent.transform.position;
@@ -58,14 +78,20 @@ namespace OrbItProcs
             parent.transform.position.X += parent.transform.velocity.X * VelocityModifier;
             parent.transform.position.Y += parent.transform.velocity.Y * VelocityModifier;
 
-            //test (holy SHIT that looks cool)
-            //PropertyInfo pi = parent.GetType().GetProperty("scale");
-            //pi.SetValue(parent, parent.transform.position.X % 4.0f, null);
+
 
             if (movementmode == movemode.screenwrap) screenWrap();
             if (movementmode == movemode.wallbounce) wallBounce();
             if (movementmode == movemode.falloff)    fallOff();
-            
+
+            //Trippy();
+        }
+
+        public void Trippy()
+        {
+            //test (holy SHIT that looks cool)
+            PropertyInfo pi = parent.transform.GetType().GetProperty("scale");
+            pi.SetValue(parent.transform, parent.transform.position.X % 4.0f, null);
         }
 
         public override void Draw(SpriteBatch spritebatch)
@@ -85,7 +111,6 @@ namespace OrbItProcs
                 pos = positions.ElementAt(0);
             }
 
-
             if (pos.X >= (levelwidth + parent.transform.radius))
             {
                 parent.IsDeleted = true;
@@ -94,7 +119,6 @@ namespace OrbItProcs
             {
                 parent.IsDeleted = true;
             }
-
 
             if (pos.Y >= (levelheight + parent.transform.radius))
             {
@@ -108,7 +132,7 @@ namespace OrbItProcs
 
         public void checkForQueue()
         {
-            
+
         }
 
         public void wallBounce()
@@ -117,8 +141,6 @@ namespace OrbItProcs
             //float levelwidth = room.game...;
             int levelwidth = parent.room.game.worldWidth;
             int levelheight = parent.room.game.worldHeight;
-
-
 
             if (parent.transform.position.X >= (levelwidth - parent.transform.radius))
             {

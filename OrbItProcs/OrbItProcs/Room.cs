@@ -33,6 +33,8 @@ namespace OrbItProcs {
         public Link linkTest { get; set; }
         public bool DrawLinks { get; set; }
 
+        public HashSet<Manifold> contacts = new HashSet<Manifold>();
+
         public ObservableHashSet<Link> _AllActiveLinks = new ObservableHashSet<Link>();
         public ObservableHashSet<Link> AllActiveLinks { get { return _AllActiveLinks; } set { _AllActiveLinks = value; } }
 
@@ -43,6 +45,8 @@ namespace OrbItProcs {
         public float mapzoom { get; set; }
 
         public GridSystem gridsystem { get; set; }
+        public GridSystem gridsystemCollision { get; set; }
+        public HashSet<Node> CollisionSet { get; set; }
         public List<Rectangle> gridSystemLines;
         public int gridSystemCounter = 0;
 
@@ -81,6 +85,9 @@ namespace OrbItProcs {
 
             // grid System
             gridsystem = new GridSystem(this, 40, 15);
+
+            gridsystemCollision = new GridSystem(this, gridsystem.cellsX, 5);
+            CollisionSet = new HashSet<Node>();
             gridSystemLines = new List<Rectangle>();
             DrawLinks = true;
             
@@ -117,15 +124,18 @@ namespace OrbItProcs {
             processManager.Update();
 
             HashSet<Node> toDelete = new HashSet<Node>();
+
+            
             //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
             masterGroup.childGroups["General Groups"].ForEachFullSet(delegate(Node o) 
             {
                 Node n = (Node)o; 
                 gridsystem.insert(n);
             });
+            
+            
 
-            //fullset.ToList().ForEach(delegate(Node n) { gridsystem.insert(n); });
-
+            //game.testing.StartTimer();
             masterGroup.ForEachFullSet(delegate(Node o)
             {
                 Node n = (Node)o;
@@ -141,7 +151,7 @@ namespace OrbItProcs {
                     if (n == game.ui.spawnerNode) game.ui.spawnerNode = null;
                 }
             });
-                
+            //game.testing.StopTimer("room update");
 
 
             toDelete.ToList().ForEach(delegate(Node n) 
@@ -159,6 +169,8 @@ namespace OrbItProcs {
                 */
             });
 
+            UpdateCollision();
+
             if (AfterIteration != null) AfterIteration(this, null);
             //if (linkTest != null) linkTest.UpdateAction();
                 
@@ -169,6 +181,29 @@ namespace OrbItProcs {
             updateTargetNodeGraphic();
 
             player1.Update(gametime);
+        }
+
+        public void UpdateCollision()
+        {
+            gridsystemCollision.clear();
+            CollisionSet.ToList().ForEach(delegate(Node n) { gridsystemCollision.insert(n); });
+            gridsystemCollision.alreadyVisited = new HashSet<Node>();
+            CollisionSet.ToList().ForEach(delegate(Node o)
+            {
+                Node n = (Node)o;
+                if (n.active)
+                {
+                    int reach = 12; //update later based on cell size and radius (or polygon size.. maybe based on it's AABB)
+                    List<Node> retrievedNodes = gridsystemCollision.retrieve(n, reach);
+                    gridsystemCollision.alreadyVisited.Add(n);
+                    retrievedNodes.ForEach(delegate(Node r)
+                    {
+                        if (gridsystemCollision.alreadyVisited.Contains(r))
+                            return;
+                        n.collision.AffectOther(r);
+                    });
+                }
+            });
         }
 
         public void updateTargetNodeGraphic()

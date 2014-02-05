@@ -31,15 +31,18 @@ namespace OrbItProcs
     public enum comp
     {
         transform,
+        body,
         queuer,
         linearpull,
         maxvel,
         
         collision,
         gravity,
+        fixedforce,
         fieldgravity,
         displace,
         orbiter,
+
 
         randcolor,
         randvelchange,
@@ -82,10 +85,12 @@ namespace OrbItProcs
         # region /// Comp to Type Dictionary ///
         public static Dictionary<comp, Type> compTypes = new Dictionary<comp, Type>(){
             {comp.basicdraw,        typeof(BasicDraw)           },
+            {comp.body,             typeof(Body)                },
             {comp.circler,          typeof(Circler)             },
             {comp.collision,        typeof(Collision)           },
             {comp.displace,         typeof(Displace)            },
             {comp.fieldgravity,     typeof(FieldGravity)        },
+            {comp.fixedforce,       typeof(FixedForce)          },
             {comp.flow,             typeof(Flow)                },
             {comp.gravity,          typeof(Gravity)             },
             {comp.hueshifter,       typeof(HueShifter)          },
@@ -127,7 +132,7 @@ namespace OrbItProcs
 
         public UserInterface ui;
         public Room room;
-        SpriteBatch spriteBatch;
+        public SpriteBatch spriteBatch;
         public SpriteFont font;
         FrameRateCounter frameRateCounter;
 
@@ -286,6 +291,7 @@ namespace OrbItProcs
             firstdefault.name = "[G0]0";
             firstdefault.IsDefault = true;
 
+            Console.WriteLine((Double.Epsilon * 2) / 2);
 
 
             Group masterGroup = new Group(room.defaultNode, Name: room.defaultNode.name, Spawnable: false);
@@ -334,6 +340,8 @@ namespace OrbItProcs
 
             //byte b = 255;
             //float f = b;
+
+
             
         }
 

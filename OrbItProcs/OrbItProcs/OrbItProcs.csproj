@@ -125,7 +125,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\AffectOthers\Displace.cs" />
+    <Compile Include="Components\AffectOthers\FixedForce.cs" />
     <Compile Include="Components\AffectOthers\Orbiter.cs" />
+    <Compile Include="Physics\Body.cs" />
     <Compile Include="Components\Drawers\BasicDraw.cs" />
     <Compile Include="Components\FieldGravity.cs" />
     <Compile Include="Components\ILinkable.cs" />
@@ -174,7 +176,6 @@
     <Compile Include="lists.cs" />
     <Compile Include="ObservableHashSetOfT.cs" />
     <Compile Include="Physics\AABB.cs" />
-    <Compile Include="Physics\Circle.cs" />
     <Compile Include="Framework\DelegateManager.cs" />
     <Compile Include="Framework\Group.cs" />
     <Compile Include="Framework\FPInfo.cs" />
@@ -184,6 +185,8 @@
     <Compile Include="Interface\UserInterface.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Framework\ModifierInfo.cs" />
+    <Compile Include="Physics\Manifold.cs" />
+    <Compile Include="Physics\Shape.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Processes\AxisMovement.cs" />
     <Compile Include="Processes\GroupSelect.cs" />
@@ -201,6 +204,7 @@
     <Compile Include="Room.cs" />
     <Compile Include="Testing.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="VMath.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Includes\C3.XNA.Primitives2D.dll" />

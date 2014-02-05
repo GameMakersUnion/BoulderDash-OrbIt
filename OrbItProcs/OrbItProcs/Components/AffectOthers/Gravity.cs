@@ -31,6 +31,9 @@ namespace OrbItProcs {
         private bool _StrongGravity = false;
         public bool StrongGravity { get { return _StrongGravity; } set { _StrongGravity = value; } }
 
+        private int _angledelta = 0;
+        public int angledelta { get { return _angledelta; } set { _angledelta = value; } }
+
         public Gravity() : this(null) { }
         public Gravity(Node parent = null)
         {
@@ -73,6 +76,8 @@ namespace OrbItProcs {
 
                 if (!StrongGravity) gravForce /= distVects;
 
+                if (angledelta != 0)
+                    angle = (angle + Math.PI + (Math.PI * (float)(angledelta / 180.0f)) % (Math.PI * 2)) - Math.PI;
 
                 //float gravForce = gnode1.GravMultiplier;
                 float velX = (float)Math.Cos(angle) * gravForce;

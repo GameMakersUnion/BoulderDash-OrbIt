@@ -20,11 +20,9 @@ namespace OrbItProcs
         affectother = 2,
         affectself = 4,
         draw = 8,
-
         changereference = 16,
         minordraw = 32,
     };
-
 
     public abstract class Component {
 

@@ -10,6 +10,7 @@ using System.Collections.Specialized;
 
 namespace OrbItProcs {
     public static class Utils {
+        
 
         public static string wordWrap(this string message, int maxCharsPerLine)
         {
@@ -47,6 +48,8 @@ namespace OrbItProcs {
         }
 
         public static bool In<T>(this T x, params T[] args) where T : struct, IConvertible {return args.Contains(x);}
+
+        
 
         public static T Pop<T>(this List<T> list)
         {
@@ -116,12 +119,12 @@ namespace OrbItProcs {
             }
             
         }
-
-        public static void DrawLine(SpriteBatch spritebatch, Vector2 start, Vector2 end, float thickness, Color color, Room room)
+        public static Vector2 CENTER_TEXTURE = new Vector2(0.5f, 0.5f);
+        public static void DrawLine(Room room, Vector2 start, Vector2 end, float thickness, Color color)
         {
             float mapzoom = room.mapzoom;
             
-            Vector2 centerTexture = new Vector2(0.5f, 0.5f);
+            //Vector2 centerTexture = new Vector2(0.5f, 0.5f);
             Vector2 diff = (end - start) / mapzoom;
             Vector2 centerpoint = (end + start) / 2;
             centerpoint /= mapzoom;
@@ -132,7 +135,7 @@ namespace OrbItProcs {
             //diff.Normalize();
             //diff = new Vector2(diff.Y, diff.X);
 
-            spritebatch.Draw(room.game.textureDict[textures.whitepixel], centerpoint, null, color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+            room.game.spriteBatch.Draw(room.game.textureDict[textures.whitepixel], centerpoint, null, color, testangle, CENTER_TEXTURE, scalevect, SpriteEffects.None, 0);
 
         }
 
@@ -216,5 +219,5 @@ namespace OrbItProcs {
 
 
 
-    } // end of class
+    } // end of class.
 }

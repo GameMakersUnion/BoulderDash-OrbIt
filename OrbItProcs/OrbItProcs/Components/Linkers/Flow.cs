@@ -214,14 +214,14 @@ namespace OrbItProcs
                 }
                 */
 
-                Utils.DrawLine(spritebatch, parent.transform.position, receiver.transform.position, 2f, col, room);
+                Utils.DrawLine(room, parent.transform.position, receiver.transform.position, 2f, col);
                 Vector2 center = (receiver.transform.position + parent.transform.position) / 2;
                 Vector2 perp = new Vector2(center.Y, -center.X);
                 perp.Normalize();
                 perp *= 10;
                 //center += perp;
-                Utils.DrawLine(spritebatch, center + perp, receiver.transform.position, 2f, col, room);
-                Utils.DrawLine(spritebatch, center - perp, receiver.transform.position, 2f, col, room);
+                Utils.DrawLine(room, center + perp, receiver.transform.position, 2f, col);
+                Utils.DrawLine(room, center - perp, receiver.transform.position, 2f, col);
 
                 
                 //count++;

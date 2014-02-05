@@ -147,6 +147,8 @@ namespace OrbItProcs
         public void IncludeEntity(Node entity)
         {
             entities.Add(entity);
+            if (entity.collision.active)
+                room.CollisionSet.Add(entity);
 
             //if (parentGroup != null)
             //    parentGroup.IncludeEntity(entity);
@@ -177,6 +179,8 @@ namespace OrbItProcs
                 root = root.parentGroup;
             }
             root.DiscludeEntity(entity);
+
+            room.CollisionSet.Remove(entity);
         }
 
         public Group FindGroup(string name)

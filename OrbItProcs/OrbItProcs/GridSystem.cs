@@ -13,6 +13,7 @@ namespace OrbItProcs {
         public int cellwidth, cellheight;
         public int gridwidth, gridheight;
         public List<Node>[,] grid;
+        public HashSet<Node> alreadyVisited;
         private int _cellReach;
         public int cellReach { get { return _cellReach; } set { if (value < 1) return; _cellReach = value; } }
 
@@ -49,6 +50,7 @@ namespace OrbItProcs {
             cellheight = cellwidth;
             this.cellsY = gridheight / cellheight;
             //cellheight = gridheight / cellsY;
+            alreadyVisited = new HashSet<Node>();
             grid = new List<Node>[cellsX, cellsY];
             for (int i = 0; i < cellsX; i++)
             {
@@ -70,7 +72,7 @@ namespace OrbItProcs {
             this.cellReach = cellReach;
             cellwidth = gridwidth / cellsX;
             cellheight = gridheight / cellsY;
-            
+            alreadyVisited = new HashSet<Node>();
             //cellheight = gridheight / cellsY;
             grid = new List<Node>[cellsX, cellsY];
             for (int i = 0; i < cellsX; i++)
@@ -87,8 +89,24 @@ namespace OrbItProcs {
             Tuple<int, int> indexs = getIndexs(node);
             //if (node == room.game.targetNode) Console.WriteLine("target indexs: {0} {1}",indexs.Item1,indexs.Item2);
             grid[indexs.Item1, indexs.Item2].Add(node);
-
         }
+
+        //public void remove(Node node)
+        //{
+        //    if (node != null && node.collision != null)
+        //    {
+        //        int x = node.collision.gridx;
+        //        int y = node.collision.gridy;
+        //        if (grid[x,y] != null)
+        //        {
+        //            grid[x, y].Remove(node);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("Node not found in gridsystem while removing");
+        //    }
+        //}
 
         public List<Node> retrieve(Node node, int reach = -1)
         {

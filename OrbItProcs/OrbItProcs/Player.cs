@@ -54,7 +54,7 @@ namespace OrbItProcs
 
             launchNode = new Node(room, userP);
             //launchNode.comps[comp.laser].lineXScale = 0.5f;
-            launchNode.comps[comp.laser].lineYScale = 1f;
+            launchNode.comps[comp.laser].lineYScale = 3f;
             launchNode.GetComponent<MaxVel>().maxvel = 15;
             bulletlife = 1500;
             firefreq = 1;
