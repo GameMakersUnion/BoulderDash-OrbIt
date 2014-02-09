@@ -37,7 +37,7 @@ namespace OrbItProcs
             {
                 Console.WriteLine("Collided with node.");
                 Node n = dict["collidee"];
-                n.transform.color = Microsoft.Xna.Framework.Color.LightSkyBlue;
+                n.body.color = Microsoft.Xna.Framework.Color.LightSkyBlue;
             }
             else
             {
@@ -60,9 +60,9 @@ namespace OrbItProcs
             n1.Collided -= OnCollision;
             n2.Collided -= OnCollision;
             n3.Collided -= OnCollision;
-            n1.transform.position.X -= 150;
-            n2.transform.position.X += 150;
-            n3.transform.position.Y -= 150;
+            n1.body.position.X -= 150;
+            n2.body.position.X += 150;
+            n3.body.position.Y -= 150;
 
 
 

@@ -50,9 +50,9 @@ namespace OrbItProcs
         public override void AffectOther(Node other) // called when used as a link
         {
             //other.transform.position += parent.transform.velocity;
-            other.transform.position += parent.transform.effvelocity;
+            other.body.position += parent.body.effvelocity;
 
-            other.comps[comp.movement].movementmode = movemode.free;
+            other.movement.movementmode = movemode.free;
         }
         public override void AffectSelf()
         {
@@ -65,10 +65,10 @@ namespace OrbItProcs
             Room room = parent.room;
             float mapzoom = room.mapzoom;
 
-            Color col = parent.transform.color;
+            Color col = parent.body.color;
 
 
-            spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, col, 0, parent.TextureCenter(), (parent.transform.scale / mapzoom) * 1.2f, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(), parent.body.position / mapzoom, null, col, 0, parent.TextureCenter(), (parent.body.scale / mapzoom) * 1.2f, SpriteEffects.None, 0);
 
 
         }

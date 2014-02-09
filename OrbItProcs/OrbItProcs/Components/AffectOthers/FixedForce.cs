@@ -65,8 +65,8 @@ namespace OrbItProcs
             //assuming other has been checked for 'active' from caller
             if (exclusions.Contains(other)) return;
             
-            if (terminal > 0 && other.transform.velocity.ProjectOnto(force).Length() < terminal)
-                other.transform.velocity += force * multiplier / 10f;
+            if (terminal > 0 && other.body.velocity.ProjectOnto(force).Length() < terminal)
+                other.body.velocity += force * multiplier / 10f;
 
             
 

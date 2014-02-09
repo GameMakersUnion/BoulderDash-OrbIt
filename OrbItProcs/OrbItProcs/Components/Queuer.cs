@@ -95,7 +95,7 @@ namespace OrbItProcs
                     {
                         positions.Dequeue();
                     }
-                    positions.Enqueue(parent.transform.position);
+                    positions.Enqueue(parent.body.position);
                 }
                 if ((qs & queues.scale) == queues.scale)
                 {
@@ -104,7 +104,7 @@ namespace OrbItProcs
                     {
                         scales.Dequeue();
                     }
-                    scales.Enqueue((float)parent.transform.scale);
+                    scales.Enqueue((float)parent.body.scale);
                 }
                 if ((qs & queues.angle) == queues.angle)
                 {
@@ -113,7 +113,7 @@ namespace OrbItProcs
                     {
                         angles.Dequeue();
                     }
-                    float angle = (float)(Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2));
+                    float angle = (float)(Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + (Math.PI / 2));
                     angles.Enqueue(angle);
                 }
                 if ((qs & queues.customs) == queues.customs)

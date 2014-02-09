@@ -70,7 +70,7 @@ namespace OrbItProcs
 
                 if (UserInterface.oldKeyBState.IsKeyDown(Keys.LeftControl))
                 {
-                    Action<Node> after = delegate(Node n) { n.transform.velocity = diff; }; 
+                    Action<Node> after = delegate(Node n) { n.body.velocity = diff; }; 
                     room.game.spawnNode(userP, after);
                 }
                 else

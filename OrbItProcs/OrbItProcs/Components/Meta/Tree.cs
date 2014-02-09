@@ -66,28 +66,28 @@ namespace OrbItProcs
             if (depth > maxdepth)
             {
                 lifeleft = -1;
-                parent.transform.velocity = new Vector2(0, 0);
+                parent.body.velocity = new Vector2(0, 0);
                 depth = -1;
                 //return;
             }
 
             //angle = Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2);
             float scaledown = 1.0f - 0.01f;
-            parent.transform.scale *= scaledown;
+            parent.body.scale *= scaledown;
             if (lifeleft > 0)
             {
                 if (positions.Count < queuecount)
                 {
-                    positions.Enqueue(parent.transform.position);
-                    scales.Enqueue(parent.transform.scale);
+                    positions.Enqueue(parent.body.position);
+                    scales.Enqueue(parent.body.scale);
 
                 }
                 else
                 {
                     positions.Dequeue();
-                    positions.Enqueue(parent.transform.position);
+                    positions.Enqueue(parent.body.position);
                     scales.Dequeue();
-                    scales.Enqueue(parent.transform.scale);
+                    scales.Enqueue(parent.body.scale);
                 }
             }
 
@@ -98,18 +98,18 @@ namespace OrbItProcs
                 //Console.WriteLine("{0} {1} > {2}",parent.name, lifeleft, randlife);
                 lifeleft = -1;
                 
-                int velLength = (int)parent.transform.velocity.Length();
-                double angle = Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X);
+                int velLength = (int)parent.body.velocity.Length();
+                double angle = Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X);
 
-                parent.transform.velocity = new Vector2(0, 0);
+                parent.body.velocity = new Vector2(0, 0);
                 //if (parent.comps.ContainsKey(comp.gravity)) parent.comps[comp.gravity].active = false;
 
                 int childcount = Utils.random.Next(maxchilds+1) + 1;
                 //Console.WriteLine(childcount);
                 for(int i = 0; i < childcount; i++)
                 {
-                    float childscale = parent.transform.scale * scaledown;
-                    Vector2 childpos = parent.transform.position;
+                    float childscale = parent.body.scale * scaledown;
+                    Vector2 childpos = parent.body.position;
                     float anglechange = Utils.random.Next((int)anglerange) - (anglerange / 2);
                     //
                     anglechange = anglechange * (float)(Math.PI / 180);
@@ -124,7 +124,7 @@ namespace OrbItProcs
 
                     Node newNode = new Node();
                     Node.cloneObject(parent, newNode);
-                    newNode.transform.velocity = childvel;
+                    newNode.body.velocity = childvel;
                     newNode.name = "node" + Node.nodeCounter;
                     //newNode.acceptUserProps(userP);
                     newNode.comps[comp.tree].depth = depth + 1;
@@ -170,15 +170,15 @@ namespace OrbItProcs
                 b += g1 / 10;
                 c += b1 / 10;
                 col = new Color(a, b, c, 0.8f);
-                if (parent.comps.ContainsKey(comp.hueshifter) && parent.comps[comp.hueshifter].active) col = parent.transform.color;
+                if (parent.comps.ContainsKey(comp.hueshifter) && parent.comps[comp.hueshifter].active) col = parent.body.color;
 
                 spritebatch.Draw(parent.getTexture(), pos / mapzoom, null, col, 0, parent.TextureCenter(), scales.ElementAt(count) / mapzoom, SpriteEffects.None, 0);
                 count++;
             }
 
             //float testangle = (float)(Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2));
-            if (parent.comps.ContainsKey(comp.hueshifter)) col = parent.transform.color;
-            spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, col, 0, parent.TextureCenter(), parent.transform.scale / mapzoom, SpriteEffects.None, 0);
+            if (parent.comps.ContainsKey(comp.hueshifter)) col = parent.body.color;
+            spritebatch.Draw(parent.getTexture(), parent.body.position / mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
 
         }
 

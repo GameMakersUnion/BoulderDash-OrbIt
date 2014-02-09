@@ -30,7 +30,7 @@ namespace OrbItProcs
         }
         public void Initialize()
         {
-            e = Math.Min(a.orient, b.orient);
+            e = Math.Min(a.restitution, b.restitution);
             sf = Math.Sqrt(a.staticFriction * a.staticFriction);
             df = Math.Sqrt(a.dynamicFriction * a.dynamicFriction);
 
@@ -70,20 +70,23 @@ namespace OrbItProcs
 
                 double raCrossN = VMath.Cross(ra, normal);
                 double rbCrossN = VMath.Cross(rb, normal);
-                double invMassSum = a.invmass + b.invmass + Math.Sqrt(raCrossN) * a.invinertia + Math.Sqrt(rbCrossN) * b.invinertia;
+                double invMassSum = a.invmass + b.invmass + (raCrossN * raCrossN) * a.invinertia + (rbCrossN * rbCrossN) * b.invinertia;
                 //calculate impulse scalar
                 double j = -(1.0 + e) * contactVel;
                 j /= invMassSum;
                 j /= (double)contact_count;
                 //apply impulse
                 Vector2 impulse = VMath.MultVectDouble(normal, j); // normal * j;
+                if (float.IsNaN(impulse.X)) System.Diagnostics.Debugger.Break();
                 a.ApplyImpulse(-impulse, ra);
                 b.ApplyImpulse(impulse, rb);
                 //friction impulse
                 rv = b.velocity + VMath.Cross(b.angularVelocity, rb) -
                      a.velocity - VMath.Cross(a.angularVelocity, ra);
                 Vector2 t = rv - (normal * Vector2.Dot(rv, normal));
+                if (float.IsNaN(t.X)) System.Diagnostics.Debugger.Break();
                 t.Normalize();
+                if (float.IsNaN(t.X)) System.Diagnostics.Debugger.Break();
                 //j tangent magnitude
                 double jt = -Vector2.Dot(rv, t);
                 jt /= invMassSum;

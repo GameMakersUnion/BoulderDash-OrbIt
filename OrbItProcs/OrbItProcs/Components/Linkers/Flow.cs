@@ -202,7 +202,7 @@ namespace OrbItProcs
                 col = Color.Red;
 
 
-            spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, col, 0, parent.TextureCenter(), (parent.transform.scale / mapzoom) * 1.2f, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(), parent.body.position / mapzoom, null, col, 0, parent.TextureCenter(), (parent.body.scale / mapzoom) * 1.2f, SpriteEffects.None, 0);
 
             foreach (Node receiver in outgoing)
             {
@@ -214,14 +214,14 @@ namespace OrbItProcs
                 }
                 */
 
-                Utils.DrawLine(room, parent.transform.position, receiver.transform.position, 2f, col);
-                Vector2 center = (receiver.transform.position + parent.transform.position) / 2;
+                Utils.DrawLine(room, parent.body.position, receiver.body.position, 2f, col);
+                Vector2 center = (receiver.body.position + parent.body.position) / 2;
                 Vector2 perp = new Vector2(center.Y, -center.X);
                 perp.Normalize();
                 perp *= 10;
                 //center += perp;
-                Utils.DrawLine(room, center + perp, receiver.transform.position, 2f, col);
-                Utils.DrawLine(room, center - perp, receiver.transform.position, 2f, col);
+                Utils.DrawLine(room, center + perp, receiver.body.position, 2f, col);
+                Utils.DrawLine(room, center - perp, receiver.body.position, 2f, col);
 
                 
                 //count++;
@@ -232,7 +232,7 @@ namespace OrbItProcs
 
             //spriteBatch.Begin();
 
-            spritebatch.DrawString(room.game.font, gatestring, parent.transform.position/mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            spritebatch.DrawString(room.game.font, gatestring, parent.body.position/mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
             //spriteBatch.DrawString(spriteFont, fps, new Vector2(1, 1), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
             //spritebatch.DrawString(room.game.font, gatestring, new Vector2(2, Game1.sHeight - 40), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
 

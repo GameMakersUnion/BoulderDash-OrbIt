@@ -158,7 +158,7 @@ namespace OrbItProcs
                     link.targets.ToList().ForEach(delegate(Node target)
                     {
                         if (source == target) return;
-                        DistancesList.Add(new Tuple<float, Node>(Vector2.DistanceSquared(source.transform.position, target.transform.position), target));
+                        DistancesList.Add(new Tuple<float, Node>(Vector2.DistanceSquared(source.body.position, target.body.position), target));
                     });
 
                     DistancesList.Sort(comparer);

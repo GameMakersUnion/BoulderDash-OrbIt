@@ -49,7 +49,7 @@ namespace OrbItProcs
                 }
 
                 int[] cols = getColorsFromAngle(angle);
-                parent.transform.color = new Color(cols[0], cols[1], cols[2], 1);
+                parent.body.color = new Color(cols[0], cols[1], cols[2], 1);
                 angle = (angle + tempinc) % 360;
                 
             }

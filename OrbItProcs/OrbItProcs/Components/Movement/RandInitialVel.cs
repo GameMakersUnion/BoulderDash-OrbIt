@@ -33,7 +33,7 @@ namespace OrbItProcs
             get { return _multiplier; }
             set {
                 _multiplier = value;
-                if (parent != null && parent.transform.velocity != null)
+                if (parent != null && parent.body.velocity != null)
                 {
                     ScaleVelocity();
                 }
@@ -50,15 +50,15 @@ namespace OrbItProcs
 
         public override void AfterCloning()
         {
-            parent.transform.velocity = new Vector2(0, 0);
+            parent.body.velocity = new Vector2(0, 0);
         }
 
         public void ScaleVelocity()
         {
-            if (parent.transform.velocity.X != 0 && parent.transform.velocity.Y != 0)
+            if (parent.body.velocity.X != 0 && parent.body.velocity.Y != 0)
             {
-                parent.transform.velocity.Normalize();
-                parent.transform.velocity *= multiplier;
+                parent.body.velocity.Normalize();
+                parent.body.velocity *= multiplier;
             }
         }
 
@@ -67,7 +67,7 @@ namespace OrbItProcs
             this.parent = parent;
             if (active)
             {
-                if (parent.transform.velocity.X != 0 && parent.transform.velocity.Y != 0)
+                if (parent.body.velocity.X != 0 && parent.body.velocity.Y != 0)
                 {
                     ScaleVelocity();
                 }
@@ -78,7 +78,7 @@ namespace OrbItProcs
                     Vector2 vel = new Vector2(x, y);
                     vel.Normalize();
                     vel = vel * multiplier;
-                    parent.transform.velocity = vel;
+                    parent.body.velocity = vel;
                 }
                 
             }

@@ -50,7 +50,7 @@ namespace OrbItProcs {
             this.parent = parent;
             if (active)
             {
-                parent.transform.color = new Color((float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255);
+                parent.body.color = new Color((float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255);
             }
             
         }
@@ -59,7 +59,7 @@ namespace OrbItProcs {
         {
             if (IsBasedOnTime)
             {
-                parent.transform.color = Utils.IntToColor(Utils.CurrentMilliseconds());
+                parent.body.color = Utils.IntToColor(Utils.CurrentMilliseconds());
             }
         }
 

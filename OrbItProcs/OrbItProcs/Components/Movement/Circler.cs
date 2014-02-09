@@ -46,9 +46,9 @@ namespace OrbItProcs
         public override void OnSpawn()
         {
             //base.OnSpawn();
-            if (parent != null && parent.transform.velocity.Length() > 0)
+            if (parent != null && parent.body.velocity.Length() > 0)
             {
-                angle = (float)Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X);
+                angle = (float)Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X);
             }
         }
 
@@ -86,10 +86,10 @@ namespace OrbItProcs
                 delta = maxDelta;
             }
 
-            float length = parent.transform.velocity.Length();
+            float length = parent.body.velocity.Length();
             float x = length * (float)Math.Sin(angle);
             float y = length * (float)Math.Cos(angle);
-            parent.transform.velocity = new Vector2(x, y);
+            parent.body.velocity = new Vector2(x, y);
 
         }
 

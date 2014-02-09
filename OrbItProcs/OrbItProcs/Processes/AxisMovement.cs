@@ -36,7 +36,7 @@ namespace OrbItProcs
         public void MoveW()
         {
             if (constantMovement)
-                player.transform.position.Y -= speed;
+                player.body.position.Y -= speed;
             else
             {
                 
@@ -45,7 +45,7 @@ namespace OrbItProcs
         public void MoveS()
         {
             if (constantMovement)
-                player.transform.position.Y += speed;
+                player.body.position.Y += speed;
             else
             {
 
@@ -54,7 +54,7 @@ namespace OrbItProcs
         public void MoveD()
         {
             if (constantMovement)
-                player.transform.position.X += speed;
+                player.body.position.X += speed;
             else
             {
 
@@ -63,7 +63,7 @@ namespace OrbItProcs
         public void MoveA()
         {
             if (constantMovement)
-                player.transform.position.X -= speed;
+                player.body.position.X -= speed;
             else
             {
 

@@ -110,7 +110,7 @@ namespace OrbItProcs {
         */
         public void Update(GameTime gametime)
         {
-
+            if (contacts.Count > 0) contacts = new List<Manifold>();
             //these make it convienient to check values after pausing the game my mouseing over
             if (defaultNode == null) defaultNode = null;
             //if (game.ui.sidebar.lstComp == null) game.ui.sidebar.lstComp = null;
@@ -174,7 +174,7 @@ namespace OrbItProcs {
             //COLLISION
             foreach (Manifold m in contacts)
                 m.Initialize();
-            int iterations = 1; //he has this at 10 to make the system more inter-affective
+            int iterations = 10;
             for (int ii = 0; ii < iterations; ii++)
             {
                 foreach (Manifold m in contacts)
@@ -182,19 +182,19 @@ namespace OrbItProcs {
             }
             foreach(Node n in masterGroup.fullSet)
             {
-                if (n.comps.ContainsKey(comp.movement))
+                if (n.movement.active)
                 {
-                    n.comps[comp.movement].IntegrateVelocity();
-                    n.body.force.Set(0, 0);
-                    n.body.torque = 0;
+                    n.movement.IntegrateVelocity();
                 }
+                n.body.force.Set(0, 0);
+                n.body.torque = 0;
             }
             foreach (Manifold m in contacts)
                 m.PositionalCorrection();
             // \COLLISION
-
+            
             if (AfterIteration != null) AfterIteration(this, null);
-                
+
             //addGridSystemLines(gridsystem);
             addBorderLines();
             //colorEffectedNodes();
@@ -236,14 +236,14 @@ namespace OrbItProcs {
         {
             if (game.targetNode != null)
             {
-                targetNodeGraphic.transform.color = Color.White;
-                targetNodeGraphic.transform.position = game.targetNode.transform.position;
+                targetNodeGraphic.body.color = Color.White;
+                targetNodeGraphic.body.position = game.targetNode.body.position;
                 //if (game.targetNode.comps.ContainsKey(comp.gravity))
                 //{
                 //    float rad = game.targetNode.GetComponent<Gravity>().radius;
                 //    targetNodeGraphic.transform.radius = rad;
                 //}
-                targetNodeGraphic.transform.scale = game.targetNode.transform.scale * 1.5f;
+                targetNodeGraphic.body.scale = game.targetNode.body.scale * 1.5f;
             }
             
         }
@@ -258,15 +258,15 @@ namespace OrbItProcs {
 
                 foreach (Node _node in nodes)
                 {
-                    if (_node.transform.color != Color.Black)
+                    if (_node.body.color != Color.Black)
                     {
                         if (returnObjectsGridSystem.Contains(_node))
-                            _node.transform.color = Color.Purple;
+                            _node.body.color = Color.Purple;
                         else
-                            _node.transform.color = Color.White;
+                            _node.body.color = Color.White;
                     }
                 }
-                game.targetNode.transform.color = Color.Red;
+                game.targetNode.body.color = Color.Red;
             }
         }
 
@@ -317,11 +317,11 @@ namespace OrbItProcs {
             HashSet<Node> groupset = (processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
             if (groupset != null)
             {
-                targetNodeGraphic.transform.color = Color.LimeGreen;
+                targetNodeGraphic.body.color = Color.LimeGreen;
                 foreach (Node n in groupset.ToList())
                 {
-                    targetNodeGraphic.transform.position = n.transform.position;
-                    targetNodeGraphic.transform.scale = n.transform.scale * 1.5f;
+                    targetNodeGraphic.body.position = n.body.position;
+                    targetNodeGraphic.body.scale = n.body.scale * 1.5f;
                     targetNodeGraphic.Draw(spritebatch);
                 }
             }

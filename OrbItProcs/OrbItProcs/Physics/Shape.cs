@@ -21,7 +21,7 @@ namespace OrbItProcs
         public static int TypeCount = 2;
 
         public Body body;
-        public double radius;
+        public float radius;
         public Mat22 u;
 
 
@@ -29,8 +29,8 @@ namespace OrbItProcs
 
         public abstract Shape Clone();
         public abstract void Initialize();
-        public abstract void ComputeMass(double density);
-        public abstract void SetOrient(double radians);
+        public abstract void ComputeMass(float density);
+        public abstract void SetOrient(float radians);
         public abstract void Draw();
         public abstract ShapeType GetShapeType();
         
@@ -38,7 +38,7 @@ namespace OrbItProcs
 
     public class Circle : Shape
     {
-        public Circle(double r)
+        public Circle(float r)
         {
             radius = r;
         }
@@ -48,19 +48,19 @@ namespace OrbItProcs
         }
         public override void Initialize()
         {
-            //ComputeMass( 1.0 );
+            ComputeMass( 1.0f );
             
         }
-        public override void ComputeMass(double density)
+        public override void ComputeMass(float density)
         {
-            body.mass = Math.PI * radius * radius * density;
+            body.mass = (float)Math.PI * radius * radius * density;
             body.inertia = body.mass * radius * radius;
         }
         public override ShapeType GetShapeType()
         {
             return ShapeType.eCircle;
         }
-        public override void SetOrient(double radians)
+        public override void SetOrient(float radians)
         { }
         public override void Draw()
         { }
@@ -77,7 +77,7 @@ namespace OrbItProcs
 
         public override void Initialize()
         {
-            ComputeMass(1.0);
+            ComputeMass(1.0f);
         }
         public override Shape Clone ()
         {
@@ -91,7 +91,7 @@ namespace OrbItProcs
             poly.vertexCount = vertexCount;
             return poly;
         }
-        public override void ComputeMass(double density)
+        public override void ComputeMass(float density)
         {
             //calculate centroid and moment of inertia
             Vector2 c = new Vector2(0, 0); // centroid
@@ -127,13 +127,13 @@ namespace OrbItProcs
                 vertices[i] -= c;
             }
 
-            body.mass = density * area;
-            body.inertia = I * density;
+            body.mass = density * (float)area;
+            body.inertia = (float)I * density;
         }
 
-        public override void SetOrient(double radians)
+        public override void SetOrient(float radians)
         {
-            u.Set((float)radians);
+            u.Set(radians);
         }
 
         public override void Draw()

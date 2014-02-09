@@ -253,7 +253,7 @@ namespace OrbItProcs
                     { node.texture, textures.whitecircle },
                     //{ node.radius, 50 },
                     { comp.basicdraw, true },
-                    //{ comp.collision, false },
+                    { comp.collision, true },
                     { comp.movement, true },
                     //{ comp.maxvel, true },
                     //{ comp.randvelchange, true },
@@ -274,6 +274,7 @@ namespace OrbItProcs
                     
                 };
             #endregion
+
 
             room.defaultNode = new Node(room, userPr);
             room.defaultNode.name = "master";
@@ -320,8 +321,7 @@ namespace OrbItProcs
             testing = new Testing();
 
             ui = new UserInterface(this);
-            //ui.sidebar.ActiveGroup = firstGroup;
-            //room.masterGroup.UpdateComboBox();
+
             ui.sidebar.UpdateGroupComboBoxes();
             ui.sidebar.cbListPicker.ItemIndex = 0;
             ui.sidebar.cbListPicker.ItemIndex = 2;
@@ -521,7 +521,7 @@ namespace OrbItProcs
 
             if (Group.IntToColor.ContainsKey(activegroup.GroupId))
             {
-                newNode.transform.color = Group.IntToColor[activegroup.GroupId];
+                newNode.body.color = Group.IntToColor[activegroup.GroupId];
             }
             else
             {
@@ -537,7 +537,7 @@ namespace OrbItProcs
 
                 System.Drawing.Color syscolor = System.Drawing.Color.FromKnownColor((KnownColor)index);
                 Color xnacol = new Color(syscolor.R, syscolor.G, syscolor.B, syscolor.A);
-                newNode.transform.color = xnacol;
+                newNode.body.color = xnacol;
             }
         }
 
@@ -586,7 +586,7 @@ namespace OrbItProcs
             
             if (Group.IntToColor.ContainsKey(activegroup.GroupId))
             {
-                newNode.transform.color = Group.IntToColor[activegroup.GroupId];
+                newNode.body.color = Group.IntToColor[activegroup.GroupId];
             }
             else
             {
@@ -602,7 +602,7 @@ namespace OrbItProcs
 
                 System.Drawing.Color syscolor = System.Drawing.Color.FromKnownColor((KnownColor)index);
                 Color xnacol = new Color(syscolor.R, syscolor.G, syscolor.B, syscolor.A);
-                newNode.transform.color = xnacol;
+                newNode.body.color = xnacol;
             }
             return newNode;
         }

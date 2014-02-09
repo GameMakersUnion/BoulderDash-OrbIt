@@ -175,9 +175,9 @@ namespace OrbItProcs {
 
         public Tuple<int, int> getIndexs(Node node)
         {
-            Vector2 pos = new Vector2(node.transform.position.X, node.transform.position.Y);
-            int x = (int)node.transform.position.X;
-            int y = (int)node.transform.position.Y;
+            Vector2 pos = new Vector2(node.body.position.X, node.body.position.Y);
+            int x = (int)node.body.position.X;
+            int y = (int)node.body.position.Y;
             int gridx = (int)pos.X - ((int)pos.X % cellwidth);
             x = gridx / cellwidth;
             //if ((int)pos.X - gridx > gridx + cellwidth - (int)node.transform.radius) x++;

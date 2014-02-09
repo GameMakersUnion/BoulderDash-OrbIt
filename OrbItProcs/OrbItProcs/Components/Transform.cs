@@ -13,8 +13,7 @@ namespace OrbItProcs
         public Vector2 position = new Vector2(0,0);
         public Vector2 velocity = new Vector2(0,0);
         public Vector2 effvelocity = new Vector2(0, 0);
-        //private float _X = 0;
-        //private float _Y = 0;
+
         private float _scale = 1f;
         private float _radius = 25f;
         private float _mass = 10f;

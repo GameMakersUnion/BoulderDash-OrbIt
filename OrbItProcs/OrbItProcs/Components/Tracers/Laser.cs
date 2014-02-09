@@ -110,10 +110,10 @@ namespace OrbItProcs
             //Queue<float> angles = parent.comps[comp.queuer].angles;
             Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
 
-            Vector2 screenPos = parent.transform.position / mapzoom;
+            Vector2 screenPos = parent.body.position / mapzoom;
             Vector2 centerTexture = new Vector2(0.5f, 0.5f);
 
-            Vector2 start = parent.transform.position;
+            Vector2 start = parent.body.position;
             Vector2 end = Vector2.Zero;
             int count = 0;
 
@@ -127,7 +127,7 @@ namespace OrbItProcs
                 //col = Utils.randomColor();
 
                 start = positions.ElementAt(i-1);
-                if (i == positions.Count) end = parent.transform.position;
+                if (i == positions.Count) end = parent.body.position;
                 else end = positions.ElementAt(i);
                 
                 Vector2 diff = (end - start) / mapzoom;
@@ -170,7 +170,7 @@ namespace OrbItProcs
                 }
                 else
                 {
-                    coll = parent.transform.color;
+                    coll = parent.body.color;
                 }
 
                 //if (alphaFade > 0) coll.A = (byte)(alphaFade * i * 255);

@@ -147,8 +147,11 @@ namespace OrbItProcs {
         public List<comp> compsToRemove = new List<comp>();
         public List<comp> compsToAdd = new List<comp>();
 
-        public Transform transform;
-        public Transform TRANSFORM { get { return transform; } set { transform = value; } }
+        //public Transform transform;
+        //public Transform TRANSFORM { get { return body; } set { body = value; } }
+
+        public Movement movement;
+        public Movement MOVEMENT { get { return movement; } set { movement = value; } }
 
         public Collision collision;
         public Collision COLLISION { get { return collision; } set { collision = value; } }
@@ -165,17 +168,17 @@ namespace OrbItProcs {
         public void storeInInstance(node val, Dictionary<dynamic,dynamic> dict)
         {
             if (val == node.active)             active                      = dict[val];
-            if (val == node.position)           transform.position          = dict[val];
-            if (val == node.velocity)           transform.velocity          = dict[val];
+            if (val == node.position)           body.position          = dict[val];
+            if (val == node.velocity)           body.velocity          = dict[val];
             if (val == node.multiplier)         multiplier                  = dict[val];
             if (val == node.effectiveRadius)    effectiveRadius             = dict[val];
-            if (val == node.radius)             transform.radius            = dict[val];
-            if (val == node.mass)               transform.mass              = dict[val];
-            if (val == node.scale)              transform.scale             = dict[val];
-            if (val == node.texture)            transform.texture           = dict[val];
+            if (val == node.radius)             body.radius            = dict[val];
+            if (val == node.mass)               body.mass              = dict[val];
+            if (val == node.scale)              body.scale             = dict[val];
+            if (val == node.texture)            body.texture           = dict[val];
             if (val == node.name)               name                        = dict[val];
             if (val == node.lifetime)           lifetime                    = dict[val];
-            if (val == node.color)              transform.color             = dict[val];
+            if (val == node.color)              body.color             = dict[val];
         }
         //these comes will allow eachother's draws to be called (all 4 could draw at once)
         public static List<comp> drawPropsSuper = new List<comp>()
@@ -190,28 +193,24 @@ namespace OrbItProcs {
         {
             nodeCounter++;
             room = Program.getRoom();
-            transform = new Transform(this);
+            //transform = new Transform(this);
+            movement = new Movement(this);
             collision = new Collision(this);
             body = new Body(parent: this);
         }
 
         public Node(Room room1, Dictionary<dynamic, dynamic> userProps = null) : this()
         {
-            //nodeCounter++;
             // add the userProps to the props
             foreach (dynamic p in userProps.Keys)
             {
-                // if the value is bool, it is a property and is added to props dict
-                //3if (p is comp && userProps[p] is bool)
-                //3    props.Add(p, userProps[p]);
                 // if the key is a comp type, we need to add the component to comps dict
                 if (p is comp)
                 {
-                    fetchComponent(p, userProps[p] );
-                    //if (comps.ContainsKey(p)) comps[p].active = userProps[p];
+                    fetchComponent(p, userProps[p]);
                 }
-                // if the key is a node type, (and not a bool) we need to update the instance variable value
-                if (p is node)// && !(userProps[p] is bool))
+                // if the key is a node type, we need to update the instance variable value
+                else if (p is node)
                     storeInInstance(p, userProps);
             }
             // fill in remaining defaultProps
@@ -320,6 +319,17 @@ namespace OrbItProcs {
 
         public bool fetchComponent(comp c, bool active, bool overwrite = false)
         {
+            if (c == comp.movement)
+            {
+                movement.active = active;
+                return true;
+            }
+            else if (c == comp.collision)
+            {
+                collision.active = active;
+                return true;
+            }
+
             Component component = MakeComponent(c, active, this);
 
             
@@ -473,7 +483,7 @@ namespace OrbItProcs {
 
                 returnObjectsFinal = room.gridsystem.retrieve(this);
 
-                int cellReach = (int)(transform.radius * 2) / room.gridsystem.cellwidth * 2;
+                int cellReach = (int)(body.radius * 2) / room.gridsystem.cellwidth * 2;
 
 
                 if (comps.ContainsKey(comp.flow) && comps[comp.flow].active)
@@ -504,6 +514,8 @@ namespace OrbItProcs {
             {
                     comps[c].AffectSelf();
             }
+
+            if (movement.active) movement.AffectSelf(); //temporary until make movement list to update at the correct time
 
             if (triggerSortComponentsUpdate)
             {
@@ -568,7 +580,7 @@ namespace OrbItProcs {
 
         public Texture2D getTexture()
         {
-            return room.game.textureDict[transform.texture];
+            return room.game.textureDict[body.texture];
         }
         public Texture2D getTexture(textures t)
         {
@@ -576,7 +588,7 @@ namespace OrbItProcs {
         }
         public Vector2 TextureCenter()
         { 
-            Texture2D tx = room.game.textureDict[transform.texture];
+            Texture2D tx = room.game.textureDict[body.texture];
             return new Vector2(tx.Width / 2f, tx.Height / 2f); // TODO: maybe cast to floats to make sure it's the exact center.
         }
         
@@ -584,12 +596,12 @@ namespace OrbItProcs {
 
         public void changeRadius(float newRadius)
         {
-            transform.radius = newRadius;
-            transform.scale = transform.radius / (getTexture().Width / 2);
+            body.radius = newRadius;
+            body.scale = body.radius / (getTexture().Width / 2);
         }
         public float diameter()
         {
-            return transform.radius * 2;
+            return body.radius * 2;
         }
 
         public void OnSpawn()
@@ -705,11 +717,15 @@ namespace OrbItProcs {
                 }
                 else if (field.FieldType == (typeof(Transform)))
                 {
-                    Component.CloneComponent(sourceNode.transform, destNode.transform);
+                    Component.CloneComponent(sourceNode.body, destNode.body);
                 }
                 else if (field.FieldType == (typeof(Collision)))
                 {
                     Component.CloneComponent(sourceNode.collision, destNode.collision);
+                }
+                else if (field.FieldType == (typeof(Movement)))
+                {
+                    Component.CloneComponent(sourceNode.movement, destNode.movement);
                 }
                 else
                 {

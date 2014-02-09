@@ -18,7 +18,6 @@ namespace OrbItProcs
         private Link _link = null;
         public Link link { get { return _link; } set { _link = value; } }
 
-        //public int gridx = 0, gridy = 0;
         public bool OldCollision { get; set; }
 
         public override bool active
@@ -26,7 +25,7 @@ namespace OrbItProcs
             get { return _active; }
             set
             {
-                if (parent != null)
+                if (parent != null && parent.room.game.ui != null)
                 {
                     if (!_active && value && parent != parent.room.game.ui.sidebar.ActiveDefaultNode)
                     {
@@ -36,14 +35,10 @@ namespace OrbItProcs
                     {
                         parent.room.CollisionSet.Remove(parent);
                     }
-                    _active = value;
-                    //Console.WriteLine(parent.name);
                 }
+                _active = value;
             }
         }
-
-        //public bool _AffectOnlyColliders = true;
-        //public bool AffectOnlyColliders { get { return _AffectOnlyColliders; } set { _AffectOnlyColliders = value; } }
 
         public Collision() : this(null) { }
         public Collision(Node parent = null)
@@ -51,8 +46,9 @@ namespace OrbItProcs
             if (parent != null) this.parent = parent;
             com = comp.collision; 
             methods = mtypes.affectother;
-            OldCollision = true;
+            OldCollision = false;
         }
+
         public override void Initialize(Node parent)
         {
             this.parent = parent;
@@ -126,7 +122,7 @@ namespace OrbItProcs
             else
             {
                 m.penetration = radius - distance;
-                m.normal = VMath.MultVectDouble(normal, 1 / distance); //normal / distance;
+                m.normal = VMath.MultVectDouble(normal, 1.0 / distance); //normal / distance;
                 m.contacts[0] = VMath.MultVectDouble(m.normal, ca.radius) + a.position; //m.normal * ca.radius + a.body.position;
             }
         }

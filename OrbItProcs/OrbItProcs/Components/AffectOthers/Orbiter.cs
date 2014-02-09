@@ -84,7 +84,7 @@ namespace OrbItProcs
                         float y = od.radius * (float)Math.Sin(od.angle);
 
                         //n.transform.position.X = (float)Math.Atan2(parent.transform.position.Y - y, parent.transform.position.X - x);
-                        n.transform.position = new Vector2(parent.transform.position.X - x, parent.transform.position.Y - y);
+                        n.body.position = new Vector2(parent.body.position.X - x, parent.body.position.Y - y);
 
                         orbiterDatas[n] = od;
                     }

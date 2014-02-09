@@ -33,8 +33,8 @@ namespace OrbItProcs
 
         public Player(Vector2 position) : base(Program.getRoom(), userP)
         {
-            transform.position = position;
-            transform.radius = 64;
+            body.position = position;
+            body.radius = 64;
             accel = new Vector2(0, 0);
             maxvel = 20f;
             maxaccel = 3f;
@@ -91,15 +91,15 @@ namespace OrbItProcs
 
             if (QuickStop)
             {
-                if (accel.X > 0 && transform.velocity.X < 0) transform.velocity.X = 0;
-                else if (accel.X < 0 && transform.velocity.X > 0) transform.velocity.X = 0;
+                if (accel.X > 0 && body.velocity.X < 0) body.velocity.X = 0;
+                else if (accel.X < 0 && body.velocity.X > 0) body.velocity.X = 0;
 
-                if (accel.Y > 0 && transform.velocity.Y < 0) transform.velocity.Y = 0;
-                else if (accel.Y < 0 && transform.velocity.Y > 0) transform.velocity.Y = 0;
+                if (accel.Y > 0 && body.velocity.Y < 0) body.velocity.Y = 0;
+                else if (accel.Y < 0 && body.velocity.Y > 0) body.velocity.Y = 0;
                 
-                if (accel.X == 0 && accel.Y == 0 && (transform.velocity.X != 0 || transform.velocity.Y != 0))
+                if (accel.X == 0 && accel.Y == 0 && (body.velocity.X != 0 || body.velocity.Y != 0))
                 {
-                    accel = transform.velocity;
+                    accel = body.velocity;
                     accel.Normalize();
                     accel *= -friction;
                 }
@@ -118,13 +118,13 @@ namespace OrbItProcs
                 //    accel.Normalize();
                 //    accel *= -friction;
                 //}
-                if ((transform.velocity.X != 0 || transform.velocity.Y != 0))
+                if ((body.velocity.X != 0 || body.velocity.Y != 0))
                 {
                     //accel = transform.velocity;
                     //accel.Normalize();
                     //accel *= -friction;
 
-                    accel += transform.velocity * -friction;
+                    accel += body.velocity * -friction;
                 }
 
                 //accel *= friction;
@@ -138,12 +138,12 @@ namespace OrbItProcs
 
             MaxVelocityUpdate();
 
-            transform.velocity += accel;
+            body.velocity += accel;
 
             if (UserInterface.keybState.IsKeyDown(Keys.Z))
             {
-                transform.velocity = new Vector2(0, 0);
-                accel = transform.velocity;
+                body.velocity = new Vector2(0, 0);
+                accel = body.velocity;
             }
 
             //if (UserInterface.mouseState.LeftButton == ButtonState.Pressed && UserInterface.oldMouseState.LeftButton == ButtonState.Released)
@@ -158,8 +158,8 @@ namespace OrbItProcs
             Vector2 pos = UserInterface.WorldMousePos;
             Node newNode = new Node();
             Node.cloneObject(launchNode, newNode);
-            newNode.transform.velocity = pos - transform.position;
-            newNode.transform.position = transform.position + transform.velocity * 5;
+            newNode.body.velocity = pos - body.position;
+            newNode.body.position = body.position + body.velocity * 5;
             room.game.spawnNode(newNode, lifetime: bulletlife);
         }
 
@@ -175,8 +175,8 @@ namespace OrbItProcs
             Vector2 pos = UserInterface.WorldMousePos;
             Node newNode = new Node();
             Node.cloneObject(launchNode, newNode);
-            newNode.transform.velocity = pos - transform.position;
-            newNode.transform.position = transform.position + transform.velocity * 5;
+            newNode.body.velocity = pos - body.position;
+            newNode.body.position = body.position + body.velocity * 5;
 
             if (UserInterface.keybState.IsKeyDown(Keys.LeftControl))
             {
@@ -191,10 +191,10 @@ namespace OrbItProcs
         {
             Node parent = this;
             
-            if ((Math.Pow(parent.transform.velocity.X, 2) + Math.Pow(parent.transform.velocity.Y, 2)) > Math.Pow(maxvel, 2))
+            if ((Math.Pow(parent.body.velocity.X, 2) + Math.Pow(parent.body.velocity.Y, 2)) > Math.Pow(maxvel, 2))
             {
-                parent.transform.velocity.Normalize();
-                parent.transform.velocity *= maxvel;
+                parent.body.velocity.Normalize();
+                parent.body.velocity *= maxvel;
 
             }
             /*

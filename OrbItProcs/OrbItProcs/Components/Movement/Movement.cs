@@ -6,8 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.Serialization;
 using System.Reflection;
-
-
+using System.Diagnostics;
 
 namespace OrbItProcs
 {
@@ -38,24 +37,23 @@ namespace OrbItProcs
             if (parent != null) this.parent = parent;
             com = comp.movement; 
             methods = mtypes.affectself;
-
+            active = false;
         }
 
         public override void Initialize(Node parent)
         {
             this.parent = parent;
-            //movementmode = movemode.wallbounce;
         }
 
         private void IntegrateForces()
         {
             if (parent.body.invmass == 0)
                 return;
+
             Body b = parent.body;
             b.velocity += VMath.MultVectDouble(b.force, b.invmass); //* dt / 2.0;
             b.angularVelocity += b.torque * b.invinertia; // * dt / 2.0;
 
-            //b.GetType().GetProperties()[0].
         }
         public void IntegrateVelocity()
         {
@@ -66,18 +64,18 @@ namespace OrbItProcs
             b.position += b.velocity;
             b.orient += b.angularVelocity;
             b.SetOrient(b.orient);
-            IntegrateForces(); //not sure we should do this twice??
+            IntegrateForces(); //calls the private integrate forces method
         }
 
 
         public override void AffectSelf()
         {
 
-            parent.transform.effvelocity = parent.transform.position - tempPosition;
-            tempPosition = parent.transform.position;
+            parent.body.effvelocity = parent.body.position - tempPosition;
+            tempPosition = parent.body.position;
 
-            parent.transform.position.X += parent.transform.velocity.X * VelocityModifier;
-            parent.transform.position.Y += parent.transform.velocity.Y * VelocityModifier;
+            //parent.body.position.X += parent.body.velocity.X * VelocityModifier;
+            //parent.body.position.Y += parent.body.velocity.Y * VelocityModifier;
 
 
 
@@ -91,8 +89,8 @@ namespace OrbItProcs
         public void Trippy()
         {
             //test (holy SHIT that looks cool)
-            PropertyInfo pi = parent.transform.GetType().GetProperty("scale");
-            pi.SetValue(parent.transform, parent.transform.position.X % 4.0f, null);
+            PropertyInfo pi = parent.body.GetType().GetProperty("scale");
+            pi.SetValue(parent.body, parent.body.position.X % 4.0f, null);
         }
 
         public override void Draw(SpriteBatch spritebatch)
@@ -104,7 +102,7 @@ namespace OrbItProcs
             int levelwidth = parent.room.game.worldWidth;
             int levelheight = parent.room.game.worldHeight;
 
-            Vector2 pos = parent.transform.position;
+            Vector2 pos = parent.body.position;
 
             if (parent.comps.ContainsKey(comp.queuer) && (parent.comps[comp.queuer].qs & queues.position) == queues.position)
             {
@@ -112,20 +110,20 @@ namespace OrbItProcs
                 pos = positions.ElementAt(0);
             }
 
-            if (pos.X >= (levelwidth + parent.transform.radius))
+            if (pos.X >= (levelwidth + parent.body.radius))
             {
                 parent.IsDeleted = true;
             }
-            else if (pos.X < parent.transform.radius * -1)
+            else if (pos.X < parent.body.radius * -1)
             {
                 parent.IsDeleted = true;
             }
 
-            if (pos.Y >= (levelheight + parent.transform.radius))
+            if (pos.Y >= (levelheight + parent.body.radius))
             {
                 parent.IsDeleted = true;
             }
-            else if (pos.Y < parent.transform.radius * -1)
+            else if (pos.Y < parent.body.radius * -1)
             {
                 parent.IsDeleted = true;
             }
@@ -143,29 +141,29 @@ namespace OrbItProcs
             int levelwidth = parent.room.game.worldWidth;
             int levelheight = parent.room.game.worldHeight;
 
-            if (parent.transform.position.X >= (levelwidth - parent.transform.radius))
+            if (parent.body.position.X >= (levelwidth - parent.body.radius))
             {
-                parent.transform.position.X = levelwidth - parent.transform.radius;
-                parent.transform.velocity.X *= -1;
+                parent.body.position.X = levelwidth - parent.body.radius;
+                parent.body.velocity.X *= -1;
                 parent.OnCollidePublic(null);
 
             }
-            if (parent.transform.position.X < parent.transform.radius)
+            if (parent.body.position.X < parent.body.radius)
             {
-                parent.transform.position.X = parent.transform.radius;
-                parent.transform.velocity.X *= -1;
+                parent.body.position.X = parent.body.radius;
+                parent.body.velocity.X *= -1;
                 parent.OnCollidePublic(null);
             }
-            if (parent.transform.position.Y >= (levelheight - parent.transform.radius))
+            if (parent.body.position.Y >= (levelheight - parent.body.radius))
             {
-                parent.transform.position.Y = levelheight - parent.transform.radius;
-                parent.transform.velocity.Y *= -1;
+                parent.body.position.Y = levelheight - parent.body.radius;
+                parent.body.velocity.Y *= -1;
                 parent.OnCollidePublic(null);
             }
-            if (parent.transform.position.Y < parent.transform.radius)
+            if (parent.body.position.Y < parent.body.radius)
             {
-                parent.transform.position.Y = parent.transform.radius;
-                parent.transform.velocity.Y *= -1;
+                parent.body.position.Y = parent.body.radius;
+                parent.body.velocity.Y *= -1;
                 parent.OnCollidePublic(null);
             }
 
@@ -181,40 +179,40 @@ namespace OrbItProcs
 
             //hitting top/bottom of screen
             //teleport node
-            if (parent.transform.position.X >= levelwidth)
+            if (parent.body.position.X >= levelwidth)
             {
-                parent.transform.position.X = 1;
+                parent.body.position.X = 1;
             }
-            else if (parent.transform.position.X < 0)
+            else if (parent.body.position.X < 0)
             {
-                parent.transform.position.X = levelwidth - 1;
+                parent.body.position.X = levelwidth - 1;
             }
             //show half texture on other side
-            if (parent.transform.position.X >= (levelwidth - parent.transform.radius))
+            if (parent.body.position.X >= (levelwidth - parent.body.radius))
             {
                 //
             }
-            else if (parent.transform.position.X < parent.transform.radius)
+            else if (parent.body.position.X < parent.body.radius)
             {
                 //
             }
 
             //hitting sides
             //teleport node
-            if (parent.transform.position.Y >= levelheight)
+            if (parent.body.position.Y >= levelheight)
             {
-                parent.transform.position.Y = 1;
+                parent.body.position.Y = 1;
             }
-            else if (parent.transform.position.Y < 0)
+            else if (parent.body.position.Y < 0)
             {
-                parent.transform.position.Y = levelheight - 1;
+                parent.body.position.Y = levelheight - 1;
             }
             //show half texture on other side
-            if (parent.transform.position.Y >= (levelheight - parent.transform.radius))
+            if (parent.body.position.Y >= (levelheight - parent.body.radius))
             {
                 //
             }
-            else if (parent.transform.position.Y < parent.transform.radius)
+            else if (parent.body.position.Y < parent.body.radius)
             {
                 //
             }

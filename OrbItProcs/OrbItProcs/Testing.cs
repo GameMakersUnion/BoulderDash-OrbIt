@@ -195,7 +195,7 @@ namespace OrbItProcs
         {
             //testing to see how long it takes to generate all the getter/setter delegates
 
-            object transformobj = room.defaultNode.transform;
+            object transformobj = room.defaultNode.body;
             dynamic nodedynamic = room.defaultNode;
             List<Func<Node, float>> delList = new List<Func<Node, float>>();
             float total = 0;

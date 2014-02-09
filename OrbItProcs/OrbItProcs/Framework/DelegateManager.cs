@@ -37,7 +37,7 @@ namespace OrbItProcs
 
         public static void VelocityToOutput (Dictionary<string, dynamic> args, ModifierInfo mi)
         {
-            Vector2 velocity = ((Node)mi.fpInfos["v1"].ob).transform.velocity;
+            Vector2 velocity = ((Node)mi.fpInfos["v1"].ob).body.velocity;
             float max = (Defaultered("max", args, 2f));
             float min = (Defaultered("min", args, 0.1f));
             float highest = (Defaultered("highest", args, 20f));

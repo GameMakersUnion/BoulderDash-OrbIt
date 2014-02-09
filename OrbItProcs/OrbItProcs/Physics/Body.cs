@@ -20,28 +20,28 @@ namespace OrbItProcs
         public Vector2 effvelocity = new Vector2(0, 0);
         public Vector2 force = new Vector2(0, 0);
 
-        private double _angularVelocity = 0;
-        private double _torque = 0;
-        private double _orient = 0;
-        private double _inertia; // moment of inertia
-        private double _mass = 10f;
+        private float _angularVelocity = 0;
+        private float _torque = 0;
+        private float _orient = 0;
+        private float _inertia; // moment of inertia
+        private float _mass = 10f;
 
-        private double _staticFriction = 0.5;
-        private double _dynamicFriction = 0.3;
-        private double _restitution = 0.2;
+        private float _staticFriction = 0.5f;
+        private float _dynamicFriction = 0.3f;
+        private float _restitution = 0.2f;
 
 
-        private double _radius = 25f;
+        private float _radius = 25f;
         private float _scale = 1f;
 
-        public double angularVelocity { get { return _angularVelocity; } set { _angularVelocity = value; } }
-        public double torque { get { return _torque; } set { _torque = value; } }
-        public double staticFriction { get { return _staticFriction; } set { _staticFriction = value; } }
-        public double dynamicFriction { get { return _dynamicFriction; } set { _dynamicFriction = value; } }
-        public double restitution { get { return _restitution; } set { _restitution = value; } }
+        public float angularVelocity { get { return _angularVelocity; } set { _angularVelocity = value; } }
+        public float torque { get { return _torque; } set { _torque = value; } }
+        public float staticFriction { get { return _staticFriction; } set { _staticFriction = value; } }
+        public float dynamicFriction { get { return _dynamicFriction; } set { _dynamicFriction = value; } }
+        public float restitution { get { return _restitution; } set { _restitution = value; } }
 
-        
-        public double orient
+
+        public float orient
         {
             get { return _orient; }
             set
@@ -56,12 +56,22 @@ namespace OrbItProcs
             get { return color; }
             set { color = value; }
         }
+        public float X
+        {
+            get { return position.X; }
+            set { position.X = value; }
+        }
+        public float Y
+        {
+            get { return position.Y; }
+            set { position.Y = value; }
+        }
         public float scale
         {
             get { return _scale; }
             set { _scale = value; }
         }
-        public double radius
+        public float radius
         {
             get { return _radius; }
             set
@@ -77,23 +87,23 @@ namespace OrbItProcs
                 }
             }
         }
-        public double mass
+        public float mass
         {
             get { return _mass; }
-            set { _mass = value; if (value == 0) invmass = 0; else invmass = 1 / value; } //infinite mass is represented by 0
+            set { _mass = value; if (value == 0) invmass = 0; else invmass = 1.0f / value; } //infinite mass is represented by 0
         }
-        public double invmass
+        public float invmass
         {
             get;
             protected set;
         }
 
-        public double inertia
+        public float inertia
         {
             get { return _inertia; }
-            set { _inertia = value; if (value == 0) invinertia = 0; else invinertia = 1 / value; } //infinite mass is represented by 0
+            set { _inertia = value; if (value == 0) invinertia = 0; else invinertia = 1.0f / value; } //infinite mass is represented by 0
         }
-        public double invinertia
+        public float invinertia
         {
             get;
             protected set;
@@ -106,7 +116,7 @@ namespace OrbItProcs
             set { _texture = value; }
         }
 
-        public Body() : this(null) { }
+        public Body() : this(shape: null) { }
         public Body(Shape shape = null, Node parent = null)
         {
             if (parent != null) this.parent = parent;
@@ -117,27 +127,30 @@ namespace OrbItProcs
             this.shape.body = this;
             this.shape.Initialize();
 
+            this.mass = this.mass;
+            this.inertia = this.inertia;
         }
 
-        public void ApplyForce(ref Vector2 f)
+        public void ApplyForce(Vector2 f)
         {
             force += f;
         }
         public void ApplyImpulse(Vector2 impulse, Vector2 contactVector)
         {
             //
-            velocity += (float)invmass * impulse;
-            angularVelocity += invinertia * VMath.Cross(contactVector, impulse);
-
+            velocity += invmass * impulse;
+            if (float.IsNaN(velocity.X)) System.Diagnostics.Debugger.Break();
+            angularVelocity += invinertia * (float)VMath.Cross(contactVector, impulse);
+            if (float.IsInfinity(angularVelocity)) System.Diagnostics.Debugger.Break();
         }
 
-        public void SetStatic(double newInerta = 0, double newMass = 0)
+        public void SetStatic(float newInerta = 0, float newMass = 0)
         {
             inertia = newInerta;
             mass = newMass;
         }
 
-        public void SetOrient(double radians)
+        public void SetOrient(float radians)
         {
             orient = radians;
             shape.SetOrient(radians);

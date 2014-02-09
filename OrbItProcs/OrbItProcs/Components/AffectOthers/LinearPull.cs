@@ -49,23 +49,23 @@ namespace OrbItProcs
             if (!active) return;
             if (exclusions.Contains(other)) return;
 
-            float distVects = Vector2.Distance(other.transform.position, parent.transform.position);
+            float distVects = Vector2.Distance(other.body.position, parent.body.position);
 
             //todo: if this component is on a link, radius is not checked
             if (distVects < radius)
             {
-                double angle = Math.Atan2((parent.transform.position.Y - other.transform.position.Y), (parent.transform.position.X - other.transform.position.X));
+                double angle = Math.Atan2((parent.body.position.Y - other.body.position.Y), (parent.body.position.X - other.body.position.X));
 
                 float velX = (float)Math.Cos(angle) * multiplier;
                 float velY = (float)Math.Sin(angle) * multiplier;
                 Vector2 delta = new Vector2(velX, velY);
-                delta /= other.transform.mass;
+                delta /= other.body.mass;
                 if (constant)
-                    other.transform.velocity = delta;
+                    other.body.velocity = delta;
                 else
                 {
                     //Console.WriteLine(delta);
-                    other.transform.velocity += delta;
+                    other.body.velocity += delta;
                 }
 
             }

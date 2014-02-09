@@ -551,12 +551,12 @@ namespace OrbItProcs
                     int[] cs = HueShifter.getColorsFromAngle(anglestep % 360);
                     Color color1 = new Color(cs[0], cs[1], cs[2]);
 
-                    Vector2 diff = target.transform.position - source.transform.position;
+                    Vector2 diff = target.body.position - source.body.position;
                     Vector2 perp = new Vector2(diff.Y, -diff.X);
                     perp.Normalize();
                     perp *= 2;
 
-                    Utils.DrawLine(room, source.transform.position, target.transform.position, 2f, color1);
+                    Utils.DrawLine(room, source.body.position, target.body.position, 2f, color1);
 
                     //Utils.DrawLine(spritebatch, source.transform.position + perp, target.transform.position + perp, 2f, col, room);
                     //Utils.DrawLine(spritebatch, source.transform.position - perp, target.transform.position - perp, 2f, col, room);
@@ -564,11 +564,11 @@ namespace OrbItProcs
                     if (!DrawTips) continue;
                     perp *= 20;
 
-                    Vector2 center = (target.transform.position + source.transform.position) / 2;
+                    Vector2 center = (target.body.position + source.body.position) / 2;
 
-                    Vector2 point = target.transform.position - (diff / 5);
-                    Utils.DrawLine(room, point + perp, target.transform.position, 2f, color1);
-                    Utils.DrawLine(room, point - perp, target.transform.position, 2f, color1);
+                    Vector2 point = target.body.position - (diff / 5);
+                    Utils.DrawLine(room, point + perp, target.body.position, 2f, color1);
+                    Utils.DrawLine(room, point - perp, target.body.position, 2f, color1);
                 }
             }
 

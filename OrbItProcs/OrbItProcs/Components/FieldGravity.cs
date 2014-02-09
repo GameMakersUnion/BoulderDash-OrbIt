@@ -59,19 +59,20 @@ namespace OrbItProcs
                 return;
             }
 
-            
+            double dd = Vector2.Distance(other.body.position, parent.body.position);
 
-            float distVects = Vector2.Distance(other.transform.position, parent.transform.position);
+            float distVects = Vector2.Distance(other.body.position, parent.body.position);
 
             if (distVects < radius)
             {
                 if (distVects < lowerbound) distVects = lowerbound;
-                double angle = Math.Atan2((parent.transform.position.Y - other.transform.position.Y), (parent.transform.position.X - other.transform.position.X));
+                double angle = Math.Atan2((parent.body.position.Y - other.body.position.Y), (parent.body.position.X - other.body.position.X));
                 //float counterforce = 100 / distVects;
                 //float gravForce = multiplier / (distVects * distVects * counterforce);
 
                 //float gravForce = (multiplier * parent.transform.mass * other.transform.mass) / (distVects * distVects * counterforce);
-                float gravForce = (multiplier * parent.transform.mass * other.transform.mass) / (distVects);
+
+                float gravForce = (float)(multiplier * parent.body.mass * other.body.mass) / (distVects);
 
                 if (!StrongGravity) gravForce /= distVects;
 
@@ -93,13 +94,13 @@ namespace OrbItProcs
 
                     if (constant)
                     {
-                        other.transform.velocity = delta / other.transform.mass;
-                        parent.transform.velocity = -delta / parent.transform.mass;
+                        other.body.velocity = delta / other.body.mass;
+                        parent.body.velocity = -delta / parent.body.mass;
                     }
                     else
                     {
-                        other.transform.velocity += delta / other.transform.mass;
-                        parent.transform.velocity -= delta / parent.transform.mass;
+                        other.body.velocity += delta / other.body.mass;
+                        parent.body.velocity -= delta / parent.body.mass;
                     }
                 }
                 else
@@ -107,11 +108,11 @@ namespace OrbItProcs
                     //delta /= 2;
                     if (constant)
                     {
-                        other.transform.velocity = delta / other.transform.mass;
+                        other.body.velocity = delta / other.body.mass;
                     }
                     else
                     {
-                        other.transform.velocity += delta / other.transform.mass;
+                        other.body.velocity += delta / other.body.mass;
                     }
                 }
 

@@ -101,7 +101,7 @@ namespace OrbItProcs
             if (!active) { return; }
             if (activated)
             {
-                Vector2 diff = other.transform.position - parent.transform.position;
+                Vector2 diff = other.body.position - parent.body.position;
                 float len;
                 if (locked)
                 {
@@ -116,33 +116,33 @@ namespace OrbItProcs
                 {
                     if (confining)
                     {
-                        other.transform.position = parent.transform.position + confiningVects[other] * maxdist;
+                        other.body.position = parent.body.position + confiningVects[other] * maxdist;
                     }
                     else
                     {
                         float percent = maxdist / len;
                         diff *= percent;
-                        other.transform.position = parent.transform.position + diff;
+                        other.body.position = parent.body.position + diff;
                     }
                 }
                 else if (len < mindist)
                 {
                     if (confining)
                     {
-                        other.transform.position = parent.transform.position + confiningVects[other] * mindist;
+                        other.body.position = parent.body.position + confiningVects[other] * mindist;
                     }
                     else
                     {
                         float percent = mindist / len;
                         diff *= percent;
-                        other.transform.position = parent.transform.position + diff;
+                        other.body.position = parent.body.position + diff;
                     }
                 }
                 else
                 {
                     if (confining)
                     {
-                        other.transform.position = parent.transform.position + confiningVects[other] * len;
+                        other.body.position = parent.body.position + confiningVects[other] * len;
                         //Console.WriteLine("{0}, {1}, {2}", confiningVects[other], other.transform.position, len);
                     }
                 }
@@ -157,7 +157,7 @@ namespace OrbItProcs
             {
                 foreach (Node other in outgoing)
                 {
-                    Vector2 diff = other.transform.position - parent.transform.position;
+                    Vector2 diff = other.body.position - parent.body.position;
                     float len;
                     if (locked)
                     {
@@ -172,7 +172,7 @@ namespace OrbItProcs
                     {
                         if (confining)
                         {
-                            other.transform.position = parent.transform.position + confiningVects[other] * maxdist;
+                            other.body.position = parent.body.position + confiningVects[other] * maxdist;
                         }
                         else
                         {
@@ -180,14 +180,14 @@ namespace OrbItProcs
                             if (locked) percent = len / diff.Length();
                             else percent = maxdist / len;
                             diff *= percent;
-                            other.transform.position = parent.transform.position + diff;
+                            other.body.position = parent.body.position + diff;
                         }
                     }
                     else if (len < mindist)
                     {
                         if (confining)
                         {
-                            other.transform.position = parent.transform.position + confiningVects[other] * mindist;
+                            other.body.position = parent.body.position + confiningVects[other] * mindist;
                         }
                         else
                         {
@@ -195,14 +195,14 @@ namespace OrbItProcs
                             if (locked) percent = len / diff.Length();
                             else percent = mindist / len;
                             diff *= percent;
-                            other.transform.position = parent.transform.position + diff;
+                            other.body.position = parent.body.position + diff;
                         }
                     }
                     else
                     {
                         if (confining)
                         {
-                            other.transform.position = parent.transform.position + confiningVects[other] * len;
+                            other.body.position = parent.body.position + confiningVects[other] * len;
                             //Console.WriteLine("{0}, {1}, {2}", confiningVects[other], other.transform.position, len);
                         }
                         if (locked)
@@ -210,7 +210,7 @@ namespace OrbItProcs
                             float percent = len / diff.Length();
                             //else percent = mindist / len;
                             diff *= percent;
-                            other.transform.position = parent.transform.position + diff;
+                            other.body.position = parent.body.position + diff;
                         }
                     }
 
@@ -228,7 +228,7 @@ namespace OrbItProcs
             confiningVects = new Dictionary<Node, Vector2>();
             foreach (Node other in outgoing.ToList())
             {
-                Vector2 len = other.transform.position - parent.transform.position;
+                Vector2 len = other.body.position - parent.body.position;
                 len.Normalize();
                 confiningVects[other] = len;
             }
@@ -240,7 +240,7 @@ namespace OrbItProcs
             lockedVals = new Dictionary<Node, int>();
             foreach (Node other in outgoing.ToList())
             {
-                Vector2 len = other.transform.position - parent.transform.position;
+                Vector2 len = other.body.position - parent.body.position;
                 lockedVals[other] = (int)len.Length();
             }
         }
@@ -262,10 +262,10 @@ namespace OrbItProcs
                     node.comps[comp.tether].incoming.Add(parent);
                     if (confining && !confiningVects.ContainsKey(node))
                     {
-                        Vector2 v = (node.transform.position - parent.transform.position); v.Normalize();
+                        Vector2 v = (node.body.position - parent.body.position); v.Normalize();
                         confiningVects.Add(node, v);
                     }
-                    if (locked && !lockedVals.ContainsKey(node)) lockedVals.Add(node, (int)(node.transform.position - parent.transform.position).Length());
+                    if (locked && !lockedVals.ContainsKey(node)) lockedVals.Add(node, (int)(node.body.position - parent.body.position).Length());
                 }
             }
 
@@ -281,34 +281,34 @@ namespace OrbItProcs
             //Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
             Color col;
             if (activated)
-                col = parent.transform.color;
+                col = parent.body.color;
             else
                 col = Color.White;
 
-            spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, col, 0, parent.TextureCenter(), (parent.transform.scale / mapzoom) * 1.2f, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(), parent.body.position / mapzoom, null, col, 0, parent.TextureCenter(), (parent.body.scale / mapzoom) * 1.2f, SpriteEffects.None, 0);
 
             foreach (Node receiver in outgoing)
             {
-                Vector2 diff = receiver.transform.position - parent.transform.position;
+                Vector2 diff = receiver.body.position - parent.body.position;
                 Vector2 perp = new Vector2(diff.Y, -diff.X);
                 perp.Normalize();
                 perp *= 2;
 
-                Utils.DrawLine(room, parent.transform.position, receiver.transform.position, 2f, col);
+                Utils.DrawLine(room, parent.body.position, receiver.body.position, 2f, col);
 
-                Utils.DrawLine(room, parent.transform.position + perp, receiver.transform.position + perp, 2f, Color.Red);
-                Utils.DrawLine(room, parent.transform.position - perp, receiver.transform.position - perp, 2f, Color.Green);
+                Utils.DrawLine(room, parent.body.position + perp, receiver.body.position + perp, 2f, Color.Red);
+                Utils.DrawLine(room, parent.body.position - perp, receiver.body.position - perp, 2f, Color.Green);
                 
                 perp *= 20;
 
-                Vector2 center = (receiver.transform.position + parent.transform.position) / 2;
+                Vector2 center = (receiver.body.position + parent.body.position) / 2;
                 
                 //Utils.DrawLine(spritebatch, center + perp, receiver.transform.position, 1f, col, room);
                 //Utils.DrawLine(spritebatch, center - perp, receiver.transform.position, 1f, col, room);
 
-                Vector2 point = receiver.transform.position - (diff / 5);
-                Utils.DrawLine(room, point + perp, receiver.transform.position, 2f, col);
-                Utils.DrawLine(room, point - perp, receiver.transform.position, 2f, col);
+                Vector2 point = receiver.body.position - (diff / 5);
+                Utils.DrawLine(room, point + perp, receiver.body.position, 2f, col);
+                Utils.DrawLine(room, point - perp, receiver.body.position, 2f, col);
             }
 
             //spritebatch.DrawString(room.game.font, gatestring, parent.transform.position / mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);

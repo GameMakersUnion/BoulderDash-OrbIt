@@ -70,7 +70,10 @@ namespace OrbItProcs
                 }
                 return room.masterGroup.defaultNode;
                 */
-                return ActiveGroupFirst.defaultNode;
+                Group g = ActiveGroupFirst;
+                if (g != null && g.defaultNode != null)
+                    return ActiveGroupFirst.defaultNode;
+                return null;
             }
         }
         //public InspectorItem ActiveInspectorParent;
@@ -442,7 +445,7 @@ namespace OrbItProcs
 
             Node newdefault = new Node();
             Node.cloneObject(n, newdefault);
-            newdefault.transform.velocity = new Vector2(0, 0);
+            newdefault.body.velocity = new Vector2(0, 0);
             Group g = new Group(newdefault, parentGroup: room.masterGroup.childGroups["General Groups"]);
             newdefault.name = g.Name;
             room.masterGroup.childGroups["General Groups"].AddGroup(g.Name, g);

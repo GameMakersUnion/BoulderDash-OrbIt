@@ -129,7 +129,7 @@ namespace OrbItProcs
                 b += g1 / 10;
                 c += b1 / 10;
                 col = new Color(a, b, c, 0.8f);
-                if (parent.comps.ContainsKey(comp.hueshifter) && parent.comps[comp.hueshifter].active) col = parent.transform.color;
+                if (parent.comps.ContainsKey(comp.hueshifter) && parent.comps[comp.hueshifter].active) col = parent.body.color;
 
                 //float scale = scales.ElementAt(count) / mapzoom;
                 //float scale = parent.transform.scale;
@@ -145,8 +145,8 @@ namespace OrbItProcs
             }
 
             //float testangle = (float)(Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2));
-            if (parent.comps.ContainsKey(comp.hueshifter)) col = parent.transform.color;
-            spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, col, 0, parent.TextureCenter(), parent.transform.scale / mapzoom, SpriteEffects.None, 0);
+            if (parent.comps.ContainsKey(comp.hueshifter)) col = parent.body.color;
+            spritebatch.Draw(parent.getTexture(), parent.body.position / mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
 
         }
 

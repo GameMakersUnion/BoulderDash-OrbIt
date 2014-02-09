@@ -142,7 +142,7 @@ namespace OrbItProcs {
         public static bool checkCollision(Node o1, Node o2)
         {
 
-            if (Vector2.DistanceSquared(o1.transform.position, o2.transform.position) <= ((o1.transform.radius + o2.transform.radius) * (o1.transform.radius + o2.transform.radius)))
+            if (Vector2.DistanceSquared(o1.body.position, o2.body.position) <= ((o1.body.radius + o2.body.radius) * (o1.body.radius + o2.body.radius)))
             {
                 return true;
             }
@@ -162,16 +162,16 @@ namespace OrbItProcs {
             //ELASTIC COLLISION RESOLUTION --- FUCK YEAH
             //float orbimass = 1, orbjmass = 1;
             //float orbRadius = 25.0f; //integrate this into the orb class
-            float distanceOrbs = (float)Vector2.Distance(o1.transform.position, o2.transform.position);
+            float distanceOrbs = (float)Vector2.Distance(o1.body.position, o2.body.position);
             if (distanceOrbs < 10) distanceOrbs = 10; //prevent /0 error
-            Vector2 normal = (o2.transform.position - o1.transform.position) / distanceOrbs;
-            float pvalue = 2 * (o1.transform.velocity.X * normal.X + o1.transform.velocity.Y * normal.Y - o2.transform.velocity.X * normal.X - o2.transform.velocity.Y * normal.Y) / (o1.transform.mass + o2.transform.mass);
+            Vector2 normal = (o2.body.position - o1.body.position) / distanceOrbs;
+            float pvalue = 2 * (o1.body.velocity.X * normal.X + o1.body.velocity.Y * normal.Y - o2.body.velocity.X * normal.X - o2.body.velocity.Y * normal.Y) / (o1.body.mass + o2.body.mass);
             //if (!test) 
             //return;
-            o1.transform.velocity.X = o1.transform.velocity.X - pvalue * normal.X * o2.transform.mass;
-            o1.transform.velocity.Y = o1.transform.velocity.Y - pvalue * normal.Y * o2.transform.mass;
-            o2.transform.velocity.X = o2.transform.velocity.X + pvalue * normal.X * o1.transform.mass;
-            o2.transform.velocity.Y = o2.transform.velocity.Y + pvalue * normal.Y * o1.transform.mass;
+            o1.body.velocity.X = o1.body.velocity.X - pvalue * normal.X * o2.body.mass;
+            o1.body.velocity.Y = o1.body.velocity.Y - pvalue * normal.Y * o2.body.mass;
+            o2.body.velocity.X = o2.body.velocity.X + pvalue * normal.X * o1.body.mass;
+            o2.body.velocity.Y = o2.body.velocity.Y + pvalue * normal.Y * o1.body.mass;
 
             float loss1 = 0.98f;
             float loss2 = 0.98f;
@@ -190,28 +190,28 @@ namespace OrbItProcs {
             //float orbRadius = 25.0f; //integrate this into the orb class
             //if the orbs are still within colliding distance after moving away (fix radius variables)
             //if (Vector2.DistanceSquared(o1.transform.position + o1.transform.velocity, o2.transform.position + o2.transform.velocity) <= ((o1.transform.radius * 2) * (o2.transform.radius * 2)))
-            if (Vector2.DistanceSquared(o1.transform.position + o1.transform.velocity, o2.transform.position + o2.transform.velocity) <= ((o1.transform.radius + o2.transform.radius) * (o1.transform.radius + o2.transform.radius)))
+            if (Vector2.DistanceSquared(o1.body.position + o1.body.velocity, o2.body.position + o2.body.velocity) <= ((o1.body.radius + o2.body.radius) * (o1.body.radius + o2.body.radius)))
             {
 
-                Vector2 difference = o1.transform.position - o2.transform.position; //get the vector between the two orbs
-                float length = Vector2.Distance(o1.transform.position, o2.transform.position);//get the length of that vector
+                Vector2 difference = o1.body.position - o2.body.position; //get the vector between the two orbs
+                float length = Vector2.Distance(o1.body.position, o2.body.position);//get the length of that vector
                 difference = difference / length;//get the unit vector
                 //fix the below statement to get the radius' from the orb objects
-                length = (o1.transform.radius + o2.transform.radius) - length; //get the length that the two orbs must be moved away from eachother
+                length = (o1.body.radius + o2.body.radius) - length; //get the length that the two orbs must be moved away from eachother
                 difference = difference * length; // produce the vector from the length and the unit vector
-                if (o1.comps.ContainsKey(comp.movement) && o1.comps[comp.movement].pushable
-                    && o2.comps.ContainsKey(comp.movement) && o2.comps[comp.movement].pushable)
+                if (o1.movement.active && o1.movement.pushable
+                    && o2.movement.active && o2.movement.pushable)
                 {
-                    o1.transform.position += difference / 2;
-                    o2.transform.position -= difference / 2;
+                    o1.body.position += difference / 2;
+                    o2.body.position -= difference / 2;
                 }
-                else if (o1.comps.ContainsKey(comp.movement) && !o1.comps[comp.movement].pushable)
+                else if (o1.movement.active && !o1.movement.pushable)
                 {
-                    o2.transform.position -= difference;
+                    o2.body.position -= difference;
                 }
-                else if (o2.comps.ContainsKey(comp.movement) && !o2.comps[comp.movement].pushable)
+                else if (o2.movement.active && !o2.movement.pushable)
                 {
-                    o1.transform.position += difference;
+                    o1.body.position += difference;
                 }
             }
             else return;

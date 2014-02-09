@@ -19,7 +19,7 @@ namespace OrbItProcs
         public MaxVel(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.movement; 
+            com = comp.maxvel; 
             methods = mtypes.affectself; 
         }
 
@@ -30,15 +30,15 @@ namespace OrbItProcs
 
         public override void AffectSelf()
         {
-            if ((Math.Pow(parent.transform.velocity.X, 2) + Math.Pow(parent.transform.velocity.Y, 2)) > Math.Pow(maxvel, 2))
+            if ((Math.Pow(parent.body.velocity.X, 2) + Math.Pow(parent.body.velocity.Y, 2)) > Math.Pow(maxvel, 2))
             {
-                parent.transform.velocity.Normalize();
-                parent.transform.velocity *= maxvel;
+                parent.body.velocity.Normalize();
+                parent.body.velocity *= maxvel;
             }
-            if ((Math.Pow(parent.transform.velocity.X, 2) + Math.Pow(parent.transform.velocity.Y, 2)) < Math.Pow(minvel, 2))
+            if ((Math.Pow(parent.body.velocity.X, 2) + Math.Pow(parent.body.velocity.Y, 2)) < Math.Pow(minvel, 2))
             {
-                parent.transform.velocity.Normalize();
-                parent.transform.velocity *= minvel;
+                parent.body.velocity.Normalize();
+                parent.body.velocity *= minvel;
             }
         }
 

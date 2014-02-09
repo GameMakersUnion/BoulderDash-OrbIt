@@ -76,7 +76,7 @@ namespace OrbItProcs
             ModifierInfo modinfo = new ModifierInfo();
             //modinfo.AddFPInfoFromString("o1", "scale", parent);
             //modinfo.AddFPInfoFromString("m1", "position", parent);
-            modinfo.AddFPInfoFromString("v1", "position", parent.transform);
+            modinfo.AddFPInfoFromString("v1", "position", parent.body);
             modinfo.AddFPInfoFromString("m1", "timer", parent.comps[comp.lifetime]);
 
             //modinfo.args.Add("mod", 4.0f);
@@ -129,10 +129,10 @@ namespace OrbItProcs
 
             //if (yval == 0) Console.WriteLine("hm");
 
-            Vector2 metapos = new Vector2(parent.transform.velocity.Y, -parent.transform.velocity.X);
+            Vector2 metapos = new Vector2(parent.body.velocity.Y, -parent.body.velocity.X);
             metapos.Normalize();
             metapos *= yval;
-            Vector2 metaposfinal = parent.transform.position + metapos;
+            Vector2 metaposfinal = parent.body.position + metapos;
 
 
             if (metapositions.Count > queuecount)
@@ -143,7 +143,7 @@ namespace OrbItProcs
 
             if (reflective)
             {
-                Vector2 reflectfinal = parent.transform.position - metapos;
+                Vector2 reflectfinal = parent.body.position - metapos;
                 if (reflectpositions.Count > queuecount)
                 {
                     reflectpositions.Dequeue();
@@ -164,7 +164,7 @@ namespace OrbItProcs
 
             foreach (Vector2 metapos in metapositions)
             {
-                spritebatch.Draw(parent.getTexture(), metapos / mapzoom, null, parent.transform.color, 0, parent.TextureCenter(), parent.transform.scale / mapzoom, SpriteEffects.None, 0);
+                spritebatch.Draw(parent.getTexture(), metapos / mapzoom, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
 
                 //if (metapos == reflectpositions.ElementAt(count)) Console.WriteLine("YEA");
                 count++;
@@ -173,7 +173,7 @@ namespace OrbItProcs
             count = 0;
             foreach (Vector2 relectpos in reflectpositions)
             {
-                spritebatch.Draw(parent.getTexture(), relectpos / mapzoom, null, parent.transform.color, 0, parent.TextureCenter(), parent.transform.scale / mapzoom, SpriteEffects.None, 0);
+                spritebatch.Draw(parent.getTexture(), relectpos / mapzoom, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
                 count++;
             }
 

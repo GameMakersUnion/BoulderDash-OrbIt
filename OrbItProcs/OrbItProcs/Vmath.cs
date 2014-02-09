@@ -8,7 +8,7 @@ namespace OrbItProcs
 {
     public static class VMath
     {
-        public static double EPSILON = 0.0001;
+        public static float EPSILON = 0.0001f;
         
         #region /// Existing Classes ///
         public static void Test()
@@ -50,7 +50,7 @@ namespace OrbItProcs
         {
             v.X = x; v.Y = y;
         }
-        public static void Rotate(this Vector2 v, double radians)
+        public static void Rotate(this Vector2 v, float radians)
         {
             double c = Math.Cos(radians);
             double s = Math.Sin(radians);
@@ -81,6 +81,20 @@ namespace OrbItProcs
             return new Vector2(v.X * (float)d, v.Y * (float)d);
         }
 
+        public static void NormalizeSafe(this Vector2 v)
+        {
+            //v.Normalize();
+            //return;
+            if (v.X != 0 && v.Y != 0)
+            {
+                //v.Normalize();
+                //return;
+                float len = v.Length();
+                float invLen = 1.0f / len;
+                v.X *= invLen;
+                v.Y *= invLen;
+            }
+        }
 
         public static bool Equal(double a, double b)
         {

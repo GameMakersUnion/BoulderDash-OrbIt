@@ -38,7 +38,7 @@ namespace OrbItProcs
             float mapzoom = room.mapzoom;
 
             //spritebatch.Draw()
-            spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, parent.transform.color, 0, parent.TextureCenter(), parent.transform.scale / mapzoom, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(), parent.body.position / mapzoom, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
             
             
         }

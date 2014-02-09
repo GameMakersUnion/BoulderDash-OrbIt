@@ -56,8 +56,8 @@ namespace OrbItProcs
 
             foreach (Node n in room.masterGroup.fullSet.ToList())
             {
-                float xx = n.transform.position.X;
-                float yy = n.transform.position.Y;
+                float xx = n.body.position.X;
+                float yy = n.body.position.Y;
 
                 if (xx >= lowerx && xx <= upperx
                     && yy >= lowery && yy <= uppery)

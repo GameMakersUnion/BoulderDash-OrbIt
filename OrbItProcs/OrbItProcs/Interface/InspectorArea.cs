@@ -185,6 +185,7 @@ namespace OrbItProcs
 
         public void ResetInspectorBox(object rootobj)
         {
+
             InsBox.ItemIndex = 0;
             InspectorItem rootitem = new InspectorItem(InsBox.Items, rootobj);
             InsBox.rootitem = rootitem;
