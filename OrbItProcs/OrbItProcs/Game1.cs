@@ -207,6 +207,9 @@ namespace OrbItProcs
             //col.AffectOther(null);
             //typeof(Collision).GetMethod("AffectOther").Invoke();
 
+            //Vector2 vv = new Vector2(0, 0);
+            //vv.Normalize();
+            //Console.WriteLine(vv);
             
         }
 
@@ -498,6 +501,8 @@ namespace OrbItProcs
 
         public void spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1)
         {
+            
+
             Group activegroup = ui.sidebar.ActiveGroupFirst;
             //if (activegroup.Name.Equals("master")) return;
             if (!activegroup.Spawnable) return;
@@ -550,6 +555,7 @@ namespace OrbItProcs
             //testing.WhereTest();
             //testing.ForLoops();
             //testing.ColorsTest();
+            //testing.NormalizeTest();
             //
 
             Group activegroup = ui.sidebar.ActiveGroupFirst;

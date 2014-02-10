@@ -154,14 +154,14 @@ namespace OrbItProcs
         public void SetBox(float hw, float hh)
         {
             vertexCount = 4;
-            vertices[0].Set(-hw, -hh);
-            vertices[1].Set(hw, -hh);
-            vertices[2].Set(hw, hh);
-            vertices[3].Set(-hw, hh);
-            normals[0].Set(0, -1);
-            normals[1].Set(1, 0);
-            normals[2].Set(0, 1);
-            normals[3].Set(-1, 0);
+            VMath.Set(ref vertices[0], -hw, -hh);//vertices[0].Set(-hw, -hh);
+            VMath.Set(ref vertices[1], hw, -hh);//vertices[1].Set(hw, -hh);
+            VMath.Set(ref vertices[2], hw, hh);//vertices[2].Set(hw, hh);
+            VMath.Set(ref vertices[3], -hw, hh);//vertices[3].Set(-hw, hh);
+            VMath.Set(ref normals[0], 0, -1);//normals[0].Set(0, -1);
+            VMath.Set(ref normals[1], 1, 0);//normals[1].Set(1, 0);
+            VMath.Set(ref normals[2], 0, 1);//normals[2].Set(0, 1);
+            VMath.Set(ref normals[3], -1, 0);//normals[3].Set(-1, 0);
         }
         public void Set(Vector2[] verts, int count)
         {

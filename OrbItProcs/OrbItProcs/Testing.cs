@@ -8,6 +8,7 @@ using System.Text;
 using System.Reflection;
 using System.Collections;
 using System.Collections.ObjectModel;
+using Microsoft.Xna.Framework;
 
 namespace OrbItProcs
 {
@@ -87,6 +88,29 @@ namespace OrbItProcs
             StartTimer();
             a();
             StopTimer("KeyManager");
+        }
+
+        public void NormalizeTest()
+        {
+            StartTimer();
+            int count = 0;
+            for(int i = 0; i < 100; i++)
+            {
+                
+                Vector2 v = new Vector2((float)Utils.random.Next(10000) / (float)Utils.random.Next(10000), (float)Utils.random.Next(10000) / (float)Utils.random.Next(10000));
+                Vector2 vv = v;
+                v.Normalize();
+                VMath.NormalizeSafe(ref vv);
+                Console.WriteLine("B: x:{0} , y:{1}", vv.X, vv.Y);
+                Console.WriteLine("c: v:{0} , vv:{1}", v.Length(), vv.Length());
+                if (v != vv)
+                {
+                    //Console.WriteLine("v:{0}\n : vv:{1}",v,vv);
+                    count++;
+                }
+            }
+            Console.WriteLine("COUNT-----------------:" + count);
+            StopTimer("Normalizes:");
         }
 
         public void TestHashSet()

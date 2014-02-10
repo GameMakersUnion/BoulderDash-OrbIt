@@ -186,7 +186,7 @@ namespace OrbItProcs {
                 {
                     n.movement.IntegrateVelocity();
                 }
-                n.body.force.Set(0, 0);
+                VMath.Set(ref n.body.force, 0, 0);
                 n.body.torque = 0;
             }
             foreach (Manifold m in contacts)

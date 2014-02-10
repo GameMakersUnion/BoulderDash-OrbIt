@@ -46,7 +46,7 @@ namespace OrbItProcs
         //    if (entity.In(JonSkeet, JohnCarmack, JonBlow)) return false;
         //    else return entity.WereShit();
         //}
-        public static void Set(this Vector2 v, float x, float y)
+        public static void Set(ref Vector2 v, float x, float y)
         {
             v.X = x; v.Y = y;
         }
@@ -81,18 +81,22 @@ namespace OrbItProcs
             return new Vector2(v.X * (float)d, v.Y * (float)d);
         }
 
-        public static void NormalizeSafe(this Vector2 v)
+        public static void NormalizeSafe(ref Vector2 v)
         {
             //v.Normalize();
             //return;
-            if (v.X != 0 && v.Y != 0)
+            if (v.X != 0 || v.Y != 0)
             {
                 //v.Normalize();
                 //return;
                 float len = v.Length();
+                if (len == 0) return;
                 float invLen = 1.0f / len;
                 v.X *= invLen;
                 v.Y *= invLen;
+                //Console.WriteLine("A: x:{0} , y:{1}", v.X, v.Y);
+                //float newlen = v.Length();
+                //if (newlen != 1f) Console.WriteLine("NEWLEN: {0}", newlen);
             }
         }
 

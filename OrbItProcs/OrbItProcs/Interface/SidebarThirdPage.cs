@@ -146,6 +146,7 @@ namespace OrbItProcs
                 CreateCheckBox(key, checkBoxHandlers[key]);
             }
 
+            tbcMain.SelectedPage = tbcMain.TabPages[0];
             #endregion
         }
 

@@ -31,6 +31,8 @@ namespace OrbItProcs
         private movemode _movementmode = movemode.wallbounce;
         public movemode movementmode { get { return _movementmode; } set { _movementmode = value; } }
 
+        private int forcecount = 0;
+
         public Movement() : this(null) { }
         public Movement(Node parent = null)
         {
@@ -51,6 +53,12 @@ namespace OrbItProcs
                 return;
 
             Body b = parent.body;
+            if (b.force != Vector2.Zero) forcecount++;
+            else if (forcecount > 0)
+            {
+                Console.WriteLine("FORCECOUNT:" + forcecount);
+                forcecount = 0;
+            }
             b.velocity += VMath.MultVectDouble(b.force, b.invmass); //* dt / 2.0;
             b.angularVelocity += b.torque * b.invinertia; // * dt / 2.0;
 
@@ -167,7 +175,7 @@ namespace OrbItProcs
                 parent.OnCollidePublic(null);
             }
 
-
+            
         }
 
         public void screenWrap()

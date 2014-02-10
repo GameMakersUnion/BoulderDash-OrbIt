@@ -85,7 +85,8 @@ namespace OrbItProcs
                      a.velocity - VMath.Cross(a.angularVelocity, ra);
                 Vector2 t = rv - (normal * Vector2.Dot(rv, normal));
                 if (float.IsNaN(t.X)) System.Diagnostics.Debugger.Break();
-                t.Normalize();
+                //t.Normalize();
+                VMath.NormalizeSafe(ref t);
                 if (float.IsNaN(t.X)) System.Diagnostics.Debugger.Break();
                 //j tangent magnitude
                 double jt = -Vector2.Dot(rv, t);
@@ -115,8 +116,8 @@ namespace OrbItProcs
         }
         void InfinitMassCorrection()
         {
-            a.velocity.Set(0, 0);
-            b.velocity.Set(0, 0);
+            VMath.Set(ref a.velocity, 0, 0);//a.velocity.Set(0, 0);
+            VMath.Set(ref b.velocity, 0, 0);//b.velocity.Set(0, 0);
         }
     }
 }
