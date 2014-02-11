@@ -56,7 +56,7 @@ namespace OrbItProcs
             if (b.force != Vector2.Zero) forcecount++;
             else if (forcecount > 0)
             {
-                Console.WriteLine("FORCECOUNT:" + forcecount);
+                //Console.WriteLine("FORCECOUNT:" + forcecount);
                 forcecount = 0;
             }
             b.velocity += VMath.MultVectDouble(b.force, b.invmass); //* dt / 2.0;
@@ -75,11 +75,11 @@ namespace OrbItProcs
             IntegrateForces(); //calls the private integrate forces method
         }
 
-
         public override void AffectSelf()
         {
 
             parent.body.effvelocity = parent.body.position - tempPosition;
+            if (!pushable) parent.body.position = tempPosition;
             tempPosition = parent.body.position;
 
             //parent.body.position.X += parent.body.velocity.X * VelocityModifier;

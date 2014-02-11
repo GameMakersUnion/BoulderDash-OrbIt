@@ -48,7 +48,7 @@ namespace OrbItProcs
         }
         public override void Initialize()
         {
-            ComputeMass( 1.0f );
+            ComputeMass( 0.001f );
             
         }
         public override void ComputeMass(float density)
@@ -77,7 +77,7 @@ namespace OrbItProcs
 
         public override void Initialize()
         {
-            ComputeMass(1.0f);
+            ComputeMass(0.001f);
         }
         public override Shape Clone ()
         {

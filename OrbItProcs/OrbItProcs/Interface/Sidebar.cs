@@ -579,7 +579,7 @@ namespace OrbItProcs
             {
                 Node n = (Node)o;
                 if (n == itemspath.ElementAt(0).obj) return;
-                InspectorItem temp = new InspectorItem(null, n);
+                InspectorItem temp = new InspectorItem(null, n, inspectorArea);
                 int count = 0;
                 foreach (InspectorItem pathitem in itemspath)
                 {

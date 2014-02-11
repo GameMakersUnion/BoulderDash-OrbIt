@@ -48,7 +48,7 @@ namespace OrbItProcs {
         public event ProcessMethod Collided;
         //public Dictionary<dynamic, dynamic> CollideArgs;
 
-        static Dictionary<dynamic, dynamic> defaultProps = new Dictionary<dynamic, dynamic>() { };
+        //static Dictionary<dynamic, dynamic> defaultProps = new Dictionary<dynamic, dynamic>() { };
 
         public T GetComponent<T>()
         {
@@ -137,18 +137,12 @@ namespace OrbItProcs {
         private Dictionary<comp, dynamic> _comps = new Dictionary<comp, dynamic>();
         public Dictionary<comp, dynamic> comps { get { return _comps; } set { _comps = value; } }
 
-        private Dictionary<dynamic, bool> _props = new Dictionary<dynamic, bool>();
-        public Dictionary<dynamic, bool> props { get { return _props; } set { _props = value; } }
-
         public List<comp> aOtherProps = new List<comp>();
         public List<comp> aSelfProps = new List<comp>();
         public List<comp> drawProps = new List<comp>();
 
         public List<comp> compsToRemove = new List<comp>();
         public List<comp> compsToAdd = new List<comp>();
-
-        //public Transform transform;
-        //public Transform TRANSFORM { get { return body; } set { body = value; } }
 
         public Movement movement;
         public Movement MOVEMENT { get { return movement; } set { movement = value; } }
@@ -212,23 +206,6 @@ namespace OrbItProcs {
                 // if the key is a node type, we need to update the instance variable value
                 else if (p is node)
                     storeInInstance(p, userProps);
-            }
-            // fill in remaining defaultProps
-            foreach (dynamic p in defaultProps.Keys)
-            {
-                if (!userProps.ContainsKey(p) && defaultProps[p] is bool)
-                {
-
-                    if (p is comp)
-                    {
-                        fetchComponent(p, defaultProps[p]);
-                        if (comps.ContainsKey(p)) comps[p].active = defaultProps[p];
-                    }
-                    else
-                    {
-                        props.Add(p, defaultProps[p]); // not adding comps to props anymore
-                    }
-                }
             }
             SortComponentLists();
             //room = room1;
@@ -641,17 +618,15 @@ namespace OrbItProcs {
                     //Console.WriteLine(field.Name + " is a dictionary.");
                     if (field.FieldType.ToString().Contains("[System.Object,System.Boolean]"))//must be props
                     {
-                        //Console.WriteLine("PROPS");
-                        //dynamic node = sourceNode;
-
-                        Dictionary<dynamic, bool> dict = sourceNode.props;
-                        Dictionary<dynamic, bool> newdict = new Dictionary<dynamic, bool>();
-                        foreach (dynamic key in dict.Keys)
-                        {
-                            newdict.Add(key, dict[key]);
-                            //Console.WriteLine("key: {0}, value: {1}", key, dict[key]);
-                        }
-                        field.SetValue(destNode, newdict);
+                        int a = 3;
+                        //Dictionary<dynamic, bool> dict = sourceNode.props;
+                        //Dictionary<dynamic, bool> newdict = new Dictionary<dynamic, bool>();
+                        //foreach (dynamic key in dict.Keys)
+                        //{
+                        //    newdict.Add(key, dict[key]);
+                        //    //Console.WriteLine("key: {0}, value: {1}", key, dict[key]);
+                        //}
+                        //field.SetValue(destNode, newdict);
 
                     }
                     else if (field.FieldType.ToString().Contains("[OrbItProcs.comp,System.Object]"))//must be comps
@@ -715,10 +690,6 @@ namespace OrbItProcs {
                 {
                     //do nothing
                 }
-                else if (field.FieldType == (typeof(Transform)))
-                {
-                    Component.CloneComponent(sourceNode.body, destNode.body);
-                }
                 else if (field.FieldType == (typeof(Collision)))
                 {
                     Component.CloneComponent(sourceNode.collision, destNode.collision);
@@ -726,6 +697,10 @@ namespace OrbItProcs {
                 else if (field.FieldType == (typeof(Movement)))
                 {
                     Component.CloneComponent(sourceNode.movement, destNode.movement);
+                }
+                else if (field.FieldType == (typeof(Body)))
+                {
+                    Component.CloneComponent(sourceNode.body, destNode.body);
                 }
                 else
                 {

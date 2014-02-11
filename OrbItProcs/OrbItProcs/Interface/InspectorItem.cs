@@ -71,12 +71,13 @@ namespace OrbItProcs {
             typeof(Enum),
             typeof(byte),
         };
+        public InspectorArea inspectorArea;
         //public treeitem itemtype;
         public int depth = 1;
         //public FieldInfo fieldInfo;
         //public PropertyInfo propertyInfo;
         public FPInfo fpinfo;
-        public comp component;
+        //public comp component;
 
         public bool extended = false;
         
@@ -97,7 +98,7 @@ namespace OrbItProcs {
         public IList<object> masterList;
 
         //root item
-        public InspectorItem(IList<object> masterList, object obj)
+        public InspectorItem(IList<object> masterList, object obj, InspectorArea insArea)
         {
             this.whitespace = "|";
             this.obj = obj;
@@ -105,6 +106,7 @@ namespace OrbItProcs {
             //this.fpinfo = new FPInfo(propertyInfo);
             this.membertype = member_type.none;
             this.children = new List<object>();
+            this.inspectorArea = insArea;
             CheckItemType();
             prefix = "" + ((char)164);
             //System.Console.WriteLine(obj);
@@ -135,6 +137,7 @@ namespace OrbItProcs {
             this.children = new List<object>();
             CheckItemType();
             prefix = "" + ((char)164);
+            this.inspectorArea = parentItem.inspectorArea;
         }
 
         //a dictionary entry
@@ -147,6 +150,8 @@ namespace OrbItProcs {
             this.masterList = masterList;
             this.fpinfo = null;
             this.children = new List<object>();
+            this.inspectorArea = parentItem.inspectorArea;
+
             Type t = parentItem.obj.GetType();
             if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
             {
@@ -173,6 +178,8 @@ namespace OrbItProcs {
             this.masterList = masterList;
             this.fpinfo = null;
             this.children = new List<object>();
+            this.inspectorArea = parentItem.inspectorArea;
+
             Type t = parentItem.obj.GetType();
 
             if (t.GetInterfaces()
@@ -214,9 +221,9 @@ namespace OrbItProcs {
             return ReferenceExists(parent.parentItem, reference);
         }
 
-        public void GenerateChildren()
+        public void GenerateChildren(bool GenerateFields = false)
         {
-            children = GenerateList(obj, this);
+            children = GenerateList(obj, this, GenerateFields);
         }
 
         
@@ -234,87 +241,8 @@ namespace OrbItProcs {
             }
 
         }
-        /*
-        public void RefrestMasterList()
-        {
-            AddMissingChildren();
-            foreach (object o in masterList.ToList())
-            {
-                masterList.Remove(o);
-            }
-            AddChildrenToMasterDeep();
 
-        }
-        public void AddMissingChildren()
-        {
-            if (datatype == data_type.dict)
-            {
-                dynamic dict = obj;
-                foreach (dynamic key in dict.Keys)
-                {
-                    //System.Console.WriteLine(key.ToString());
-                    bool found = false;
-                    foreach (object child in children.ToList())
-                    {
-                        InspectorItem item = (InspectorItem)child;
-                        if (item.key.Equals(key))
-                        {
-                            found = true;
-                        }
-                    }
-                    if (!found)
-                    {
-                        InspectorItem iitem = new InspectorItem(masterList, this, dict[key], key);
-                        if (iitem.CheckForChildren()) iitem.prefix = "+";
-                        InsertItemSorted(children, iitem);
-                    }
-
-                }
-            }
-            else if (datatype == data_type.obj)
-            {
-                List<PropertyInfo> propertyInfos;
-                //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                if (!(this.obj is Component || this.obj is Player))
-                {
-                    propertyInfos = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
-                }
-                else
-                {
-                    propertyInfos = obj.GetType().GetProperties().ToList();
-                }
-
-                foreach (PropertyInfo pinfo in propertyInfos)
-                {
-                    //if (pinfo.PropertyType == typeof(Node)) continue; //don't infinitely recurse on nodes
-                    bool found = false;
-                    foreach (object child in children)
-                    {
-                        if (((InspectorItem)child).fpinfo.Name.Equals(pinfo.Name))
-                        {
-                            found = true;
-                        }
-                    }
-                    if (!found)
-                    {
-                        InspectorItem iitem = new InspectorItem(parentItem.masterList, this, pinfo.GetValue(obj, null), pinfo);
-                        if (iitem.CheckForChildren()) iitem.prefix = "+";
-                        InsertItemSorted(children, iitem);
-                    }
-                }
-                foreach (object child in children)
-                {
-                    InspectorItem item = (InspectorItem)child;
-                    if (item.extended)
-                    {
-                        item.AddMissingChildren();
-                    }
-                }
-            }
-        }
-        */
-
-        public static List<object> GenerateList(object parent, InspectorItem parentItem = null)
+        public static List<object> GenerateList(object parent, InspectorItem parentItem = null, bool GenerateFields = false)
         {
             List<object> list = new List<object>();
             //char a = (char)164;
@@ -371,23 +299,27 @@ namespace OrbItProcs {
                     InsertItemSorted(list, iitem);
                 }
                 ////// FIELDS
-                List<FieldInfo> fieldInfos;
-                //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                if (!(parent is Component || parent is Player || parent is Process))
+                if (parentItem.inspectorArea != null && parentItem.inspectorArea.GenerateFields)
                 {
-                    fieldInfos = parent.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
-                }
-                else
-                {
-                    fieldInfos = parent.GetType().GetFields().ToList();
-                }
+                    List<FieldInfo> fieldInfos;
+                    //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
+                    if (!(parent is Component || parent is Player || parent is Process))
+                    {
+                        fieldInfos = parent.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
+                    }
+                    else
+                    {
+                        fieldInfos = parent.GetType().GetFields().ToList();
+                    }
 
-                foreach (FieldInfo finfo in fieldInfos)
-                {
-                    InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, finfo.GetValue(parent), finfo);
-                    if (iitem.CheckForChildren()) iitem.prefix = "+";
-                    InsertItemSorted(list, iitem);
+                    foreach (FieldInfo finfo in fieldInfos)
+                    {
+                        InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, finfo.GetValue(parent), finfo);
+                        if (iitem.CheckForChildren()) iitem.prefix = "+";
+                        InsertItemSorted(list, iitem);
+                    }
                 }
+                
             }
             //if it's just a normal primitive, it will return an empty list
             if (list.Count > 0) parentItem.prefix = "+";
@@ -578,7 +510,7 @@ namespace OrbItProcs {
                         }
                         if (parentItem != null)
                         {
-                            InspectorItem uplevel = new InspectorItem(masterList, "...");
+                            InspectorItem uplevel = new InspectorItem(masterList, "...", parentItem.inspectorArea);
                             uplevel.parentItem = this;
                             uplevel.membertype = member_type.previouslevel;
                             masterList.Add(uplevel);

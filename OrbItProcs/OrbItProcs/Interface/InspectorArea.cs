@@ -34,6 +34,8 @@ namespace OrbItProcs
         public int ScrollPosition = 0;
         public int InsBoxParentTop = 0;
 
+        public bool GenerateFields { get; set; }
+
         public Manager manager;
         public Control parent;
 
@@ -61,8 +63,9 @@ namespace OrbItProcs
             this.Left = Left;
             this.Top = Top;
 
+            this.GenerateFields = true;
             //this.ActiveInspectorParent = sidebar.ActiveInspectorParent;
-
+            
             Initialize();
             
         }
@@ -187,9 +190,9 @@ namespace OrbItProcs
         {
 
             InsBox.ItemIndex = 0;
-            InspectorItem rootitem = new InspectorItem(InsBox.Items, rootobj);
+            InspectorItem rootitem = new InspectorItem(InsBox.Items, rootobj, this);
             InsBox.rootitem = rootitem;
-            rootitem.GenerateChildren();
+            rootitem.GenerateChildren(GenerateFields);
             ActiveInspectorParent = rootitem;
             
 
@@ -323,9 +326,9 @@ namespace OrbItProcs
             Group activeGroup = sidebar.ActiveGroupFirst;
             activeGroup.ForEachAllSets(delegate(Node o)
             {
-                Node n = (Node)o;
+                Node n = o;
                 if (n == itemspath.ElementAt(0).obj) return;
-                InspectorItem temp = new InspectorItem(null, n);
+                InspectorItem temp = new InspectorItem(null, n, this);
                 int count = 0;
                 foreach (InspectorItem pathitem in itemspath)
                 {
@@ -457,7 +460,7 @@ namespace OrbItProcs
             {
                 Component component = (Component)item.obj;
                 component.active = false;
-                editNode.RemoveComponent(item.component);
+                editNode.RemoveComponent(component.com);
                 item.RemoveChildren();
                 InsBox.Items.Remove(item);
             }

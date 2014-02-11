@@ -223,8 +223,6 @@ namespace OrbItProcs
             dynamic nodedynamic = room.defaultNode;
             List<Func<Node, float>> delList = new List<Func<Node, float>>();
             float total = 0;
-            MethodInfo minfo = typeof(Transform).GetProperty("mass").GetGetMethod();
-            Func<Transform, float> getDel = (Func<Transform, float>)Delegate.CreateDelegate(typeof(Func<Transform, float>), minfo);
 
             Movement movement = new Movement();
 

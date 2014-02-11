@@ -30,7 +30,7 @@ namespace OrbItProcs
 
     public enum comp
     {
-        transform,
+        //transform,
         body,
         queuer,
         linearpull,
@@ -109,10 +109,10 @@ namespace OrbItProcs
             {comp.relativemotion,   typeof(RelativeMotion)      },
             {comp.tether,           typeof(Tether)              },
             {comp.transfer,         typeof(Transfer)            },
-            {comp.transform,        typeof(Transform)           },
             {comp.tree,             typeof(Tree)                },
             {comp.waver,            typeof(Waver)               },
             {comp.wideray,          typeof(WideRay)             },
+          //{comp.transform,        typeof(Transform)           },
           //{comp.lasertimers,      typeof(LaserTimers)         },
           //{comp.middle,           typeof(MaxVel)              },
           //{comp.repel,            typeof(Repel)               },
