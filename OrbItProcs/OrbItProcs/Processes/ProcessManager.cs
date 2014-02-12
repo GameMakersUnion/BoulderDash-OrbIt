@@ -14,6 +14,7 @@ namespace OrbItProcs
         groupselect,
         randomizer,
         axismovement,
+        polygonspawner,
 
     }
 
@@ -63,6 +64,7 @@ namespace OrbItProcs
             processDict.Add(proc.randomizer, new Randomizer());
             processDict.Add(proc.singleselect, new SingleSelect());
             processDict.Add(proc.groupselect, new GroupSelect());
+            processDict.Add(proc.polygonspawner, new PolygonSpawner());
 
             activeInputProcess = processDict[proc.spawnnodes];
 

@@ -150,6 +150,39 @@ namespace OrbItProcs
         {
             return ShapeType.ePolygon;
         }
+
+        //Highlight something and then use [Shift *] to put it in a comment block!---------------------------------
+
+        public void FindCentroid(Vector2[] verts)
+        {
+            int len = verts.Length;
+            if (len < 3) return;
+            float x = 0, y = 0, area = 0;
+            for (int i = 0; i < len; i++)
+            {
+                Vector2 next = verts[(i + 1) % len];
+                float factor = verts[i].X * next.Y - next.X * verts[i].Y;
+                x += (verts[i].X + next.X) * factor;
+                y += (verts[i].Y + next.Y) * factor;
+
+                area += factor;
+            }
+            area /= 2;
+            x /= 6 * area;
+            y /= 6 * area;
+            if (x < 0 || y < 0) System.Diagnostics.Debugger.Break();
+
+            Vector2[] newverts = new Vector2[len];
+            for (int i = 0; i < len; i++)
+            {
+                newverts[i] = new Vector2(verts[i].X - x, verts[i].Y - y);
+            }
+            body.position = new Vector2(x, y);
+            Set(newverts, len);
+            
+
+        }
+
         // half width and half height
         public void SetBox(float hw, float hh)
         {

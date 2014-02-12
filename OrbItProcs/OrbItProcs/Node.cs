@@ -122,12 +122,8 @@ namespace OrbItProcs {
         private float _effectiveRadius = 100f;
         public float effectiveRadius { get { return _effectiveRadius; } set { _effectiveRadius = value; } }
 
-        
-        
         private string _name = "node";
         public string name { get { return _name; } set { _name = value; } }
-
-
 
         private int _sentinel = -10;
         public int sentinelp { get { return _sentinel; } set { _sentinel = value; } }
@@ -183,17 +179,42 @@ namespace OrbItProcs {
             comp.phaseorb
         };
 
-        public Node()
+        //public Node()
+        //{
+        //    nodeCounter++;
+        //    room = Program.getRoom();
+        //    //transform = new Transform(this);
+        //    movement = new Movement(this);
+        //    collision = new Collision(this);
+        //    body = new Body(parent: this);
+        //}
+
+        public Node(ShapeType shapetype = ShapeType.eCircle)
         {
             nodeCounter++;
             room = Program.getRoom();
-            //transform = new Transform(this);
             movement = new Movement(this);
             collision = new Collision(this);
-            body = new Body(parent: this);
+            Shape shape;
+            if (shapetype == ShapeType.eCircle)
+            {
+                shape = new Circle(25);
+            }
+            else if (shapetype == ShapeType.ePolygon)
+            {
+                shape = new Polygon();
+            }
+            else
+            {
+                shape = new Circle(25); //in case there are more shapes
+            }
+
+            body = new Body(shape: shape, parent: this);
+            name = "blankname";
         }
 
-        public Node(Room room1, Dictionary<dynamic, dynamic> userProps = null) : this()
+        public Node(Dictionary<dynamic, dynamic> userProps, ShapeType shapetype = ShapeType.eCircle)
+            : this(shapetype)
         {
             // add the userProps to the props
             foreach (dynamic p in userProps.Keys)
@@ -210,8 +231,8 @@ namespace OrbItProcs {
             SortComponentLists();
             //room = room1;
             //room = Program.getRoom();
-            if (room == null) Console.WriteLine("null");
-            if (Program.getGame() == null) Console.WriteLine("gnull");
+            //if (room == null) Console.WriteLine("null");
+            //if (Program.getGame() == null) Console.WriteLine("gnull");
             if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0,5);
             else name = name + nodeCounter;
 
@@ -266,6 +287,7 @@ namespace OrbItProcs {
                     if (comps.ContainsKey(p)) comps[p].active = userProps[p];
                 }
             }
+            SortComponentLists();
         }
 
         public void addComponent(comp c, bool active, bool overwrite = false)
@@ -615,21 +637,7 @@ namespace OrbItProcs {
                 //Console.WriteLine("fieldtype: " + field.FieldType);
                 if (field.FieldType.ToString().Contains("Dictionary"))
                 {
-                    //Console.WriteLine(field.Name + " is a dictionary.");
-                    if (field.FieldType.ToString().Contains("[System.Object,System.Boolean]"))//must be props
-                    {
-                        int a = 3;
-                        //Dictionary<dynamic, bool> dict = sourceNode.props;
-                        //Dictionary<dynamic, bool> newdict = new Dictionary<dynamic, bool>();
-                        //foreach (dynamic key in dict.Keys)
-                        //{
-                        //    newdict.Add(key, dict[key]);
-                        //    //Console.WriteLine("key: {0}, value: {1}", key, dict[key]);
-                        //}
-                        //field.SetValue(destNode, newdict);
-
-                    }
-                    else if (field.FieldType.ToString().Contains("[OrbItProcs.comp,System.Object]"))//must be comps
+                    if (field.FieldType.ToString().Contains("[OrbItProcs.comp,System.Object]"))//must be comps
                     {
                         //Console.WriteLine("COMPS");
                         //dynamic node = sourceNode;

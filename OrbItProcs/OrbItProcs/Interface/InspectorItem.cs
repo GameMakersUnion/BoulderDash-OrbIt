@@ -30,9 +30,9 @@ namespace OrbItProcs {
     public enum data_type {
         none,
         dict,
+        obj,
         collection,
         list,
-        obj,
         enm,
         boolean,
         integer,
@@ -250,7 +250,7 @@ namespace OrbItProcs {
             //string space = "|";
             //if (parentItem != null) space += parentItem.whitespace;
             //List<FieldInfo> fieldInfos = o.GetType().GetFields().ToList(); //just supporting properties for now
-            data_type dt = data_type.obj; //if this item is the root, we should give it it's real type insteam of assuming it's an object
+            data_type dt = data_type.obj; //if this item is the root, we should give it it's real type in.steam of assuming it's an object
             if (parentItem != null) dt = parentItem.datatype;
 
             if (dt == data_type.collection)
@@ -361,7 +361,8 @@ namespace OrbItProcs {
             }
             for (int i = 0; i < length; i++)
             {
-                if (weight < (int)((InspectorItem)itemList.ElementAt(i)).datatype)
+                int itemweight = (int)((InspectorItem)itemList.ElementAt(i)).datatype;
+                if (weight < itemweight)
                 {
                     itemList.Insert(i, item);
                     return;
@@ -577,7 +578,11 @@ namespace OrbItProcs {
             //Type t = obj.GetType();
             data_type dt = data_type.none;
 
-            if (obj is int)
+            if (obj == null)
+            {
+                //Console.WriteLine("Object was null when checking inspector.item obj type.");
+            }
+            else if (obj is int)
             {
                 dt = data_type.integer;
             }
@@ -597,9 +602,9 @@ namespace OrbItProcs {
             {
                 dt = data_type.tbyte;
             }
-            else if (obj == null)
+            else if (obj.GetType().IsSubclassOf(typeof(Enum)))
             {
-                //Console.WriteLine("Object was null when checking inspectoritem obj type.");
+                dt = data_type.enm;
             }
             else if (obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(Dictionary<,>))
             {

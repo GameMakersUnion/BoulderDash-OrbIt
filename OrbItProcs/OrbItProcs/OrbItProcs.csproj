@@ -189,6 +189,7 @@
     <Compile Include="Player.cs" />
     <Compile Include="Processes\AxisMovement.cs" />
     <Compile Include="Processes\GroupSelect.cs" />
+    <Compile Include="Processes\PolygonSpawner.cs" />
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Processes\ProcessManager.cs" />
     <Compile Include="Framework\QueueInfo.cs" />

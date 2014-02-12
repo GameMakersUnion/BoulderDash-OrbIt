@@ -79,7 +79,7 @@ namespace OrbItProcs
         {
 
             parent.body.effvelocity = parent.body.position - tempPosition;
-            if (!pushable) parent.body.position = tempPosition;
+            if (!pushable && tempPosition != new Vector2(0,0)) parent.body.position = tempPosition;
             tempPosition = parent.body.position;
 
             //parent.body.position.X += parent.body.velocity.X * VelocityModifier;

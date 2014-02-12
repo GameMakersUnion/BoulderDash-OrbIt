@@ -31,7 +31,7 @@ namespace OrbItProcs
         //public int fireamount { get; set; }
         public int firefreqCounter = 0;
 
-        public Player(Vector2 position) : base(Program.getRoom(), userP)
+        public Player(Vector2 position) : base(userP)
         {
             body.position = position;
             body.radius = 64;
@@ -52,7 +52,7 @@ namespace OrbItProcs
                 //{ comp.linearpull, true },
             };
 
-            launchNode = new Node(room, userP);
+            launchNode = new Node(userP);
             //launchNode.comps[comp.laser].lineXScale = 0.5f;
             launchNode.comps[comp.laser].lineYScale = 3f;
             launchNode.GetComponent<MaxVel>().maxvel = 15;

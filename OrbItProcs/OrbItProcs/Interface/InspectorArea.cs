@@ -63,7 +63,7 @@ namespace OrbItProcs
             this.Left = Left;
             this.Top = Top;
 
-            this.GenerateFields = true;
+            this.GenerateFields = false;
             //this.ActiveInspectorParent = sidebar.ActiveInspectorParent;
             
             Initialize();

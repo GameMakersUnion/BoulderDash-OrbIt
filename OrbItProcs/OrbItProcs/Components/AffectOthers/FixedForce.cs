@@ -12,27 +12,6 @@ namespace OrbItProcs
         private Link _link = null;
         public Link link { get { return _link; } set { _link = value; } }
 
-        //public int gridx = 0, gridy = 0;
-
-        //public override bool active
-        //{
-        //    get { return _active; }
-        //    set
-        //    {
-        //        if (parent != null)
-        //        {
-        //            if (!_active && value && parent != parent.room.game.ui.sidebar.ActiveDefaultNode)
-        //            {
-        //            }
-        //            else if (_active && !value)
-        //            {
-        //            }
-        //            _active = value;
-        //            //Console.WriteLine(parent.name);
-        //        }
-        //    }
-        //}
-
         public Vector2 _force = new Vector2(0, 1);
         public Vector2 force { get { return _force; } set { _force = value; } }
 
@@ -59,26 +38,16 @@ namespace OrbItProcs
         public override void AffectOther(Node other)
         {
             if (!active) { return; }
-
-            //if ((!other.comps.ContainsKey(comp.collision) || !other.isCompActive(comp.collision))) { return; }
-
-            //assuming other has been checked for 'active' from caller
             if (exclusions.Contains(other)) return;
-            
+
             if (terminal > 0 && other.body.velocity.ProjectOnto(force).Length() < terminal)
-                other.body.velocity += force * multiplier / 10f;
-
-            
-
+                other.body.ApplyForce(force * multiplier / 10f);//other.body.velocity += force * multiplier / 10f;
         }
         public override void AffectSelf()
         {
         }
-
         public override void Draw(SpriteBatch spritebatch)
         {
         }
-
-        
     }
 }

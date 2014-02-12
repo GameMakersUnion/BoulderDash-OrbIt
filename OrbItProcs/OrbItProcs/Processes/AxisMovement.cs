@@ -24,8 +24,6 @@ namespace OrbItProcs
             addProcessKeyAction("d", KeyCodes.D, OnHold: MoveD);
             addProcessKeyAction("a", KeyCodes.A, OnHold: MoveA);
             addProcessKeyAction("x", KeyCodes.X, OnPress: ToggleMode);
-
-            
         }
 
         public void ToggleMode()

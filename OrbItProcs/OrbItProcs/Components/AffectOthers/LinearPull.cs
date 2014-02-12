@@ -37,12 +37,10 @@ namespace OrbItProcs
             methods = mtypes.affectother;
         }
 
-
         public override void Initialize(Node parent)
         {
             this.parent = parent;
         }
-
 
         public override void AffectOther(Node other)
         {
@@ -59,15 +57,16 @@ namespace OrbItProcs
                 float velX = (float)Math.Cos(angle) * multiplier;
                 float velY = (float)Math.Sin(angle) * multiplier;
                 Vector2 delta = new Vector2(velX, velY);
-                delta /= other.body.mass;
+                //delta /= other.body.mass;
                 if (constant)
-                    other.body.velocity = delta;
+                {
+                    other.body.velocity = delta / other.body.mass;
+                }
                 else
                 {
-                    //Console.WriteLine(delta);
-                    other.body.velocity += delta;
+                    //other.body.velocity += delta;
+                    other.body.ApplyForce(delta);
                 }
-
             }
         }
         public override void AffectSelf()

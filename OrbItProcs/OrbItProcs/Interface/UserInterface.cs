@@ -100,6 +100,11 @@ namespace OrbItProcs {
             {
                 Keybindset.AddProcess(room.processManager.processDict[proc.singleselect], KeySwitchMethod.Overwrite);
             });
+            //
+            Keybindset.Add("polygonspawner", new KeyBundle(KeyCodes.D9), delegate
+            {
+                Keybindset.AddProcess(room.processManager.processDict[proc.polygonspawner], KeySwitchMethod.Overwrite);
+            });
 
             //Keybindset.Add("singleselect", new KeyBundle(Keys.Q),
             //    delegate { room.processManager.activeInputProcess = room.processManager.processDict[proc.singleselect]; });

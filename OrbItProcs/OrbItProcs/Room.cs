@@ -118,8 +118,6 @@ namespace OrbItProcs {
             ObservableHashSet<Node> hs = new ObservableHashSet<Node>();
             ICollection<Node> i = hs;
 
-            
-
             gridsystem.clear();
             gridSystemLines = new List<Rectangle>();
 
@@ -135,8 +133,8 @@ namespace OrbItProcs {
                 gridsystem.insert(n);
             });
 
-            UpdateCollision(); //this collision detection may need to go after the full room (components) update
-
+            //UpdateCollision();
+            
             //game.testing.StartTimer();
             masterGroup.ForEachFullSet(delegate(Node o)
             {
@@ -171,27 +169,7 @@ namespace OrbItProcs {
                 */
             });
 
-            //COLLISION
-            foreach (Manifold m in contacts)
-                m.Initialize();
-            int iterations = 10;
-            for (int ii = 0; ii < iterations; ii++)
-            {
-                foreach (Manifold m in contacts)
-                    m.ApplyImpulse();
-            }
-            foreach(Node n in masterGroup.fullSet)
-            {
-                if (n.movement.active)
-                {
-                    n.movement.IntegrateVelocity();
-                }
-                VMath.Set(ref n.body.force, 0, 0);
-                n.body.torque = 0;
-            }
-            foreach (Manifold m in contacts)
-                m.PositionalCorrection();
-            // \COLLISION
+            UpdateCollision();
             
             if (AfterIteration != null) AfterIteration(this, null);
 
@@ -230,6 +208,28 @@ namespace OrbItProcs {
                     });
                 }
             });
+
+            //COLLISION
+            foreach (Manifold m in contacts)
+                m.Initialize();
+            int iterations = 10;
+            for (int ii = 0; ii < iterations; ii++)
+            {
+                foreach (Manifold m in contacts)
+                    m.ApplyImpulse();
+            }
+            foreach (Node n in masterGroup.fullSet)
+            {
+                if (n.movement.active)
+                {
+                    n.movement.IntegrateVelocity();
+                }
+                VMath.Set(ref n.body.force, 0, 0);
+                n.body.torque = 0;
+            }
+            foreach (Manifold m in contacts)
+                m.PositionalCorrection();
+            // \COLLISION
         }
 
         public void updateTargetNodeGraphic()

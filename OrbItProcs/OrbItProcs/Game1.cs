@@ -279,7 +279,7 @@ namespace OrbItProcs
             #endregion
 
 
-            room.defaultNode = new Node(room, userPr);
+            room.defaultNode = new Node(userPr);
             room.defaultNode.name = "master";
             room.defaultNode.IsDefault = true;
 
@@ -314,7 +314,7 @@ namespace OrbItProcs
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
                     { comp.basicdraw, true }, { node.texture, textures.whitecircle } };
 
-            room.targetNodeGraphic = new Node(room, userPropsTarget);
+            room.targetNodeGraphic = new Node(userPropsTarget);
             room.targetNodeGraphic.name = "TargetNodeGraphic";
 
             frameRateCounter = new FrameRateCounter(this);

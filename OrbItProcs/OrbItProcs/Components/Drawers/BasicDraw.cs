@@ -10,8 +10,9 @@ namespace OrbItProcs
     public class BasicDraw : Component
     {
 
-        //private bool _pushable = true;
-        //public bool pushable { get { return _pushable; } set { _pushable = value; } }
+        private bool _DrawCircle = true;
+        public bool DrawCircle { get { return _DrawCircle; } set { _DrawCircle = value; } }
+
         public BasicDraw() : this(null) { }
         public BasicDraw(Node parent = null) 
         {
@@ -34,10 +35,17 @@ namespace OrbItProcs
         {
             //it would be really cool to have some kind of blending effects so that every combination of components will look diff
 
+            if (parent.body.shape is Polygon)
+            {
+                parent.body.shape.Draw();
+                if (!DrawCircle) return;
+            }
+
             Room room = parent.room;
             float mapzoom = room.mapzoom;
 
             //spritebatch.Draw()
+
             spritebatch.Draw(parent.getTexture(), parent.body.position / mapzoom, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
             
             
