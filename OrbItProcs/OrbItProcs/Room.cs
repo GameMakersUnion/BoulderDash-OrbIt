@@ -29,11 +29,10 @@ namespace OrbItProcs {
 
     public class Room {
 
-
-        public Link linkTest { get; set; }
         public bool DrawLinks { get; set; }
 
-
+        public List<Node> WallNodes { get; set; }
+        public float WallWidth { get; set; }
 
         public ObservableHashSet<Link> _AllActiveLinks = new ObservableHashSet<Link>();
         public ObservableHashSet<Link> AllActiveLinks { get { return _AllActiveLinks; } set { _AllActiveLinks = value; } }
@@ -45,6 +44,7 @@ namespace OrbItProcs {
         public float mapzoom { get; set; }
 
         public GridSystem gridsystem { get; set; }
+        public Level level { get; set; }
         public GridSystem gridsystemCollision { get; set; }
         public HashSet<Node> CollisionSet { get; set; }
         public List<Rectangle> gridSystemLines;
@@ -87,27 +87,65 @@ namespace OrbItProcs {
 
             // grid System
             gridsystem = new GridSystem(this, 40, 15);
+            level = new Level(this, 40, 40, gridsystem.cellWidth, gridsystem.cellHeight);
 
             gridsystemCollision = new GridSystem(this, gridsystem.cellsX, 5);
             CollisionSet = new HashSet<Node>();
             gridSystemLines = new List<Rectangle>();
             DrawLinks = true;
-            
-            
+            WallNodes = new List<Node>();
+            WallWidth = 500;
+            //MakeWalls();
         }
-        /*
-        public void RemoveAllNodes()
+        
+        public void MakeWalls()
         {
-            int c = nodes.Count;
-            
-            for (int i = 0; i < c; i++)
-            {
-                ((Node)nodes.ElementAt(0)).active = false;
-                nodes.Remove(nodes.ElementAt(0));
-            }
-            //game.ui.sidebar.UpdateNodesTitle();
+            //Vector2[] leftVerts = { new Vector2(-WallWidth,0),new Vector2(-WallWidth,game.worldHeight),new Vector2(0,0),new Vector2(0,game.worldHeight) };
+            //Vector2[] rightVerts = { new Vector2(WallWidth, 0), new Vector2(WallWidth, game.worldHeight), new Vector2(0, 0), new Vector2(0, game.worldHeight) };
+            //Vector2[] topVerts = { new Vector2(0, -WallWidth), new Vector2(0, 0), new Vector2(game.worldWidth, -WallWidth), new Vector2(game.worldWidth, 0) };
+            //Vector2[] bottomVerts = { new Vector2(0, WallWidth), new Vector2(0, 0), new Vector2(game.worldWidth, WallWidth), new Vector2(game.worldWidth, 0) };
+            //
+            //Vector2[] testverts = { new Vector2(0, 0), new Vector2(0, 133), new Vector2(133, 133), new Vector2(0, 133) };
+
+            Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>() {
+                    { node.position, new Vector2(0, 0) },
+                    { comp.basicdraw, true },
+                    { comp.collision, true },
+                    //{ comp.movement, true },
+            };
+
+            //Node left = ConstructWallPoly(props, leftVerts, new Vector2(0, 0));
+            //Node right = ConstructWallPoly(props, rightVerts, new Vector2(0, 0));//(game.worldWidth, 0)
+            //Node top = ConstructWallPoly(props, topVerts, new Vector2(0, 0));
+            //Node bottom = ConstructWallPoly(props, bottomVerts, new Vector2(0, 0));//(0, game.worldHeight)
+            Node left = ConstructWallPoly(props, (int)WallWidth / 2, game.worldHeight / 2, new Vector2(-WallWidth / 2, game.worldHeight / 2));
+            Node right = ConstructWallPoly(props, (int)WallWidth / 2, game.worldHeight / 2, new Vector2(game.worldWidth + WallWidth / 2, game.worldHeight / 2));
+            Node top = ConstructWallPoly(props, (game.worldWidth + (int)WallWidth * 2) / 2, (int)WallWidth / 2, new Vector2(game.worldWidth / 2, (int)-WallWidth / 2));
+            Node bottom = ConstructWallPoly(props, (game.worldWidth + (int)WallWidth * 2) / 2, (int)WallWidth / 2, new Vector2(game.worldWidth / 2, game.worldHeight + (int)WallWidth / 2));
+
         }
-        */
+
+        public Node ConstructWallPoly(Dictionary<dynamic, dynamic> props, int hw, int hh, Vector2 pos)
+        {
+            Node n = new Node(props);
+            Polygon poly = new Polygon();
+            poly.body = n.body;
+            poly.body.position = pos;
+            poly.SetBox(hw,hh);
+            //poly.SetOrient(0f);
+            
+            n.body.shape = poly;
+            n.body.SetStatic();
+            n.body.SetOrient(0);
+            //n.body.restitution = 1f;
+
+            //n.movement.pushable = false;
+
+            masterGroup.fullSet.Add(n);
+            WallNodes.Add(n);
+            return n;
+        }
+
         public void Update(GameTime gametime)
         {
             if (contacts.Count > 0) contacts = new List<Manifold>();
@@ -134,6 +172,7 @@ namespace OrbItProcs {
             });
 
             //UpdateCollision();
+            UpdateCollision();
             
             //game.testing.StartTimer();
             masterGroup.ForEachFullSet(delegate(Node o)
@@ -169,17 +208,17 @@ namespace OrbItProcs {
                 */
             });
 
-            UpdateCollision();
             
             if (AfterIteration != null) AfterIteration(this, null);
 
             //addGridSystemLines(gridsystem);
+            addLevelLines(level);
             addBorderLines();
             //colorEffectedNodes();
 
             updateTargetNodeGraphic();
 
-            player1.Update(gametime);
+            //player1.Update(gametime);
         }
 
         public void AddManifold(Manifold m)
@@ -192,12 +231,11 @@ namespace OrbItProcs {
             gridsystemCollision.clear();
             CollisionSet.ToList().ForEach(delegate(Node n) { gridsystemCollision.insert(n); });
             gridsystemCollision.alreadyVisited = new HashSet<Node>();
-            CollisionSet.ToList().ForEach(delegate(Node o)
+            CollisionSet.ToList().ForEach(delegate(Node n)
             {
-                Node n = (Node)o;
                 if (n.active)
                 {
-                    int reach = 12; //update later based on cell size and radius (or polygon size.. maybe based on it's AABB)
+                    int reach = 20; //update later based on cell size and radius (or polygon size.. maybe based on it's AABB)
                     List<Node> retrievedNodes = gridsystemCollision.retrieve(n, reach);
                     gridsystemCollision.alreadyVisited.Add(n);
                     retrievedNodes.ForEach(delegate(Node r)
@@ -216,7 +254,10 @@ namespace OrbItProcs {
             for (int ii = 0; ii < iterations; ii++)
             {
                 foreach (Manifold m in contacts)
+                {
+                    
                     m.ApplyImpulse();
+                }
             }
             foreach (Node n in masterGroup.fullSet)
             {
@@ -275,12 +316,26 @@ namespace OrbItProcs {
         {
             for (int i = 0; i <= gs.cellsX; i++)
             {
-                int x = i * gs.cellwidth;
+                int x = i * gs.cellWidth;
                 gridSystemLines.Add(new Rectangle(x, 0, x, game.worldHeight));
             }
             for (int i = 0; i <= gs.cellsY; i++)
             {
-                int y = i * gs.cellheight;
+                int y = i * gs.cellHeight;
+                gridSystemLines.Add(new Rectangle(0, y, game.worldWidth, y));
+            }
+        }
+
+        public void addLevelLines(Level lev)
+        {
+            for (int i = 0; i <= lev.cellsX; i++)
+            {
+                int x = i * lev.cellWidth;
+                gridSystemLines.Add(new Rectangle(x, 0, x, game.worldHeight));
+            }
+            for (int i = 0; i <= lev.cellsY; i++)
+            {
+                int y = i * lev.cellHeight;
                 gridSystemLines.Add(new Rectangle(0, y, game.worldWidth, y));
             }
         }
@@ -326,9 +381,9 @@ namespace OrbItProcs {
                 }
             }
 
-            masterGroup.ForEachFullSet(delegate(Node o)
+            masterGroup.ForEachFullSet(delegate(Node n)
             {
-                Node n = (Node)o;
+                //Node n = (Node)o;
                 n.Draw(spritebatch);
             });
             int linecount = 0;
@@ -351,7 +406,8 @@ namespace OrbItProcs {
                 linecount++;
             }
 
-            player1.Draw(spritebatch);
+            //player1.Draw(spritebatch);
+            level.Draw(spritebatch);
             
         } 
 
@@ -371,26 +427,6 @@ namespace OrbItProcs {
             PropertiesDict.Add("bulletsOn", false);
             PropertiesDict.Add("enemiesOn", false);
             PropertiesDict.Add("friction", false);
-        }
-
-        public void makelink()
-        {
-            Node n1 = masterGroup.fullSet.ElementAt(0);
-            Node n2 = masterGroup.fullSet.ElementAt(1);
-            Tether t1 = new Tether();
-            t1.activated = true;
-
-            linkTest = new Link(n1,n2,t1);
-        }
-
-        public void grouplink()
-        {
-            Group g0 = masterGroup.FindGroup("[G0]"); 
-            Group g1 = masterGroup.FindGroup("[G1]");
-            Tether t1 = new Tether();
-            t1.active = true;
-            t1.activated = true;
-            linkTest = new Link(g0, g1, t1,formationtype.NearestN);
         }
         
         public void tether()

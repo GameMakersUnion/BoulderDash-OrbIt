@@ -35,7 +35,7 @@ namespace OrbItProcs {
         public Game1 game;
         public Room room;
 
-        public KeyManager Keybindset;
+        public KeyManager keyManager;
 
         
         public static KeyboardState keybState, oldKeyBState;
@@ -63,11 +63,8 @@ namespace OrbItProcs {
 
         public Dictionary<dynamic, dynamic> UserProps;
 
-        //public Node editNode;
         public Node spawnerNode;
         public Sidebar sidebar;
-
-        private Randomizer randomizerProcess;
 
         public UserInterface(Game1 game)
         {
@@ -79,39 +76,9 @@ namespace OrbItProcs {
             zoomfactor = 0.9f;
             GameInputDisabled = false;
             IsPaused = false;
-            this.Keybindset = new KeyManager(this);
-            //
-            Keybindset.Add("spawnnodes", new KeyBundle(KeyCodes.D1), delegate
-            {
-                Keybindset.AddProcess(room.processManager.processDict[proc.spawnnodes],KeySwitchMethod.Overwrite); 
-            });
-            //
-            Keybindset.Add("randomizer", new KeyBundle(KeyCodes.D2), delegate
-            {
-                Keybindset.AddProcess(room.processManager.processDict[proc.randomizer], KeySwitchMethod.Overwrite);
-            });
-            //
-            Keybindset.Add("groupselect", new KeyBundle(KeyCodes.D3), delegate
-            {
-                Keybindset.AddProcess(room.processManager.processDict[proc.groupselect], KeySwitchMethod.Overwrite);
-            });
-            //
-            Keybindset.Add("singleselect", new KeyBundle(KeyCodes.D4), delegate
-            {
-                Keybindset.AddProcess(room.processManager.processDict[proc.singleselect], KeySwitchMethod.Overwrite);
-            });
-            //
-            Keybindset.Add("polygonspawner", new KeyBundle(KeyCodes.D9), delegate
-            {
-                Keybindset.AddProcess(room.processManager.processDict[proc.polygonspawner], KeySwitchMethod.Overwrite);
-            });
+            this.keyManager = new KeyManager(this);
+            
 
-            //Keybindset.Add("singleselect", new KeyBundle(Keys.Q),
-            //    delegate { room.processManager.activeInputProcess = room.processManager.processDict[proc.singleselect]; });
-            //Keybindset.Add("groupselect", new KeyBundle(Keys.W),
-            //    delegate { room.processManager.activeInputProcess = room.processManager.processDict[proc.groupselect]; });
-            //Keybindset.Add("randomizer", new KeyBundle(Keys.E),
-            //    delegate { room.processManager.activeInputProcess = room.processManager.processDict[proc.randomizer]; });
 
             groupSelectSet = (room.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet; //syncs group select set to process set
         }
@@ -122,7 +89,7 @@ namespace OrbItProcs {
             ProcessMouse();
 
             //game.testing.KeyManagerTest(() => Keybindset.Update());
-            Keybindset.Update();
+            keyManager.Update();
 
             //randomizerProcess = new Randomizer();
             

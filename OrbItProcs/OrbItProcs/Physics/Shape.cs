@@ -141,8 +141,11 @@ namespace OrbItProcs
             //could optimize to use the last vertex on the next iteration
             for (int i = 0; i < vertexCount; i++)
             {
-                Vector2 v1 = body.position + u * vertices[i];
-                Vector2 v2 = body.position + u * vertices[(i + 1) % vertexCount];
+                Vector2 a1 = u * vertices[i];
+                Vector2 a2 = u * vertices[(i + 1) % vertexCount];
+
+                Vector2 v1 = body.position + a1;//u * vertices[i];
+                Vector2 v2 = body.position + a2;//u * vertices[(i + 1) % vertexCount];
                 Utils.DrawLine(body.parent.room, v1, v2, 1f, body.color);
             }
         }
@@ -428,10 +431,11 @@ namespace OrbItProcs
             C.Set(A.Col1 + B.Col1, A.Col2 + B.Col2);
             return C;
         }
-        // not entirely sure this is right; may need to switch m.Col1.Y -> x.Co2.X ...
+        // switched them and collision is working properly
         public static Vector2 operator *(Mat22 m, Vector2 v)
         {
-            return new Vector2(m.Col1.X * v.X + m.Col1.Y * v.Y, m.Col2.X * v.X + m.Col2.Y * v.Y);
+            //return new Vector2(m.Col1.X * v.X + m.Col1.Y * v.Y, m.Col2.X * v.X + m.Col2.Y * v.Y);
+            return new Vector2(m.Col1.X * v.X + m.Col2.X * v.Y, m.Col1.Y * v.X + m.Col2.Y * v.Y);
         }
 
         public Mat22 Transpose()

@@ -28,7 +28,7 @@ namespace OrbItProcs
 
         public Vector2 tempPosition = new Vector2(0, 0);
         
-        private movemode _movementmode = movemode.wallbounce;
+        private movemode _movementmode = movemode.free;
         public movemode movementmode { get { return _movementmode; } set { _movementmode = value; } }
 
         private int forcecount = 0;
@@ -77,7 +77,6 @@ namespace OrbItProcs
 
         public override void AffectSelf()
         {
-
             parent.body.effvelocity = parent.body.position - tempPosition;
             if (!pushable && tempPosition != new Vector2(0,0)) parent.body.position = tempPosition;
             tempPosition = parent.body.position;
@@ -103,6 +102,7 @@ namespace OrbItProcs
 
         public override void Draw(SpriteBatch spritebatch)
         {
+            //C3.XNA.Primitives2D.DrawCircle()
         }
 
         public void fallOff()

@@ -131,6 +131,13 @@ namespace OrbItProcs
             this.inertia = this.inertia;
         }
 
+        public void SetShape(Shape shape)
+        {
+            shape.body = this;
+            this.shape = shape;
+            
+        }
+
         public void ApplyForce(Vector2 f)
         {
             force += f;
@@ -139,9 +146,9 @@ namespace OrbItProcs
         {
             //
             velocity += invmass * impulse;
-            if (float.IsNaN(velocity.X)) System.Diagnostics.Debugger.Break();
+            //if (float.IsNaN(velocity.X)) System.Diagnostics.Debugger.Break();
             angularVelocity += invinertia * (float)VMath.Cross(contactVector, impulse);
-            if (float.IsInfinity(angularVelocity)) System.Diagnostics.Debugger.Break();
+            //if (float.IsInfinity(angularVelocity)) System.Diagnostics.Debugger.Break();
         }
 
         public void SetStatic(float newInerta = 0, float newMass = 0)

@@ -179,17 +179,18 @@ namespace OrbItProcs {
             comp.phaseorb
         };
 
-        //public Node()
-        //{
-        //    nodeCounter++;
-        //    room = Program.getRoom();
-        //    //transform = new Transform(this);
-        //    movement = new Movement(this);
-        //    collision = new Collision(this);
-        //    body = new Body(parent: this);
-        //}
+        public Node()
+        {
+            nodeCounter++;
+            room = Program.getRoom();
+            //transform = new Transform(this);
+            movement = new Movement(this);
+            collision = new Collision(this);
+            body = new Body(parent: this);
+            name = "blankname";
+        }
 
-        public Node(ShapeType shapetype = ShapeType.eCircle)
+        public Node(ShapeType shapetype)
         {
             nodeCounter++;
             room = Program.getRoom();
@@ -482,7 +483,7 @@ namespace OrbItProcs {
 
                 returnObjectsFinal = room.gridsystem.retrieve(this);
 
-                int cellReach = (int)(body.radius * 2) / room.gridsystem.cellwidth * 2;
+                int cellReach = (int)(body.radius * 2) / room.gridsystem.cellWidth * 2;
 
 
                 if (comps.ContainsKey(comp.flow) && comps[comp.flow].active)

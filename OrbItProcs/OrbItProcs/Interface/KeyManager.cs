@@ -782,14 +782,15 @@ namespace OrbItProcs
         TempOverwrite,
     }
 
-
+    //================================================== KEY MANAGER ==========================================
     public class KeyManager
     {
         public Dictionary<KeyBundle, KeyAction> PressedBundles = new Dictionary<KeyBundle, KeyAction>();
 
         public UserInterface ui;
 
-        public Process ActiveInputProcess = null;
+        public List<Process> PermanentProcesses = new List<Process>();
+        public Process TemporaryProcess = null;
 
         public Dictionary<KeyBundle, KeyAction> _Keybinds = new Dictionary<KeyBundle, KeyAction>();
         public Dictionary<KeyBundle, KeyAction> Keybinds { get { return _Keybinds; } set { _Keybinds = value; } }
@@ -797,18 +798,12 @@ namespace OrbItProcs
         public Stack<KeyCodes> PressedKeysS = new Stack<KeyCodes>(); //max of three KeyMouse detected at a time
         public List<KeyCodes> PressedKeys = new List<KeyCodes>();
 
-        //public HashSet<Keys> AllKeys = new HashSet<Keys>();
-        //public HashSet<Mouses> AllMouses = new HashSet<Mouses>();
-        //public HashSet<KeyMouse> AllModKeyMouses = new HashSet<KeyMouse>();
-
-
         public KeyboardState newKeyboardState, oldKeyboardState;
 
         public MouseState newMouseState, oldMouseState;
 
-        //public Dictionary<Mouses, dynamic> _Mousebinds = new Dictionary<Mouses, dynamic>();
-        //public Dictionary<Mouses, dynamic> Mousebinds { get { return _Mousebinds; } set { _Mousebinds = value; } }
-
+        //don't call me generic
+        public Dictionary<Process, List<Tuple<KeyBundle, KeyAction>>> ReplacedBundles = new Dictionary<Process, List<Tuple<KeyBundle, KeyAction>>>();
 
         public KeyManager(UserInterface ui, Dictionary<KeyBundle, KeyAction> Keybinds = null)
         {
@@ -822,17 +817,6 @@ namespace OrbItProcs
                 this.Keybinds = Keybinds;
                 
             }
-
-            //Add(new KeyBundle(KeyCodes.LeftControl, KeyCodes.R), new KeyAction("cr", action: delegate { Console.WriteLine("Ctrl+R!!"); }), true);
-            //Add(new KeyBundle(KeyCodes.LeftControl, KeyCodes.LeftAlt, KeyCodes.Q), delegate { Console.WriteLine("Ctrl+Alt+Q!!"); }, true);
-
-
-            //foreach (Keys k in Enum.GetValues(typeof(Keys)))
-            //{
-            //    AllKeys.Add(k);
-            //} //uncomment later - e harley
-            
-
         }
 
         public void Add(string name, KeyBundle bundle, Action action, Action holdAction = null)
@@ -865,8 +849,76 @@ namespace OrbItProcs
                     Keybinds[p.processKeyActions[a]] = a;
                 }
             }
-
         }
+        public void AddProcess(Process p, bool Temporary = true)
+        {
+            if (p == null) throw new SystemException("Process parameter was null"); //well ya see kids...
+            if (p.processKeyActions == null) throw new SystemException("Process parameter had no keyactions");
+
+            if (Temporary)
+            {
+                if (TemporaryProcess != p)
+                {
+                    //remove current temporary process and reinstate the keybinds it had replaced when it was added
+                    RemoveTemporaryProcess();
+
+                    ReplacedBundles[p] = new List<Tuple<KeyBundle, KeyAction>>();
+                    foreach (KeyAction a in p.processKeyActions.Keys)
+                    {
+
+                        //store previous keyaction in replacedbundles
+                        if (Keybinds.ContainsKey(p.processKeyActions[a]))
+                        {
+                            ReplacedBundles[p].Add(new Tuple<KeyBundle, KeyAction>(p.processKeyActions[a], Keybinds[p.processKeyActions[a]]));
+                        }
+                        //insert new keybind
+                        Keybinds[p.processKeyActions[a]] = a;
+                    }
+                    TemporaryProcess = p;
+                }
+            }
+            else //permanent process
+            {
+                if (!PermanentProcesses.Contains(p))
+                {
+                    PermanentProcesses.Add(p);
+                    foreach (KeyAction a in p.processKeyActions.Keys)
+                    {
+                        //insert new keybind
+                        Keybinds[p.processKeyActions[a]] = a;
+                    }
+                }
+            }
+        }
+
+        public void RemoveTemporaryProcess()
+        {
+            if (TemporaryProcess == null) return;//throw new SystemException("Temporary process was null");
+
+            foreach(KeyAction ka in TemporaryProcess.processKeyActions.Keys)
+            {
+                KeyBundle kb = TemporaryProcess.processKeyActions[ka];
+                if (Keybinds.ContainsKey(kb) && ka == Keybinds[kb])
+                {
+                    Keybinds.Remove(TemporaryProcess.processKeyActions[ka]);
+                }
+            }
+            if (ReplacedBundles.ContainsKey(TemporaryProcess))
+            {
+                List<Tuple<KeyBundle, KeyAction>> list = ReplacedBundles[TemporaryProcess];
+                foreach(Tuple<KeyBundle, KeyAction> tup in list)
+                {
+                    if (Keybinds.ContainsKey(tup.Item1)) continue; //maybe shouldn't do this; doesn't replace if something took the slot
+                    Keybinds.Add(tup.Item1, tup.Item2);
+                }
+            }
+
+            ReplacedBundles.Remove(TemporaryProcess);
+            TemporaryProcess = null; //maybe disable temporary process? or should we let caller do that
+            
+        }
+
+
         // processes can now spawn their own keyactions
         //public void Add(KeyBundle keyarr, Process process, bool AddBothCombinations = false)
         //{

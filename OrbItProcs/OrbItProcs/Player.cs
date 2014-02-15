@@ -38,30 +38,32 @@ namespace OrbItProcs
             accel = new Vector2(0, 0);
             maxvel = 20f;
             maxaccel = 3f;
-            absaccel = 0.1f;
+            absaccel = 0.2f;
             friction = 0.01f;
             QuickStop = false;
 
-            var userP = new Dictionary<dynamic, dynamic>()
+            var bulletProps = new Dictionary<dynamic, dynamic>()
             {
                 { node.texture, textures.whitecircle },
                 { comp.movement, true },
+                //{ comp.collision, true },
                 { comp.basicdraw, true },
                 { comp.maxvel, true },
                 { comp.laser, true },
                 //{ comp.linearpull, true },
             };
 
-            launchNode = new Node(userP);
+            launchNode = new Node(bulletProps);
             //launchNode.comps[comp.laser].lineXScale = 0.5f;
             launchNode.comps[comp.laser].lineYScale = 3f;
             launchNode.GetComponent<MaxVel>().maxvel = 15;
             bulletlife = 1500;
             firefreq = 1;
 
-            room.game.ui.Keybindset.addProcessKeyAction("firebullet", KeyCodes.LeftClick, OnPress: FireNode);
-            room.game.ui.Keybindset.addProcessKeyAction("firebullets", KeyCodes.RightClick, OnHold: FireNodes);
+            room.game.ui.keyManager.addProcessKeyAction("firebullet", KeyCodes.LeftClick, OnPress: FireNode);
+            room.game.ui.keyManager.addProcessKeyAction("firebullets", KeyCodes.RightClick, OnHold: FireNodes);
 
+            room.masterGroup.fullSet.Add(this);
         }
 
         public override void Update(GameTime gametime)
@@ -106,28 +108,12 @@ namespace OrbItProcs
             }
             else
             {
-                //if (accel.X > 0 && transform.velocity.X < 0) transform.velocity.X = 0;
-                //else if (accel.X < 0 && transform.velocity.X > 0) transform.velocity.X = 0;
-                //
-                //if (accel.Y > 0 && transform.velocity.Y < 0) transform.velocity.Y = 0;
-                //else if (accel.Y < 0 && transform.velocity.Y > 0) transform.velocity.Y = 0;
 
-                //if (accel.X == 0 && accel.Y == 0 && (transform.velocity.X != 0 || transform.velocity.Y != 0))
-                //{
-                //    accel = transform.velocity;
-                //    accel.Normalize();
-                //    accel *= -friction;
-                //}
                 if ((body.velocity.X != 0 || body.velocity.Y != 0))
                 {
-                    //accel = transform.velocity;
-                    //accel.Normalize();
-                    //accel *= -friction;
-
                     accel += body.velocity * -friction;
                 }
 
-                //accel *= friction;
             }
             
 
@@ -138,7 +124,8 @@ namespace OrbItProcs
 
             MaxVelocityUpdate();
 
-            body.velocity += accel;
+            //body.velocity += accel;
+            body.ApplyForce(accel);
 
             if (UserInterface.keybState.IsKeyDown(Keys.Z))
             {

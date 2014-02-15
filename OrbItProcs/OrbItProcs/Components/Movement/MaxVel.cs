@@ -28,6 +28,11 @@ namespace OrbItProcs
             this.parent = parent;
         }
 
+        public override void OnSpawn()
+        {
+            if (active) AffectSelf();
+        }
+
         public override void AffectSelf()
         {
             if ((Math.Pow(parent.body.velocity.X, 2) + Math.Pow(parent.body.velocity.Y, 2)) > Math.Pow(maxvel, 2))

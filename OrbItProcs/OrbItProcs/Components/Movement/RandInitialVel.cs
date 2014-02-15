@@ -85,6 +85,7 @@ namespace OrbItProcs
         }
         public override void OnSpawn()
         {
+            if (!active) return;
             //parent.transform.velocity = new Vector2(0, 0);
             Initialize(parent);
             return;

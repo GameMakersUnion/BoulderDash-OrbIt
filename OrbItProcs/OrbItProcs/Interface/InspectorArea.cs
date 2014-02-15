@@ -42,6 +42,7 @@ namespace OrbItProcs
         //public GroupBox backPanel;
         public Panel backPanel;
         public Label lblInspectorAddress;
+        public Button btnToggleFields;
         public InspectorBox InsBox;
         public PropertyEditPanel propertyEditPanel;
         public ContextMenu contextMenuInsBox;
@@ -95,7 +96,7 @@ namespace OrbItProcs
             lblInspectorAddress.Parent = backPanel;
             lblInspectorAddress.Top = HeightCounter; //HeightCounter += VertPadding + lblInspectorAddress.Height + 10;
             lblInspectorAddress.Width = Width - WidthReduction;
-            lblInspectorAddress.Height = lblInspectorAddress.Height * 2; HeightCounter += lblInspectorAddress.Height;
+            lblInspectorAddress.Height = lblInspectorAddress.Height * 2; //HeightCounter += lblInspectorAddress.Height;
             //lblInspectorAddress.Left = LeftPadding;
             //lblInspectorAddress.Anchor = Anchors.Left;
             lblInspectorAddress.Text = ">No Node Selected<\u2190";
@@ -111,6 +112,21 @@ namespace OrbItProcs
                 changed = false;
             };
             #endregion
+            btnToggleFields = new Button(manager);
+            btnToggleFields.Init();
+            btnToggleFields.Parent = backPanel;
+            btnToggleFields.Left = LeftPadding + backPanel.Width - 30;
+            btnToggleFields.Width = 15;
+            btnToggleFields.Height = 20;
+            btnToggleFields.Top = HeightCounter + 10; HeightCounter += lblInspectorAddress.Height;
+            btnToggleFields.Text = "F";
+            btnToggleFields.Click += delegate(object s, EventArgs e)
+            {
+                this.GenerateFields = !this.GenerateFields;
+                //ResetInspectorBox(ActiveInspectorParent.obj);
+                ActiveInspectorParent.DoubleClickItem(this);
+            };
+
 
             #region  /// Component List ///
             InsBox = new InspectorBox(manager);

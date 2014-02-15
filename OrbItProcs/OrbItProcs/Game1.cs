@@ -335,15 +335,14 @@ namespace OrbItProcs
             room.player1 = new Player(new Vector2(200, 200));
             room.processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
 
-            ui.Keybindset.Add("axismovement", new KeyBundle(KeyCodes.D0), delegate
-            {
-                ui.Keybindset.AddProcess(room.processManager.processDict[proc.axismovement], KeySwitchMethod.Overwrite);
-            });
+            room.processManager.SetProcessKeybinds(ui.keyManager);
 
             //byte b = 255;
             //float f = b;
 
+            room.MakeWalls();
 
+            
             
         }
 
@@ -576,6 +575,9 @@ namespace OrbItProcs
             newNode.name = activegroup.Name + Node.nodeCounter;
 
             newNode.acceptUserProps(userProperties);
+
+            AssignColor(activegroup, newNode);
+
             newNode.OnSpawn();
             if (afterSpawnAction != null) afterSpawnAction(newNode);
             
@@ -590,6 +592,19 @@ namespace OrbItProcs
             
 
             
+            
+            return newNode;
+        }
+        public void spawnNode(int worldMouseX, int worldMouseY)
+        {
+            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
+                                { node.position, new Vector2(worldMouseX,worldMouseY) },
+            };
+            spawnNode(userP);
+        }
+
+        public void AssignColor(Group activegroup, Node newNode)
+        {
             if (Group.IntToColor.ContainsKey(activegroup.GroupId))
             {
                 newNode.body.color = Group.IntToColor[activegroup.GroupId];
@@ -610,18 +625,11 @@ namespace OrbItProcs
                 Color xnacol = new Color(syscolor.R, syscolor.G, syscolor.B, syscolor.A);
                 newNode.body.color = xnacol;
             }
-            return newNode;
-        }
-        public void spawnNode(int worldMouseX, int worldMouseY)
-        {
-            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
-                                { node.position, new Vector2(worldMouseX,worldMouseY) },
-            };
-            spawnNode(userP);
         }
 
         public void saveNode(Node node, string name)
         {
+            if (name.Equals("") || node == null) return;
 
             name = name.Trim();
             string filename = "Presets//Nodes//" + name + ".xml";

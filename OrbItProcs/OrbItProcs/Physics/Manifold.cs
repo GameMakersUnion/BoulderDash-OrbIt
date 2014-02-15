@@ -65,6 +65,7 @@ namespace OrbItProcs
                 //relative velocity along the normal
                 double contactVel = Vector2.Dot(rv, normal);
                 //do not resolve if velocities are seperating
+
                 if (contactVel > 0)
                     return;
 

@@ -97,6 +97,7 @@ namespace OrbItProcs
 
         public override void OnSpawn()
         {
+            if (!active) return;
             if (parent.comps.ContainsKey(comp.queuer))
                 parent.comps[comp.queuer].positions = metapositions;
         }

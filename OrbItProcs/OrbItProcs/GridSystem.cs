@@ -10,8 +10,8 @@ namespace OrbItProcs {
     public class GridSystem {
         public Room room;
         public int cellsX, cellsY;
-        public int cellwidth, cellheight;
-        public int gridwidth, gridheight;
+        public int cellWidth, cellHeight;
+        public int gridWidth, gridHeight;
         public List<Node>[,] grid;
         public HashSet<Node> alreadyVisited;
         private int _cellReach;
@@ -21,13 +21,13 @@ namespace OrbItProcs {
         public GridSystem(Room room, int gridwidth, int gridheight, int cellsX, int cellsY, int cellReach = 4)
         {
             this.room = room;
-            this.gridwidth = gridwidth;
-            this.gridheight = gridheight;
+            this.gridWidth = gridwidth;
+            this.gridHeight = gridheight;
             this.cellsX = cellsX;
             this.cellsY = cellsY;
             this.cellReach = cellReach;
-            cellwidth = gridwidth / cellsX;
-            cellheight = gridheight / cellsY;
+            cellWidth = gridwidth / cellsX;
+            cellHeight = gridheight / cellsY;
             grid = new List<Node>[cellsX, cellsY];
             for (int i = 0; i < cellsX; i++)
             {
@@ -41,14 +41,14 @@ namespace OrbItProcs {
         public GridSystem(Room room, int cellsX, int cellReach = 4)
         {
             this.room = room;
-            this.gridwidth = room.game.worldWidth;
-            this.gridheight = room.game.worldHeight;
+            this.gridWidth = room.game.worldWidth;
+            this.gridHeight = room.game.worldHeight;
             this.cellsX = cellsX;
             
             this.cellReach = cellReach;
-            cellwidth = gridwidth / cellsX;
-            cellheight = cellwidth;
-            this.cellsY = gridheight / cellheight;
+            cellWidth = gridWidth / cellsX;
+            cellHeight = cellWidth;
+            this.cellsY = gridHeight / cellHeight;
             //cellheight = gridheight / cellsY;
             alreadyVisited = new HashSet<Node>();
             grid = new List<Node>[cellsX, cellsY];
@@ -64,14 +64,14 @@ namespace OrbItProcs {
         public GridSystem(Room room, int cellsX, int cellsY, int cellReach = 4)
         {
             this.room = room;
-            this.gridwidth = room.game.worldWidth;
-            this.gridheight = room.game.worldHeight;
+            this.gridWidth = room.game.worldWidth;
+            this.gridHeight = room.game.worldHeight;
             this.cellsX = cellsX;
             this.cellsY = cellsY;
 
             this.cellReach = cellReach;
-            cellwidth = gridwidth / cellsX;
-            cellheight = gridheight / cellsY;
+            cellWidth = gridWidth / cellsX;
+            cellHeight = gridHeight / cellsY;
             alreadyVisited = new HashSet<Node>();
             //cellheight = gridheight / cellsY;
             grid = new List<Node>[cellsX, cellsY];
@@ -90,23 +90,6 @@ namespace OrbItProcs {
             //if (node == room.game.targetNode) Console.WriteLine("target indexs: {0} {1}",indexs.Item1,indexs.Item2);
             grid[indexs.Item1, indexs.Item2].Add(node);
         }
-
-        //public void remove(Node node)
-        //{
-        //    if (node != null && node.collision != null)
-        //    {
-        //        int x = node.collision.gridx;
-        //        int y = node.collision.gridy;
-        //        if (grid[x,y] != null)
-        //        {
-        //            grid[x, y].Remove(node);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Node not found in gridsystem while removing");
-        //    }
-        //}
 
         public List<Node> retrieve(Node node, int reach = -1)
         {
@@ -178,11 +161,11 @@ namespace OrbItProcs {
             Vector2 pos = new Vector2(node.body.position.X, node.body.position.Y);
             int x = (int)node.body.position.X;
             int y = (int)node.body.position.Y;
-            int gridx = (int)pos.X - ((int)pos.X % cellwidth);
-            x = gridx / cellwidth;
+            int gridx = (int)pos.X - ((int)pos.X % cellWidth);
+            x = gridx / cellWidth;
             //if ((int)pos.X - gridx > gridx + cellwidth - (int)node.transform.radius) x++;
-            int gridy = (int)pos.Y - ((int)pos.Y % cellheight);
-            y = gridy / cellheight;
+            int gridy = (int)pos.Y - ((int)pos.Y % cellHeight);
+            y = gridy / cellHeight;
             //if ((int)pos.Y - gridy > gridy + cellheight - (int)node.transform.radius) y++;
 
             if (x > cellsX - 1) x = cellsX - 1;

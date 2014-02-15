@@ -84,6 +84,13 @@ namespace OrbItProcs
 
                 Manifold m = new Manifold(parent.body, other.body);
                 m.Solve();
+                //Console.Write("{0}:", DateTime.Now.Millisecond);
+                //foreach (Vector2 c in m.contacts)
+                //{
+                //    Console.Write("{0}c: {1}",m.contact_count,c);
+                //    
+                //}
+                //Console.WriteLine();
                 if (m.contact_count > 0)
                     parent.room.AddManifold(m);
             }
@@ -139,7 +146,7 @@ namespace OrbItProcs
             Circle A = (Circle)a.shape;
             Polygon B = (Polygon)b.shape;
 
-            m.contact_count = 0;
+            m.contact_count = 0;//m.contact_count = 0;
 
             // Transform circle center to Polygon model space
             Vector2 center = a.position;
@@ -154,7 +161,11 @@ namespace OrbItProcs
                 double s = Vector2.Dot(B.normals[i], center - B.vertices[i]);
 
                 if (s > A.radius)
+                {
+                    //Console.Write("{0}:", DateTime.Now.Millisecond);
+                    //Console.WriteLine("Exit at 0");
                     return;
+                }
 
                 if (s > separation)
                 {
@@ -175,7 +186,11 @@ namespace OrbItProcs
                 m.normal = -(B.u * B.normals[faceNormal]);
                 m.contacts[0] = VMath.MultVectDouble(m.normal, A.radius) + a.position;
                 m.penetration = A.radius;
-                return;
+                {
+                    //Console.Write("{0}:", DateTime.Now.Millisecond);
+                    //Console.WriteLine("Exit at 1");
+                    return;
+                }
             }
 
             // Determine which voronoi region of the edge center of circle lies within
@@ -187,7 +202,11 @@ namespace OrbItProcs
             if (dot1 <= 0.0f)
             {
                 if (Vector2.DistanceSquared(center, v1) > A.radius * A.radius)
+                {
+                    //Console.Write("{0}:", DateTime.Now.Millisecond);
+                    //Console.WriteLine("Exit at 2");
                     return;
+                }
 
                 m.contact_count = 1;
                 Vector2 n = v1 - center;
@@ -202,7 +221,11 @@ namespace OrbItProcs
             else if (dot2 <= 0.0f)
             {
                 if (Vector2.DistanceSquared(center, v2) > A.radius * A.radius)
+                {
+                    //Console.Write("{0}:", DateTime.Now.Millisecond);
+                    //Console.WriteLine("Exit at 3");
                     return;
+                }
 
                 m.contact_count = 1;
                 Vector2 n = v2 - center;
@@ -218,7 +241,11 @@ namespace OrbItProcs
             {
                 Vector2 n = B.normals[faceNormal];
                 if (Vector2.Dot(center - v1, n) > A.radius)
+                {
+                    Console.Write("{0}:", DateTime.Now.Millisecond);
+                    Console.WriteLine("Exit at 4");
                     return;
+                }
 
                 n = B.u * n;
                 m.normal = -n;

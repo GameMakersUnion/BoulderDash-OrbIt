@@ -70,72 +70,40 @@ namespace OrbItProcs
 
             //room.game.ui.
         }
-        /*
-        public void PollKeyboard()
-        {
-            if (activeInputProcess != null)
-            {
-                activeInputProcess.InvokeKeyEvent(null);
-            }
-        }
-        
-        public void PollMouse(MouseState mS, MouseState oMS)
-        {
-            //return;
-            //left button
-            if (mS.LeftButton == ButtonState.Pressed && oMS.LeftButton == ButtonState.Released)
-            {
-                if (activeInputProcess != null)
-                    activeInputProcess.InvokeLeftClick(ButtonState.Pressed);
-            }
-            else if (mS.LeftButton == ButtonState.Released && oMS.LeftButton == ButtonState.Pressed)
-            {
-                if (activeInputProcess != null)
-                    activeInputProcess.InvokeLeftClick(ButtonState.Released);
-            }
-            //right button
-            if (mS.RightButton == ButtonState.Pressed && oMS.RightButton == ButtonState.Released)
-            {
-                if (activeInputProcess != null)
-                    activeInputProcess.InvokeRightClick(ButtonState.Pressed);
-            }
-            else if (mS.RightButton == ButtonState.Released && oMS.RightButton == ButtonState.Pressed)
-            {
-                if (activeInputProcess != null)
-                    activeInputProcess.InvokeRightClick(ButtonState.Released);
-            }
-            //middle button
-            if (mS.MiddleButton == ButtonState.Pressed && oMS.MiddleButton == ButtonState.Released)
-            {
-                if (activeInputProcess != null)
-                    activeInputProcess.InvokeMiddleClick(ButtonState.Pressed);
-            }
-            else if (mS.MiddleButton == ButtonState.Released && oMS.MiddleButton == ButtonState.Pressed)
-            {
-                if (activeInputProcess != null)
-                    activeInputProcess.InvokeMiddleClick(ButtonState.Released);
-            }
-            //scroll
-            if (mS.ScrollWheelValue < oMS.ScrollWheelValue)
-            {
-                if (activeInputProcess != null)
-                    activeInputProcess.InvokeScroll(1);
-            }
-            else if (mS.ScrollWheelValue > oMS.ScrollWheelValue)
-            {
-                if (activeInputProcess != null)
-                    activeInputProcess.InvokeScroll(-1);
-            }
-        }
-        */
 
-        /*public void SetInputStates(MouseState mS, MouseState oMS, KeyboardState kS, KeyboardState oKS)
+        public void SetProcessKeybinds(KeyManager Keybindset)
         {
-            mouseState = mS;
-            oldMouseState = oMS;
-            keyState = kS;
-            oldKeyState = oKS;
-        }*/
+            //
+            Keybindset.Add("spawnnodes", new KeyBundle(KeyCodes.D1), delegate
+            {
+                Keybindset.AddProcess(room.processManager.processDict[proc.spawnnodes]);//, KeySwitchMethod.Overwrite);
+            });
+            //
+            Keybindset.Add("randomizer", new KeyBundle(KeyCodes.D2), delegate
+            {
+                Keybindset.AddProcess(room.processManager.processDict[proc.randomizer]);//, KeySwitchMethod.Overwrite);
+            });
+            //
+            Keybindset.Add("groupselect", new KeyBundle(KeyCodes.D3), delegate
+            {
+                Keybindset.AddProcess(room.processManager.processDict[proc.groupselect]);//, KeySwitchMethod.Overwrite);
+            });
+            //
+            Keybindset.Add("singleselect", new KeyBundle(KeyCodes.D4), delegate
+            {
+                Keybindset.AddProcess(room.processManager.processDict[proc.singleselect]);//, KeySwitchMethod.Overwrite);
+            });
+            //
+            Keybindset.Add("polygonspawner", new KeyBundle(KeyCodes.D9), delegate
+            {
+                Keybindset.AddProcess(room.processManager.processDict[proc.polygonspawner]);//, KeySwitchMethod.Overwrite);
+            });
+            //
+            Keybindset.Add("axismovement", new KeyBundle(KeyCodes.D0), delegate
+            {
+                Keybindset.AddProcess(room.processManager.processDict[proc.axismovement]);//, KeySwitchMethod.Overwrite);
+            });
+        }
 
         public void Update()
         {
