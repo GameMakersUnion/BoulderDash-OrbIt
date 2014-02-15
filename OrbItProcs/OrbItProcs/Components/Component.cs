@@ -105,6 +105,10 @@ namespace OrbItProcs
                if (property.PropertyType == typeof(ModifierInfo)) continue;
                if (property.PropertyType == typeof(Node)) continue;
                //Console.WriteLine(destComp.GetType().ToString() + property.Name);
+               if (property.Name == "pshape")
+               {
+                   property.SetValue(destComp, ((Shape)property.GetValue(sourceComp, null)).Clone(), null);
+               }
                property.SetValue(destComp, property.GetValue(sourceComp, null), null);
            }
            foreach (FieldInfo field in fields)

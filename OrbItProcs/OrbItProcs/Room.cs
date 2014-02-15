@@ -212,7 +212,7 @@ namespace OrbItProcs {
             if (AfterIteration != null) AfterIteration(this, null);
 
             //addGridSystemLines(gridsystem);
-            addLevelLines(level);
+            //addLevelLines(level);
             addBorderLines();
             //colorEffectedNodes();
 

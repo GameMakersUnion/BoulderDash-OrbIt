@@ -12,11 +12,12 @@ namespace OrbItProcs
         public Color color = new Color(255, 255, 255);
         private textures _texture = textures.whitecircle;
 
-        private Shape _shape;
-        public Shape shape { get { return _shape; } set { _shape = value; } }
+        public Shape shape;
+        public Shape shapeP { get { return shape; } set { shape = value.Clone();} }
 
         public Vector2 position = new Vector2(0, 0);
         public Vector2 velocity = new Vector2(0, 0);
+        
         public Vector2 effvelocity = new Vector2(0, 0);
         public Vector2 force = new Vector2(0, 0);
 
@@ -50,6 +51,8 @@ namespace OrbItProcs
                 if (shape != null) shape.SetOrient(value);
             }
         }
+        public Vector2 velocityP { get { return velocity; } set { velocity = value; } }
+        public Vector2 effvelocityP { get { return effvelocity; } set { effvelocity = value; } }
 
         public Color colorP
         {

@@ -32,6 +32,7 @@ namespace OrbItProcs {
         dict,
         obj,
         collection,
+        array,
         list,
         enm,
         boolean,
@@ -264,6 +265,17 @@ namespace OrbItProcs {
                 }
 
             }
+            else if (dt == data_type.array)
+            {
+                dynamic array = parent;
+                foreach (object o in array)
+                {
+                    InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, o);
+                    if (iitem.CheckForChildren()) iitem.prefix = "+";
+                    InsertItemSorted(list, iitem);
+                }
+
+            }
             else if (dt == data_type.dict)
             {
                 //dynamic dict = iitem.fpinfo.GetValue(iitem.parentItem);
@@ -283,7 +295,7 @@ namespace OrbItProcs {
                 ///// PROPERTIES
                 List<PropertyInfo> propertyInfos;
                 //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                if (!(parent is Component || parent is Player || parent is Process))
+                if (false && !(parent is Component || parent is Player || parent is Process))
                 {
                     propertyInfos = parent.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
                 }
@@ -303,7 +315,7 @@ namespace OrbItProcs {
                 {
                     List<FieldInfo> fieldInfos;
                     //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                    if (!(parent is Component || parent is Player || parent is Process))
+                    if (false && !(parent is Component || parent is Player || parent is Process))
                     {
                         fieldInfos = parent.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
                     }
@@ -337,7 +349,24 @@ namespace OrbItProcs {
             if (datatype == data_type.collection)
             {
                 dynamic collection = obj;
+
                 if (collection.Count > 0) return true;
+                else return false;
+                //he tried..
+            }
+            if (datatype == data_type.array)
+            {
+                dynamic array = obj;
+
+                if (array.Length > 0) return true;
+                else return false;
+                //he tried..
+            }
+            if (datatype == data_type.array)
+            {
+                dynamic array = obj;
+
+                if (array.Length > 0) return true;
                 else return false;
             }
             if (datatype == data_type.obj)
@@ -375,6 +404,14 @@ namespace OrbItProcs {
         public override string ToString()
         {
             string result = whitespace + prefix;
+
+
+            if (obj is Vector2)
+            {
+                dynamic vect = obj;
+                return "X:" + vect.X + "Y:" + vect.Y;
+            }
+
 
             if (membertype == member_type.dictentry)
             {
@@ -426,6 +463,13 @@ namespace OrbItProcs {
                     //System.Console.WriteLine(obj.GetType());
                     //System.Console.WriteLine(result + fpinfo.Name + " <" + ks + "," + vs + ">");
                     return result + fpinfo.Name + " <" + ks + ">";
+                }
+                if (datatype == data_type.array)
+                {
+                    //Type[] gen = obj.GetType().GetGenericArguments();
+                    //obj.GetType()
+                    Type k = obj.GetType().GetElementType();
+                    return result + fpinfo.Name + " <" + k + ">";
                 }
 
                 return result + fpinfo.Name + " : " + fpinfo.GetValue(parentItem.obj);
@@ -614,10 +658,13 @@ namespace OrbItProcs {
                 //Type keyType = t.GetGenericArguments()[0];
                 //Type valueType = t.GetGenericArguments()[1];
             }
+            else if (obj is Array)
+            {
+                dt = data_type.array;
+            }
             else if (obj.GetType().GetInterfaces()
                 .Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
             {
-                //Console.WriteLine("IEnumerable : {0}", obj.GetType());
                 dt = data_type.collection;
             }
             //might need to be more specific than List
@@ -699,8 +746,6 @@ namespace OrbItProcs {
 
             if (membertype == member_type.dictentry)
             {
-                
-                
                 //holy shit that's dynamic.
                 dynamic dict = parentItem.obj;
                 dynamic KEY = key;

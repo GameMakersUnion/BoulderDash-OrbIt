@@ -28,6 +28,12 @@ namespace OrbItProcs {
                 return message;
         }
         //even distribution of colors between 0 and 16.5 million (total number of possible colors, excluding alphas)
+        public static float[] toFloatArray(this Vector2 v2)
+        {
+            float[] result = new float[2];
+            result[0] = v2.X; result[1] = v2.Y;
+            return result;
+        }
         public static Color IntToColor(int i, int alpha = 255)
         {
             

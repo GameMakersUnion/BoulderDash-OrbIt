@@ -359,6 +359,10 @@ namespace OrbItProcs
                 {
                     ((Component)presetnode.comps[c]).parent = presetnode;
                 }
+                presetnode.body.parent = presetnode;
+                //presetnode.body.shape.body = presetnode.body;
+                presetnode.collision.parent = presetnode;
+                presetnode.movement.parent = presetnode;
                 NodePresets.Add(presetnode);
 
                 //NodePresets.Add((Node)room.serializer.Deserialize(file));

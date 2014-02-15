@@ -20,10 +20,12 @@ namespace OrbItProcs
     {
         public static int TypeCount = 2;
 
-        public Body body;
-        public float radius;
-        public Mat22 u;
+        public Body body ; //{ get; set; }
+        public float radius { get; set; }
+        public Mat22 u;// { get; set; }
 
+        //public Body bodyP { get { return body; } set { body = value; } }
+        public Mat22 uP { get { return u; } set { u = value; } }
 
         public Shape() { }
 
@@ -38,6 +40,9 @@ namespace OrbItProcs
 
     public class Circle : Shape
     {
+        public Circle()
+        {
+        }
         public Circle(float r)
         {
             radius = r;
@@ -71,10 +76,56 @@ namespace OrbItProcs
     public class Polygon : Shape
     {
         public static int MaxPolyVertexCount = 64;
-        public int vertexCount;
+        public int vertexCount { get; set; }
         public Vector2[] vertices = new Vector2[MaxPolyVertexCount];
         public Vector2[] normals = new Vector2[MaxPolyVertexCount];
 
+        public float[,] verticesP
+        {
+            get
+            {
+                float[,] result = new float[MaxPolyVertexCount, 2];
+                for (int i = 0; i < MaxPolyVertexCount; i++)
+                {
+                    result[i, 0] = vertices[i].X;
+                    result[i, 1] = vertices[i].Y;
+                }
+                return result;
+            }
+            set
+            {
+                for (int i = 0; i < MaxPolyVertexCount; i++)
+                {
+                    vertices[i].X = value[i, 0];
+                    vertices[i].Y = value[i, 1];
+                }
+            }
+        }
+        public float[,] normalsP
+        {
+            get
+            {
+                float[,] result = new float[MaxPolyVertexCount, 2];
+                for (int i = 0; i < MaxPolyVertexCount; i++)
+                {
+                    result[i, 0] = normals[i].X;
+                    result[i, 1] = normals[i].Y;
+                }
+                return result;
+            }
+            set
+            {
+                for (int i = 0; i < MaxPolyVertexCount; i++)
+                {
+                    normals[i].X = value[i, 0];
+                    normals[i].Y = value[i, 1];
+                }
+            }
+        }
+
+
+        public Polygon() { }
+        
         public override void Initialize()
         {
             ComputeMass(0.001f);

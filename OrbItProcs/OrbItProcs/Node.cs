@@ -475,6 +475,7 @@ namespace OrbItProcs {
         
         public virtual void Update(GameTime gametime)
         {
+            if (body != body.shape.body) body.shape.body = body;
             if (nodeState == state.off || nodeState == state.drawOnly) return;
 
             if (aOtherProps.Count > 0)
@@ -702,14 +703,19 @@ namespace OrbItProcs {
                 else if (field.FieldType == (typeof(Collision)))
                 {
                     Component.CloneComponent(sourceNode.collision, destNode.collision);
+
+                    destNode.collision.parent = destNode;
                 }
                 else if (field.FieldType == (typeof(Movement)))
                 {
                     Component.CloneComponent(sourceNode.movement, destNode.movement);
+                    destNode.movement.parent = destNode;
                 }
                 else if (field.FieldType == (typeof(Body)))
                 {
                     Component.CloneComponent(sourceNode.body, destNode.body);
+                    destNode.body.parent = destNode;
+                    destNode.body.shape.body = destNode.body;
                 }
                 else
                 {
