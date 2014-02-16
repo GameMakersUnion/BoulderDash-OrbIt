@@ -95,7 +95,7 @@ namespace OrbItProcs
                     {
                         positions.Dequeue();
                     }
-                    positions.Enqueue(parent.body.position);
+                    positions.Enqueue(parent.body.pos);
                 }
                 if ((qs & queues.scale) == queues.scale)
                 {

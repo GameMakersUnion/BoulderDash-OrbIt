@@ -20,11 +20,67 @@ namespace OrbItProcs
             addProcessKeyAction("BatchSpawn", KeyCodes.RightClick, OnHold: BatchSpawn);
             addProcessKeyAction("DirectionalLaunch", KeyCodes.LeftShift, KeyCodes.RightClick, OnHold: DirectionalLaunch);
             batchSpawnNum = 50;
+
+            addProcessKeyAction("serial", KeyCodes.O, OnPress: Testing3);
+            addProcessKeyAction("deserial", KeyCodes.P, OnPress: Testing4);
         }
 
         public void SetSpawnPosition ()
         {
             spawnPos = UserInterface.WorldMousePos;
+        }
+        
+        /*public void Testing()
+        {
+            string filename = "Presets//Rooms//entities.xml";
+            room.serializer.Serialize(room.masterGroup.fullSet, filename);
+
+        }
+        public void Testing2()
+        {
+            string filename = "Presets//Rooms//entities.xml";
+            ObservableHashSet<Node> ents = (ObservableHashSet<Node>)room.serializer.Deserialize(filename);
+            room.serializer = new Polenter.Serialization.SharpSerializer();
+            
+            //room.masterGroup.EmptyGroup();
+            Group g = room.game.ui.sidebar.ActiveGroupFirst;
+            //g.EmptyGroup();
+
+            foreach (Node n in ents)
+            {
+                Node newNode = n.CreateClone();
+                g.IncludeEntity(newNode);
+            }
+        }*/
+        //public void Testing3()
+        //{
+        //    string filename = "Presets//Rooms//group1.xml";
+        //    room.serializer.Serialize(room.masterGroup, filename);
+        //
+        //}
+        //public void Testing4()
+        //{
+        //    string filename = "Presets//Rooms//group1.xml";
+        //    Group master = (Group)room.serializer.Deserialize(filename);
+        //    room.serializer = new Polenter.Serialization.SharpSerializer();
+        //    room.masterGroup = master;
+        //
+        //    room.game.ui.sidebar.UpdateGroupComboBoxes();
+        //}
+
+        public void Testing3()
+        {
+            string filename = "Presets//Rooms//link1.xml";
+            room.serializer.Serialize(room._AllActiveLinks.ElementAt(0), filename);
+
+        }
+        public void Testing4()
+        {
+            string filename = "Presets//Rooms//link1.xml";
+            Link lnk = (Link)room.serializer.Deserialize(filename);
+            room.serializer = new Polenter.Serialization.SharpSerializer();
+            room._AllActiveLinks = new ObservableHashSet<Link>();
+            room._AllActiveLinks.Add(lnk);
         }
 
         public void SpawnNode()
@@ -70,7 +126,11 @@ namespace OrbItProcs
 
                 if (UserInterface.oldKeyBState.IsKeyDown(Keys.LeftControl))
                 {
-                    Action<Node> after = delegate(Node n) { n.body.velocity = diff; }; 
+                    Action<Node> after = delegate(Node n) { 
+                        n.body.velocity = diff;
+                        if (n.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
+                    
+                    }; 
                     room.game.spawnNode(userP, after);
                 }
                 else

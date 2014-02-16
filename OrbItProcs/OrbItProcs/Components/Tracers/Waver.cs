@@ -76,7 +76,7 @@ namespace OrbItProcs
             ModifierInfo modinfo = new ModifierInfo();
             //modinfo.AddFPInfoFromString("o1", "scale", parent);
             //modinfo.AddFPInfoFromString("m1", "position", parent);
-            modinfo.AddFPInfoFromString("v1", "position", parent.body);
+            modinfo.AddFPInfoFromString("v1", "pos", parent.body);
             modinfo.AddFPInfoFromString("m1", "timer", parent.comps[comp.lifetime]);
 
             //modinfo.args.Add("mod", 4.0f);
@@ -133,7 +133,7 @@ namespace OrbItProcs
             Vector2 metapos = new Vector2(parent.body.velocity.Y, -parent.body.velocity.X);
             metapos.Normalize();
             metapos *= yval;
-            Vector2 metaposfinal = parent.body.position + metapos;
+            Vector2 metaposfinal = parent.body.pos + metapos;
 
 
             if (metapositions.Count > queuecount)
@@ -144,7 +144,7 @@ namespace OrbItProcs
 
             if (reflective)
             {
-                Vector2 reflectfinal = parent.body.position - metapos;
+                Vector2 reflectfinal = parent.body.pos - metapos;
                 if (reflectpositions.Count > queuecount)
                 {
                     reflectpositions.Dequeue();

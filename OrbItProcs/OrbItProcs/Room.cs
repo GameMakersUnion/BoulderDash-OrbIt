@@ -27,61 +27,55 @@ namespace OrbItProcs {
 
     
 
-    public class Room {
+    public class Room
+    {
 
+        #region // State // --------------------------------------------
         public bool DrawLinks { get; set; }
-
-        public List<Node> WallNodes { get; set; }
         public float WallWidth { get; set; }
+        public float mapzoom { get; set; }
+        #endregion
 
+        #region // References // --------------------------------------------
+        public Game1 game;
+        public ProcessManager processManager { get; set; }
+        public event EventHandler AfterIteration;
+        #endregion
+
+        #region // Lists // --------------------------------------------
         public ObservableHashSet<Link> _AllActiveLinks = new ObservableHashSet<Link>();
         public ObservableHashSet<Link> AllActiveLinks { get { return _AllActiveLinks; } set { _AllActiveLinks = value; } }
 
-        public event EventHandler AfterIteration;
-        
-        public Game1 game;
-        public ProcessManager processManager { get; set; }
-        public float mapzoom { get; set; }
+
+        public ObservableHashSet<Link> _AllInactiveLinks = new ObservableHashSet<Link>();
+        public ObservableHashSet<Link> AllInactiveLinks { get { return _AllInactiveLinks; } set { _AllInactiveLinks = value; } }
+
+        public List<Node> WallNodes { get; set; }
+        public HashSet<Node> CollisionSet { get; set; }
+        public List<Rectangle> gridSystemLines = new List<Rectangle>(); //dns
+        private List<Manifold> contacts = new List<Manifold>(); //dns
+        #endregion
 
         public GridSystem gridsystem { get; set; }
-        public Level level { get; set; }
         public GridSystem gridsystemCollision { get; set; }
-        public HashSet<Node> CollisionSet { get; set; }
-        public List<Rectangle> gridSystemLines;
+        public Level level { get; set; }
+        
         public int gridSystemCounter = 0;
 
-        public Dictionary<string, bool> PropertiesDict = new Dictionary<string, bool>();
-
-        //public Dictionary<string, Group> groups = new Dictionary<string, Group>();
         public Group masterGroup;
 
-        public ObservableCollection<object> nodes = new ObservableCollection<object>();
-
-        //public Queue<object> nodesToAdd = new Queue<object>();
-
         public Node defaultNode, targetNodeGraphic;
-        //public NodeList<Node> nodes = new NodeList<Node>();
-        public int dtimerMax = -1, dtimerCount = 0;
 
-        public SharpSerializer serializer = new SharpSerializer();
+        public SharpSerializer serializer = new SharpSerializer(); //dns.. lol
 
         public Player player1 { get; set; }
 
-        private List<Manifold> contacts = new List<Manifold>();
-
-        //public tree treeProp = tree.gridsystem;
-
         public Room()
         {
-            setDefaultProperties();
         }
 
         public Room(Game1 game)
         {
-            setDefaultProperties();
-
-            
-            
             this.game = game;
             this.mapzoom = 2f;
 
@@ -91,7 +85,6 @@ namespace OrbItProcs {
 
             gridsystemCollision = new GridSystem(this, gridsystem.cellsX, 5);
             CollisionSet = new HashSet<Node>();
-            gridSystemLines = new List<Rectangle>();
             DrawLinks = true;
             WallNodes = new List<Node>();
             WallWidth = 500;
@@ -118,10 +111,10 @@ namespace OrbItProcs {
             //Node right = ConstructWallPoly(props, rightVerts, new Vector2(0, 0));//(game.worldWidth, 0)
             //Node top = ConstructWallPoly(props, topVerts, new Vector2(0, 0));
             //Node bottom = ConstructWallPoly(props, bottomVerts, new Vector2(0, 0));//(0, game.worldHeight)
-            Node left = ConstructWallPoly(props, (int)WallWidth / 2, game.worldHeight / 2, new Vector2(-WallWidth / 2, game.worldHeight / 2));
-            Node right = ConstructWallPoly(props, (int)WallWidth / 2, game.worldHeight / 2, new Vector2(game.worldWidth + WallWidth / 2, game.worldHeight / 2));
-            Node top = ConstructWallPoly(props, (game.worldWidth + (int)WallWidth * 2) / 2, (int)WallWidth / 2, new Vector2(game.worldWidth / 2, (int)-WallWidth / 2));
-            Node bottom = ConstructWallPoly(props, (game.worldWidth + (int)WallWidth * 2) / 2, (int)WallWidth / 2, new Vector2(game.worldWidth / 2, game.worldHeight + (int)WallWidth / 2));
+            Node left = ConstructWallPoly(props, (int)WallWidth / 2, game.worldHeight / 2, new Vector2(-WallWidth / 2, game.worldHeight / 2)); left.name = "left wall";
+            Node right = ConstructWallPoly(props, (int)WallWidth / 2, game.worldHeight / 2, new Vector2(game.worldWidth + WallWidth / 2, game.worldHeight / 2)); right.name = "right wall";
+            Node top = ConstructWallPoly(props, (game.worldWidth + (int)WallWidth * 2) / 2, (int)WallWidth / 2, new Vector2(game.worldWidth / 2, (int)-WallWidth / 2)); top.name = "top wall";
+            Node bottom = ConstructWallPoly(props, (game.worldWidth + (int)WallWidth * 2) / 2, (int)WallWidth / 2, new Vector2(game.worldWidth / 2, game.worldHeight + (int)WallWidth / 2)); bottom.name = "bottom wall";
 
         }
 
@@ -130,7 +123,7 @@ namespace OrbItProcs {
             Node n = new Node(props);
             Polygon poly = new Polygon();
             poly.body = n.body;
-            poly.body.position = pos;
+            poly.body.pos = pos;
             poly.SetBox(hw,hh);
             //poly.SetOrient(0f);
             
@@ -278,7 +271,7 @@ namespace OrbItProcs {
             if (game.targetNode != null)
             {
                 targetNodeGraphic.body.color = Color.White;
-                targetNodeGraphic.body.position = game.targetNode.body.position;
+                targetNodeGraphic.body.pos = game.targetNode.body.pos;
                 //if (game.targetNode.comps.ContainsKey(comp.gravity))
                 //{
                 //    float rad = game.targetNode.GetComponent<Gravity>().radius;
@@ -288,29 +281,6 @@ namespace OrbItProcs {
             }
             
         }
-
-        // color the nodes that targetnode is affecting
-        public void colorEffectedNodes()
-        {
-            // coloring the nodes
-            if (game.targetNode != null)
-            {
-                List<Node> returnObjectsGridSystem = gridsystem.retrieve(game.targetNode);
-
-                foreach (Node _node in nodes)
-                {
-                    if (_node.body.color != Color.Black)
-                    {
-                        if (returnObjectsGridSystem.Contains(_node))
-                            _node.body.color = Color.Purple;
-                        else
-                            _node.body.color = Color.White;
-                    }
-                }
-                game.targetNode.body.color = Color.Red;
-            }
-        }
-
         //draw grid lines
         public void addGridSystemLines(GridSystem gs)
         {
@@ -375,7 +345,7 @@ namespace OrbItProcs {
                 targetNodeGraphic.body.color = Color.LimeGreen;
                 foreach (Node n in groupset.ToList())
                 {
-                    targetNodeGraphic.body.position = n.body.position;
+                    targetNodeGraphic.body.pos = n.body.pos;
                     targetNodeGraphic.body.scale = n.body.scale * 1.5f;
                     targetNodeGraphic.Draw(spritebatch);
                 }
@@ -410,24 +380,6 @@ namespace OrbItProcs {
             level.Draw(spritebatch);
             
         } 
-
-        public void setDefaultProperties()
-        {
-            //mapzoom = 2f;
-
-            PropertiesDict.Add("wallBounce", true);
-            PropertiesDict.Add("gravityFreeze", false);
-            PropertiesDict.Add("tempSlow", true);
-            PropertiesDict.Add("mapOn", true);
-            PropertiesDict.Add("collisionOn", true);
-            PropertiesDict.Add("discoOn", false);
-            PropertiesDict.Add("fixCollisionOn", true);
-            PropertiesDict.Add("fullLightOn", false);
-            PropertiesDict.Add("smallLightsOn", false);
-            PropertiesDict.Add("bulletsOn", false);
-            PropertiesDict.Add("enemiesOn", false);
-            PropertiesDict.Add("friction", false);
-        }
         
         public void tether()
         {
@@ -443,6 +395,10 @@ namespace OrbItProcs {
         public void show()
         {
             //game.ui.sidebar.lstComp.Visible = true;
+        }
+        public Group findGroupByHash(string value)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -50,7 +50,7 @@ namespace OrbItProcs
 
         public override void AfterCloning()
         {
-            parent.body.velocity = new Vector2(0, 0);
+            //parent.body.velocity = new Vector2(0, 0);
         }
 
         public void ScaleVelocity()
@@ -86,17 +86,11 @@ namespace OrbItProcs
         public override void OnSpawn()
         {
             if (!active) return;
-            //parent.transform.velocity = new Vector2(0, 0);
+            parent.body.velocity = new Vector2(0, 0);
+
             Initialize(parent);
             return;
-            /*
-            float x = ((float)Utils.random.NextDouble() * 100) - 50;
-            float y = ((float)Utils.random.NextDouble() * 100) - 50;
-            Vector2 vel = new Vector2(x, y);
-            vel.Normalize();
-            vel = vel * multiplier;
-            parent.transform.velocity = vel;
-            */
+
         }
 
 

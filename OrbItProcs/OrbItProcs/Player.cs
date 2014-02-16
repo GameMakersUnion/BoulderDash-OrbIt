@@ -31,9 +31,11 @@ namespace OrbItProcs
         //public int fireamount { get; set; }
         public int firefreqCounter = 0;
 
-        public Player(Vector2 position) : base(userP)
+        //public Player() : this(Vector2.Zero) { }
+
+        public Player() : base(userP)
         {
-            body.position = position;
+            body.pos = Vector2.Zero;
             body.radius = 64;
             accel = new Vector2(0, 0);
             maxvel = 20f;
@@ -63,7 +65,7 @@ namespace OrbItProcs
             room.game.ui.keyManager.addProcessKeyAction("firebullet", KeyCodes.LeftClick, OnPress: FireNode);
             room.game.ui.keyManager.addProcessKeyAction("firebullets", KeyCodes.RightClick, OnHold: FireNodes);
 
-            room.masterGroup.fullSet.Add(this);
+            //room.masterGroup.fullSet.Add(this);
         }
 
         public override void Update(GameTime gametime)
@@ -145,8 +147,8 @@ namespace OrbItProcs
             Vector2 pos = UserInterface.WorldMousePos;
             Node newNode = new Node();
             Node.cloneObject(launchNode, newNode);
-            newNode.body.velocity = pos - body.position;
-            newNode.body.position = body.position + body.velocity * 5;
+            newNode.body.velocity = pos - body.pos;
+            newNode.body.pos = body.pos + body.velocity * 5;
             room.game.spawnNode(newNode, lifetime: bulletlife);
         }
 
@@ -162,8 +164,8 @@ namespace OrbItProcs
             Vector2 pos = UserInterface.WorldMousePos;
             Node newNode = new Node();
             Node.cloneObject(launchNode, newNode);
-            newNode.body.velocity = pos - body.position;
-            newNode.body.position = body.position + body.velocity * 5;
+            newNode.body.velocity = pos - body.pos;
+            newNode.body.pos = body.pos + body.velocity * 5;
 
             if (UserInterface.keybState.IsKeyDown(Keys.LeftControl))
             {

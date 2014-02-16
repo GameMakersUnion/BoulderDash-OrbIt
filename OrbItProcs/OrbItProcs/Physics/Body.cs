@@ -15,8 +15,13 @@ namespace OrbItProcs
         public Shape shape;
         public Shape shapeP { get { return shape; } set { shape = value.Clone();} }
 
-        public Vector2 position = new Vector2(0, 0);
+        public Vector2 pos = new Vector2(0, 0);
         public Vector2 velocity = new Vector2(0, 0);
+
+        public float[] positionP { get { return pos.toFloatArray(); } 
+            set { pos = new Vector2(value[0], value[1]); } }
+        public float[] velocityP { get { return velocity.toFloatArray(); } 
+            set { velocity = new Vector2(value[0], value[1]); } }
         
         public Vector2 effvelocity = new Vector2(0, 0);
         public Vector2 force = new Vector2(0, 0);
@@ -51,8 +56,6 @@ namespace OrbItProcs
                 if (shape != null) shape.SetOrient(value);
             }
         }
-        public Vector2 velocityP { get { return velocity; } set { velocity = value; } }
-        public Vector2 effvelocityP { get { return effvelocity; } set { effvelocity = value; } }
 
         public Color colorP
         {
@@ -61,13 +64,13 @@ namespace OrbItProcs
         }
         public float X
         {
-            get { return position.X; }
-            set { position.X = value; }
+            get { return pos.X; }
+            set { pos.X = value; }
         }
         public float Y
         {
-            get { return position.Y; }
-            set { position.Y = value; }
+            get { return pos.Y; }
+            set { pos.Y = value; }
         }
         public float scale
         {
@@ -130,6 +133,11 @@ namespace OrbItProcs
             this.shape.body = this;
             this.shape.Initialize();
 
+            AfterCloning();
+        }
+
+        public override void AfterCloning()
+        {
             this.mass = this.mass;
             this.inertia = this.inertia;
         }

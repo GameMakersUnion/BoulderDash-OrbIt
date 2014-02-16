@@ -12,6 +12,21 @@ namespace OrbItProcs
 
     public class Group
     {
+        public static HashSet<string> groupHashes = new HashSet<string>();
+
+        public string _groupHash = "";
+        public string groupHash { get { return _groupHash; } set {
+
+            groupHashes.Remove(_groupHash);
+            _groupHash = value;
+
+            if (groupHashes.Contains(value))
+                room.findGroupByHash(value).groupHash =
+                    Utils.uniqueString(groupHashes);
+
+            groupHashes.Add(value);
+        } }
+
         public static int GroupNumber = 0;
         public static Dictionary<int, Color> IntToColor = new Dictionary<int, Color>()
         {
@@ -30,10 +45,50 @@ namespace OrbItProcs
 
         public int GroupId = -1;
 
+        [Polenter.Serialization.ExcludeFromSerialization]
         public Group parentGroup { get; set; }
-        public ObservableHashSet<Node> entities { get; set; }
-        public ObservableHashSet<Node> inherited { get; set; }
-        public ObservableHashSet<Node> fullSet { get; set; }
+        //
+        public ObservableHashSet<Node> fullSet;
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public ObservableHashSet<Node> fullSetP
+        {
+            get { return fullSet; }
+            set {
+                fullSet = value; ;
+            }
+        }
+
+        public ObservableHashSet<Node> entities;// { get; set; }
+        public ObservableHashSet<Node> inherited;// { get; set; }
+
+        public ObservableHashSet<Node> entitiesP { get { return entities; }
+            set
+            {
+                if (entities == null || entities.Count > 0) throw new SystemException("Entities was null was setting entitiesP");
+
+                foreach (Node n in value.ToList()) // another coke -dante
+                {
+                    Node newNode = n.CreateClone();
+                    //entities.Add(newNode);
+                    IncludeEntity(newNode);
+                }
+            }
+        }
+        public ObservableHashSet<Node> inheritedP
+        {
+            get { return inherited; }
+            set
+            {
+                return;
+                /*if (inherited == null || inherited.Count > 0) throw new SystemException("inherited was null was setting inheritedP");
+                foreach (Node n in value.ToList())
+                {
+                    Node newNode = n.CreateClone();
+                    inherited.Add(newNode);
+                }*/
+            }
+        }
+        
         private Dictionary<string, Group> _childGroups;
         public Dictionary<string, Group> childGroups
         {
@@ -44,26 +99,55 @@ namespace OrbItProcs
             set
             {
                 _childGroups = value;
+                foreach(Group g in _childGroups.Values)
+                {
+                    g.parentGroup = this;
+                }
             }
         }
         public Node defaultNode { get; set; }
         public Room room;
         private string _Name;
         public string Name { get { return _Name; } set { if (_Name != null && _Name.Equals("master")) return; _Name = value; } } //cannot rename main group
-        public bool Spawnable;
+        public bool Spawnable { get; set; }
         public GroupState groupState { get; set; }
 
         private ObservableHashSet<Link> _SourceLinks = new ObservableHashSet<Link>();
+        [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> SourceLinks { get { return _SourceLinks; } set { _SourceLinks = value; } }
 
         private ObservableHashSet<Link> _TargetLinks = new ObservableHashSet<Link>();
+        [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> TargetLinks { get { return _TargetLinks; } set { _TargetLinks = value; } }
+
+        public bool PolenterHack { get { return true; }
+            set
+            {
+                if (fullSet == null) fullSet = new ObservableHashSet<Node>();
+                foreach(Node n in entities)
+                {
+                    fullSet.Add(n);
+                }
+                foreach(Node n in inherited)
+                {
+                    fullSet.Add(n);
+                }
+                foreach(Group g in childGroups.Values)
+                {
+                    foreach(Node n in g.fullSet)
+                    {
+                        fullSet.Add(n);
+                    }
+                }
+            }
+        }
 
         public Group() : this(null)
         {
         }
         public Group(Node defaultNode = null, ObservableHashSet<Node> entities = null, Group parentGroup = null, GroupState groupState = GroupState.on, string Name = "", bool Spawnable = true)
         {
+            groupHash = Utils.uniqueString(groupHashes);
             room = Program.getRoom();
             this.defaultNode = defaultNode ?? room.defaultNode;
             this.entities = entities ?? new ObservableHashSet<Node>();
@@ -160,6 +244,7 @@ namespace OrbItProcs
 
             entities.Remove(entity);
             inherited.Remove(entity);
+            fullSet.Remove(entity);
 
             if (childGroups.Count > 0)
             {
@@ -272,8 +357,7 @@ namespace OrbItProcs
         {
             if (childGroups.ContainsKey(name))
             {
-                Console.WriteLine("Error: One of the childGroups with the same key was already present in this Group.");
-                return;
+                throw new SystemException("Error: One of the childGroups with the same key was already present in this Group.");
             }
             childGroups.Add(name, group);
         }
@@ -285,6 +369,19 @@ namespace OrbItProcs
             {
                 g.GroupNamesToList(list);
             }
+        }
+
+        public void DeleteGroup()
+        {
+            foreach (Group g in childGroups.Values)
+                g.DeleteGroup();
+
+            foreach (Node n in entities.ToList())
+            {
+                DeleteEntity(n);
+            }
+            if (parentGroup == null) throw new SystemException("Don't delete orphans");
+            parentGroup.childGroups.Remove(Name);
         }
 
         /*
@@ -317,5 +414,10 @@ namespace OrbItProcs
             });
         }
 
+
+        public Node findNodeByHash(string value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

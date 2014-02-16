@@ -78,14 +78,14 @@ namespace OrbItProcs
             {
                 if (positions.Count < queuecount)
                 {
-                    positions.Enqueue(parent.body.position);
+                    positions.Enqueue(parent.body.pos);
                     scales.Enqueue(parent.body.scale);
 
                 }
                 else
                 {
                     positions.Dequeue();
-                    positions.Enqueue(parent.body.position);
+                    positions.Enqueue(parent.body.pos);
                     scales.Dequeue();
                     scales.Enqueue(parent.body.scale);
                 }
@@ -109,7 +109,7 @@ namespace OrbItProcs
                 for(int i = 0; i < childcount; i++)
                 {
                     float childscale = parent.body.scale * scaledown;
-                    Vector2 childpos = parent.body.position;
+                    Vector2 childpos = parent.body.pos;
                     float anglechange = Utils.random.Next((int)anglerange) - (anglerange / 2);
                     //
                     anglechange = anglechange * (float)(Math.PI / 180);
@@ -125,6 +125,7 @@ namespace OrbItProcs
                     Node newNode = new Node();
                     Node.cloneObject(parent, newNode);
                     newNode.body.velocity = childvel;
+                    if (newNode.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
                     newNode.name = "node" + Node.nodeCounter;
                     //newNode.acceptUserProps(userP);
                     newNode.comps[comp.tree].depth = depth + 1;
@@ -178,7 +179,7 @@ namespace OrbItProcs
 
             //float testangle = (float)(Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2));
             if (parent.comps.ContainsKey(comp.hueshifter)) col = parent.body.color;
-            spritebatch.Draw(parent.getTexture(), parent.body.position / mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(), parent.body.pos / mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
 
         }
 

@@ -173,7 +173,6 @@
     <Compile Include="Interface\StackView.cs" />
     <Compile Include="IRedirectable.cs" />
     <Compile Include="Framework\Link.cs" />
-    <Compile Include="lists.cs" />
     <Compile Include="ObservableHashSetOfT.cs" />
     <Compile Include="Physics\AABB.cs" />
     <Compile Include="Framework\DelegateManager.cs" />

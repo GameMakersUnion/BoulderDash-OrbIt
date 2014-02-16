@@ -35,15 +35,6 @@ namespace OrbItProcs
 
     public class ProcessManager
     {
-        
-
-        //public enum MouseButtons
-        //{
-        //    LeftButton,
-        //    RightButton,
-        //    MiddleButton,
-        //    ScrollValue,
-        //}
 
         public Dictionary<proc, Process> processDict { get; set; }
         public Process activeInputProcess;
@@ -68,7 +59,6 @@ namespace OrbItProcs
 
             activeInputProcess = processDict[proc.spawnnodes];
 
-            //room.game.ui.
         }
 
         public void SetProcessKeybinds(KeyManager Keybindset)

@@ -32,13 +32,13 @@ namespace OrbItProcs
             if (!active) return;
             if (exclusions.Contains(other)) return;
 
-            float distVects = Vector2.Distance(other.body.position, parent.body.position);
+            float distVects = Vector2.Distance(other.body.pos, parent.body.pos);
             if (distVects < radius)
             {
-                float newX = (parent.body.position.X - other.body.position.X) * 2.05f;
-                float newY = (parent.body.position.Y - other.body.position.Y) * 2.05f;
-                other.body.position.X += newX;
-                other.body.position.Y += newY;
+                float newX = (parent.body.pos.X - other.body.pos.X) * 2.05f;
+                float newY = (parent.body.pos.Y - other.body.pos.Y) * 2.05f;
+                other.body.pos.X += newX;
+                other.body.pos.Y += newY;
             }
         }
         public override void AffectSelf()

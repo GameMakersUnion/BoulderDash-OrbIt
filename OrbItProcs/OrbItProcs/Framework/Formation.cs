@@ -19,8 +19,9 @@ namespace OrbItProcs
     public class Formation
     {
         public Room room;
+        [Polenter.Serialization.ExcludeFromSerialization]
         public Link link { get; set; }
-        public formationtype FormationType { get { return link.FormationType; } set { link.FormationType = value; } }
+        public formationtype FormationType { get { return link.FormationType; } set { if (link != null) link.FormationType = value; } }
         public bool Uninhabited { get; set; }
         
         private int _UpdateFrequency = -1;
@@ -42,7 +43,14 @@ namespace OrbItProcs
         }
         public int Clock = 0;
         public int NearestNValue { get; set; }
+        [Polenter.Serialization.ExcludeFromSerialization]
         public Dictionary<Node, ObservableHashSet<Node>> AffectionSets { get; set; }
+
+        public Formation()
+        {
+            //..
+            this.room = Program.getRoom();
+        }
 
         public Formation(   Link link, 
                             formationtype FormationType = formationtype.AllToAll,
@@ -158,7 +166,7 @@ namespace OrbItProcs
                     link.targets.ToList().ForEach(delegate(Node target)
                     {
                         if (source == target) return;
-                        DistancesList.Add(new Tuple<float, Node>(Vector2.DistanceSquared(source.body.position, target.body.position), target));
+                        DistancesList.Add(new Tuple<float, Node>(Vector2.DistanceSquared(source.body.pos, target.body.pos), target));
                     });
 
                     DistancesList.Sort(comparer);

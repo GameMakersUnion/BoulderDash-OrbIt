@@ -158,9 +158,9 @@ namespace OrbItProcs {
 
         public Tuple<int, int> getIndexs(Node node)
         {
-            Vector2 pos = new Vector2(node.body.position.X, node.body.position.Y);
-            int x = (int)node.body.position.X;
-            int y = (int)node.body.position.Y;
+            Vector2 pos = new Vector2(node.body.pos.X, node.body.pos.Y);
+            int x = (int)node.body.pos.X;
+            int y = (int)node.body.pos.Y;
             int gridx = (int)pos.X - ((int)pos.X % cellWidth);
             x = gridx / cellWidth;
             //if ((int)pos.X - gridx > gridx + cellwidth - (int)node.transform.radius) x++;
@@ -201,5 +201,27 @@ namespace OrbItProcs {
             return false;
         }
 
+        // color the nodes that targetnode is affecting
+        public void colorEffectedNodes()
+        {
+            Game1 game = room.game;
+            // coloring the nodes
+            if (game.targetNode != null)
+            {
+                List<Node> returnObjectsGridSystem = retrieve(game.targetNode);
+
+                foreach (Node _node in room.masterGroup.fullSet)
+                {
+                    if (_node.body.color != Color.Black)
+                    {
+                        if (returnObjectsGridSystem.Contains(_node))
+                            _node.body.color = Color.Purple;
+                        else
+                            _node.body.color = Color.White;
+                    }
+                }
+                game.targetNode.body.color = Color.Red;
+            }
+        }
     }
 }

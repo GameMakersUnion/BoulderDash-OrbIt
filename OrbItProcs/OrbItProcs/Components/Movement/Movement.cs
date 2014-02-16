@@ -28,10 +28,8 @@ namespace OrbItProcs
 
         public Vector2 tempPosition = new Vector2(0, 0);
         
-        private movemode _movementmode = movemode.free;
+        private movemode _movementmode = movemode.wallbounce;
         public movemode movementmode { get { return _movementmode; } set { _movementmode = value; } }
-
-        private int forcecount = 0;
 
         public Movement() : this(null) { }
         public Movement(Node parent = null)
@@ -49,27 +47,28 @@ namespace OrbItProcs
 
         private void IntegrateForces()
         {
+            if (parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
+            if (parent.body.force.IsFucked()) System.Diagnostics.Debugger.Break();
+
             if (parent.body.invmass == 0)
                 return;
 
             Body b = parent.body;
-            if (b.force != Vector2.Zero) forcecount++;
-            else if (forcecount > 0)
-            {
-                //Console.WriteLine("FORCECOUNT:" + forcecount);
-                forcecount = 0;
-            }
             b.velocity += VMath.MultVectDouble(b.force, b.invmass); //* dt / 2.0;
+            
             b.angularVelocity += b.torque * b.invinertia; // * dt / 2.0;
 
         }
         public void IntegrateVelocity()
         {
+            if (parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
+            if (parent.body.force.IsFucked()) System.Diagnostics.Debugger.Break();
+
             if (!active) return;
             if (parent.body.invmass == 0)
                 return;
             Body b = parent.body;
-            b.position += b.velocity;
+            b.pos += b.velocity;
             b.orient += b.angularVelocity;
             b.SetOrient(b.orient);
             IntegrateForces(); //calls the private integrate forces method
@@ -77,9 +76,9 @@ namespace OrbItProcs
 
         public override void AffectSelf()
         {
-            parent.body.effvelocity = parent.body.position - tempPosition;
-            if (!pushable && tempPosition != new Vector2(0,0)) parent.body.position = tempPosition;
-            tempPosition = parent.body.position;
+            parent.body.effvelocity = parent.body.pos - tempPosition;
+            if (!pushable && tempPosition != new Vector2(0,0)) parent.body.pos = tempPosition;
+            tempPosition = parent.body.pos;
 
             //parent.body.position.X += parent.body.velocity.X * VelocityModifier;
             //parent.body.position.Y += parent.body.velocity.Y * VelocityModifier;
@@ -97,7 +96,7 @@ namespace OrbItProcs
         {
             //test (holy SHIT that looks cool)
             PropertyInfo pi = parent.body.GetType().GetProperty("scale");
-            pi.SetValue(parent.body, parent.body.position.X % 4.0f, null);
+            pi.SetValue(parent.body, parent.body.pos.X % 4.0f, null);
         }
 
         public override void Draw(SpriteBatch spritebatch)
@@ -110,7 +109,7 @@ namespace OrbItProcs
             int levelwidth = parent.room.game.worldWidth;
             int levelheight = parent.room.game.worldHeight;
 
-            Vector2 pos = parent.body.position;
+            Vector2 pos = parent.body.pos;
 
             if (parent.comps.ContainsKey(comp.queuer) && (parent.comps[comp.queuer].qs & queues.position) == queues.position)
             {
@@ -149,28 +148,28 @@ namespace OrbItProcs
             int levelwidth = parent.room.game.worldWidth;
             int levelheight = parent.room.game.worldHeight;
 
-            if (parent.body.position.X >= (levelwidth - parent.body.radius))
+            if (parent.body.pos.X >= (levelwidth - parent.body.radius))
             {
-                parent.body.position.X = levelwidth - parent.body.radius;
+                parent.body.pos.X = levelwidth - parent.body.radius;
                 parent.body.velocity.X *= -1;
                 parent.OnCollidePublic(null);
 
             }
-            if (parent.body.position.X < parent.body.radius)
+            if (parent.body.pos.X < parent.body.radius)
             {
-                parent.body.position.X = parent.body.radius;
+                parent.body.pos.X = parent.body.radius;
                 parent.body.velocity.X *= -1;
                 parent.OnCollidePublic(null);
             }
-            if (parent.body.position.Y >= (levelheight - parent.body.radius))
+            if (parent.body.pos.Y >= (levelheight - parent.body.radius))
             {
-                parent.body.position.Y = levelheight - parent.body.radius;
+                parent.body.pos.Y = levelheight - parent.body.radius;
                 parent.body.velocity.Y *= -1;
                 parent.OnCollidePublic(null);
             }
-            if (parent.body.position.Y < parent.body.radius)
+            if (parent.body.pos.Y < parent.body.radius)
             {
-                parent.body.position.Y = parent.body.radius;
+                parent.body.pos.Y = parent.body.radius;
                 parent.body.velocity.Y *= -1;
                 parent.OnCollidePublic(null);
             }
@@ -187,40 +186,40 @@ namespace OrbItProcs
 
             //hitting top/bottom of screen
             //teleport node
-            if (parent.body.position.X >= levelwidth)
+            if (parent.body.pos.X >= levelwidth)
             {
-                parent.body.position.X = 1;
+                parent.body.pos.X = 1;
             }
-            else if (parent.body.position.X < 0)
+            else if (parent.body.pos.X < 0)
             {
-                parent.body.position.X = levelwidth - 1;
+                parent.body.pos.X = levelwidth - 1;
             }
             //show half texture on other side
-            if (parent.body.position.X >= (levelwidth - parent.body.radius))
+            if (parent.body.pos.X >= (levelwidth - parent.body.radius))
             {
                 //
             }
-            else if (parent.body.position.X < parent.body.radius)
+            else if (parent.body.pos.X < parent.body.radius)
             {
                 //
             }
 
             //hitting sides
             //teleport node
-            if (parent.body.position.Y >= levelheight)
+            if (parent.body.pos.Y >= levelheight)
             {
-                parent.body.position.Y = 1;
+                parent.body.pos.Y = 1;
             }
-            else if (parent.body.position.Y < 0)
+            else if (parent.body.pos.Y < 0)
             {
-                parent.body.position.Y = levelheight - 1;
+                parent.body.pos.Y = levelheight - 1;
             }
             //show half texture on other side
-            if (parent.body.position.Y >= (levelheight - parent.body.radius))
+            if (parent.body.pos.Y >= (levelheight - parent.body.radius))
             {
                 //
             }
-            else if (parent.body.position.Y < parent.body.radius)
+            else if (parent.body.pos.Y < parent.body.radius)
             {
                 //
             }

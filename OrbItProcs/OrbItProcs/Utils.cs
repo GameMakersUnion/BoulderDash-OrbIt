@@ -11,6 +11,38 @@ using System.Collections.Specialized;
 namespace OrbItProcs {
     public static class Utils {
         
+        public static void Break()
+        {
+            System.Diagnostics.Debugger.Break();
+        }
+
+        public static string uniqueString(HashSet<string> hashSet = null)
+        {
+            string GuidString = randomString();
+
+            if (hashSet != null)
+            {
+                while (hashSet.Contains(GuidString))
+                {
+                    GuidString = randomString();
+                }
+            }
+            return GuidString;
+        }
+
+        public static string randomString()
+        {
+            Guid g = Guid.NewGuid();
+            string GuidString = Convert.ToBase64String(g.ToByteArray());
+            GuidString = GuidString.Replace("=", "");
+            GuidString = GuidString.Replace("+", "");
+            return GuidString;
+        }
+        public static bool IsFucked(this Vector2 v)
+        {
+            if (float.IsInfinity(v.X) || float.IsNaN(v.X) || float.IsInfinity(v.Y) || float.IsNaN(v.Y)) return true;
+            return false;
+        }
 
         public static string wordWrap(this string message, int maxCharsPerLine)
         {
@@ -27,13 +59,14 @@ namespace OrbItProcs {
                             };
                 return message;
         }
-        //even distribution of colors between 0 and 16.5 million (total number of possible colors, excluding alphas)
+        
         public static float[] toFloatArray(this Vector2 v2)
         {
             float[] result = new float[2];
             result[0] = v2.X; result[1] = v2.Y;
             return result;
         }
+        //even distribution of colors between 0 and 16.5 million (total number of possible colors, excluding alphas)
         public static Color IntToColor(int i, int alpha = 255)
         {
             
@@ -150,7 +183,7 @@ namespace OrbItProcs {
         public static bool checkCollision(Node o1, Node o2)
         {
 
-            if (Vector2.DistanceSquared(o1.body.position, o2.body.position) <= ((o1.body.radius + o2.body.radius) * (o1.body.radius + o2.body.radius)))
+            if (Vector2.DistanceSquared(o1.body.pos, o2.body.pos) <= ((o1.body.radius + o2.body.radius) * (o1.body.radius + o2.body.radius)))
             {
                 return true;
             }
@@ -170,9 +203,9 @@ namespace OrbItProcs {
             //ELASTIC COLLISION RESOLUTION --- FUCK YEAH
             //float orbimass = 1, orbjmass = 1;
             //float orbRadius = 25.0f; //integrate this into the orb class
-            float distanceOrbs = (float)Vector2.Distance(o1.body.position, o2.body.position);
+            float distanceOrbs = (float)Vector2.Distance(o1.body.pos, o2.body.pos);
             if (distanceOrbs < 10) distanceOrbs = 10; //prevent /0 error
-            Vector2 normal = (o2.body.position - o1.body.position) / distanceOrbs;
+            Vector2 normal = (o2.body.pos - o1.body.pos) / distanceOrbs;
             float pvalue = 2 * (o1.body.velocity.X * normal.X + o1.body.velocity.Y * normal.Y - o2.body.velocity.X * normal.X - o2.body.velocity.Y * normal.Y) / (o1.body.mass + o2.body.mass);
             //if (!test) 
             //return;
@@ -198,11 +231,11 @@ namespace OrbItProcs {
             //float orbRadius = 25.0f; //integrate this into the orb class
             //if the orbs are still within colliding distance after moving away (fix radius variables)
             //if (Vector2.DistanceSquared(o1.transform.position + o1.transform.velocity, o2.transform.position + o2.transform.velocity) <= ((o1.transform.radius * 2) * (o2.transform.radius * 2)))
-            if (Vector2.DistanceSquared(o1.body.position + o1.body.velocity, o2.body.position + o2.body.velocity) <= ((o1.body.radius + o2.body.radius) * (o1.body.radius + o2.body.radius)))
+            if (Vector2.DistanceSquared(o1.body.pos + o1.body.velocity, o2.body.pos + o2.body.velocity) <= ((o1.body.radius + o2.body.radius) * (o1.body.radius + o2.body.radius)))
             {
 
-                Vector2 difference = o1.body.position - o2.body.position; //get the vector between the two orbs
-                float length = Vector2.Distance(o1.body.position, o2.body.position);//get the length of that vector
+                Vector2 difference = o1.body.pos - o2.body.pos; //get the vector between the two orbs
+                float length = Vector2.Distance(o1.body.pos, o2.body.pos);//get the length of that vector
                 difference = difference / length;//get the unit vector
                 //fix the below statement to get the radius' from the orb objects
                 length = (o1.body.radius + o2.body.radius) - length; //get the length that the two orbs must be moved away from eachother
@@ -210,16 +243,16 @@ namespace OrbItProcs {
                 if (o1.movement.active && o1.movement.pushable
                     && o2.movement.active && o2.movement.pushable)
                 {
-                    o1.body.position += difference / 2;
-                    o2.body.position -= difference / 2;
+                    o1.body.pos += difference / 2;
+                    o2.body.pos -= difference / 2;
                 }
                 else if (o1.movement.active && !o1.movement.pushable)
                 {
-                    o2.body.position -= difference;
+                    o2.body.pos -= difference;
                 }
                 else if (o2.movement.active && !o2.movement.pushable)
                 {
-                    o1.body.position += difference;
+                    o1.body.pos += difference;
                 }
             }
             else return;

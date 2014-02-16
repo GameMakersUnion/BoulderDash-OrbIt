@@ -30,7 +30,7 @@ namespace OrbItProcs
             {
                 Node n = (Node)room.masterGroup.fullSet.ElementAt(i);
                 // find node that has been clicked, starting from the most recently placed nodes
-                float distsquared = Vector2.DistanceSquared(n.body.position, pos);
+                float distsquared = Vector2.DistanceSquared(n.body.pos, pos);
                 if (distsquared < n.body.radius * n.body.radius)
                 {
                     if (distsquared < shortedDistance)

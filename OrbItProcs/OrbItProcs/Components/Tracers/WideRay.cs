@@ -95,7 +95,7 @@ namespace OrbItProcs
             Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
             
 
-            Vector2 screenPos = parent.body.position / mapzoom;
+            Vector2 screenPos = parent.body.pos / mapzoom;
             Vector2 centerTexture = new Vector2(0.5f, 0.5f);
 
             int count = 0;
@@ -110,7 +110,7 @@ namespace OrbItProcs
 
             float testangle = (float)(Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + (Math.PI / 2));
             scalevect.X = parent.body.scale * 50;
-            spritebatch.Draw(parent.getTexture(textures.whitepixel), parent.body.position / mapzoom, null, parent.body.color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(textures.whitepixel), parent.body.pos / mapzoom, null, parent.body.color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
             
         }
 

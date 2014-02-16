@@ -195,8 +195,8 @@ namespace OrbItProcs
                 Vector2 a1 = u * vertices[i];
                 Vector2 a2 = u * vertices[(i + 1) % vertexCount];
 
-                Vector2 v1 = body.position + a1;//u * vertices[i];
-                Vector2 v2 = body.position + a2;//u * vertices[(i + 1) % vertexCount];
+                Vector2 v1 = body.pos + a1;//u * vertices[i];
+                Vector2 v2 = body.pos + a2;//u * vertices[(i + 1) % vertexCount];
                 Utils.DrawLine(body.parent.room, v1, v2, 1f, body.color);
             }
         }
@@ -231,7 +231,7 @@ namespace OrbItProcs
             {
                 newverts[i] = new Vector2(verts[i].X - x, verts[i].Y - y);
             }
-            body.position = new Vector2(x, y);
+            body.pos = new Vector2(x, y);
             Set(newverts, len);
             
 

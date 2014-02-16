@@ -60,9 +60,9 @@ namespace OrbItProcs
             n1.Collided -= OnCollision;
             n2.Collided -= OnCollision;
             n3.Collided -= OnCollision;
-            n1.body.position.X -= 150;
-            n2.body.position.X += 150;
-            n3.body.position.Y -= 150;
+            n1.body.pos.X -= 150;
+            n2.body.pos.X += 150;
+            n3.body.pos.Y -= 150;
 
 
 

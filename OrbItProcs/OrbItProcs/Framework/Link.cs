@@ -39,7 +39,22 @@ namespace OrbItProcs
         }
         public Room room;
         //public ILinkable linkComponent { get; set; }
-        public HashSet<ILinkable> components { get; set; }
+        //[Polenter.Serialization.ExcludeFromSerialization]
+        public ObservableHashSet<ILinkable> components { get; set; }
+        /*public HashSet<Component> componentsP
+        {
+            get
+            {
+                HashSet<Component> result = new HashSet<Component>();
+                components.ToList().ForEach(w => result.Add((Component)w));
+                return result;
+            }
+            set{
+                HashSet<ILinkable> result = new HashSet<ILinkable>();
+                value.ToList().ForEach(w => result.Add((ILinkable)w));
+                components = result;
+            }
+        }*/
 
         public linktype ltype { get; set; }
         public updatetime _UpdateTime = updatetime.SourceUpdate;
@@ -66,15 +81,19 @@ namespace OrbItProcs
         public bool DrawTips { get { return _DrawTips; } set { _DrawTips = value; } }
         public float _AngleInc = 0.2f;
         public float AngleInc { get { return _AngleInc; } set { _AngleInc = value; } }
-
+        [Polenter.Serialization.ExcludeFromSerialization]
         public Node sourceNode { get; set; }
+        [Polenter.Serialization.ExcludeFromSerialization]
         public Node targetNode { get; set; }
-
+        [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Node> sources { get; set; }
+        [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Node> targets { get; set; }
+        [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Node> exclusions { get; set; }
-
+        [Polenter.Serialization.ExcludeFromSerialization]
         public Group sourceGroup { get; set; }
+        [Polenter.Serialization.ExcludeFromSerialization]
         public Group targetGroup { get; set; }
 
         public bool _IsEntangled = false;
@@ -90,11 +109,18 @@ namespace OrbItProcs
 
         private float anglestep = 0;
 
+        public Link()
+        {
+            //..
+            this.room = Program.getRoom();
+            this.components = new ObservableHashSet<ILinkable>();
+        }
+
         //blank link (for the palette)
         public Link(ILinkable linkComponent, formationtype ftype = formationtype.AllToAll)
         {
             this.room = Program.getRoom();
-            this.components = new HashSet<ILinkable>();
+            this.components = new ObservableHashSet<ILinkable>();
             this.components.Add(linkComponent);
             this._FormationType = ftype;
             this.formation = new Formation(this, ftype, InitializeFormation: false);
@@ -103,7 +129,7 @@ namespace OrbItProcs
         public Link(Link link, dynamic source, dynamic target)
         {
             this.room = Program.getRoom();
-            this.components = new HashSet<ILinkable>();
+            this.components = new ObservableHashSet<ILinkable>();
 
             this.UpdateTime = link.UpdateTime;
             this.IsEntangled = link.IsEntangled;
@@ -134,7 +160,7 @@ namespace OrbItProcs
             
             if (components == null)
             {
-                this.components = new HashSet<ILinkable>();
+                this.components = new ObservableHashSet<ILinkable>();
             }
             if (linkComponent != null)
             {
@@ -551,12 +577,12 @@ namespace OrbItProcs
                     int[] cs = HueShifter.getColorsFromAngle(anglestep % 360);
                     Color color1 = new Color(cs[0], cs[1], cs[2]);
 
-                    Vector2 diff = target.body.position - source.body.position;
+                    Vector2 diff = target.body.pos - source.body.pos;
                     Vector2 perp = new Vector2(diff.Y, -diff.X);
                     perp.Normalize();
                     perp *= 2;
 
-                    Utils.DrawLine(room, source.body.position, target.body.position, 2f, color1);
+                    Utils.DrawLine(room, source.body.pos, target.body.pos, 2f, color1);
 
                     //Utils.DrawLine(spritebatch, source.transform.position + perp, target.transform.position + perp, 2f, col, room);
                     //Utils.DrawLine(spritebatch, source.transform.position - perp, target.transform.position - perp, 2f, col, room);
@@ -564,11 +590,11 @@ namespace OrbItProcs
                     if (!DrawTips) continue;
                     perp *= 20;
 
-                    Vector2 center = (target.body.position + source.body.position) / 2;
+                    Vector2 center = (target.body.pos + source.body.pos) / 2;
 
-                    Vector2 point = target.body.position - (diff / 5);
-                    Utils.DrawLine(room, point + perp, target.body.position, 2f, color1);
-                    Utils.DrawLine(room, point - perp, target.body.position, 2f, color1);
+                    Vector2 point = target.body.pos - (diff / 5);
+                    Utils.DrawLine(room, point + perp, target.body.pos, 2f, color1);
+                    Utils.DrawLine(room, point - perp, target.body.pos, 2f, color1);
                 }
             }
 

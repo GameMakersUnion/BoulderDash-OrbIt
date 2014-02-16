@@ -62,12 +62,12 @@ namespace OrbItProcs {
             }
 
 
-            float distVects = Vector2.Distance(other.body.position, parent.body.position);
+            float distVects = Vector2.Distance(other.body.pos, parent.body.pos);
 
             if (distVects < radius)
             {
                 if (distVects < lowerbound) distVects = lowerbound;
-                double angle = Math.Atan2((parent.body.position.Y - other.body.position.Y), (parent.body.position.X - other.body.position.X));
+                double angle = Math.Atan2((parent.body.pos.Y - other.body.pos.Y), (parent.body.pos.X - other.body.pos.X));
                 //float counterforce = 100 / distVects;
                 //float gravForce = multiplier / (distVects * distVects * counterforce);
 
@@ -96,13 +96,18 @@ namespace OrbItProcs {
 
                     if (constant)
                     {
-                        other.body.velocity = delta / other.body.mass;
-                        parent.body.velocity = -delta / parent.body.mass;
+                        other.body.velocity = delta * other.body.invmass;
+                        parent.body.velocity = -delta * parent.body.invmass;
+                        if (other.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
+                        if (parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
+
                     }
                     else
                     {
-                        other.body.velocity += delta / other.body.mass;
-                        parent.body.velocity -= delta / parent.body.mass;
+                        other.body.velocity += delta * other.body.invmass;
+                        parent.body.velocity -= delta * parent.body.invmass;
+                        if (other.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
+                        if (parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
                     }
                 }
                 else
@@ -110,12 +115,15 @@ namespace OrbItProcs {
                     //delta /= 2;
                     if (constant)
                     {
-                        other.body.velocity = delta / other.body.mass;
+                        other.body.velocity = delta * parent.body.invmass;
+                        if (parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
                     }
                     else
                     {
                         //other.body.velocity += delta / other.body.mass;
                         other.body.ApplyForce(delta);
+                        if (other.body.force.IsFucked()) System.Diagnostics.Debugger.Break();
+
                     }
                 }
                 

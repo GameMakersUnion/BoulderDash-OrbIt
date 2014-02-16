@@ -367,17 +367,32 @@ namespace OrbItProcs
             }
             else if (!item.Equals(""))
             {
+                Group g = ActiveGroupFirst;
+                if (g.Name.Equals("[G0]")) return;
+
                 foreach (object o in lstMain.Items.ToList())
                 {
                     lstMain.Items.Remove(o);
                 }
 
-                Group find = room.masterGroup.FindGroup(item);
-                if (find == null) return;
+                
+                if (g.fullSet.Contains(game.targetNode)) game.targetNode = null;
+                if (g.fullSet.Contains(inspectorArea.editNode) && inspectorArea.editNode != g.defaultNode)
+                {
+                    inspectorArea.InsBox.Items.Clear();
+                    inspectorArea.InsBox.rootitem = null;
+                    inspectorArea.editNode = null;
+                }
+                g.DeleteGroup();
+
+                cbListPicker.Items.Remove(g.Name);
+
+                cbListPicker.ItemIndex = 2;
 
                 
 
-                SyncTitleNumber(find);
+                //UpdateGroupComboBoxes();
+                SyncTitleNumber();
 
                 
 
@@ -547,12 +562,12 @@ namespace OrbItProcs
             
         }
 
-        public void SyncTitleNumber(Group caller)
+        public void SyncTitleNumber(Group group = null)
         {
-            Group g = ActiveGroupFirst;
-            if (g != caller) return;
-            int count = g == null ? 0 : g.entities.Count;
-            title1.Text = g.Name + " : " + count;
+            if (group == null) group = ActiveGroupFirst;
+
+            int count = group == null ? 0 : group.entities.Count;
+            title1.Text = group.Name + " : " + count;
         }
 
         void btnSaveNode_Click(object sender, EventArgs e)
@@ -941,7 +956,7 @@ namespace OrbItProcs
             inspectorArea.lblInspectorAddress.Text = "/" + activeDef.ToString();
         }
 
-        void btnRemoveAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        public void btnRemoveAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             Group g = ActiveGroupFirst;
             if (g.fullSet.Contains(game.targetNode)) game.targetNode = null;
@@ -951,11 +966,13 @@ namespace OrbItProcs
                 inspectorArea.InsBox.rootitem = null;
                 inspectorArea.editNode = null;
             }
-            g.fullSet.ToList().ForEach(delegate(Node o) 
+            //int size = g.fullSet.Count, count = 0;
+            g.fullSet.ToList().ForEach(delegate(Node o)
             {
                 g.DeleteEntity(o);
+                //count++;    
             });
-
+            //Console.WriteLine("Size:"+  g.fullSet.Count);
             lstMain.ItemIndex = -1;
         }
 

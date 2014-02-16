@@ -36,11 +36,17 @@ namespace OrbItProcs
 
             for(int i = 0; i < contact_count; i++)
             {
-                Vector2 ra = contacts[i] - a.position;
-                Vector2 rb = contacts[i] - b.position;
+                Vector2 ra = contacts[i] - a.pos;
+                Vector2 rb = contacts[i] - b.pos;
 
-                Vector2 rv = b.velocity + VMath.Cross(b.angularVelocity, rb) -
-                             a.velocity - VMath.Cross(a.angularVelocity, ra);
+                Vector2 crossprod_b = VMath.Cross(b.angularVelocity, rb);
+                Vector2 crossprod_a = VMath.Cross(a.angularVelocity, ra);
+                Vector2 rv = b.velocity + crossprod_b - a.velocity - crossprod_a;
+
+                //Vector2 rv = b.velocity + VMath.Cross(b.angularVelocity, rb) -
+                //             a.velocity - VMath.Cross(a.angularVelocity, ra);
+                //if (b.velocity.IsFucked()) System.Diagnostics.Debugger.Break(); //removelater
+                //if (a.velocity.IsFucked()) System.Diagnostics.Debugger.Break(); //removelater
 
                 //if (rv.Length() < (dt,gravity).LengthSquared() + EPSILON) e = 0.0f;
 
@@ -57,11 +63,13 @@ namespace OrbItProcs
             for (int i = 0; i < contact_count; i++)
             {
                 //calcuate radii from COM to contact
-                Vector2 ra = contacts[i] - a.position;
-                Vector2 rb = contacts[i] - b.position;
+                Vector2 ra = contacts[i] - a.pos;
+                Vector2 rb = contacts[i] - b.pos;
                 //relative velocity
                 Vector2 rv = b.velocity + VMath.Cross(b.angularVelocity, rb) -
                              a.velocity - VMath.Cross(a.angularVelocity, ra);
+                if (a.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
+                if (b.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
                 //relative velocity along the normal
                 double contactVel = Vector2.Dot(rv, normal);
                 //do not resolve if velocities are seperating
@@ -84,6 +92,8 @@ namespace OrbItProcs
                 //friction impulse
                 rv = b.velocity + VMath.Cross(b.angularVelocity, rb) -
                      a.velocity - VMath.Cross(a.angularVelocity, ra);
+                if (a.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
+                if (b.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
                 Vector2 t = rv - (normal * Vector2.Dot(rv, normal));
                 if (float.IsNaN(t.X)) System.Diagnostics.Debugger.Break();
                 //t.Normalize();
@@ -112,11 +122,13 @@ namespace OrbItProcs
             double k_slop = 0.05;
             double percent = 0.4;
             Vector2 correction = VMath.MultVectDouble(normal, Math.Max(penetration - k_slop, 0.0) / (a.invmass + b.invmass) * percent);
-            a.position -= VMath.MultVectDouble(correction, a.invmass);
-            b.position += VMath.MultVectDouble(correction, b.invmass);
+            a.pos -= VMath.MultVectDouble(correction, a.invmass);
+            b.pos += VMath.MultVectDouble(correction, b.invmass);
         }
         void InfinitMassCorrection()
         {
+            if (a.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
+            if (b.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
             VMath.Set(ref a.velocity, 0, 0);//a.velocity.Set(0, 0);
             VMath.Set(ref b.velocity, 0, 0);//b.velocity.Set(0, 0);
         }

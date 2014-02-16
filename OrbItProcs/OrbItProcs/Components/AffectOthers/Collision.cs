@@ -108,7 +108,7 @@ namespace OrbItProcs
         {
             Circle ca = (Circle)a.shape;
             Circle cb = (Circle)b.shape;
-            Vector2 normal = b.position - a.position;
+            Vector2 normal = b.pos - a.pos;
             float distSquared = normal.LengthSquared();
             double radius = a.radius + b.radius;
             if (distSquared >= (float)(radius * radius))
@@ -124,13 +124,13 @@ namespace OrbItProcs
             {
                 m.penetration = ca.radius;
                 m.normal = new Vector2(1, 0);
-                m.contacts[0] = a.position;
+                m.contacts[0] = a.pos;
             }
             else
             {
                 m.penetration = radius - distance;
                 m.normal = VMath.MultVectDouble(normal, 1.0 / distance); //normal / distance;
-                m.contacts[0] = VMath.MultVectDouble(m.normal, ca.radius) + a.position; //m.normal * ca.radius + a.body.position;
+                m.contacts[0] = VMath.MultVectDouble(m.normal, ca.radius) + a.pos; //m.normal * ca.radius + a.body.position;
             }
         }
         //////////////////////////////////////////////////////////
@@ -149,8 +149,8 @@ namespace OrbItProcs
             m.contact_count = 0;//m.contact_count = 0;
 
             // Transform circle center to Polygon model space
-            Vector2 center = a.position;
-            center = B.u.Transpose() * (center - b.position);
+            Vector2 center = a.pos;
+            center = B.u.Transpose() * (center - b.pos);
 
             // Find edge with minimum penetration
             // Exact concept as using support points in Polygon vs Polygon
@@ -184,7 +184,7 @@ namespace OrbItProcs
             {
                 m.contact_count = 1;
                 m.normal = -(B.u * B.normals[faceNormal]);
-                m.contacts[0] = VMath.MultVectDouble(m.normal, A.radius) + a.position;
+                m.contacts[0] = VMath.MultVectDouble(m.normal, A.radius) + a.pos;
                 m.penetration = A.radius;
                 {
                     //Console.Write("{0}:", DateTime.Now.Millisecond);
@@ -213,7 +213,7 @@ namespace OrbItProcs
                 n = B.u * n;
                 n.Normalize();
                 m.normal = n;
-                v1 = B.u * v1 + b.position;
+                v1 = B.u * v1 + b.pos;
                 m.contacts[0] = v1;
             }
 
@@ -229,7 +229,7 @@ namespace OrbItProcs
 
                 m.contact_count = 1;
                 Vector2 n = v2 - center;
-                v2 = B.u * v2 + b.position;
+                v2 = B.u * v2 + b.pos;
                 m.contacts[0] = v2;
                 n = B.u * n;
                 n.Normalize();
@@ -249,7 +249,7 @@ namespace OrbItProcs
 
                 n = B.u * n;
                 m.normal = -n;
-                m.contacts[0] = VMath.MultVectDouble(m.normal, A.radius) + a.position;
+                m.contacts[0] = VMath.MultVectDouble(m.normal, A.radius) + a.pos;
                 m.contact_count = 1;
             }
         }
@@ -281,8 +281,8 @@ namespace OrbItProcs
                 // Retrieve vertex on face from A, transform into
                 // B's model space
                 Vector2 v = A.vertices[i];
-                v = A.u * v + A.body.position;
-                v -= B.body.position;
+                v = A.u * v + A.body.pos;
+                v -= B.body.pos;
                 v = buT * v;
 
                 // Compute penetration distance (in B's model space)
@@ -322,9 +322,9 @@ namespace OrbItProcs
             }
 
             // Assign face vertices for incidentFace
-            v[0] = IncPoly.u * IncPoly.vertices[incidentFace] + IncPoly.body.position;
+            v[0] = IncPoly.u * IncPoly.vertices[incidentFace] + IncPoly.body.pos;
             incidentFace = incidentFace + 1 >= IncPoly.vertexCount ? 0 : incidentFace + 1;
-            v[1] = IncPoly.u * IncPoly.vertices[incidentFace] + IncPoly.body.position;
+            v[1] = IncPoly.u * IncPoly.vertices[incidentFace] + IncPoly.body.pos;
         }
 
         public static int Clip(Vector2 n, double c, ref Vector2[] face)
@@ -428,8 +428,8 @@ namespace OrbItProcs
             Vector2 v2 = RefPoly.vertices[referenceIndex];
 
             // Transform vertices to world space
-            v1 = RefPoly.u * v1 + RefPoly.body.position;
-            v2 = RefPoly.u * v2 + RefPoly.body.position;
+            v1 = RefPoly.u * v1 + RefPoly.body.pos;
+            v2 = RefPoly.u * v2 + RefPoly.body.pos;
 
             // Calculate reference face side normal in world space
             Vector2 sidePlaneNormal = (v2 - v1);

@@ -295,7 +295,7 @@ namespace OrbItProcs {
                 ///// PROPERTIES
                 List<PropertyInfo> propertyInfos;
                 //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                if (false && !(parent is Component || parent is Player || parent is Process))
+                if (!(parent is Component || parent is Player || parent is Process))
                 {
                     propertyInfos = parent.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
                 }
@@ -315,7 +315,7 @@ namespace OrbItProcs {
                 {
                     List<FieldInfo> fieldInfos;
                     //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                    if (false && !(parent is Component || parent is Player || parent is Process))
+                    if (!(parent is Component || parent is Player || parent is Process))
                     {
                         fieldInfos = parent.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
                     }
@@ -409,7 +409,10 @@ namespace OrbItProcs {
             if (obj is Vector2)
             {
                 dynamic vect = obj;
-                return "X:" + vect.X + "Y:" + vect.Y;
+                string s = result + fpinfo.Name + " : ";
+                s += string.Format("X: {0:0} | Y: {1:0}", vect.X, vect.Y);
+                return s;
+
             }
 
 
@@ -454,8 +457,16 @@ namespace OrbItProcs {
                     //System.Console.WriteLine(result + fpinfo.Name + " <" + ks + "," + vs + ">");
                     return result + fpinfo.Name + " <" + ks + "," + vs + ">";
                 }
+                if (datatype == data_type.array)
+                {
+                    //Type[] gen = obj.GetType().GetGenericArguments();
+                    //obj.GetType()
+                    Type k = obj.GetType().GetElementType();
+                    return result + fpinfo.Name + " <" + k + ">";
+                }
                 if (datatype == data_type.collection)
                 {
+                    if (obj.GetType().GetGenericArguments().Length == 0) return result + fpinfo.Name;
                     Type k = obj.GetType().GetGenericArguments()[0];
                     //Type v = obj.GetType().GetGenericArguments()[1];
                     string ks = k.ToString().Split('.').ToList().ElementAt(k.ToString().Split('.').ToList().Count - 1);
@@ -464,14 +475,6 @@ namespace OrbItProcs {
                     //System.Console.WriteLine(result + fpinfo.Name + " <" + ks + "," + vs + ">");
                     return result + fpinfo.Name + " <" + ks + ">";
                 }
-                if (datatype == data_type.array)
-                {
-                    //Type[] gen = obj.GetType().GetGenericArguments();
-                    //obj.GetType()
-                    Type k = obj.GetType().GetElementType();
-                    return result + fpinfo.Name + " <" + k + ">";
-                }
-
                 return result + fpinfo.Name + " : " + fpinfo.GetValue(parentItem.obj);
             }
             if (obj == null)

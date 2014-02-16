@@ -25,7 +25,6 @@ namespace OrbItProcs
         {
             this.parent = parent;
         }
-
         
         public override void AffectSelf()
         {
@@ -44,9 +43,12 @@ namespace OrbItProcs
             Room room = parent.room;
             float mapzoom = room.mapzoom;
 
-            //spritebatch.Draw()
+            if (parent.DebugFlag) System.Diagnostics.Debugger.Break();
 
-            spritebatch.Draw(parent.getTexture(), parent.body.position / mapzoom, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
+            //spritebatch.Draw()
+            Texture2D tex = parent.getTexture();
+
+            spritebatch.Draw(tex, parent.body.pos / mapzoom, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
             
             
         }

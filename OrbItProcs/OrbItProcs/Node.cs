@@ -41,15 +41,28 @@ namespace OrbItProcs {
 
     public class Node {
 
+        public static HashSet<string> nodeHashes = new HashSet<string>();
+
+        public string _nodeHash = "";
+        public string nodeHash { get { return _nodeHash; } set 
+        { 
+            nodeHashes.Remove(_nodeHash);
+            _nodeHash = value;
+
+            if (nodeHashes.Contains(value))
+                room.masterGroup.findNodeByHash(value).nodeHash =
+                    Utils.uniqueString(nodeHashes);
+
+            nodeHashes.Add(value);
+        } }
+
         public static int nodeCounter = 0;
 
         public event EventHandler OnAffectOthers;
 
         public event ProcessMethod Collided;
         //public Dictionary<dynamic, dynamic> CollideArgs;
-
         //static Dictionary<dynamic, dynamic> defaultProps = new Dictionary<dynamic, dynamic>() { };
-
         public T GetComponent<T>()
         {
             return comps[Game1.compEnums[typeof(T)]];
@@ -59,7 +72,7 @@ namespace OrbItProcs {
         private Dictionary<comp, bool> tempCompActiveValues = new Dictionary<comp, bool>();
 
         private state _nodeState = state.on;
-        public state nodeState { get { return _nodeState; } set { _nodeState = value;} }
+        public state nodeState { get { return _nodeState; } set { _nodeState = value; } }
 
         private bool _active = true;
         public bool active
@@ -140,14 +153,14 @@ namespace OrbItProcs {
         public List<comp> compsToRemove = new List<comp>();
         public List<comp> compsToAdd = new List<comp>();
 
+        public Body body;
+        public Body BODY { get { return body; } set { body = value; } }
+
         public Movement movement;
         public Movement MOVEMENT { get { return movement; } set { movement = value; } }
 
         public Collision collision;
         public Collision COLLISION { get { return collision; } set { collision = value; } }
-
-        public Body body;
-        public Body BODY { get { return body; } set { body = value; } }
 
         private ObservableHashSet<Link> _SourceLinks = new ObservableHashSet<Link>();
         public ObservableHashSet<Link> SourceLinks { get { return _SourceLinks; } set { _SourceLinks = value; } }
@@ -155,10 +168,28 @@ namespace OrbItProcs {
         private ObservableHashSet<Link> _TargetLinks = new ObservableHashSet<Link>();
         public ObservableHashSet<Link> TargetLinks { get { return _TargetLinks; } set { _TargetLinks = value; } }
 
+        public bool DebugFlag { get; set; }
+
+        public bool PolenterHack
+        {
+            get { return true; }
+            set 
+            {
+                foreach (comp c in comps.Keys.ToList())
+                {
+                    ((Component)comps[c]).parent = this;
+                }
+                body.parent = this;
+                collision.parent = this;
+                movement.parent = this;
+                body.shape.body = body;
+            }
+        }
+
         public void storeInInstance(node val, Dictionary<dynamic,dynamic> dict)
         {
             if (val == node.active)             active                      = dict[val];
-            if (val == node.position)           body.position          = dict[val];
+            if (val == node.position)           body.pos          = dict[val];
             if (val == node.velocity)           body.velocity          = dict[val];
             if (val == node.multiplier)         multiplier                  = dict[val];
             if (val == node.effectiveRadius)    effectiveRadius             = dict[val];
@@ -181,6 +212,7 @@ namespace OrbItProcs {
 
         public Node()
         {
+            nodeHash = Utils.uniqueString(nodeHashes);
             nodeCounter++;
             room = Program.getRoom();
             //transform = new Transform(this);
@@ -188,10 +220,12 @@ namespace OrbItProcs {
             collision = new Collision(this);
             body = new Body(parent: this);
             name = "blankname";
+            
         }
 
         public Node(ShapeType shapetype)
         {
+            nodeHash = Utils.uniqueString(nodeHashes);
             nodeCounter++;
             room = Program.getRoom();
             movement = new Movement(this);
@@ -475,7 +509,15 @@ namespace OrbItProcs {
         
         public virtual void Update(GameTime gametime)
         {
-            if (body != body.shape.body) body.shape.body = body;
+            
+            /*foreach (comp c in comps.Keys.ToList())
+            {
+                Component component = (Component)comps[c];
+                //if (component is BasicDraw && DebugFlag) System.Diagnostics.Debugger.Break();
+                component.parent = this;
+            }*/
+
+            //if (body != body.shape.body) body.shape.body = body;
             if (nodeState == state.off || nodeState == state.drawOnly) return;
 
             if (aOtherProps.Count > 0)
@@ -620,6 +662,14 @@ namespace OrbItProcs {
             }
         }
 
+        public Node CreateClone()
+        {
+            Node newNode = new Node();
+            cloneObject(this, newNode);
+
+            return newNode;
+        }
+
         public static void cloneObject(Node sourceNode, Node destNode) //they must be the same type
         {
             //dynamic returnval;
@@ -705,17 +755,20 @@ namespace OrbItProcs {
                     Component.CloneComponent(sourceNode.collision, destNode.collision);
 
                     destNode.collision.parent = destNode;
+                    destNode.collision.AfterCloning();
                 }
                 else if (field.FieldType == (typeof(Movement)))
                 {
                     Component.CloneComponent(sourceNode.movement, destNode.movement);
                     destNode.movement.parent = destNode;
+                    destNode.movement.AfterCloning();
                 }
                 else if (field.FieldType == (typeof(Body)))
                 {
                     Component.CloneComponent(sourceNode.body, destNode.body);
                     destNode.body.parent = destNode;
                     destNode.body.shape.body = destNode.body;
+                    destNode.body.AfterCloning();
                 }
                 else
                 {

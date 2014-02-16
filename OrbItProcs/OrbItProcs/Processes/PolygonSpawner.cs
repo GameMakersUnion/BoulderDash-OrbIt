@@ -61,7 +61,7 @@ namespace OrbItProcs
             poly.body = newNode.body;
             poly.Set(vertices, vertices.Length);
             newNode.body.shape = poly;
-            newNode.body.position = mp;
+            newNode.body.pos = mp;
             room.game.spawnNode(newNode);
 
             verts = new List<Vector2>();
@@ -80,7 +80,7 @@ namespace OrbItProcs
             poly.body = newNode.body;
             poly.SetBox(Utils.random.Next(100),Utils.random.Next(100));
             newNode.body.shape = poly;
-            newNode.body.position = mp;
+            newNode.body.pos = mp;
             room.game.spawnNode(newNode);
 
             //verts = new List<Vector2>();

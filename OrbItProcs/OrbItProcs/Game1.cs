@@ -332,7 +332,8 @@ namespace OrbItProcs
             ui.sidebar.cbGroupT.ItemIndex = 2;
             InitializePresets();
 
-            room.player1 = new Player(new Vector2(200, 200));
+            room.player1 = new Player();
+            room.player1.body.pos = new Vector2(100, 100);
             room.processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
 
             room.processManager.SetProcessKeybinds(ui.keyManager);
@@ -355,14 +356,13 @@ namespace OrbItProcs
                 //Console.WriteLine("Current Files" + filepath);
                 //Console.WriteLine(file);
                 Node presetnode = (Node)room.serializer.Deserialize(file);
-                foreach (comp c in presetnode.comps.Keys.ToList())
+                /*foreach (comp c in presetnode.comps.Keys.ToList())
                 {
                     ((Component)presetnode.comps[c]).parent = presetnode;
                 }
                 presetnode.body.parent = presetnode;
-                //presetnode.body.shape.body = presetnode.body;
                 presetnode.collision.parent = presetnode;
-                presetnode.movement.parent = presetnode;
+                presetnode.movement.parent = presetnode;*/
                 NodePresets.Add(presetnode);
 
                 //NodePresets.Add((Node)room.serializer.Deserialize(file));

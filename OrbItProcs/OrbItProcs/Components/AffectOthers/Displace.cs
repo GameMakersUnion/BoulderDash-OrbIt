@@ -64,12 +64,12 @@ namespace OrbItProcs
             if (exclusions.Contains(other)) return;
 
 
-            float distVects = Vector2.Distance(other.body.position, parent.body.position);
+            float distVects = Vector2.Distance(other.body.pos, parent.body.pos);
 
             if (distVects < radius)
             {
                 if (distVects < lowerbound) distVects = lowerbound;
-                double angle = Math.Atan2((parent.body.position.Y - other.body.position.Y), (parent.body.position.X - other.body.position.X));
+                double angle = Math.Atan2((parent.body.pos.Y - other.body.pos.Y), (parent.body.pos.X - other.body.pos.X));
                 //float counterforce = 100 / distVects;
                 //float gravForce = multiplier / (distVects * distVects * counterforce);
                 //Console.WriteLine(angle);
@@ -89,9 +89,9 @@ namespace OrbItProcs
                 float velY = (float)Math.Sin(angle) * gravForce;
                 Vector2 delta = new Vector2(velX, velY);
 
-                if (IsLinear) delta /= other.body.mass;
+                if (IsLinear) delta *= other.body.invmass;;
 
-                other.body.position -= delta;
+                other.body.pos -= delta;
 
             }
         }

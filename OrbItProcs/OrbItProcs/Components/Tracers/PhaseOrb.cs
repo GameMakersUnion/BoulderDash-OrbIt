@@ -10,17 +10,6 @@ namespace OrbItProcs
 {
     public class PhaseOrb : Component
     {
-        [Polenter.Serialization.ExcludeFromSerialization]
-        public Node parent
-        {
-            get { return _parent; }
-            set
-            {
-                _parent = value;
-                //if (value != null) UpdateParent();
-            }
-        }
-
         private int _queuecount = 10;
         public int queuecount { get { return _queuecount; } set { _queuecount = value; } }
 
@@ -146,7 +135,7 @@ namespace OrbItProcs
 
             //float testangle = (float)(Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2));
             if (parent.comps.ContainsKey(comp.hueshifter)) col = parent.body.color;
-            spritebatch.Draw(parent.getTexture(), parent.body.position / mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(), parent.body.pos / mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
 
         }
 

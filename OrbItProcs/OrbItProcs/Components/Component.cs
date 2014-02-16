@@ -193,6 +193,7 @@ namespace OrbItProcs
                //field.SetValue(newobj, field.GetValue(obj));
            }
            destComp.InitializeLists();
+           destComp.AfterCloning();
        }
     }
 
