@@ -30,9 +30,25 @@ namespace OrbItProcs
         public bool active { get { return _active; } 
             set 
             {
-                if (value && !_active && formation != null)
+                if (value && !_active)
                 {
-                    formation.UpdateFormation();
+                    if (formation != null)
+                    {
+                        formation.UpdateFormation();
+                    }
+                    if (room != null)
+                    {
+                        room.AllInactiveLinks.Remove(this);
+                        room.AllActiveLinks.Add(this);
+                    }
+                }
+                else if (!value && _active)
+                {
+                    if (room != null)
+                    {
+                        room.AllActiveLinks.Remove(this);
+                        room.AllInactiveLinks.Add(this);
+                    }
                 }
                 _active = value; 
             } 
@@ -73,47 +89,178 @@ namespace OrbItProcs
                     _FormationType = value; 
                 }
                 
-            } 
+            }
         }
         public bool _Reversed = false;
         public bool Reversed { get { return _Reversed; } set { _Reversed = value; } }
         public bool _DrawTips = false;
         public bool DrawTips { get { return _DrawTips; } set { _DrawTips = value; } }
-        public float _AngleInc = 0.2f;
+        public float _AngleInc = 0.02f;
         public float AngleInc { get { return _AngleInc; } set { _AngleInc = value; } }
         [Polenter.Serialization.ExcludeFromSerialization]
         public Node sourceNode { get; set; }
+        public string sourceNodeHash
+        {
+            get
+            {
+                if (sourceNode != null) return sourceNode.nodeHash;
+                return "";
+            }
+            set
+            {
+                if (room.masterGroup == null) return;
+                Node n = room.masterGroup.FindNodeByHash(value);
+                sourceNode = n;
+            }
+        }
         [Polenter.Serialization.ExcludeFromSerialization]
         public Node targetNode { get; set; }
+        public string targetNodeHash
+        {
+            get
+            {
+                if (targetNode != null) return targetNode.nodeHash;
+                return "";
+            }
+            set
+            {
+                if (room.masterGroup == null) return;
+                Node n = room.masterGroup.FindNodeByHash(value);
+                targetNode = n;
+            }
+        }
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Node> sources { get; set; }
+        public ObservableHashSet<string> sourcesHashes { 
+            get 
+            {
+                if (sources == null) return null;
+                ObservableHashSet<string> hashes = new ObservableHashSet<string>();
+                foreach(Node n in sources)
+                {
+                    hashes.Add(n.nodeHash);
+                }
+                return hashes;
+            }
+            set
+            {
+                if (sources == null) throw new SystemException("sources was expected to be non-null when deserializing.");
+                else if (sources.Count > 0) throw new SystemException("sources was expected to be empty when deserializing.");
+                room.masterGroup.FindNodeByHashes(value, sources);
+            }
+        }
+
+
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Node> targets { get; set; }
+        public ObservableHashSet<string> targetsHashes
+        {
+            get
+            {
+                if (targets == null) return null;
+                ObservableHashSet<string> hashes = new ObservableHashSet<string>();
+                foreach (Node n in targets)
+                {
+                    hashes.Add(n.nodeHash);
+                }
+                return hashes;
+            }
+            set
+            {
+                if (targets == null) throw new SystemException("targets was expected to be non-null when deserializing.");
+                else if (targets.Count > 0) throw new SystemException("targets was expected to be empty when deserializing.");
+                room.masterGroup.FindNodeByHashes(value, targets);
+            }
+        }
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Node> exclusions { get; set; }
+        public ObservableHashSet<string> exclusionsHashes
+        {
+            get
+            {
+                if (exclusions == null) return null;
+                ObservableHashSet<string> hashes = new ObservableHashSet<string>();
+                foreach (Node n in exclusions)
+                {
+                    hashes.Add(n.nodeHash);
+                }
+                return hashes;
+            }
+            set
+            {
+                if (exclusions == null) throw new SystemException("exclusions was expected to be non-null when deserializing.");
+                else if (exclusions.Count > 0) throw new SystemException("exclusions was expected to be empty when deserializing.");
+                room.masterGroup.FindNodeByHashes(value, exclusions);
+            }
+        }
         [Polenter.Serialization.ExcludeFromSerialization]
         public Group sourceGroup { get; set; }
+        public string sourceGroupHash
+        {
+            get
+            {
+                if (sourceGroup == null) return "";
+                return sourceGroup.groupHash;
+            }
+            set
+            {
+                Group g = room.findGroupByHash(value);
+                sourceGroup = g;
+            }
+        }
         [Polenter.Serialization.ExcludeFromSerialization]
         public Group targetGroup { get; set; }
-
+        public string targetGroupHash
+        {
+            get
+            {
+                if (targetGroup == null) return "";
+                return targetGroup.groupHash;
+            }
+            set
+            {
+                Group g = room.findGroupByHash(value);
+                targetGroup = g;
+            }
+        }
         public bool _IsEntangled = false;
         public bool IsEntangled
         {
             get { return _IsEntangled; }
             set
             {
-                //linkComponent.parent = sourceNode;
                 _IsEntangled = value;
             }
         }
 
         private float anglestep = 0;
 
+        public bool PolenterHack
+        {
+            get { return true; }
+            set
+            {
+                if (formation != null)
+                    formation.link = this;
+
+                if (sources != null)
+                {
+                    foreach (Node n in sources)
+                    {
+                        n.OnAffectOthers += NodeToGroupHandler; //i'm nervous about this
+                    }
+                }
+            }
+        }
+
+
         public Link()
         {
             //..
             this.room = Program.getRoom();
             this.components = new ObservableHashSet<ILinkable>();
+            this.sources = new ObservableHashSet<Node>();
+            this.targets = new ObservableHashSet<Node>();
         }
 
         //blank link (for the palette)
@@ -225,8 +372,6 @@ namespace OrbItProcs
                         t.TargetLinks.Add(this);
                     }
                 }
-
-                
             }
             else if (src is Group)
             {
@@ -235,7 +380,6 @@ namespace OrbItProcs
 
                 this.sourceGroup.SourceLinks.Add(this);
 
-
                 foreach (Node s in sources)
                 {
                     s.OnAffectOthers += NodeToGroupHandler;
@@ -243,8 +387,6 @@ namespace OrbItProcs
 
                 }
                 this.sourceGroup.fullSet.CollectionChanged += sourceGroup_CollectionChanged;
-
-                
             }
             else
             {
@@ -474,7 +616,7 @@ namespace OrbItProcs
                 }
             }
         }
-        //unused for now as well
+        //unused for now
         /*
         public void UpdateNodeToGroup()
         {
@@ -654,7 +796,7 @@ namespace OrbItProcs
         {
             foreach (comp key in Enum.GetValues(typeof(comp)))
             {
-                Type compType = Game1.compTypes[key];
+                Type compType = Utils.GetComponentTypeFromEnum(key);
 
                 if (!typeof(ILinkable).IsAssignableFrom(compType)) continue;
 

@@ -462,6 +462,7 @@ namespace OrbItProcs
         {
             InspectorBox box = insArea2.InsBox;
             if (box.ItemIndex < 0 || box.ItemIndex > box.Items.Count) return;
+            if (box.ItemIndex >= box.Items.Count) return;
 
             object i = box.Items.ElementAt(box.ItemIndex);
             if (!(i is InspectorItem)) return;

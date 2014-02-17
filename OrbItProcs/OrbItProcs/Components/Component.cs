@@ -92,7 +92,11 @@ namespace OrbItProcs
             return null;
         }
 
-        
+        public static Component GenerateComponent(comp c)
+        {
+            Component component = (Component)Activator.CreateInstance(Utils.GetComponentTypeFromEnum(c));
+            return component;
+        }
         
 
        public static void CloneComponent(Component sourceComp, Component destComp)

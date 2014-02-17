@@ -563,7 +563,7 @@ namespace OrbItProcs
         {
             //bool writeable = false;
             comp c = (comp)o[1];
-            Type t = Game1.compTypes[c];
+            Type t = Utils.GetComponentTypeFromEnum(c);
 
             object linkComp = Activator.CreateInstance(t);
 

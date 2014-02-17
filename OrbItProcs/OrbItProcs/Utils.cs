@@ -11,6 +11,47 @@ using System.Collections.Specialized;
 namespace OrbItProcs {
     public static class Utils {
         
+        public static Dictionary<comp, Type> compTypes;
+
+        public static Type GetComponentTypeFromEnum(comp c)
+        {
+            if (compTypes.ContainsKey(c)) return compTypes[c];
+            return null;
+        }
+        //public static comp GetComponentCompFromType(Type t)
+        //{
+        //    if (compTypes.ContainsKey(c)) return compTypes[c];
+        //    return null;
+        //}
+
+        public static void PopulateComponentTypesDictionary()
+        {
+            compTypes = new Dictionary<comp, Type>();
+
+            IEnumerable<Type> types = AppDomain.CurrentDomain.GetAssemblies()
+                       .SelectMany(assembly => assembly.GetTypes())
+                       .Where(type => type.IsSubclassOf(typeof(Component)));
+
+            foreach(Type t in types)
+            {
+                string name = t.ToString().ToLower();
+                if (name.Contains('.'))
+                {
+                    int index = name.LastIndexOf('.');
+                    name = name.Substring(index+1);
+                }
+                comp c;
+                if (Enum.TryParse<comp>(name, out c))
+                {
+                    compTypes.Add(c, t);
+                }
+                else
+                {
+                    Console.WriteLine("{0} did not have an equivalent enum value", t.ToString());
+                }
+            }
+        }
+
         public static void Break()
         {
             System.Diagnostics.Debugger.Break();

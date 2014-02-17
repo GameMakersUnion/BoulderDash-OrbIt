@@ -310,7 +310,7 @@ namespace OrbItProcs
 
         public static void PopulateDelegatesAll()
         {
-            foreach (Type componentType in Game1.compTypes.Values)
+            foreach (Type componentType in Utils.compTypes.Values)
             {
                 PopulateDelegates(componentType);
             }

@@ -158,7 +158,7 @@ namespace OrbItProcs
                     string ltype = cbLinkType.SelectedItem();
                     comp c = (comp)Enum.Parse(typeof(comp), ltype);
                     //System.Console.WriteLine((int)c);
-                    Type t = Game1.compTypes[c];
+                    Type t = Utils.GetComponentTypeFromEnum(c);
 
                     object linkComp = Activator.CreateInstance(t);
 

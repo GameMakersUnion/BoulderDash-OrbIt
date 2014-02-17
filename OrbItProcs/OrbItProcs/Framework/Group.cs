@@ -14,7 +14,7 @@ namespace OrbItProcs
     {
         public static HashSet<string> groupHashes = new HashSet<string>();
 
-        public string _groupHash = "";
+        private string _groupHash = "";
         public string groupHash { get { return _groupHash; } set {
 
             groupHashes.Remove(_groupHash);
@@ -415,9 +415,27 @@ namespace OrbItProcs
         }
 
 
-        public Node findNodeByHash(string value)
+        public Node FindNodeByHash(string value)
         {
-            throw new NotImplementedException();
+            foreach(Node n in fullSet)
+            {
+                if (n.nodeHash.Equals(value)) return n;
+            }
+            return null;
+        }
+
+        public void FindNodeByHashes(ObservableHashSet<string> hashes, ObservableHashSet<Node> nodeSet)
+        {
+            ObservableHashSet<string> alreadyFound = new ObservableHashSet<string>();
+            foreach(Node n in fullSet)
+            {
+                if (hashes.Contains(n.nodeHash) && !alreadyFound.Contains(n.nodeHash))
+                {
+                    nodeSet.Add(n);
+                    alreadyFound.Add(n.nodeHash);
+                }
+            }
+            Console.WriteLine("hashes:{0}  |  alreadyfound:{1}", hashes.Count, alreadyFound.Count);
         }
     }
 }

@@ -43,14 +43,14 @@ namespace OrbItProcs {
 
         public static HashSet<string> nodeHashes = new HashSet<string>();
 
-        public string _nodeHash = "";
+        private string _nodeHash = "";
         public string nodeHash { get { return _nodeHash; } set 
         { 
             nodeHashes.Remove(_nodeHash);
             _nodeHash = value;
 
             if (nodeHashes.Contains(value))
-                room.masterGroup.findNodeByHash(value).nodeHash =
+                room.masterGroup.FindNodeByHash(value).nodeHash =
                     Utils.uniqueString(nodeHashes);
 
             nodeHashes.Add(value);
@@ -389,7 +389,7 @@ namespace OrbItProcs {
         {
             Component component;
 
-            component = Game1.GenerateComponent(c);
+            component = Component.GenerateComponent(c);
             component.parent = this;
             component.active = active;
             component.AfterCloning();
@@ -785,6 +785,7 @@ namespace OrbItProcs {
                 
 
             }
+            destNode.nodeHash = Utils.uniqueString(nodeHashes);
 
         }
         

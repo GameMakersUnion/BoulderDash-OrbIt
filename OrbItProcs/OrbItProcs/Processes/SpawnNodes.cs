@@ -71,16 +71,45 @@ namespace OrbItProcs
         public void Testing3()
         {
             string filename = "Presets//Rooms//link1.xml";
+
+
+            //Dictionary<string, ObservableHashSet<string>> AffectionSetsHashes = room._AllActiveLinks.ElementAt(0).formation.AffectionSetsHashes;
+
             room.serializer.Serialize(room._AllActiveLinks.ElementAt(0), filename);
 
         }
         public void Testing4()
         {
             string filename = "Presets//Rooms//link1.xml";
-            Link lnk = (Link)room.serializer.Deserialize(filename);
-            room.serializer = new Polenter.Serialization.SharpSerializer();
-            room._AllActiveLinks = new ObservableHashSet<Link>();
-            room._AllActiveLinks.Add(lnk);
+
+            try
+            {
+                Link lnk = (Link)room.serializer.Deserialize(filename);
+                room.serializer = new Polenter.Serialization.SharpSerializer();
+                room._AllActiveLinks = new ObservableHashSet<Link>();
+                room._AllActiveLinks.Add(lnk);
+            }
+            catch(Exception e)
+            {
+                if (e.InnerException != null)
+                {
+                    if (e.InnerException.InnerException != null)
+                    {
+                        throw e.InnerException.InnerException;
+                    }
+                    else
+                    {
+                        throw e.InnerException;
+                    }
+                }
+                else
+                {
+                    throw e;
+                }
+            }
+
+            
+            
         }
 
         public void SpawnNode()

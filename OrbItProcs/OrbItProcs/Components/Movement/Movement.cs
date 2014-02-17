@@ -106,8 +106,8 @@ namespace OrbItProcs
 
         public void fallOff()
         {
-            int levelwidth = parent.room.game.worldWidth;
-            int levelheight = parent.room.game.worldHeight;
+            int levelwidth = parent.room.worldWidth;
+            int levelheight = parent.room.worldHeight;
 
             Vector2 pos = parent.body.pos;
 
@@ -145,8 +145,8 @@ namespace OrbItProcs
         {
             //if (room.PropertiesDict["wallBounce"])
             //float levelwidth = room.game...;
-            int levelwidth = parent.room.game.worldWidth;
-            int levelheight = parent.room.game.worldHeight;
+            int levelwidth = parent.room.worldWidth;
+            int levelheight = parent.room.worldHeight;
 
             if (parent.body.pos.X >= (levelwidth - parent.body.radius))
             {
@@ -181,8 +181,8 @@ namespace OrbItProcs
         {
             //if (room.PropertiesDict["wallBounce"])
             //float levelwidth = room.game...;
-            int levelwidth = parent.room.game.worldWidth;
-            int levelheight = parent.room.game.worldHeight;
+            int levelwidth = parent.room.worldWidth;
+            int levelheight = parent.room.worldHeight;
 
             //hitting top/bottom of screen
             //teleport node

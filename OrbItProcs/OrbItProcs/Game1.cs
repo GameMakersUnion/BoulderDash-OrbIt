@@ -19,9 +19,6 @@ using Component = OrbItProcs.Component;
 using Console = System.Console;
 using sc = System.Console;
 
-
-
-
 using System.IO;
 using System.Collections.ObjectModel;
 
@@ -42,7 +39,6 @@ namespace OrbItProcs
         fieldgravity,
         displace,
         orbiter,
-
 
         randcolor,
         randvelchange,
@@ -70,7 +66,6 @@ namespace OrbItProcs
         tree,
         basicdraw,
 
-        //lasertimers,
         //repel,
         //middle,
         //slow,
@@ -82,52 +77,6 @@ namespace OrbItProcs
 
     public class Game1 : Application
     {
-        # region /// Comp to Type Dictionary ///
-        public static Dictionary<comp, Type> compTypes = new Dictionary<comp, Type>(){
-            {comp.basicdraw,        typeof(BasicDraw)           },
-            {comp.body,             typeof(Body)                },
-            {comp.circler,          typeof(Circler)             },
-            {comp.collision,        typeof(Collision)           },
-            {comp.displace,         typeof(Displace)            },
-            {comp.fieldgravity,     typeof(FieldGravity)        },
-            {comp.fixedforce,       typeof(FixedForce)          },
-            {comp.flow,             typeof(Flow)                },
-            {comp.gravity,          typeof(Gravity)             },
-            {comp.hueshifter,       typeof(HueShifter)          },
-            {comp.laser,            typeof(Laser)               },
-            {comp.lifetime,         typeof(Lifetime)            },
-            {comp.linearpull,       typeof(LinearPull)          },
-            {comp.maxvel,           typeof(MaxVel)              },
-            {comp.modifier,         typeof(Modifier)            },
-            {comp.movement,         typeof(Movement)            },
-            {comp.orbiter,          typeof(Orbiter)             },
-            {comp.phaseorb,         typeof(PhaseOrb)            },
-            {comp.queuer,           typeof(Queuer)              },
-            {comp.randcolor,        typeof(RandColor)           },
-            {comp.randinitialvel,   typeof(RandInitialVel)      },
-            {comp.randvelchange,    typeof(RandVelChange)       },
-            {comp.relativemotion,   typeof(RelativeMotion)      },
-            {comp.tether,           typeof(Tether)              },
-            {comp.transfer,         typeof(Transfer)            },
-            {comp.tree,             typeof(Tree)                },
-            {comp.waver,            typeof(Waver)               },
-            {comp.wideray,          typeof(WideRay)             },
-          //{comp.transform,        typeof(Transform)           },
-          //{comp.lasertimers,      typeof(LaserTimers)         },
-          //{comp.middle,           typeof(MaxVel)              },
-          //{comp.repel,            typeof(Repel)               },
-          //{comp.siphon,           typeof(Siphon)              },
-          //{comp.slow,             typeof(Slow)                }, 
-          //{comp.weird,            typeof(Weird)               },
-        };
-        #endregion
-
-        public static Component GenerateComponent(comp c)
-        {
-            Component component = (Component)Activator.CreateInstance(compTypes[c]);
-            return component;
-        }
-
         public static GameTime GlobalGameTime;
 
         public UserInterface ui;
@@ -148,8 +97,8 @@ namespace OrbItProcs
         //Node node;
         
 
-        public int worldWidth { get; set; }
-        public int worldHeight { get; set; }
+        //public int worldWidth { get; set; }
+        //public int worldHeight { get; set; }
 
         //string currentSelection = "placeNode";
         public Node targetNode = null;
@@ -177,14 +126,11 @@ namespace OrbItProcs
             IsFixedTimeStep = false;
             //TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 5);
 
-            worldWidth = 1580;
-            worldHeight = 1175;
-
             Graphics.PreferredBackBufferWidth = sWidth;
             Graphics.PreferredBackBufferHeight = sHeight;
             ////
-            
 
+            Utils.PopulateComponentTypesDictionary();
 
             ClearBackground = true;
             BackgroundColor = Color.White;
@@ -195,10 +141,10 @@ namespace OrbItProcs
             
             //Manager.TargetFrames = 60;
 
-            compEnums = new Dictionary<Type, comp>();
-            foreach (comp key in compTypes.Keys.ToList())
+            compEnums = new Dictionary<Type, comp>(); //move this later
+            foreach (comp key in Utils.compTypes.Keys.ToList())
             {
-                compEnums.Add(compTypes[key], key);
+                compEnums.Add(Utils.GetComponentTypeFromEnum(key), key);
             }
 
             TimeToDraw = false;
@@ -248,7 +194,8 @@ namespace OrbItProcs
             font = Content.Load<SpriteFont>("Courier New");
 
             
-            room = new Room(this);
+            room = new Room(this, 1580, 1175);
+
             room.processManager = new ProcessManager(room);
             #region ///Default User props///
             Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {

@@ -41,8 +41,8 @@ namespace OrbItProcs {
         public GridSystem(Room room, int cellsX, int cellReach = 4)
         {
             this.room = room;
-            this.gridWidth = room.game.worldWidth;
-            this.gridHeight = room.game.worldHeight;
+            this.gridWidth = room.worldWidth;
+            this.gridHeight = room.worldHeight;
             this.cellsX = cellsX;
             
             this.cellReach = cellReach;
@@ -64,8 +64,8 @@ namespace OrbItProcs {
         public GridSystem(Room room, int cellsX, int cellsY, int cellReach = 4)
         {
             this.room = room;
-            this.gridWidth = room.game.worldWidth;
-            this.gridHeight = room.game.worldHeight;
+            this.gridWidth = room.worldWidth;
+            this.gridHeight = room.worldHeight;
             this.cellsX = cellsX;
             this.cellsY = cellsY;
 

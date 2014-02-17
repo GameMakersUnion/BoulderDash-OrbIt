@@ -21,6 +21,7 @@ namespace OrbItProcs
         public Room room;
         [Polenter.Serialization.ExcludeFromSerialization]
         public Link link { get; set; }
+        [Polenter.Serialization.ExcludeFromSerialization]
         public formationtype FormationType { get { return link.FormationType; } set { if (link != null) link.FormationType = value; } }
         public bool Uninhabited { get; set; }
         
@@ -45,11 +46,51 @@ namespace OrbItProcs
         public int NearestNValue { get; set; }
         [Polenter.Serialization.ExcludeFromSerialization]
         public Dictionary<Node, ObservableHashSet<Node>> AffectionSets { get; set; }
+        public Dictionary<string, ObservableHashSet<string>> AffectionSetsHashes
+        {
+            get
+            {
+                if (AffectionSets == null) throw new SystemException("AffectionSets was null when serializing");
+                Dictionary<string, ObservableHashSet<string>> hashes = new Dictionary<string, ObservableHashSet<string>>();
+                foreach(Node n in AffectionSets.Keys)
+                {
+                    ObservableHashSet<string> hashset = new ObservableHashSet<string>();
+                    foreach(Node subNode in AffectionSets[n])
+                    {
+                        hashset.Add(subNode.nodeHash);
+                    }
+                    hashes.Add(n.nodeHash, hashset);
+                }
+                return hashes;
+            }
+            set
+            {
+                if (value == null) throw new SystemException("AffectionSets(value) was null when deserializing");
+                if (AffectionSets == null) throw new SystemException("AffectionSets(field) was null when deserializing");
+                if (AffectionSets.Count > 0) throw new SystemException("AffectionSets was expected to be empty when deserializing");
+                Dictionary<Node, ObservableHashSet<Node>> nodes = new Dictionary<Node, ObservableHashSet<Node>>();
+                foreach (string hash in value.Keys)
+                {
+                    Node n = room.masterGroup.FindNodeByHash(hash);
+                    if (n == null)
+                    {
+                        throw new SystemException("Node was not found by hash when deserializing (" + hash + ")");
+                    }
+
+                    ObservableHashSet<Node> nodeset = new ObservableHashSet<Node>();
+                    room.masterGroup.FindNodeByHashes(value[hash], nodeset);
+                    if (value[hash].Count != nodeset.Count) throw new SystemException("Nodeset did not match hashset Count when deserializing");
+                    AffectionSets.Add(n, nodeset);
+                }
+
+            }
+        }
 
         public Formation()
         {
             //..
             this.room = Program.getRoom();
+            this.AffectionSets = new Dictionary<Node, ObservableHashSet<Node>>();
         }
 
         public Formation(   Link link, 
