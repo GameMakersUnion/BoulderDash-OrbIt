@@ -40,20 +40,24 @@ namespace OrbItProcs {
     //public delegate void MyEventHandler (object sender, EventArgs e);
 
     public class Node {
-
-        public static HashSet<string> nodeHashes = new HashSet<string>();
-
         private string _nodeHash = "";
         public string nodeHash { get { return _nodeHash; } set 
         { 
-            nodeHashes.Remove(_nodeHash);
+            //if (room.nodeHashes.Contains(_nodeHash)) Console.WriteLine("Total Hashes:{0} , removed hash:{1}", room.nodeHashes.Count, _nodeHash);
+            room.nodeHashes.Remove(_nodeHash);
             _nodeHash = value;
+            /*if (room.nodeHashes.Contains(value))
+            {
+                string unqStr = Utils.uniqueString(room.nodeHashes);
+                Group mstrGrp = room.masterGroup;
 
-            if (nodeHashes.Contains(value))
-                room.masterGroup.FindNodeByHash(value).nodeHash =
-                    Utils.uniqueString(nodeHashes);
+                Node nd = mstrGrp.FindNodeByHash(value);
+                if (nd == null) System.Diagnostics.Debugger.Break();
+                nd.nodeHash = unqStr;
 
-            nodeHashes.Add(value);
+            }*/
+            room.nodeHashes.Add(value);
+            //Console.WriteLine("Total Hashes:{0} , added hash:{1}, with name: {2} ", room.nodeHashes.Count, value, this.name);
         } }
 
         public static int nodeCounter = 0;
@@ -65,7 +69,8 @@ namespace OrbItProcs {
         //static Dictionary<dynamic, dynamic> defaultProps = new Dictionary<dynamic, dynamic>() { };
         public T GetComponent<T>()
         {
-            return comps[Game1.compEnums[typeof(T)]];
+            //return comps[Game1.compEnums[typeof(T)]];
+            return comps[Utils.compEnums[typeof(T)]];
         }
 
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;
@@ -118,9 +123,9 @@ namespace OrbItProcs {
             get { return _IsDeleted; }
             set
             {
-                if (!IsDeleted && value)
+                if (!_IsDeleted && value)
                 {
-                    active = false;
+                    OnDelete();
                 }
                 _IsDeleted = value;
             }
@@ -163,10 +168,16 @@ namespace OrbItProcs {
         public Collision COLLISION { get { return collision; } set { collision = value; } }
 
         private ObservableHashSet<Link> _SourceLinks = new ObservableHashSet<Link>();
+        [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> SourceLinks { get { return _SourceLinks; } set { _SourceLinks = value; } }
 
         private ObservableHashSet<Link> _TargetLinks = new ObservableHashSet<Link>();
+        [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> TargetLinks { get { return _TargetLinks; } set { _TargetLinks = value; } }
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public ObservableHashSet<Group> Groups { get; set; }
+
+        
 
         public bool DebugFlag { get; set; }
 
@@ -210,24 +221,19 @@ namespace OrbItProcs {
             comp.phaseorb
         };
 
-        public Node()
-        {
-            nodeHash = Utils.uniqueString(nodeHashes);
-            nodeCounter++;
-            room = Program.getRoom();
-            //transform = new Transform(this);
-            movement = new Movement(this);
-            collision = new Collision(this);
-            body = new Body(parent: this);
-            name = "blankname";
-            
-        }
+        public Node() : this(ShapeType.eCircle) { }
 
-        public Node(ShapeType shapetype)
+        public Node(bool createHash) : this(ShapeType.eCircle, createHash) { }
+
+        public Node(ShapeType shapetype, bool createHash = true)
         {
-            nodeHash = Utils.uniqueString(nodeHashes);
-            nodeCounter++;
             room = Program.getRoom();
+            if (createHash)
+            {
+                nodeHash = Utils.uniqueString(room.nodeHashes);
+            }
+            Groups = new ObservableHashSet<Group>();
+            nodeCounter++;
             movement = new Movement(this);
             collision = new Collision(this);
             Shape shape;
@@ -248,8 +254,8 @@ namespace OrbItProcs {
             name = "blankname";
         }
 
-        public Node(Dictionary<dynamic, dynamic> userProps, ShapeType shapetype = ShapeType.eCircle)
-            : this(shapetype)
+        public Node(Dictionary<dynamic, dynamic> userProps, ShapeType shapetype = ShapeType.eCircle, bool createHash = true)
+            : this(shapetype, createHash)
         {
             // add the userProps to the props
             foreach (dynamic p in userProps.Keys)
@@ -623,6 +629,7 @@ namespace OrbItProcs {
 
         public Texture2D getTexture()
         {
+
             return room.game.textureDict[body.texture];
         }
         public Texture2D getTexture(textures t)
@@ -658,19 +665,34 @@ namespace OrbItProcs {
                 {
                     component.OnSpawn();
                 }
-
             }
         }
 
-        public Node CreateClone()
+        public void OnDelete()
         {
-            Node newNode = new Node();
-            cloneObject(this, newNode);
+            //Console.WriteLine("{0} - deleting:      {1}", name, nodeHash);
+            //if (room.nodeHashes.Contains(nodeHash)) Console.WriteLine("Total Hashes:{0} , removed hash:{1}", room.nodeHashes.Count, _nodeHash);
+            //Console.WriteLine("---------------");
+            room.nodeHashes.Remove(nodeHash);
 
+            active = false;
+            if (this == room.game.targetNode) room.game.targetNode = null;
+            if (this == room.game.ui.sidebar.inspectorArea.editNode) room.game.ui.sidebar.inspectorArea.editNode = null;
+            if (this == room.game.ui.spawnerNode) room.game.ui.spawnerNode = null;
+            if (room.masterGroup != null && room.masterGroup.fullSet.Contains(this))
+            {
+                room.masterGroup.DeleteEntity(this);
+            }
+        }
+
+        public Node CreateClone(bool CloneHash = false)
+        {
+            Node newNode = new Node(!CloneHash);
+            cloneObject(this, newNode, CloneHash);
             return newNode;
         }
 
-        public static void cloneObject(Node sourceNode, Node destNode) //they must be the same type
+        public static void cloneObject(Node sourceNode, Node destNode, bool CloneHash = false) //they must be the same type
         {
             //dynamic returnval;
             List<FieldInfo> fields = sourceNode.GetType().GetFields().ToList();
@@ -686,6 +708,13 @@ namespace OrbItProcs {
             //*/
             foreach (FieldInfo field in fields)
             {
+                if (field.Name.Equals("_nodeHash"))
+                {
+                    if (!CloneHash)
+                    {
+                        continue;
+                    }
+                }
                 //Console.WriteLine("fieldtype: " + field.FieldType);
                 if (field.FieldType.ToString().Contains("Dictionary"))
                 {
@@ -779,14 +808,9 @@ namespace OrbItProcs {
                         field.SetValue(destNode, field.GetValue(sourceNode));
                     }
                 }
-
                 //field.SetValue(newobj, field.GetValue(obj));
                 //Console.WriteLine("{0}", field.FieldType);
-                
-
             }
-            destNode.nodeHash = Utils.uniqueString(nodeHashes);
-
         }
         
         

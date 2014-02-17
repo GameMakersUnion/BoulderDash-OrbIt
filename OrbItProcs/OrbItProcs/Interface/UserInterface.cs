@@ -80,7 +80,7 @@ namespace OrbItProcs {
             
 
 
-            groupSelectSet = (room.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet; //syncs group select set to process set
+            groupSelectSet = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet; //syncs group select set to process set
         }
 
         public void Update(GameTime gameTime)
@@ -100,7 +100,7 @@ namespace OrbItProcs {
             keybState = Keyboard.GetState();
 
             if (GameInputDisabled) return;
-            //room.processManager.PollKeyboard();
+            //game.processManager.PollKeyboard();
 
             if (keybState.IsKeyDown(Keys.Y))
             {
@@ -113,6 +113,7 @@ namespace OrbItProcs {
             if (keybState.IsKeyDown(Keys.Space) && oldKeyBState.IsKeyUp(Keys.Space))
             {
                 room.Update(null);
+                System.Console.WriteLine(room.nodeHashes.Count);
             }
 
             if (keybState.IsKeyDown(Keys.LeftShift))
@@ -198,7 +199,7 @@ namespace OrbItProcs {
             }
 
             if (GameInputDisabled) return;
-            //room.processManager.PollMouse(mouseState, oldMouseState);
+            //game.processManager.PollMouse(mouseState, oldMouseState);
 
 
             int worldMouseX = (int)WorldMousePos.X;

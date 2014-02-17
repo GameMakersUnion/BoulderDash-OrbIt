@@ -247,7 +247,12 @@ namespace OrbItProcs
                 {
                     foreach (Node n in sources)
                     {
-                        n.OnAffectOthers += NodeToGroupHandler; //i'm nervous about this
+                        n.OnAffectOthers += NodeToGroupHandler;
+                        n.SourceLinks.Add(this);
+                    }
+                    foreach (Node n in targets)
+                    {
+                        n.TargetLinks.Add(this);
                     }
                 }
             }

@@ -1125,9 +1125,6 @@ namespace OrbItProcs
             if (ka != null)
             {
                 if (ka.pressAction != null) ka.pressAction();
-
-
-
                 //if (!PressedBundles.ContainsKey(kb)) 
                     PressedBundles.Add(kb, ka); //exception
 

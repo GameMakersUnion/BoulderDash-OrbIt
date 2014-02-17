@@ -9,15 +9,36 @@ using Microsoft.Xna.Framework.Graphics;
 namespace OrbItProcs {
     public class GridSystem {
         public Room room;
-        public int cellsX, cellsY;
-        public int cellWidth, cellHeight;
-        public int gridWidth, gridHeight;
-        public List<Node>[,] grid;
-        public HashSet<Node> alreadyVisited;
+        public int cellsX { get; set; }
+        public int cellsY { get; set; }
+
+        public int cellWidth { get; set; }
+        public int cellHeight { get; set; }
+        public int gridWidth { get; set; }
+        public int gridHeight { get; set; }
+
         private int _cellReach;
         public int cellReach { get { return _cellReach; } set { if (value < 1) return; _cellReach = value; } }
 
-        //obsolete constructor
+        public List<Node>[,] grid;
+        public HashSet<Node> alreadyVisited;
+
+        public bool PolenterHack { get { return false; } 
+            set 
+            {
+                grid = new List<Node>[cellsX, cellsY];
+                for (int i = 0; i < cellsX; i++)
+                {
+                    for (int j = 0; j < cellsY; j++)
+                    {
+                        grid[i, j] = new List<Node>();
+                    }
+                }
+            } 
+        }
+       
+
+        /*//obsolete constructor
         public GridSystem(Room room, int gridwidth, int gridheight, int cellsX, int cellsY, int cellReach = 4)
         {
             this.room = room;
@@ -36,11 +57,18 @@ namespace OrbItProcs {
                     grid[i, j] = new List<Node>();
                 }
             }
+        }*/
+
+        public GridSystem() 
+        {
+            room = Program.getRoom();
+            alreadyVisited = new HashSet<Node>();
         }
 
-        public GridSystem(Room room, int cellsX, int cellReach = 4)
+        public GridSystem(Room room, int cellsX, int cellReach = 4): this()
         {
             this.room = room;
+            
             this.gridWidth = room.worldWidth;
             this.gridHeight = room.worldHeight;
             this.cellsX = cellsX;
@@ -50,7 +78,6 @@ namespace OrbItProcs {
             cellHeight = cellWidth;
             this.cellsY = gridHeight / cellHeight;
             //cellheight = gridheight / cellsY;
-            alreadyVisited = new HashSet<Node>();
             grid = new List<Node>[cellsX, cellsY];
             for (int i = 0; i < cellsX; i++)
             {

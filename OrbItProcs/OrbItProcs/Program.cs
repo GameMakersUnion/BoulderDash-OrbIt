@@ -5,6 +5,8 @@ namespace OrbItProcs {
     static class Program
     {
         static Game1 game;
+        public static Room room;
+
         static void Main(string[] args)
         {
            game = new Game1();
@@ -19,7 +21,8 @@ namespace OrbItProcs {
 
         public static Room getRoom()
         {
-            return game.room;
+            return room;
+            //return game.room;
         }
     }
 #endif

@@ -66,32 +66,32 @@ namespace OrbItProcs
             //
             Keybindset.Add("spawnnodes", new KeyBundle(KeyCodes.D1), delegate
             {
-                Keybindset.AddProcess(room.processManager.processDict[proc.spawnnodes]);//, KeySwitchMethod.Overwrite);
+                Keybindset.AddProcess(processDict[proc.spawnnodes]);//, KeySwitchMethod.Overwrite);
             });
             //
             Keybindset.Add("randomizer", new KeyBundle(KeyCodes.D2), delegate
             {
-                Keybindset.AddProcess(room.processManager.processDict[proc.randomizer]);//, KeySwitchMethod.Overwrite);
+                Keybindset.AddProcess(processDict[proc.randomizer]);//, KeySwitchMethod.Overwrite);
             });
             //
             Keybindset.Add("groupselect", new KeyBundle(KeyCodes.D3), delegate
             {
-                Keybindset.AddProcess(room.processManager.processDict[proc.groupselect]);//, KeySwitchMethod.Overwrite);
+                Keybindset.AddProcess(processDict[proc.groupselect]);//, KeySwitchMethod.Overwrite);
             });
             //
             Keybindset.Add("singleselect", new KeyBundle(KeyCodes.D4), delegate
             {
-                Keybindset.AddProcess(room.processManager.processDict[proc.singleselect]);//, KeySwitchMethod.Overwrite);
+                Keybindset.AddProcess(processDict[proc.singleselect]);//, KeySwitchMethod.Overwrite);
             });
             //
             Keybindset.Add("polygonspawner", new KeyBundle(KeyCodes.D9), delegate
             {
-                Keybindset.AddProcess(room.processManager.processDict[proc.polygonspawner]);//, KeySwitchMethod.Overwrite);
+                Keybindset.AddProcess(processDict[proc.polygonspawner]);//, KeySwitchMethod.Overwrite);
             });
             //
             Keybindset.Add("axismovement", new KeyBundle(KeyCodes.D0), delegate
             {
-                Keybindset.AddProcess(room.processManager.processDict[proc.axismovement]);//, KeySwitchMethod.Overwrite);
+                Keybindset.AddProcess(processDict[proc.axismovement]);//, KeySwitchMethod.Overwrite);
             });
         }
 

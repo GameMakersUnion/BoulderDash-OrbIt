@@ -58,7 +58,7 @@ namespace OrbItProcs
                             
                 };
                 ts.Collision += pm;
-                room.processManager.Add(ts);
+                game.processManager.Add(ts);
                 */
             }
             else

@@ -77,6 +77,7 @@ namespace OrbItProcs
 
             editType = activeInspectorItem.obj.GetType();
             object value = activeInspectorItem.GetValue();
+            if (value == null) return;
 
             if (editType == typeof(int) || editType == typeof(Single) || editType == typeof(string) || editType == typeof(byte))
             {

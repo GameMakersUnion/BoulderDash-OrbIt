@@ -439,6 +439,8 @@ namespace OrbItProcs {
 
                     if (obj is Link) return obj.ToString();
 
+                    if (obj is Group) return result + (obj as Group).Name;
+
                     string ts = obj.GetType().ToString().Split('.').ToList().ElementAt(obj.GetType().ToString().Split('.').ToList().Count - 1);
                     return result + key + "[" + ts + "]";
                 }

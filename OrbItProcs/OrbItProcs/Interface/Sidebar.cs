@@ -967,11 +967,8 @@ namespace OrbItProcs
                 inspectorArea.editNode = null;
             }
             //int size = g.fullSet.Count, count = 0;
-            g.fullSet.ToList().ForEach(delegate(Node o)
-            {
-                g.DeleteEntity(o);
-                //count++;    
-            });
+            g.EmptyGroup();
+            
             //Console.WriteLine("Size:"+  g.fullSet.Count);
             lstMain.ItemIndex = -1;
         }

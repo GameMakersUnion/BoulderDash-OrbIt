@@ -12,19 +12,17 @@ namespace OrbItProcs
 
     public class Group
     {
-        public static HashSet<string> groupHashes = new HashSet<string>();
-
         private string _groupHash = "";
         public string groupHash { get { return _groupHash; } set {
 
-            groupHashes.Remove(_groupHash);
+            room.groupHashes.Remove(_groupHash);
             _groupHash = value;
 
-            if (groupHashes.Contains(value))
+            if (room.groupHashes.Contains(value))
                 room.findGroupByHash(value).groupHash =
-                    Utils.uniqueString(groupHashes);
+                    Utils.uniqueString(room.groupHashes);
 
-            groupHashes.Add(value);
+            room.groupHashes.Add(value);
         } }
 
         public static int GroupNumber = 0;
@@ -68,7 +66,8 @@ namespace OrbItProcs
 
                 foreach (Node n in value.ToList()) // another coke -dante
                 {
-                    Node newNode = n.CreateClone();
+                    room.nodeHashes.Remove(n.nodeHash);
+                    Node newNode = n.CreateClone(true);
                     //entities.Add(newNode);
                     IncludeEntity(newNode);
                 }
@@ -127,10 +126,12 @@ namespace OrbItProcs
                 foreach(Node n in entities)
                 {
                     fullSet.Add(n);
+                    n.Groups.Add(this);
                 }
                 foreach(Node n in inherited)
                 {
                     fullSet.Add(n);
+                    n.Groups.Add(this);
                 }
                 foreach(Group g in childGroups.Values)
                 {
@@ -147,8 +148,8 @@ namespace OrbItProcs
         }
         public Group(Node defaultNode = null, ObservableHashSet<Node> entities = null, Group parentGroup = null, GroupState groupState = GroupState.on, string Name = "", bool Spawnable = true)
         {
-            groupHash = Utils.uniqueString(groupHashes);
             room = Program.getRoom();
+            groupHash = Utils.uniqueString(room.groupHashes);
             this.defaultNode = defaultNode ?? room.defaultNode;
             this.entities = entities ?? new ObservableHashSet<Node>();
             this.inherited = new ObservableHashSet<Node>();
@@ -193,6 +194,7 @@ namespace OrbItProcs
                         parentGroup.inherited.Add(n);
                     }
                     fullSet.Add(n);
+                    n.Groups.Add(this);
                 }
                 room.game.ui.sidebar.SyncTitleNumber(this);
             }
@@ -207,13 +209,17 @@ namespace OrbItProcs
                     }
                     if (!entities.Contains(n) && !inherited.Contains(n))
                         fullSet.Remove(n);
+                    n.Groups.Remove(this);
                 }
             }
         }
 
         public void EmptyGroup()
         {
-
+            foreach(Node n in fullSet.ToList())
+            {
+                DeleteEntity(n);
+            }
         }
 
         public void ForEachFullSet(Action<Node> action)
@@ -257,15 +263,14 @@ namespace OrbItProcs
         //removes entity from all groups, starting from the highest root
         public void DeleteEntity(Node entity)
         {
-            if (entity is Node) ((Node)entity).IsDeleted = true;
             Group root = this;
             while (root.parentGroup != null)
             {
                 root = root.parentGroup;
             }
             root.DiscludeEntity(entity);
-
             room.CollisionSet.Remove(entity);
+            entity.OnDelete();
         }
 
         public Group FindGroup(string name)
@@ -378,7 +383,9 @@ namespace OrbItProcs
 
             foreach (Node n in entities.ToList())
             {
+                n.Groups.Remove(this);
                 DeleteEntity(n);
+
             }
             if (parentGroup == null) throw new SystemException("Don't delete orphans");
             parentGroup.childGroups.Remove(Name);

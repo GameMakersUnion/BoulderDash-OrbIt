@@ -29,6 +29,8 @@ namespace OrbItProcs
                 {
                     if (!_active && value && parent != parent.room.game.ui.sidebar.ActiveDefaultNode)
                     {
+                        
+                        
                         parent.room.CollisionSet.Add(parent);
                     }
                     else if (_active && !value)

@@ -12,17 +12,18 @@ namespace OrbItProcs {
     public static class Utils {
         
         public static Dictionary<comp, Type> compTypes;
+        public static Dictionary<Type, comp> compEnums;
 
         public static Type GetComponentTypeFromEnum(comp c)
         {
             if (compTypes.ContainsKey(c)) return compTypes[c];
             return null;
         }
-        //public static comp GetComponentCompFromType(Type t)
-        //{
-        //    if (compTypes.ContainsKey(c)) return compTypes[c];
-        //    return null;
-        //}
+        public static comp GetComponentCompFromType(Type t)
+        {
+            if (compEnums.ContainsKey(t)) throw new SystemException("Type was not found in compEnums dictionary.");
+            return compEnums[t];
+        }
 
         public static void PopulateComponentTypesDictionary()
         {
@@ -50,6 +51,12 @@ namespace OrbItProcs {
                     Console.WriteLine("{0} did not have an equivalent enum value", t.ToString());
                 }
             }
+
+            compEnums = new Dictionary<Type, comp>(); //move this later
+            foreach (comp key in Utils.compTypes.Keys.ToList())
+            {
+                compEnums.Add(Utils.GetComponentTypeFromEnum(key), key);
+            }
         }
 
         public static void Break()
@@ -57,7 +64,7 @@ namespace OrbItProcs {
             System.Diagnostics.Debugger.Break();
         }
 
-        public static string uniqueString(HashSet<string> hashSet = null)
+        public static string uniqueString(ObservableHashSet<string> hashSet = null)
         {
             string GuidString = randomString();
 

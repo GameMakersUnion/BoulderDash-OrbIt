@@ -9,24 +9,15 @@ namespace OrbItProcs
 {
     public class TripSpawnOnCollide : Process
     {
-        public Room room;
         public int colCount = 0;
         public Node triggerNode { get; set; }
 
         public TripSpawnOnCollide(Node node) : base()
         {
-            //CollisionArgs = new Dictionary<dynamic, dynamic>();
-            //CollisionArgs["trigger"] = node;
-            //CollisionArgs["room"] = node.room;
-            //pargs["trigger"] = node;
-
             this.triggerNode = node;
-            room = Program.getRoom();
 
             Collision += CollisionEvent;
             triggerNode.Collided += OnCollision;
-            
-            //Collision = null;
         }
 
         

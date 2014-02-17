@@ -5,10 +5,6 @@ using System.Text;
 using C3.XNA;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Polenter.Serialization;
-
-
-
 
 using Component = OrbItProcs.Component;
 using System.Collections.ObjectModel;
@@ -29,6 +25,18 @@ namespace OrbItProcs {
 
     public class Room
     {
+        public bool shit
+        {
+            get { //System.Diagnostics.Debugger.Break(); 
+                return false; 
+            }
+            set
+            {
+                //System.Diagnostics.Debugger.Break();
+                //throw new SystemException("Polenter.");
+            }
+        }
+        
 
         #region // State // --------------------------------------------
         public bool DrawLinks { get; set; }
@@ -40,31 +48,53 @@ namespace OrbItProcs {
 
         #region // References // --------------------------------------------
         public Game1 game;
-        [Polenter.Serialization.ExcludeFromSerialization]
-        public ProcessManager processManager { get; set; }
         public event EventHandler AfterIteration;
         #endregion
 
-        #region // Lists // --------------------------------------------
-        public List<Node> WallNodes { get; set; }
+        #region // Lists // --------------------------------------------\
         [Polenter.Serialization.ExcludeFromSerialization]
         public HashSet<Node> CollisionSet { get; set; }
         public List<Rectangle> gridSystemLines = new List<Rectangle>(); //dns
         private List<Manifold> contacts = new List<Manifold>(); //dns
         #endregion
-
         public GridSystem gridsystem { get; set; }
         public GridSystem gridsystemCollision { get; set; }
-        public Level level { get; set; }
-        
-        public int gridSystemCounter = 0;
+        //[Polenter.Serialization.ExcludeFromSerialization]
+        //public Level level { get; set; }
 
-        public Group masterGroup;
 
-        public Node defaultNode, targetNodeGraphic;
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public ObservableHashSet<string> groupHashes { get; set; }
+        public ObservableHashSet<string> nodeHashes { get; set; }
 
-        public SharpSerializer serializer = new SharpSerializer(); //dns.. lol
+        private Group _masterGroup;
+        public Group masterGroup
+        {
+            get
+            {
+                return _masterGroup;
+            }
+            set
+            {
+                //System.Diagnostics.Debugger.Break();
+                _masterGroup = value;
+            }
+        }
 
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public Node defaultNode { get; set; }
+        public string defaultNodeHash
+        {
+            get { if (defaultNode == null) return ""; else return defaultNode.nodeHash; }
+            set
+            {
+                defaultNode = masterGroup.FindNodeByHash(value);
+            }
+        }
+
+        public Node targetNodeGraphic { get; set; }
+
+        [Polenter.Serialization.ExcludeFromSerialization]
         public Player player1 { get; set; }
 
         #region // Links // ------------------------------------------------------
@@ -77,25 +107,26 @@ namespace OrbItProcs {
 
         public Room()
         {
+            Program.room = this;
+            game = Program.getGame();
+            groupHashes = new ObservableHashSet<string>();
+            nodeHashes = new ObservableHashSet<string>();
+            CollisionSet = new HashSet<Node>();
         }
 
-        public Room(Game1 game, int worldWidth, int worldHeight)
+        public Room(Game1 game, int worldWidth, int worldHeight) : this()
         {
-            this.game = game;
             this.mapzoom = 2f;
             this.worldWidth = worldWidth;
             this.worldHeight = worldHeight;
 
             // grid System
             gridsystem = new GridSystem(this, 40, 15);
-            level = new Level(this, 40, 40, gridsystem.cellWidth, gridsystem.cellHeight);
+            //level = new Level(this, 40, 40, gridsystem.cellWidth, gridsystem.cellHeight);
 
             gridsystemCollision = new GridSystem(this, gridsystem.cellsX, 5);
-            CollisionSet = new HashSet<Node>();
             DrawLinks = true;
-            WallNodes = new List<Node>();
             WallWidth = 500;
-            //MakeWalls();
         }
         
         public void MakeWalls()
@@ -129,7 +160,6 @@ namespace OrbItProcs {
             //n.movement.pushable = false;
 
             masterGroup.fullSet.Add(n);
-            WallNodes.Add(n);
             return n;
         }
 
@@ -146,7 +176,7 @@ namespace OrbItProcs {
             gridsystem.clear();
             gridSystemLines = new List<Rectangle>();
 
-            processManager.Update();
+            game.processManager.Update();
 
             HashSet<Node> toDelete = new HashSet<Node>();
 
@@ -169,31 +199,8 @@ namespace OrbItProcs {
                 {
                     n.Update(gametime);
                 }
-                if (n.IsDeleted)
-                {
-                    toDelete.Add(n);
-                    if (n == game.targetNode) game.targetNode = null;
-                    if (n == game.ui.sidebar.inspectorArea.editNode) game.ui.sidebar.inspectorArea.editNode = null;
-                    if (n == game.ui.spawnerNode) game.ui.spawnerNode = null;
-                }
             });
             //game.testing.StopTimer("room update");
-
-
-            toDelete.ToList().ForEach(delegate(Node n) 
-            {
-                if (masterGroup.fullSet.Contains(n)) //masterGroup.entities.Remove(n);
-                {
-                    masterGroup.DeleteEntity(n);
-                }
-                /*
-                groups.Keys.ToList().ForEach(delegate(string key)
-                {
-                    Group g = groups[key];
-                    if (g.entities.Contains(n)) g.entities.Remove(n);
-                });
-                */
-            });
 
             
             if (AfterIteration != null) AfterIteration(this, null);
@@ -333,7 +340,7 @@ namespace OrbItProcs {
                 updateTargetNodeGraphic();
                 targetNodeGraphic.Draw(spritebatch);
             }
-            HashSet<Node> groupset = (processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
+            HashSet<Node> groupset = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
             if (groupset != null)
             {
                 targetNodeGraphic.body.color = Color.LimeGreen;
@@ -371,7 +378,7 @@ namespace OrbItProcs {
             }
 
             //player1.Draw(spritebatch);
-            level.Draw(spritebatch);
+            //level.Draw(spritebatch);
             
         } 
         

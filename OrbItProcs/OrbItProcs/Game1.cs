@@ -21,6 +21,7 @@ using sc = System.Console;
 
 using System.IO;
 using System.Collections.ObjectModel;
+using Polenter.Serialization;
 
 namespace OrbItProcs
 {
@@ -85,8 +86,9 @@ namespace OrbItProcs
         public SpriteFont font;
         FrameRateCounter frameRateCounter;
 
-        public static Dictionary<Type, comp> compEnums;
+        public SharpSerializer serializer = new SharpSerializer();
 
+        public ProcessManager processManager { get; set; }
         public static int sWidth = 1000;
         public static int sHeight = 600;
         public static int fullWidth = 1680;
@@ -141,11 +143,7 @@ namespace OrbItProcs
             
             //Manager.TargetFrames = 60;
 
-            compEnums = new Dictionary<Type, comp>(); //move this later
-            foreach (comp key in Utils.compTypes.Keys.ToList())
-            {
-                compEnums.Add(Utils.GetComponentTypeFromEnum(key), key);
-            }
+            
 
             TimeToDraw = false;
 
@@ -156,8 +154,8 @@ namespace OrbItProcs
             //Vector2 vv = new Vector2(0, 0);
             //vv.Normalize();
             //Console.WriteLine(vv);
-            
         }
+
 
         public void ToggleFullScreen(bool on)
         {
@@ -196,7 +194,7 @@ namespace OrbItProcs
             
             room = new Room(this, 1580, 1175);
 
-            room.processManager = new ProcessManager(room);
+            processManager = new ProcessManager(room);
             #region ///Default User props///
             Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {
                     { node.position, new Vector2(0, 0) },
@@ -281,9 +279,9 @@ namespace OrbItProcs
 
             room.player1 = new Player();
             room.player1.body.pos = new Vector2(100, 100);
-            room.processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
+            processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
 
-            room.processManager.SetProcessKeybinds(ui.keyManager);
+            processManager.SetProcessKeybinds(ui.keyManager);
 
             //byte b = 255;
             //float f = b;
@@ -294,6 +292,20 @@ namespace OrbItProcs
             
         }
 
+        public void ResetRoomReferences(Room newRoom)
+        {
+            if (newRoom == null) throw new SystemException("Room was null when reseting room references");
+            Program.room = newRoom;
+            room = newRoom;
+            ui.room = newRoom;
+            ui.sidebar.room = newRoom;
+            ui.sidebar.inspectorArea.room = newRoom;
+            ui.sidebar.insArea2.room = newRoom;
+            processManager.room = newRoom;
+            processManager.processes.ToList().ForEach((p) => p.room = newRoom);
+            ui.sidebar.UpdateGroupComboBoxes();
+        }
+
         public void InitializePresets()
         {
 
@@ -302,7 +314,7 @@ namespace OrbItProcs
             {
                 //Console.WriteLine("Current Files" + filepath);
                 //Console.WriteLine(file);
-                Node presetnode = (Node)room.serializer.Deserialize(file);
+                Node presetnode = (Node)room.game.serializer.Deserialize(file);
                 /*foreach (comp c in presetnode.comps.Keys.ToList())
                 {
                     ((Component)presetnode.comps[c]).parent = presetnode;
@@ -507,7 +519,6 @@ namespace OrbItProcs
             //testing.ColorsTest();
             //testing.NormalizeTest();
             //
-
             Group activegroup = ui.sidebar.ActiveGroupFirst;
             //if (activegroup.Name.Equals("master")) return;
             if (!activegroup.Spawnable) return null;
@@ -534,16 +545,11 @@ namespace OrbItProcs
             
             if (lifetime != -1)
             {
-                
                 newNode.comps[comp.lifetime].maxmseconds = lifetime;
                 newNode.comps[comp.lifetime].immortal = false;
             }
             //activegroup.entities.Add(newNode);
             activegroup.IncludeEntity(newNode);
-            
-
-            
-            
             return newNode;
         }
         public void spawnNode(int worldMouseX, int worldMouseY)
@@ -588,8 +594,8 @@ namespace OrbItProcs
             ui.sidebar.inspectorArea.editNode.name = name;
             Node serializenode = new Node();
             Node.cloneObject(ui.sidebar.inspectorArea.editNode, serializenode);
-                room.serializer.Serialize(serializenode, filename);
-                ui.game.NodePresets.Add(serializenode);
+            room.game.serializer.Serialize(serializenode, filename);
+            ui.game.NodePresets.Add(serializenode);
             };
 
             if (File.Exists(filename)){ //we must be overwriting, therefore don't update the live presetList
@@ -598,13 +604,7 @@ namespace OrbItProcs
             }
             else { PopUp.Toast(ui, "Node Saved"); completeSave(); }
 
-            
-
         }
-
-        
-
-        
 
         internal void deletePreset(Node p)
         {
