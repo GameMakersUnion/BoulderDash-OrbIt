@@ -60,7 +60,7 @@ namespace OrbItProcs {
         public GridSystem gridsystem { get; set; }
         public GridSystem gridsystemCollision { get; set; }
         //[Polenter.Serialization.ExcludeFromSerialization]
-        //public Level level { get; set; }
+        public Level level { get; set; }
 
 
         [Polenter.Serialization.ExcludeFromSerialization]
@@ -122,9 +122,9 @@ namespace OrbItProcs {
 
             // grid System
             gridsystem = new GridSystem(this, 40, 15);
-            //level = new Level(this, 40, 40, gridsystem.cellWidth, gridsystem.cellHeight);
+            level = new Level(this, 40, 40, gridsystem.cellWidth, gridsystem.cellHeight);
 
-            gridsystemCollision = new GridSystem(this, gridsystem.cellsX, 5);
+            gridsystemCollision = new GridSystem(this, gridsystem.cellsX, 20);
             DrawLinks = true;
             WallWidth = 500;
         }
@@ -229,8 +229,8 @@ namespace OrbItProcs {
             {
                 if (n.active)
                 {
-                    int reach = 5; //update later based on cell size and radius (or polygon size.. maybe based on it's AABB)
-                    List<Node> retrievedNodes = gridsystemCollision.retrieve(n, reach);
+                    //int reach = 5; //update later based on cell size and radius (or polygon size.. maybe based on it's AABB)
+                    List<Node> retrievedNodes = gridsystemCollision.retrieve(n);
                     gridsystemCollision.alreadyVisited.Add(n);
                     retrievedNodes.ForEach(delegate(Node r)
                     {
@@ -379,6 +379,8 @@ namespace OrbItProcs {
 
             //player1.Draw(spritebatch);
             //level.Draw(spritebatch);
+
+            game.processManager.Draw(spritebatch);
             
         } 
         

@@ -29,16 +29,13 @@ namespace OrbItProcs
         {
             if (verts.Count < 3) return;
             Vector2[] vertices = verts.ToArray();
-            //Node newNode = new Node(ShapeType.ePolygon);
             Node newNode = new Node();
             Node.cloneObject(room.game.ui.sidebar.ActiveDefaultNode, newNode);
             Polygon poly = new Polygon();
             poly.body = newNode.body;
             poly.FindCentroid(vertices);
-            //poly.Set(vertices, vertices.Length);
             newNode.body.shape = poly;
             room.game.spawnNode(newNode);
-
             verts = new List<Vector2>();
         }
 

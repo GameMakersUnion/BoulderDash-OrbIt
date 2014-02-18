@@ -472,9 +472,14 @@ namespace OrbItProcs
                 Console.WriteLine("Error: The list item was not a component.");
                 return;
             }
+            Component component = (Component)item.obj;
+            if (component is Movement || component is Collision || component is Body)
+            {
+                return;
+            }
+
             if (item.parentItem.parentItem.obj is Node)
             {
-                Component component = (Component)item.obj;
                 component.active = false;
                 editNode.RemoveComponent(component.com);
                 item.RemoveChildren();
@@ -482,8 +487,6 @@ namespace OrbItProcs
             }
             else if (item.parentItem.parentItem.obj is Link)
             {
-                Component component = (Component)item.obj;
-
                 component.active = false;
                 Link link = (Link)item.parentItem.parentItem.obj;
                 link.components.Remove(component as ILinkable);

@@ -94,7 +94,6 @@ namespace OrbItProcs {
 
         public static string wordWrap(this string message, int maxCharsPerLine)
         {
-
             int chars = maxCharsPerLine;
                 for (int i = 1; i <= 4; i++)
                     if (message.Length > chars * i)
@@ -117,8 +116,6 @@ namespace OrbItProcs {
         //even distribution of colors between 0 and 16.5 million (total number of possible colors, excluding alphas)
         public static Color IntToColor(int i, int alpha = 255)
         {
-            
-
             int r = (i / (255 * 255)) % 255;
             int g = (i / 255) % 255;
             int b = i % 255;
@@ -230,7 +227,6 @@ namespace OrbItProcs {
 
         public static bool checkCollision(Node o1, Node o2)
         {
-
             if (Vector2.DistanceSquared(o1.body.pos, o2.body.pos) <= ((o1.body.radius + o2.body.radius) * (o1.body.radius + o2.body.radius)))
             {
                 return true;
@@ -240,37 +236,20 @@ namespace OrbItProcs {
 
         public static void resolveCollision(Node o1, Node o2)
         {
-
-            /*Console.WriteLine("Collision Occured.");
-            o1.IsActive = false;
-            o2.IsActive = false;
-             */
-
-            //Console.WriteLine(o1.transform.mass + " " + o2.transform.mass);
-            
-            //ELASTIC COLLISION RESOLUTION --- FUCK YEAH
-            //float orbimass = 1, orbjmass = 1;
-            //float orbRadius = 25.0f; //integrate this into the orb class
             float distanceOrbs = (float)Vector2.Distance(o1.body.pos, o2.body.pos);
             if (distanceOrbs < 10) distanceOrbs = 10; //prevent /0 error
             Vector2 normal = (o2.body.pos - o1.body.pos) / distanceOrbs;
             float pvalue = 2 * (o1.body.velocity.X * normal.X + o1.body.velocity.Y * normal.Y - o2.body.velocity.X * normal.X - o2.body.velocity.Y * normal.Y) / (o1.body.mass + o2.body.mass);
-            //if (!test) 
-            //return;
+
             o1.body.velocity.X = o1.body.velocity.X - pvalue * normal.X * o2.body.mass;
             o1.body.velocity.Y = o1.body.velocity.Y - pvalue * normal.Y * o2.body.mass;
             o2.body.velocity.X = o2.body.velocity.X + pvalue * normal.X * o1.body.mass;
             o2.body.velocity.Y = o2.body.velocity.Y + pvalue * normal.Y * o1.body.mass;
-
-            float loss1 = 0.98f;
-            float loss2 = 0.98f;
+            //float loss1 = 0.98f;
+            //float loss2 = 0.98f;
             //o1.transform.velocity *= loss1;
             //o2.transform.velocity *= loss2;
-
-            //if (game.fixCollisionOn)
             fixCollision(o1, o2);
-
-
         }
 
         //make sure that if the orbs are stuck together, they are separated.
@@ -305,8 +284,5 @@ namespace OrbItProcs {
             }
             else return;
         }
-
-
-
     } // end of class.
 }

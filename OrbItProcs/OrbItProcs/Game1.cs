@@ -143,8 +143,6 @@ namespace OrbItProcs
             
             //Manager.TargetFrames = 60;
 
-            
-
             TimeToDraw = false;
 
             //Collision col = new Collision();
@@ -252,6 +250,9 @@ namespace OrbItProcs
             Group linkGroup = new Group(room.defaultNode, parentGroup: masterGroup, Name: "Link Groups", Spawnable: false);
             room.masterGroup.AddGroup(linkGroup.Name, linkGroup);
 
+            Group wallGroup = new Group(room.defaultNode, parentGroup: masterGroup, Name: "Walls", Spawnable: false);
+            room.masterGroup.AddGroup(wallGroup.Name, wallGroup);
+
             Group firstGroup = new Group(firstdefault, parentGroup: generalGroup);
             generalGroup.AddGroup(firstGroup.Name, firstGroup);
 
@@ -301,9 +302,20 @@ namespace OrbItProcs
             ui.sidebar.room = newRoom;
             ui.sidebar.inspectorArea.room = newRoom;
             ui.sidebar.insArea2.room = newRoom;
-            processManager.room = newRoom;
-            processManager.processes.ToList().ForEach((p) => p.room = newRoom);
             ui.sidebar.UpdateGroupComboBoxes();
+            processManager.room = newRoom;
+            foreach (Process p in processManager.processes)
+            {
+                p.room = newRoom;
+            }
+            foreach(Process p in processManager.processDict.Values)
+            {
+                p.room = newRoom;
+            }
+            if (processManager.processDict.ContainsKey(proc.mapeditor))
+            {
+                (processManager.processDict[proc.mapeditor] as MapEditor).level = newRoom.level;
+            }
         }
 
         public void InitializePresets()
@@ -461,13 +473,10 @@ namespace OrbItProcs
 
         }
 
-        public void spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1)
+        public void spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)
         {
-            
-
             Group activegroup = ui.sidebar.ActiveGroupFirst;
-            //if (activegroup.Name.Equals("master")) return;
-            if (!activegroup.Spawnable) return;
+            if (g == null && !activegroup.Spawnable) return;
 
             newNode.name = "bullet" + Node.nodeCounter;
             newNode.OnSpawn();
@@ -483,8 +492,14 @@ namespace OrbItProcs
                 newNode.comps[comp.lifetime].maxmseconds = lifetime;
                 newNode.comps[comp.lifetime].immortal = false;
             }
-
-            activegroup.IncludeEntity(newNode);
+            if (g == null)
+            {
+                activegroup.IncludeEntity(newNode);
+            }
+            else
+            {
+                g.IncludeEntity(newNode);
+            }
 
             if (Group.IntToColor.ContainsKey(activegroup.GroupId))
             {

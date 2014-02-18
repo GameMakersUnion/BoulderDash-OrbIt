@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs
 {
@@ -15,6 +16,7 @@ namespace OrbItProcs
         randomizer,
         axismovement,
         polygonspawner,
+        mapeditor,
 
     }
 
@@ -56,6 +58,7 @@ namespace OrbItProcs
             processDict.Add(proc.singleselect, new SingleSelect());
             processDict.Add(proc.groupselect, new GroupSelect());
             processDict.Add(proc.polygonspawner, new PolygonSpawner());
+            processDict.Add(proc.mapeditor, new MapEditor(room.level));
 
             activeInputProcess = processDict[proc.spawnnodes];
 
@@ -93,18 +96,38 @@ namespace OrbItProcs
             {
                 Keybindset.AddProcess(processDict[proc.axismovement]);//, KeySwitchMethod.Overwrite);
             });
+            //
+            Keybindset.Add("mapeditor", new KeyBundle(KeyCodes.D5), delegate
+            {
+                Keybindset.AddProcess(processDict[proc.mapeditor]);//, KeySwitchMethod.Overwrite);
+            });
         }
 
         public void Update()
         {
             foreach (Process p in processes)
             {
-                p.OnUpdate();
+                if (p.active)
+                {
+                    p.OnUpdate();
+                }
             }
             if (activeInputProcess != null)
                 activeInputProcess.OnUpdate();
 
         }
+        
+        public void Draw(SpriteBatch batch)
+        {
+            foreach (Process p in processes)
+            {
+                if (p.active)
+                {
+                    p.OnDraw(batch);
+                }
+            }
+        }
+
 
         //this will start it.... for now...
         public void Add(Process p)

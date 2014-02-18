@@ -159,13 +159,58 @@ namespace OrbItProcs {
         public List<comp> compsToAdd = new List<comp>();
 
         public Body body;
-        public Body BODY { get { return body; } set { body = value; } }
+        public Body BODY
+        {
+            get { return body; }
+            set
+            {
+                body = value;
+                if (comps != null && value != null)
+                {
+                    if (comps.ContainsKey(comp.body))
+                    {
+                        comps.Remove(comp.body);
+                    }
+                    comps.Add(comp.body, value);
+                }
+            } 
+        }
 
         public Movement movement;
-        public Movement MOVEMENT { get { return movement; } set { movement = value; } }
+        public Movement MOVEMENT
+        {
+            get { return movement; }
+            set
+            {
+                movement = value;
+                if (comps != null && value != null)
+                {
+                    if (comps.ContainsKey(comp.movement))
+                    {
+                        comps.Remove(comp.movement);
+                    }
+                    comps.Add(comp.movement, value);
+                }
+            }
+        }
 
         public Collision collision;
-        public Collision COLLISION { get { return collision; } set { collision = value; } }
+        public Collision COLLISION
+        {
+            get { return collision; }
+            set
+            {
+                collision = value;
+                if (comps != null && value != null)
+                {
+                    if (comps.ContainsKey(comp.collision))
+                    {
+                        comps.Remove(comp.collision);
+                    }
+                    comps.Add(comp.collision, value);
+                }
+            }
+        }
 
         private ObservableHashSet<Link> _SourceLinks = new ObservableHashSet<Link>();
         [Polenter.Serialization.ExcludeFromSerialization]
@@ -252,6 +297,11 @@ namespace OrbItProcs {
 
             body = new Body(shape: shape, parent: this);
             name = "blankname";
+
+            comps.Add(comp.body, body);
+            comps.Add(comp.movement, movement);
+            comps.Add(comp.collision, collision);
+            
         }
 
         public Node(Dictionary<dynamic, dynamic> userProps, ShapeType shapetype = ShapeType.eCircle, bool createHash = true)
@@ -481,6 +531,7 @@ namespace OrbItProcs {
 
             foreach (comp c in clist)
             {
+                if (c == comp.movement || c == comp.body || c == comp.collision) continue;
                 if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.affectother) == mtypes.affectother))
                 {
                     aOtherProps.Add(c);
@@ -488,6 +539,7 @@ namespace OrbItProcs {
             }
             foreach (comp c in clist)
             {
+                if (c == comp.movement || c == comp.body || c == comp.collision) continue;
                 if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.affectself) == mtypes.affectself))
                 {
                     aSelfProps.Add(c);

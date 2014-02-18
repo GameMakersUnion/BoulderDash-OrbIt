@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using OrbItProcs;
 using System;
 using System.Collections.Generic;
@@ -13,28 +14,14 @@ namespace OrbItProcs
     public class Process
     {
         public Room room;
-
+        public bool active { get; set; }
 
         public event ProcessMethod Update;
+        public event Action<SpriteBatch> Draw;
         public event ProcessMethod Create;
         public event ProcessMethod Destroy;
         public event ProcessMethod Collision;
         public event ProcessMethod OutOfBounds;
-
-        //Fuck no
-        //
-        //public event Action<ButtonState> LeftClick;
-        //public event Action<ButtonState> RightClick;
-        //public event Action<ButtonState> MiddleClick;
-        //public event Action<int> Scroll;
-        //
-        //public event Action LeftHold;
-        //public event Action RightHold;
-        //public event Action MiddleHold;
-        //
-        //public event ProcessMethod KeyEvent;
-        //
-        //private bool leftHold = false, rightHold = false, middleHold = false;
 
         public Dictionary<KeyAction, KeyBundle> processKeyActions = new Dictionary<KeyAction,KeyBundle>();
 
@@ -47,6 +34,7 @@ namespace OrbItProcs
         { 
             // / // / //
             room = Program.getRoom();
+            active = true;
         }
 
         protected void addProcessKeyAction(String name, KeyCodes k1, KeyCodes? k2 = null, KeyCodes? k3 = null, Action OnPress = null, Action OnRelease = null, Action OnHold = null)
@@ -64,15 +52,27 @@ namespace OrbItProcs
             processKeyActions.Add(keyAction, keyBundle);
         }
 
-        
-
         public void OnUpdate()
         {
             foreach (Process p in procs)
             {
-                p.OnUpdate();
+                if (p.active)
+                {
+                    p.OnUpdate();
+                }
             }
             if (Update != null) Update(pargs);
+        }
+        public void OnDraw(SpriteBatch batch)
+        {
+            foreach (Process p in procs)
+            {
+                if (p.active)
+                {
+                    p.OnDraw(batch);
+                }
+            }
+            if (Draw != null) Draw(batch);
         }
 
         public void Add(Process p)

@@ -13,7 +13,7 @@ namespace OrbItProcs
     {
         private bool _reflective = false;
         public bool reflective { get { return _reflective; } set { _reflective = value; } }
-        public  Queue<Vector2> metapositions = new Queue<Vector2>();
+        public Queue<Vector2> metapositions = new Queue<Vector2>();
         public Queue<Vector2> reflectpositions = new Queue<Vector2>();
         private int _queuecount = 10;
         public int queuecount { get { return _queuecount; } set { _queuecount = value;  } }
@@ -21,11 +21,10 @@ namespace OrbItProcs
         private float _amp = 100;
         public float amp
         {
-            get { return _amp; } 
+            get { return _amp; }
             set 
             {
                 _amp = value;
-                DelegateManager.ChangeArg(parent, "waver", "amp", value);
             } 
         }
         private float _period = 30;
@@ -35,19 +34,21 @@ namespace OrbItProcs
             set
             {
                 _period = value;
-                DelegateManager.ChangeArg(parent, "waver", "period", value);
             }
         }
-        private float _composite = 1;
-        public float composite
+        private int _composite = 1;
+        public int composite
         {
             get { return _composite; }
             set
             {
                 _composite = value;
-                DelegateManager.ChangeArg(parent, "waver", "composite", value);
             }
         }
+        private float vshift = 0f;
+        private float yval = 0f;
+
+
         public Waver() : this(null) { }
         public Waver(Node parent = null)
         {
@@ -62,24 +63,16 @@ namespace OrbItProcs
 
         public override void AfterCloning()
         {
-            //if (!parent.comps.ContainsKey(comp.queuer)) parent.addComponent(comp.queuer, true);
             if (!parent.comps.ContainsKey(comp.lifetime)) 
                 parent.addComponent(comp.lifetime, true);
-            if (!parent.comps.ContainsKey(comp.modifier)) 
-                parent.addComponent(comp.modifier, true);
-            //if (parent.comps.ContainsKey(comp.queuer)) 
-            //parent.comps[comp.queuer].qs = parent.comps[comp.queuer].qs | queues.scale | queues.position;
+            //if (!parent.comps.ContainsKey(comp.modifier)) 
+            //    parent.addComponent(comp.modifier, true);
 
-            //parent.comps[comp.lifetime].immortal = true;
-
-            //MODIFIER
+            /*//MODIFIER
             ModifierInfo modinfo = new ModifierInfo();
-            //modinfo.AddFPInfoFromString("o1", "scale", parent);
-            //modinfo.AddFPInfoFromString("m1", "position", parent);
             modinfo.AddFPInfoFromString("v1", "pos", parent.body);
             modinfo.AddFPInfoFromString("m1", "timer", parent.comps[comp.lifetime]);
 
-            //modinfo.args.Add("mod", 4.0f);
             modinfo.args.Add("amp", amp);
             modinfo.args.Add("period", period);
             modinfo.args.Add("composite", composite);
@@ -92,7 +85,7 @@ namespace OrbItProcs
             //modinfo.delegateName = "VectorSine";
             modinfo.delegateName = "VectorSineComposite";
 
-            parent.comps[comp.modifier].modifierInfos["waver"] = modinfo;
+            parent.comps[comp.modifier].modifierInfos["waver"] = modinfo;*/
         }
 
         public override void OnSpawn()
@@ -120,15 +113,18 @@ namespace OrbItProcs
         }
         public override void AffectSelf()
         {
-            float yval = 0;
+            /*float yval = 0;
             if (parent.comps[comp.modifier].modifierInfos["waver"].args.ContainsKey("yval"))
             {
                 yval = parent.comps[comp.modifier].modifierInfos["waver"].args["yval"];
-
-                
+            }*/
+            float time = 0;
+            if (parent.comps.ContainsKey(comp.lifetime))
+            {
+                time = parent.comps[comp.lifetime].mseconds;
             }
 
-            //if (yval == 0) Console.WriteLine("hm");
+            yval = DelegateManager.SineComposite(time, amp, period, vshift, composite);
 
             Vector2 metapos = new Vector2(parent.body.velocity.Y, -parent.body.velocity.X);
             metapos.Normalize();

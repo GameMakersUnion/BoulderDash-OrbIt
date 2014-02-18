@@ -33,8 +33,8 @@ namespace OrbItProcs
 
         private int _maxmseconds = 5000;
         public int maxmseconds { get { return _maxmseconds; } set { _maxmseconds = value; } }
-        private int mseconds = 0;
-        //public int msecondsleft { get { return _msecondsleft; } set { _msecondsleft = value; } }
+        private int _mseconds = 0;
+        public int mseconds { get { return _mseconds; } set { _mseconds = value; } }
 
         private bool _immortal = true;
         public bool immortal { get { return _immortal; } set { _immortal = value; } }

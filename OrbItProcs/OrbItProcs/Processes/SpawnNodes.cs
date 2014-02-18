@@ -29,6 +29,8 @@ namespace OrbItProcs
             addProcessKeyAction("deserial2", KeyCodes.F6, OnPress: Deserailize_Link);
             addProcessKeyAction("serial1", KeyCodes.F7, OnPress: Serialize_Room);
             addProcessKeyAction("deserial2", KeyCodes.F8, OnPress: Deserialize_Room);
+            addProcessKeyAction("serial1", KeyCodes.F9, OnPress: Serialize_Room_Binary);
+            addProcessKeyAction("deserial2", KeyCodes.F10, OnPress: Deserialize_Room_Binary);
         }
 
         
@@ -119,6 +121,21 @@ namespace OrbItProcs
         {
             string filename = "Presets//Rooms//room1.xml";
             room.game.serializer = new Polenter.Serialization.SharpSerializer();
+            Room rm = (Room)room.game.serializer.Deserialize(filename);
+
+            room.game.ResetRoomReferences(rm);
+
+        }
+        public void Serialize_Room_Binary()//F9
+        {
+            string filename = "Presets//Rooms//room1.bin";
+            room.game.serializer = new Polenter.Serialization.SharpSerializer(true);
+            room.game.serializer.Serialize(room, filename);
+        }
+        public void Deserialize_Room_Binary()//F10
+        {
+            string filename = "Presets//Rooms//room1.bin";
+            room.game.serializer = new Polenter.Serialization.SharpSerializer(true);
             Room rm = (Room)room.game.serializer.Deserialize(filename);
 
             room.game.ResetRoomReferences(rm);
