@@ -85,8 +85,6 @@ namespace OrbItProcs
         {
             this.parent = parent;
             parent.Collided += onCollision;
-
-            //AfterCloning();
         }
 
         public override void AffectOther(Node other)

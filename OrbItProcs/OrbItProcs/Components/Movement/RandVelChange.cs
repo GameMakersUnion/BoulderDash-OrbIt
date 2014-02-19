@@ -18,12 +18,6 @@ namespace OrbItProcs
             methods = mtypes.affectself; 
         }
 
-
-        public override void Initialize(Node parent)
-        {
-            this.parent = parent;
-        }
-
         public override void AffectSelf()
         {
             float counterVelocity = 40f;

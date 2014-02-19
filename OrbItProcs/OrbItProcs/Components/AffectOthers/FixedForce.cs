@@ -30,10 +30,6 @@ namespace OrbItProcs
             com = comp.fixedforce;
             methods = mtypes.affectother;
         }
-        public override void Initialize(Node parent)
-        {
-            this.parent = parent;
-        }
 
         public override void AffectOther(Node other)
         {

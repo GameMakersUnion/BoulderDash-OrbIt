@@ -9,7 +9,7 @@ namespace OrbItProcs
 {
     public class RandInitialVel : Component {
 
-        public bool active
+        /*public override bool active
         {
             get
             {
@@ -24,7 +24,7 @@ namespace OrbItProcs
                     parent.triggerSortLists();
                 }
             }
-        }
+        }*/
 
         private float _multiplier = 8f;
         
@@ -35,7 +35,7 @@ namespace OrbItProcs
                 _multiplier = value;
                 if (parent != null && parent.body.velocity != null)
                 {
-                    ScaleVelocity();
+                    //ScaleVelocity();
                 }
             }
         }
@@ -62,35 +62,27 @@ namespace OrbItProcs
             }
         }
 
-        public override void Initialize(Node parent)
-        {
-            this.parent = parent;
-            if (active)
-            {
-                if (parent.body.velocity.X != 0 && parent.body.velocity.Y != 0)
-                {
-                    ScaleVelocity();
-                }
-                else
-                {
-                    float x = ((float)Utils.random.NextDouble() * 100) - 50;
-                    float y = ((float)Utils.random.NextDouble() * 100) - 50;
-                    Vector2 vel = new Vector2(x, y);
-                    vel.Normalize();
-                    vel = vel * multiplier;
-                    parent.body.velocity = vel;
-                }
-                
-            }
-        }
         public override void OnSpawn()
         {
             if (!active) return;
-            parent.body.velocity = new Vector2(0, 0);
+            if (parent.body.velocity.X != 0 && parent.body.velocity.Y != 0)
+            {
+                ScaleVelocity();
+            }
+            else
+            {
+                RandomizeVelocity();
+            }
+        }
 
-            Initialize(parent);
-            return;
-
+        public void RandomizeVelocity()
+        {
+            float x = ((float)Utils.random.NextDouble() * 100) - 50;
+            float y = ((float)Utils.random.NextDouble() * 100) - 50;
+            Vector2 vel = new Vector2(x, y);
+            vel.Normalize();
+            vel = vel * multiplier;
+            parent.body.velocity = vel;
         }
 
 

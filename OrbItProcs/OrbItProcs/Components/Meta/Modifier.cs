@@ -55,7 +55,7 @@ namespace OrbItProcs
             this.parent = parent;
             if (modifierInfos.Count > 0)
             {
-                UpdateReferences();
+                UpdateReferences(); //todo:fix this to use nodehashes for serialization
             }
         }
         /*

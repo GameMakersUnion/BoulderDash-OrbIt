@@ -40,11 +40,6 @@ namespace OrbItProcs
             active = false;
         }
 
-        public override void Initialize(Node parent)
-        {
-            this.parent = parent;
-        }
-
         private void IntegrateForces()
         {
             if (parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();

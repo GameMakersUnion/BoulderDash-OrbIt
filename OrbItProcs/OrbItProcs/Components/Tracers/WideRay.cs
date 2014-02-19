@@ -47,11 +47,6 @@ namespace OrbItProcs
             //scales = new Queue<float>();
         }
 
-        public override void Initialize(Node parent)
-        {
-            this.parent = parent;
-            
-        }
 
         public override void AffectOther(Node other)
         {

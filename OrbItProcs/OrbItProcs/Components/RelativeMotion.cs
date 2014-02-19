@@ -41,12 +41,6 @@ namespace OrbItProcs
         {
         }
 
-        public override void Initialize(Node parent)
-        {
-            this.parent = parent;
-
-        }
-
         public override void AffectOther(Node other) // called when used as a link
         {
             //other.transform.position += parent.transform.velocity;

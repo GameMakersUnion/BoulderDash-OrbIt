@@ -53,9 +53,8 @@ namespace OrbItProcs
 
         }
 
-        public override void Initialize(Node parent)
+        public override void OnSpawn()
         {
-            this.parent = parent;
             r1 = Utils.random.Next(255) / 255f;
             g1 = Utils.random.Next(255) / 255f;
             b1 = Utils.random.Next(255) / 255f;

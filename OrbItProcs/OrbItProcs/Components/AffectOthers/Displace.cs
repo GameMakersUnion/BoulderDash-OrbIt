@@ -50,14 +50,6 @@ namespace OrbItProcs
 
         }
 
-
-
-
-        public override void Initialize(Node parent)
-        {
-            this.parent = parent;
-        }
-
         public override void AffectOther(Node other)
         {
             if (!active) { return; }

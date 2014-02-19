@@ -54,7 +54,6 @@ namespace OrbItProcs
         public override void Initialize()
         {
             ComputeMass( 0.001f );
-            
         }
         public override void ComputeMass(float density)
         {
@@ -207,32 +206,55 @@ namespace OrbItProcs
 
         //Highlight something and then use [Shift *] to put it in a comment block!---------------------------------
 
-        public void FindCentroid(Vector2[] verts)
+        public void SetCenterOfMass(Vector2[] verts)
         {
             int len = verts.Length;
             if (len < 3) return;
+
+            Vector2 centroid = FindCentroid(verts);
+
+            Vector2[] newverts = new Vector2[len];
+            for (int i = 0; i < len; i++)
+            {
+                newverts[i] = new Vector2(verts[i].X - centroid.X, verts[i].Y - centroid.Y);
+            }
+            //body.pos = new Vector2(x, y);
+            Set(newverts, len);
+
+            Vector2 newCentroid = FindCentroid(vertices, vertexCount);
+            body.pos = centroid + newCentroid;
+            
+        }
+
+        public Vector2 FindCentroid(Vector2[] verts, int? length = null)
+        {
+            int len;
+            if (length == null)
+            {
+                len = verts.Length;
+            }
+            else
+            {
+                len = (int)length;
+            }
+
             float x = 0, y = 0, area = 0;
             for (int i = 0; i < len; i++)
             {
                 Vector2 next = verts[(i + 1) % len];
-                float factor = verts[i].X * next.Y - next.X * verts[i].Y;
-                x += (verts[i].X + next.X) * factor;
-                y += (verts[i].Y + next.Y) * factor;
+                Vector2 current = verts[i];
+                float factor = current.X * next.Y - next.X * current.Y;
+                x += (current.X + next.X) * factor;
+                y += (current.Y + next.Y) * factor;
 
                 area += factor;
             }
             area /= 2;
             x /= 6 * area;
             y /= 6 * area;
-            if (x < 0 || y < 0) System.Diagnostics.Debugger.Break();
+            //if (x < 0 || y < 0) System.Diagnostics.Debugger.Break();
 
-            Vector2[] newverts = new Vector2[len];
-            for (int i = 0; i < len; i++)
-            {
-                newverts[i] = new Vector2(verts[i].X - x, verts[i].Y - y);
-            }
-            body.pos = new Vector2(x, y);
-            Set(newverts, len);
+            return new Vector2(x, y);
             
 
         }
@@ -249,11 +271,13 @@ namespace OrbItProcs
             VMath.Set(ref normals[1], 1, 0);//normals[1].Set(1, 0);
             VMath.Set(ref normals[2], 0, 1);//normals[2].Set(0, 1);
             VMath.Set(ref normals[3], -1, 0);//normals[3].Set(-1, 0);
+
         }
+
         public void Set(Vector2[] verts, int count)
         {
             //no hulls with less than 3 verticies (ensure actual polygon)
-            Debug.Assert(count > 2 && count < MaxPolyVertexCount);
+            //Debug.Assert(count > 2 && count < MaxPolyVertexCount);
             count = Math.Min(count, MaxPolyVertexCount);
 
             //find the right most point in the hull

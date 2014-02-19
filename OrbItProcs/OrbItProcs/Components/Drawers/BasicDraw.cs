@@ -20,11 +20,6 @@ namespace OrbItProcs
             com = comp.basicdraw; 
             methods = mtypes.draw;
         }
-
-        public override void Initialize(Node parent)
-        {
-            this.parent = parent;
-        }
         
         public override void AffectSelf()
         {

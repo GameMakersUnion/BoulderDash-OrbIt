@@ -38,7 +38,9 @@ namespace OrbItProcs
             com = comp.tree;
             methods = mtypes.affectself | mtypes.draw;
             InitializeLists();
-
+            r1 = Utils.random.Next(255) / 255f;
+            g1 = Utils.random.Next(255) / 255f;
+            b1 = Utils.random.Next(255) / 255f;
         }
 
         public override void InitializeLists()
@@ -46,14 +48,6 @@ namespace OrbItProcs
             positions = new Queue<Vector2>();
             scales = new Queue<float>();
 
-        }
-
-        public override void Initialize(Node parent)
-        {
-            this.parent = parent;
-            r1 = Utils.random.Next(255) / 255f;
-            g1 = Utils.random.Next(255) / 255f;
-            b1 = Utils.random.Next(255) / 255f;
         }
 
         public override void AffectSelf()

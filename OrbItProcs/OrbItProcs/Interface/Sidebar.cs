@@ -958,6 +958,8 @@ namespace OrbItProcs
 
         public void btnRemoveAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
+            (sender as Button).Focused = false;
+
             Group g = ActiveGroupFirst;
             if (g.fullSet.Contains(game.targetNode)) game.targetNode = null;
             if (g.fullSet.Contains(inspectorArea.editNode) && inspectorArea.editNode != g.defaultNode)

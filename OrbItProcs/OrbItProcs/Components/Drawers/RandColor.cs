@@ -10,28 +10,6 @@ using Component = OrbItProcs.Component;
 namespace OrbItProcs {
     public class RandColor : Component {
 
-        new public bool active
-        {
-            get
-            {
-                return _active;
-            }
-            set
-            {
-                
-                _active = value;
-                if (value && parent != null)
-                {
-                    Initialize(parent);
-                }
-                if (parent != null && parent.comps.ContainsKey(com))
-                {
-                    parent.triggerSortLists();
-                }
-                
-            }
-        }
-
         public bool _IsBasedOnTime = true;
         public bool IsBasedOnTime { get { return _IsBasedOnTime; } set { _IsBasedOnTime = value; } }
 
@@ -43,16 +21,6 @@ namespace OrbItProcs {
             if (parent != null) this.parent = parent;
             com = comp.randcolor; 
             methods = mtypes.initialize; 
-        }
-
-        public override void Initialize(Node parent)
-        {
-            this.parent = parent;
-            if (active)
-            {
-                parent.body.color = new Color((float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255, (float)Utils.random.Next(255) / (float)255);
-            }
-            
         }
 
         public override void OnSpawn()

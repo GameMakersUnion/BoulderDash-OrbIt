@@ -162,11 +162,11 @@ namespace OrbItProcs {
         {
             mouseState = Mouse.GetState();
 
-            if (mouseState.XButton1 == ButtonState.Pressed)
-                System.Console.WriteLine("X1");
-
-            if (mouseState.XButton2 == ButtonState.Pressed)
-                System.Console.WriteLine("X2");
+            //if (mouseState.XButton1 == ButtonState.Pressed)
+            //    System.Console.WriteLine("X1");
+            //
+            //if (mouseState.XButton2 == ButtonState.Pressed)
+            //    System.Console.WriteLine("X2");
 
             MousePos = new Vector2(mouseState.X, mouseState.Y);
             WorldMousePos = MousePos * room.mapzoom;

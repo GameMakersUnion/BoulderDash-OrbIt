@@ -9,23 +9,6 @@ namespace OrbItProcs
 {
     public class Lifetime : Component
     {
-        public override bool active
-        {
-            get
-            {
-                return _active;
-            }
-            set
-            {
-                _active = value;
-                if (value && parent != null) Initialize(parent);
-                if (parent != null && parent.comps.ContainsKey(com))
-                {
-                    parent.triggerSortLists();
-                }
-            }
-        }
-
         //private int _maxlife = 100;
         //public int maxlife { get { return _maxlife; } set { _maxlife = value; } }
         //private int _lifeleft = 100;
@@ -52,18 +35,10 @@ namespace OrbItProcs
         {
             if (parent != null) this.parent = parent;
             com = comp.lifetime; 
-            methods = mtypes.affectself; 
-        }
-
-
-        public override void Initialize(Node parent)
-        {
-            this.parent = parent;
-            //lifeleft = maxlife;
+            methods = mtypes.affectself;
             mseconds = 0;
             alive = true;
         }
-
 
         public override void AffectSelf()
         {

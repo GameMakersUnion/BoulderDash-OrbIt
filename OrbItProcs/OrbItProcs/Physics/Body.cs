@@ -24,6 +24,11 @@ namespace OrbItProcs
             set { velocity = new Vector2(value[0], value[1]); } }
         
         public Vector2 effvelocity = new Vector2(0, 0);
+        public float[] effvelocityP
+        {
+            get { return effvelocity.toFloatArray(); }
+            set { effvelocity = new Vector2(value[0], value[1]); }
+        }
         public Vector2 force = new Vector2(0, 0);
 
         private float _angularVelocity = 0;
@@ -122,6 +127,15 @@ namespace OrbItProcs
             set { _texture = value; }
         }
 
+        public bool PolenterHack
+        {
+            get { return true; }
+            set
+            {
+                if (shape != null) shape.body = this;
+            }
+        }
+
         public Body() : this(shape: null) { }
         public Body(Shape shape = null, Node parent = null)
         {
@@ -172,14 +186,6 @@ namespace OrbItProcs
         {
             orient = radians;
             shape.SetOrient(radians);
-        }
-
-        
-
-
-        public override void Initialize(Node parent)
-        {
-            this.parent = parent;
         }
 
         public override void AffectSelf()

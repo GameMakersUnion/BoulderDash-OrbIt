@@ -119,6 +119,9 @@ namespace OrbItProcs
         }
         public void Deserialize_Room()//F8
         {
+            Group.GroupNumber = 0;
+            Node.nodeCounter = 0;
+
             string filename = "Presets//Rooms//room1.xml";
             room.game.serializer = new Polenter.Serialization.SharpSerializer();
             Room rm = (Room)room.game.serializer.Deserialize(filename);

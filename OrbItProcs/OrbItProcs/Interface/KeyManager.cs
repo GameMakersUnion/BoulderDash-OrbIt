@@ -802,6 +802,8 @@ namespace OrbItProcs
 
         public MouseState newMouseState, oldMouseState;
 
+        private bool MouseInGameBox = false;
+
         //don't call me generic
         public Dictionary<Process, List<Tuple<KeyBundle, KeyAction>>> ReplacedBundles = new Dictionary<Process, List<Tuple<KeyBundle, KeyAction>>>();
 
@@ -947,15 +949,21 @@ namespace OrbItProcs
             newKeyboardState = Keyboard.GetState();
             newMouseState = Mouse.GetState();
 
+            MouseInGameBox = newMouseState.X < Game1.sWidth - ui.sidebar.master.Width; //todo:support fullscreen
 
-            Vector2 mousePos = UserInterface.MousePos;
-            if (mousePos.X < Game1.sWidth - ui.sidebar.master.Width)
+            
+
+            //Vector2 mousePos = UserInterface.MousePos;
+            //if (mousePos.X < Game1.sWidth - ui.sidebar.master.Width)
+            //{
+            if (newMouseState.X >= 0 && newMouseState.Y >= 0) //todo:check that the game window is active
             {
                 ProcessKeyboard();
                 ProcessMouse();
 
                 ProcessHolds();
             }
+            //}
 
             oldKeyboardState = Keyboard.GetState();
             oldMouseState = Mouse.GetState();
@@ -1110,7 +1118,6 @@ namespace OrbItProcs
                 }
 
                 if (!Keybinds.ContainsKey(kb))
-
                 {
                     if (kb.mod1 != null) kb.mod1 = temp;
                     if (!Keybinds.ContainsKey(kb))
@@ -1127,10 +1134,12 @@ namespace OrbItProcs
             KeyAction ka = Keybinds[kb];
             if (ka != null)
             {
-                if (ka.pressAction != null) ka.pressAction();
-                //if (!PressedBundles.ContainsKey(kb)) 
+                if (MouseInGameBox || (kb.effectiveKey != KeyCodes.LeftClick && kb.effectiveKey != KeyCodes.RightClick && kb.effectiveKey != KeyCodes.MiddleClick))
+                {
+                    if (ka.pressAction != null) ka.pressAction();
+                    //if (!PressedBundles.ContainsKey(kb)) 
                     PressedBundles.Add(kb, ka); //exception
-
+                }
                 
             }
         }

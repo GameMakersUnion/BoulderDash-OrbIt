@@ -52,10 +52,12 @@ namespace OrbItProcs
             Node.cloneObject(room.game.ui.sidebar.ActiveDefaultNode, newNode);
             Polygon poly = new Polygon();
             poly.body = newNode.body;
-            poly.FindCentroid(vertices);
+            //poly.FindCentroid(vertices);
+            poly.SetCenterOfMass(vertices);
             newNode.body.shape = poly;
             newNode.body.SetStatic();
             newNode.body.SetOrient(0);
+            newNode.body.restitution = 1f;
             room.game.spawnNode(newNode, g: room.masterGroup.childGroups["Walls"]);
             verts = new List<Vector2>();
         }

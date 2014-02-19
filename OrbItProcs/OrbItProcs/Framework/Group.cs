@@ -41,7 +41,8 @@ namespace OrbItProcs
 
         };
 
-        public int GroupId = -1;
+        public int GroupId { get; set; }
+
 
         [Polenter.Serialization.ExcludeFromSerialization]
         public Group parentGroup { get; set; }
@@ -149,6 +150,7 @@ namespace OrbItProcs
         public Group(Node defaultNode = null, ObservableHashSet<Node> entities = null, Group parentGroup = null, GroupState groupState = GroupState.on, string Name = "", bool Spawnable = true)
         {
             room = Program.getRoom();
+            GroupId = -1;
             groupHash = Utils.uniqueString(room.groupHashes);
             this.defaultNode = defaultNode ?? room.defaultNode;
             this.entities = entities ?? new ObservableHashSet<Node>();

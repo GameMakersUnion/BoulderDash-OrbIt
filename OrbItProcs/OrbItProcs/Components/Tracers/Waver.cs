@@ -101,12 +101,6 @@ namespace OrbItProcs
             reflectpositions = new Queue<Vector2>();
         }
 
-        public override void Initialize(Node parent)
-        {
-            this.parent = parent;
-
-        }
-
         public override void AffectOther(Node other)
         {
 
