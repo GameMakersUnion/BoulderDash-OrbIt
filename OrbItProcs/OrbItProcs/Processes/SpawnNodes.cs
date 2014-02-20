@@ -21,6 +21,8 @@ namespace OrbItProcs
             addProcessKeyAction("DirectionalLaunch", KeyCodes.LeftShift, KeyCodes.RightClick, OnHold: DirectionalLaunch);
             batchSpawnNum = 50;
 
+            addProcessKeyAction("testing", KeyCodes.OemPipe, OnPress: Testing);
+
             addProcessKeyAction("serial1", KeyCodes.F1, OnPress: Serailize_Entities);
             addProcessKeyAction("deserial2", KeyCodes.F2, OnPress: Deserailize_Entities);
             addProcessKeyAction("serial1", KeyCodes.F3, OnPress: Serailize_Group);
@@ -33,7 +35,18 @@ namespace OrbItProcs
             addProcessKeyAction("deserial2", KeyCodes.F10, OnPress: Deserialize_Room_Binary);
         }
 
-        
+        public void Testing()
+        {
+            //
+            //room.game.testing.TestOnClick();
+            //room.game.testing.TestHashSet();
+            //room.game.testing.WhereTest();
+            //room.game.testing.ForLoops();
+            //room.game.testing.ColorsTest();
+            //room.game.testing.NormalizeTest();
+            room.game.testing.LoopTesting();
+            //
+        }
 
         public void Serailize_Entities()//F1
         {

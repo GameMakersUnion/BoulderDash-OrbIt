@@ -32,7 +32,7 @@ namespace OrbItProcs
             if (parent.body.shape is Polygon)
             {
                 parent.body.shape.Draw();
-                if (!DrawCircle) return;
+                if (!parent.body.DrawCircle) return;
             }
 
             Room room = parent.room;

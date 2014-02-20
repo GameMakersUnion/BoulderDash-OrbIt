@@ -127,6 +127,8 @@ namespace OrbItProcs {
             gridsystemCollision = new GridSystem(this, gridsystem.cellsX, 20);
             DrawLinks = true;
             WallWidth = 500;
+
+
         }
         
         public void MakeWalls()
@@ -182,26 +184,26 @@ namespace OrbItProcs {
 
             
             //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
-            masterGroup.childGroups["General Groups"].ForEachFullSet(delegate(Node o) 
+            masterGroup.childGroups["General Groups"].ForEachFullSet(delegate(Node n) 
             {
-                Node n = (Node)o; 
                 gridsystem.insert(n);
             });
 
-            //UpdateCollision();
+            //
             UpdateCollision();
             
             //game.testing.StartTimer();
-            masterGroup.ForEachFullSet(delegate(Node o)
+            foreach(Node n in masterGroup.fullSet.ToList())
             {
-                Node n = (Node)o;
                 if (n.active)
                 {
                     n.Update(gametime);
                 }
-            });
+            }
             //game.testing.StopTimer("room update");
 
+            //masterGroup.ForEachThreading(gametime);
+            
             
             if (AfterIteration != null) AfterIteration(this, null);
 

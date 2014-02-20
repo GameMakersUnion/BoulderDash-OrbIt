@@ -79,6 +79,13 @@ namespace OrbItProcs
         public Vector2[] vertices = new Vector2[MaxPolyVertexCount];
         public Vector2[] normals = new Vector2[MaxPolyVertexCount];
 
+        public float LineThickness { get; set; }
+        public bool RecurseDrawEnabled { get; set; }
+        public int RecurseCount { get; set; }
+        public float RecurseScaleReduction { get; set; }
+        public bool FillEnabled { get; set; }
+
+
         public float[,] verticesP
         {
             get
@@ -123,7 +130,13 @@ namespace OrbItProcs
         }
 
 
-        public Polygon() { }
+        public Polygon() {
+            LineThickness = 1f;
+            RecurseDrawEnabled = false;
+            RecurseCount = 1;
+            RecurseScaleReduction = 0.2f;
+            FillEnabled = false;
+        }
         
         public override void Initialize()
         {
@@ -133,6 +146,13 @@ namespace OrbItProcs
         {
             Polygon poly = new Polygon();
             poly.u = u;
+            poly.RecurseCount = RecurseCount;
+            poly.RecurseDrawEnabled = RecurseDrawEnabled;
+            poly.RecurseScaleReduction = RecurseScaleReduction;
+            poly.LineThickness = LineThickness;
+            poly.FillEnabled = FillEnabled;
+
+
             for (int i = 0; i < vertexCount; i++)
             {
                 poly.vertices[i] = vertices[i];
@@ -188,17 +208,81 @@ namespace OrbItProcs
 
         public override void Draw()
         {
+            DrawPolygon(body.pos, body.color);
+        }
+
+        public void DrawPolygon(Vector2 position, Color color)
+        {
+            //Vector2[] vertIncrements = new Vector2[vertexCount];
+            //for (int i = 0; i < vertexCount; i++)
+            //{
+            //    vertIncrements[i] = vertices[i];
+            //    vertIncrements[i].Normalize();
+            //    vertIncrements[i] *= -LineThickness;
+            //
+            //}
+
             //could optimize to use the last vertex on the next iteration
             for (int i = 0; i < vertexCount; i++)
             {
                 Vector2 a1 = u * vertices[i];
                 Vector2 a2 = u * vertices[(i + 1) % vertexCount];
 
-                Vector2 v1 = body.pos + a1;//u * vertices[i];
-                Vector2 v2 = body.pos + a2;//u * vertices[(i + 1) % vertexCount];
+                Vector2 v1 = position + a1;
+                Vector2 v2 = position + a2;
+                Utils.DrawLine(body.parent.room, v1, v2, LineThickness, color);
+
+                if (RecurseDrawEnabled)
+                {
+                    DrawRecurse(body.pos + a1, RecurseCount, 1f);
+                }
+
+            }
+
+
+            //DrawFill(body.pos, 1f);
+        }
+
+        public void DrawFill(Vector2 pos, float scale)
+        {
+            //could optimize to use the last vertex on the next iteration
+            scale -= RecurseScaleReduction;
+            if (scale < 0.3f) return;
+
+            for (int i = 0; i < vertexCount; i++)
+            {
+                Vector2 a1 = u * vertices[i] * scale;
+                Vector2 a2 = u * vertices[(i + 1) % vertexCount] * scale;
+
+                Vector2 v1 = pos + a1;
+                Vector2 v2 = pos + a2;
+                Utils.DrawLine(body.parent.room, v1, v2, LineThickness, body.color);
+
+                //Draw(pos, count, scale, scalediff);
+            }
+            DrawFill(pos, scale);
+        }
+
+        public void DrawRecurse(Vector2 pos, int count, float scale)
+        {
+            //could optimize to use the last vertex on the next iteration
+            scale -= RecurseScaleReduction;
+            count--;
+            if (scale < 0 || count < 0) return;
+
+            for (int i = 0; i < vertexCount; i++)
+            {
+                Vector2 a1 = u * vertices[i] * scale;
+                Vector2 a2 = u * vertices[(i + 1) % vertexCount] * scale;
+
+                Vector2 v1 = pos + a1;
+                Vector2 v2 = pos + a2;
                 Utils.DrawLine(body.parent.room, v1, v2, 1f, body.color);
+
+                DrawRecurse(pos + a1, count, scale);
             }
         }
+
         public override ShapeType GetShapeType()
         {
             return ShapeType.ePolygon;

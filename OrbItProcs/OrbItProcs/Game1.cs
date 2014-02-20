@@ -94,6 +94,7 @@ namespace OrbItProcs
         public static int fullWidth = 1680;
         public static int fullHeight = 1050;
         public static string filepath = "Presets//Nodes/";
+        public static bool isFullScreen = false;
 
         public Dictionary<textures, Texture2D> textureDict;
         //Node node;
@@ -157,6 +158,7 @@ namespace OrbItProcs
 
         public void ToggleFullScreen(bool on)
         {
+            Game1.isFullScreen = on;
             if (on)
             {
                 //SystemBorder = false;
@@ -479,9 +481,11 @@ namespace OrbItProcs
             if (g == null && !activegroup.Spawnable) return;
 
             newNode.name = "bullet" + Node.nodeCounter;
-            newNode.OnSpawn();
 
+            newNode.OnSpawn();
             if (afterSpawnAction != null) afterSpawnAction(newNode);
+
+            
 
             if (lifetime != -1)
             {
@@ -526,14 +530,7 @@ namespace OrbItProcs
 
         public Node spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null, bool blank = false, int lifetime = -1)
         {
-            //
-            //testing.TestOnClick();
-            //testing.TestHashSet();
-            //testing.WhereTest();
-            //testing.ForLoops();
-            //testing.ColorsTest();
-            //testing.NormalizeTest();
-            //
+            
             Group activegroup = ui.sidebar.ActiveGroupFirst;
             //if (activegroup.Name.Equals("master")) return;
             if (!activegroup.Spawnable) return null;
@@ -557,6 +554,8 @@ namespace OrbItProcs
 
             newNode.OnSpawn();
             if (afterSpawnAction != null) afterSpawnAction(newNode);
+
+            
             
             if (lifetime != -1)
             {

@@ -101,7 +101,7 @@ namespace OrbItProcs
             a = b = c = 0;
 
             //Vector2 screenPos = parent.transform.position / mapzoom;
-
+            bool IsPolygon = parent.body.shape is Polygon;
             int count = 0;
             //foreach (Vector2 pos in positions)
             //Queue<float> scales = ((Queue<float>)(parent.comps[comp.queuer].scales));
@@ -127,14 +127,26 @@ namespace OrbItProcs
                     //scale = ((Queue<float>)(parent.comps[comp.queuer].scales)).ElementAt(count) / mapzoom;
                 
                 //}
+                
+                if (IsPolygon)
+                {
+                    (parent.body.shape as Polygon).DrawPolygon(positions.ElementAt(i), col);
+                }
+                if (!IsPolygon || (IsPolygon && parent.body.DrawCircle))
+                {
+                    spritebatch.Draw(parent.getTexture(), positions.ElementAt(i) / mapzoom, null, col, 0, parent.TextureCenter(), scales.ElementAt(i) / mapzoom, SpriteEffects.None, 0);
+                }
 
-                spritebatch.Draw(parent.getTexture(), positions.ElementAt(i) / mapzoom, null, col, 0, parent.TextureCenter(), scales.ElementAt(i) / mapzoom , SpriteEffects.None, 0);
                 count++;
             }
 
             //float testangle = (float)(Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2));
+            
             if (parent.comps.ContainsKey(comp.hueshifter)) col = parent.body.color;
-            spritebatch.Draw(parent.getTexture(), parent.body.pos / mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
+            if (!IsPolygon || (IsPolygon && parent.body.DrawCircle))
+            {
+                spritebatch.Draw(parent.getTexture(), parent.body.pos / mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
+            }
 
         }
 

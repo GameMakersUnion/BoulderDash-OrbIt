@@ -51,6 +51,7 @@ namespace OrbItProcs
         public float dynamicFriction { get { return _dynamicFriction; } set { _dynamicFriction = value; } }
         public float restitution { get { return _restitution; } set { _restitution = value; } }
 
+        public bool DrawCircle { get; set; }
 
         public float orient
         {
@@ -146,6 +147,7 @@ namespace OrbItProcs
             this.shape = shape ?? new Circle(25);
             this.shape.body = this;
             this.shape.Initialize();
+            DrawCircle = true;
 
             AfterCloning();
         }

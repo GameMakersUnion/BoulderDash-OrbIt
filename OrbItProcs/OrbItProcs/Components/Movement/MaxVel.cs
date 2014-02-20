@@ -9,11 +9,29 @@ namespace OrbItProcs
 {
     public class MaxVel : Component {
 
+        
+
         private float _maxvel = 30f;
         public float maxvel { get { return _maxvel; } set { _maxvel = value; if (maxvel < _minvel) _maxvel = _minvel; } }
 
         private float _minvel = 0f;
         public float minvel { get { return _minvel; } set { _minvel = value; if (_minvel > _maxvel) _minvel = _maxvel; } }
+
+        public override bool active
+        {
+            get
+            {
+                return _active;
+            }
+            set
+            {
+                _active = value;
+                //if (value && parent != null && parent.comps.ContainsKey(com))
+                //{
+                //    AffectSelf();
+                //}
+            }
+        }
 
         public MaxVel() : this(null) { }
         public MaxVel(Node parent = null)
@@ -25,17 +43,20 @@ namespace OrbItProcs
 
         public override void OnSpawn()
         {
-            if (active) AffectSelf();
+            if (active) 
+                AffectSelf();
         }
 
         public override void AffectSelf()
         {
-            if ((Math.Pow(parent.body.velocity.X, 2) + Math.Pow(parent.body.velocity.Y, 2)) > Math.Pow(maxvel, 2))
+            double velSquared = Math.Pow(parent.body.velocity.X, 2) + Math.Pow(parent.body.velocity.Y, 2);
+
+            if (velSquared > Math.Pow(maxvel, 2))
             {
                 parent.body.velocity.Normalize();
                 parent.body.velocity *= maxvel;
             }
-            if ((Math.Pow(parent.body.velocity.X, 2) + Math.Pow(parent.body.velocity.Y, 2)) < Math.Pow(minvel, 2))
+            if (velSquared < Math.Pow(minvel, 2))
             {
                 parent.body.velocity.Normalize();
                 parent.body.velocity *= minvel;

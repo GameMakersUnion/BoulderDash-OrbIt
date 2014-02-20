@@ -949,8 +949,14 @@ namespace OrbItProcs
             newKeyboardState = Keyboard.GetState();
             newMouseState = Mouse.GetState();
 
-            MouseInGameBox = newMouseState.X < Game1.sWidth - ui.sidebar.master.Width; //todo:support fullscreen
-
+            if (Game1.isFullScreen)
+            {
+                MouseInGameBox = newMouseState.X < Game1.fullWidth - Game1.fullWidth * ((float)ui.sidebar.master.Width / (float)Game1.sWidth);
+            }
+            else
+            {
+                MouseInGameBox = newMouseState.X < Game1.sWidth - ui.sidebar.master.Width;
+            }
             
 
             //Vector2 mousePos = UserInterface.MousePos;
@@ -1042,6 +1048,7 @@ namespace OrbItProcs
             if (newButtonState == ButtonState.Pressed && oldButtonState == ButtonState.Released)
             {
                 KeyCodes kc = (KeyCodes)press;
+                
                 if (!PressedKeys.Contains(kc) && PressedKeys.Count < 3)
                 {
                     PressedKeys.Add(kc);
@@ -1069,6 +1076,7 @@ namespace OrbItProcs
                 if (KeyPressEvent(k))
                 {
                     KeyCodes kc = (KeyCodes)k;
+                    //Console.WriteLine(kc); //======================//======================//======================//======================//======================
                     if (!PressedKeys.Contains(kc) && PressedKeys.Count < 3)
                     {
                         //PressedKeys.Push(kc);

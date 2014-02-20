@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace OrbItProcs
 {
@@ -178,6 +179,18 @@ namespace OrbItProcs
             }
             this.Name = Name;
 
+            /*threads[0] = new Thread(new ThreadStart(ThreadStartAction));
+            threads[1] = new Thread(new ThreadStart(ThreadStartAction));
+            threads[2] = new Thread(new ThreadStart(ThreadStartAction));
+            threads[3] = new Thread(new ThreadStart(ThreadStartAction));*/
+            //threads[0] = new Thread(new ThreadStart(Thread1));
+            //threads[1] = new Thread(new ThreadStart(Thread2));
+            //threads[2] = new Thread(new ThreadStart(Thread3));
+
+            //threads[4] = new Thread(new ThreadStart(ThreadStartAction));
+            //threads[5] = new Thread(new ThreadStart(ThreadStartAction));
+
+            
         }
 
         void entities_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -227,13 +240,129 @@ namespace OrbItProcs
         public void ForEachFullSet(Action<Node> action)
         {
             fullSet.ToList().ForEach(action);
-            /*
-            foreach (Node n in fullSet)
-            {
-                action(n);
-            }
-            */
         }
+
+        //private int counter = 0;
+        //private static int ThreadCount = 3;
+        //private static bool ThreadStarted = false;
+        //public Node[] nodes;
+        //Thread[] threads = new Thread[ThreadCount];
+        ///*Thread t1;
+        //Thread t2;
+        //Thread t3;
+        //Thread t4;
+        //Thread t5;
+        //Thread t6;*/
+
+        /*public void ForEachThreading(GameTime gameTime)
+        {
+            nodes = fullSet.ToArray();
+
+            / *foreach(Node n in nodes)
+            {
+                if (n.active)
+                {
+                    n.Update(gameTime);
+                }
+            }
+            return;* /
+
+            //Thread t1 = new Thread(new ThreadStart(ThreadStartAction));
+            //Thread t2 = new Thread(new ThreadStart(ThreadStartAction));
+            //Thread t3 = new Thread(new ThreadStart(ThreadStartAction));
+            //Thread t4 = new Thread(new ThreadStart(ThreadStartAction));
+            //Thread t5 = new Thread(new ThreadStart(ThreadStartAction));
+            //Thread t6 = new Thread(new ThreadStart(ThreadStartAction));
+            //Thread t7 = new Thread(new ThreadStart(ThreadStartAction));
+            //Thread t8 = new Thread(new ThreadStart(ThreadStartAction));
+
+            
+            / *for (int i = 0; i < ThreadCount; i++)
+            {
+                threads[i] = new Thread(new ThreadStart(ThreadStartAction));
+            }* /
+
+            / *if (!ThreadStarted)
+            {
+                for (int i = 0; i < ThreadCount; i++)
+                {
+                    threads[i].Start();
+                }
+                ThreadStarted = true;
+            }
+            else
+            {
+                for (int i = 0; i < ThreadCount; i++)
+                {
+                    Thread.Sleep(1);
+                    //threads[i].
+                }
+            }* /
+
+            if (!ThreadStarted)
+            {
+
+                threads[0].Start();
+                threads[1].Start();
+                threads[2].Start();
+
+                ThreadStarted = true;
+            }
+
+            / *for (int i = 0; i < ThreadCount; i++)
+            {
+                threads[i].Join();
+            }* /
+
+        }
+
+
+        public void Thread1()
+        {
+            for(int i = 0; i < 100; i++)
+            {
+                Console.WriteLine("{0} : {1}", 1, i);
+            }
+        }
+        public void Thread2()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                Console.WriteLine("{0} : {1}", 2, i);
+            }
+        }
+        public void Thread3()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                Console.WriteLine("{0} : {1}", 3, i);
+            }
+        }
+
+        public void ThreadStartAction()
+        {
+            int min = (nodes.Length / ThreadCount) * counter;
+            int max = (nodes.Length / ThreadCount + 1) * counter;
+
+            counter++;
+            //for (int i = min; i <= max - (nodes.Length % ThreadCount) - 1; i++)
+            //for (int i = min; i <= max - (nodes.Length % ThreadCount) - 1; i++)
+            while(true)
+            {
+                Console.WriteLine("COUNT1:" + counter);
+                if (nodes[counter - 1].active)
+                {
+                    Console.WriteLine("COUNT2:" + counter);
+                    lock (nodes[counter - 1])
+                    {
+                        Console.WriteLine("COUNT3:" + counter);
+                        nodes[counter - 1].Update(Game1.GlobalGameTime);
+                    }
+                }
+            }
+            //counter++; 
+        }*/
+
 
         //adds entity to current group and all parent groups
         public void IncludeEntity(Node entity)

@@ -55,6 +55,26 @@ namespace OrbItProcs
             }
         }
 
+        public void LoopTesting()
+        {
+            StartTimer();
+            int it = 40000000;
+            dynamic a = 0;
+            for(int i = 0; i < it; i++)
+            {
+                a = a * a;
+            }
+            string output = "::" + it + " iterations."; 
+            StopTimer(output);
+        }
+
+        private static int NewMethod(int a)
+        {
+            a++;
+            return a;
+        }
+
+
         public void ForLoops()
         {
             HashSet<int> ints = new HashSet<int>();
