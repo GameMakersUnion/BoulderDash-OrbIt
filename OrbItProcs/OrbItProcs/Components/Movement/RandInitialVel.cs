@@ -9,23 +9,6 @@ namespace OrbItProcs
 {
     public class RandInitialVel : Component {
 
-        /*public override bool active
-        {
-            get
-            {
-                return _active;
-            }
-            set
-            {
-                _active = value;
-                if (value && parent != null) Initialize(parent);
-                if (parent != null && parent.comps.ContainsKey(com))
-                {
-                    parent.triggerSortLists();
-                }
-            }
-        }*/
-
         private float _multiplier = 8f;
         
         public float multiplier
@@ -45,21 +28,11 @@ namespace OrbItProcs
         {
             if (parent != null) this.parent = parent;
             com = comp.randinitialvel; 
-            methods = mtypes.initialize; 
+            methods = mtypes.initialize;
         }
 
         public override void AfterCloning()
         {
-            //parent.body.velocity = new Vector2(0, 0);
-        }
-
-        public void ScaleVelocity()
-        {
-            if (parent.body.velocity.X != 0 && parent.body.velocity.Y != 0)
-            {
-                parent.body.velocity.Normalize();
-                parent.body.velocity *= multiplier;
-            }
         }
 
         public override void OnSpawn()
@@ -75,6 +48,15 @@ namespace OrbItProcs
             }
         }
 
+        public void ScaleVelocity()
+        {
+            if (parent.body.velocity.X != 0 && parent.body.velocity.Y != 0)
+            {
+                parent.body.velocity.Normalize();
+                parent.body.velocity *= multiplier;
+            }
+        }
+
         public void RandomizeVelocity()
         {
             float x = ((float)Utils.random.NextDouble() * 100) - 50;
@@ -85,6 +67,9 @@ namespace OrbItProcs
             parent.body.velocity = vel;
         }
 
+        public override void AffectOther(Node other)
+        {
+        }
 
         public override void AffectSelf()
         {

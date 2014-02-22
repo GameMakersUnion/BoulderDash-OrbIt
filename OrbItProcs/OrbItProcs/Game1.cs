@@ -91,10 +91,14 @@ namespace OrbItProcs
         public ProcessManager processManager { get; set; }
         public static int sWidth = 1000;
         public static int sHeight = 600;
-        public static int fullWidth = 1680;
-        public static int fullHeight = 1050;
+        //public static int fullWidth = 1680;
+        //public static int fullHeight = 1050;
+
+        public static int fullWidth = 1920;
+        public static int fullHeight = 1080;
         public static string filepath = "Presets//Nodes/";
         public static bool isFullScreen = false;
+        public static bool TakeScreenshot = false;
 
         public Dictionary<textures, Texture2D> textureDict;
         //Node node;
@@ -109,7 +113,7 @@ namespace OrbItProcs
         TimeSpan elapsedTimeUpdate = new TimeSpan();
         TimeSpan targetElapsedTimeUpdate = new TimeSpan(0, 0, 0, 0, 16);
 
-        TimeSpan elapsedTimeDraw = new TimeSpan();
+        //TimeSpan elapsedTimeDraw = new TimeSpan();
         TimeSpan targetElapsedTimeDraw = new TimeSpan(0, 0, 0, 0, 16);
 
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
@@ -285,15 +289,47 @@ namespace OrbItProcs
             processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
 
             processManager.SetProcessKeybinds(ui.keyManager);
-
-            //byte b = 255;
-            //float f = b;
+            ui.keyManager.addProcessKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
+            ui.keyManager.addProcessKeyAction("togglesidebar", KeyCodes.OemTilde, OnPress: ui.ToggleSidebar);
+            ui.keyManager.addProcessKeyAction("screenshot", KeyCodes.PrintScreen, OnPress: TakeScreenShot);
 
             room.MakeWalls();
-
-            
-            
         }
+
+        public void TakeScreenShot()
+        {
+            TakeScreenshot = true;
+        }
+
+        public static void Screenshot(GraphicsDevice device)
+        {
+            byte[] screenData;
+
+            screenData = new byte[device.PresentationParameters.BackBufferWidth * device.PresentationParameters.BackBufferHeight * 4];
+
+            device.GetBackBufferData<byte>(screenData);
+
+            Texture2D t2d = new Texture2D(device, device.PresentationParameters.BackBufferWidth, device.PresentationParameters.BackBufferHeight, false, device.PresentationParameters.BackBufferFormat);
+
+            t2d.SetData<byte>(screenData);
+
+            int i = 0;
+            string name = "Screenshots//ScreenShot" + i.ToString() + ".png";
+            while (File.Exists(name))
+            {
+                i += 1;
+                name = "Screenshots//ScreenShot" + i.ToString() + ".png";
+
+            }
+
+            Stream st = new FileStream(name, FileMode.Create);
+
+            t2d.SaveAsPng(st, t2d.Width, t2d.Height);
+
+            st.Close();
+
+            t2d.Dispose();
+        } 
 
         public void ResetRoomReferences(Room newRoom)
         {
@@ -371,19 +407,6 @@ namespace OrbItProcs
         {
             GlobalGameTime = gameTime;
             base.Update(gameTime);
-            if (false && !IsFixedTimeStep)
-            {
-                elapsedTimeUpdate += gameTime.ElapsedGameTime;
-                if (elapsedTimeUpdate >= targetElapsedTimeUpdate)
-                {
-                    frameRateCounter.UpdateElapsed(elapsedTimeUpdate);
-                    elapsedTimeUpdate = TimeSpan.Zero;
-                }
-                else
-                {
-                    return;
-                }
-            }
 
             //frameRateCounter.UpdateElapsed(gameTime.ElapsedGameTime);
             frameRateCounter.Update(gameTime);
@@ -465,9 +488,19 @@ namespace OrbItProcs
 
             //spriteBatch.Draw(whiteTexture, new Vector2(100, 100), null, Color.Black, 0, Vector2.Zero, new Vector2(10, 1), SpriteEffects.None, 0);
 
+            
+
             spriteBatch.End();
 
+            
+
             Manager.EndDraw();
+
+            if (TakeScreenshot)
+            {
+                Screenshot(Manager.Graphics.GraphicsDevice);
+                TakeScreenshot = false;
+            }
 
             TimeToDraw = false;
 

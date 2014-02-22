@@ -225,8 +225,8 @@ namespace OrbItProcs
             //could optimize to use the last vertex on the next iteration
             for (int i = 0; i < vertexCount; i++)
             {
-                Vector2 a1 = u * vertices[i];
-                Vector2 a2 = u * vertices[(i + 1) % vertexCount];
+                Vector2 a1 = (u /** (RecurseCount)*/) * vertices[i];
+                Vector2 a2 = (u /** (RecurseCount)*/) * vertices[(i + 1) % vertexCount];
 
                 Vector2 v1 = position + a1;
                 Vector2 v2 = position + a2;
@@ -272,8 +272,8 @@ namespace OrbItProcs
 
             for (int i = 0; i < vertexCount; i++)
             {
-                Vector2 a1 = u * vertices[i] * scale;
-                Vector2 a2 = u * vertices[(i + 1) % vertexCount] * scale;
+                Vector2 a1 = (u * (i + 1)) * vertices[i] * scale;
+                Vector2 a2 = (u * (i + 1)) * vertices[(i + 1) % vertexCount] * scale;
 
                 Vector2 v1 = pos + a1;
                 Vector2 v2 = pos + a2;
@@ -595,6 +595,12 @@ namespace OrbItProcs
         {
             //return new Vector2(m.Col1.X * v.X + m.Col1.Y * v.Y, m.Col2.X * v.X + m.Col2.Y * v.Y);
             return new Vector2(m.Col1.X * v.X + m.Col2.X * v.Y, m.Col1.Y * v.X + m.Col2.Y * v.Y);
+        }
+
+        public static Mat22 operator *(Mat22 m, int i)
+        {
+            //return new Vector2(m.Col1.X * v.X + m.Col1.Y * v.Y, m.Col2.X * v.X + m.Col2.Y * v.Y);
+            return new Mat22(m.GetAngle() * i);
         }
 
         public Mat22 Transpose()

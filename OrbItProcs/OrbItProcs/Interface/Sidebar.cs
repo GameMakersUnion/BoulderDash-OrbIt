@@ -82,7 +82,7 @@ namespace OrbItProcs
         #region /// Neoforce Fields///
         public Manager manager;
         public Window master;
-        TabControl tbcMain;
+        public TabControl tbcMain;
         public Label title1;
         TextBox consoletextbox;
         public ListBox lstMain;
@@ -96,10 +96,6 @@ namespace OrbItProcs
         public ContextMenu mainNodeContextMenu;
         public MenuItem ConvertIntoList, PromoteToDefault;
         
-        //testing
-        StackPanel stackpanel;
-        GroupPanel gp;
-        
         #endregion
 
         public InspectorArea inspectorArea;
@@ -107,7 +103,7 @@ namespace OrbItProcs
         #region /// Layout Fields///
         private int HeightCounter = 0, HeightCounter2 = 0;
         private int lstMainScrollPosition = 0;
-        private int lstCompScrollPosition = 0;
+        //private int lstCompScrollPosition = 0;
         private int LeftPadding = 5;
         private int VertPadding = 4;
         #endregion
@@ -144,7 +140,7 @@ namespace OrbItProcs
             master.Anchor = Anchors.Top | Anchors.Right | Anchors.Bottom;
             master.BorderVisible = false;
             master.Alpha = 255; //TODO : check necesity
-            master.SetPosition(Game1.sWidth - 200, 2);
+            master.SetPosition(Game1.sWidth - Width, 2);
             manager.Add(master);
             #endregion
 
@@ -399,25 +395,6 @@ namespace OrbItProcs
             }
             lstMain.ScrollTo(0);
         }
-
-        void stackpanel_Resize(object sender, ResizeEventArgs e)
-        {
-            Console.WriteLine("resized");
-        }
-        void b2_Click(object sender, EventArgs e)
-        {
-            Button b = (Button)sender;
-            if (b.Text.Equals("^")) b.Text = "v";
-            else b.Text = "^";
-
-
-            if (gp.Height == 100)
-                gp.Height = 20;
-            else gp.Height = 100;
-
-            stackpanel.Refresh();
-        }
-
 
         void lstMain_Click(object sender, EventArgs e)
         {

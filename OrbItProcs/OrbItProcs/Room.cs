@@ -121,7 +121,7 @@ namespace OrbItProcs {
             this.worldHeight = worldHeight;
 
             // grid System
-            gridsystem = new GridSystem(this, 40, 15);
+            gridsystem = new GridSystem(this, 40, 5);
             level = new Level(this, 40, 40, gridsystem.cellWidth, gridsystem.cellHeight);
 
             gridsystemCollision = new GridSystem(this, gridsystem.cellsX, 20);
@@ -161,7 +161,7 @@ namespace OrbItProcs {
 
             //n.movement.pushable = false;
 
-            masterGroup.fullSet.Add(n);
+            masterGroup.childGroups["Walls"].entities.Add(n);
             return n;
         }
 

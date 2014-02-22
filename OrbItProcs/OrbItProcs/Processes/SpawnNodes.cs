@@ -44,7 +44,12 @@ namespace OrbItProcs
             //room.game.testing.ForLoops();
             //room.game.testing.ColorsTest();
             //room.game.testing.NormalizeTest();
+            DateTime before = DateTime.Now;
             room.game.testing.LoopTesting();
+
+            int diff = DateTime.Now.Millisecond - before.Millisecond;
+            if (diff < 0)  diff += 1000;
+            Console.WriteLine("DIFF:" + diff);
             //
         }
 

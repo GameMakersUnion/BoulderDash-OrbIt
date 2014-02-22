@@ -67,7 +67,7 @@ namespace OrbItProcs
                 {
                     Dictionary<dynamic, dynamic> dict = new Dictionary<dynamic, dynamic>() { 
                     { "collidee", other },
-                };
+                    };
                     parent.OnCollidePublic(dict);
                     dict["collidee"] = parent;
                     other.OnCollidePublic(dict);
@@ -81,17 +81,10 @@ namespace OrbItProcs
 
                 Manifold m = new Manifold(parent.body, other.body);
                 m.Solve();
-                //Console.Write("{0}:", DateTime.Now.Millisecond);
-                //foreach (Vector2 c in m.contacts)
-                //{
-                //    Console.Write("{0}c: {1}",m.contact_count,c);
-                //    
-                //}
-                //Console.WriteLine();
+
                 if (m.contact_count > 0)
-                    parent.room.AddManifold(m);
+                    parent.room.AddManifold(m); //todo: add collision handler flag here
             }
-            
         }
         public override void AffectSelf()
         {
@@ -143,7 +136,7 @@ namespace OrbItProcs
             Circle A = (Circle)a.shape;
             Polygon B = (Polygon)b.shape;
 
-            m.contact_count = 0;//m.contact_count = 0;
+            m.contact_count = 0;
 
             // Transform circle center to Polygon model space
             Vector2 center = a.pos;
@@ -159,8 +152,6 @@ namespace OrbItProcs
 
                 if (s > A.radius)
                 {
-                    //Console.Write("{0}:", DateTime.Now.Millisecond);
-                    //Console.WriteLine("Exit at 0");
                     return;
                 }
 
@@ -183,11 +174,7 @@ namespace OrbItProcs
                 m.normal = -(B.u * B.normals[faceNormal]);
                 m.contacts[0] = VMath.MultVectDouble(m.normal, A.radius) + a.pos;
                 m.penetration = A.radius;
-                {
-                    //Console.Write("{0}:", DateTime.Now.Millisecond);
-                    //Console.WriteLine("Exit at 1");
-                    return;
-                }
+                return;
             }
 
             // Determine which voronoi region of the edge center of circle lies within
@@ -200,11 +187,8 @@ namespace OrbItProcs
             {
                 if (Vector2.DistanceSquared(center, v1) > A.radius * A.radius)
                 {
-                    //Console.Write("{0}:", DateTime.Now.Millisecond);
-                    //Console.WriteLine("Exit at 2");
                     return;
                 }
-
                 m.contact_count = 1;
                 Vector2 n = v1 - center;
                 n = B.u * n;
@@ -213,14 +197,11 @@ namespace OrbItProcs
                 v1 = B.u * v1 + b.pos;
                 m.contacts[0] = v1;
             }
-
             // Closest to v2
             else if (dot2 <= 0.0f)
             {
                 if (Vector2.DistanceSquared(center, v2) > A.radius * A.radius)
                 {
-                    //Console.Write("{0}:", DateTime.Now.Millisecond);
-                    //Console.WriteLine("Exit at 3");
                     return;
                 }
 
@@ -232,15 +213,12 @@ namespace OrbItProcs
                 n.Normalize();
                 m.normal = n;
             }
-
             // Closest to face
             else
             {
                 Vector2 n = B.normals[faceNormal];
                 if (Vector2.Dot(center - v1, n) > A.radius)
                 {
-                    Console.Write("{0}:", DateTime.Now.Millisecond);
-                    Console.WriteLine("Exit at 4");
                     return;
                 }
 

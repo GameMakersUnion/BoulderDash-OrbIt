@@ -802,7 +802,7 @@ namespace OrbItProcs
 
         public MouseState newMouseState, oldMouseState;
 
-        private bool MouseInGameBox = false;
+        public bool MouseInGameBox = false;
 
         //don't call me generic
         public Dictionary<Process, List<Tuple<KeyBundle, KeyAction>>> ReplacedBundles = new Dictionary<Process, List<Tuple<KeyBundle, KeyAction>>>();
@@ -949,19 +949,23 @@ namespace OrbItProcs
             newKeyboardState = Keyboard.GetState();
             newMouseState = Mouse.GetState();
 
-            if (Game1.isFullScreen)
+            if (!ui.SidebarActive)
             {
-                MouseInGameBox = newMouseState.X < Game1.fullWidth - Game1.fullWidth * ((float)ui.sidebar.master.Width / (float)Game1.sWidth);
+                MouseInGameBox = true;
             }
             else
             {
-                MouseInGameBox = newMouseState.X < Game1.sWidth - ui.sidebar.master.Width;
+                if (Game1.isFullScreen)
+                {
+                    MouseInGameBox = newMouseState.X < Game1.fullWidth - (float)Game1.fullWidth * ((float)ui.sidebar.master.Width / (float)Game1.sWidth);
+                    //Console.WriteLine("{0} < {1} : {2}", newMouseState.X, Game1.fullWidth - (float)Game1.fullWidth * ((float)ui.sidebar.master.Width / (float)Game1.sWidth), MouseInGameBox);
+                }
+                else
+                {
+                    MouseInGameBox = newMouseState.X < Game1.sWidth - ui.sidebar.master.Width;
+                }
             }
             
-
-            //Vector2 mousePos = UserInterface.MousePos;
-            //if (mousePos.X < Game1.sWidth - ui.sidebar.master.Width)
-            //{
             if (newMouseState.X >= 0 && newMouseState.Y >= 0) //todo:check that the game window is active
             {
                 ProcessKeyboard();
@@ -969,7 +973,6 @@ namespace OrbItProcs
 
                 ProcessHolds();
             }
-            //}
 
             oldKeyboardState = Keyboard.GetState();
             oldMouseState = Mouse.GetState();

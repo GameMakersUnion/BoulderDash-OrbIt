@@ -54,7 +54,6 @@ namespace OrbItProcs {
         public Vector2 spawnPos;
         Vector2 groupSelectionBoxOrigin = new Vector2(0, 0);
         public HashSet<Node> groupSelectSet;
-
         #endregion
 
         public float zoomfactor { get; set; }
@@ -63,6 +62,8 @@ namespace OrbItProcs {
 
         public Dictionary<dynamic, dynamic> UserProps;
 
+        public bool SidebarActive { get; set; }
+
         public Node spawnerNode;
         public Sidebar sidebar;
 
@@ -70,6 +71,7 @@ namespace OrbItProcs {
         {
             this.game = game;
             this.room = game.room;
+            SidebarActive = true;
             
             sidebar = new Sidebar(this);
             sidebar.Initialize();
@@ -81,6 +83,22 @@ namespace OrbItProcs {
 
 
             groupSelectSet = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet; //syncs group select set to process set
+        }
+
+        public void ToggleSidebar()
+        {
+            if (SidebarActive)
+            {
+                sidebar.master.Visible = false;
+                sidebar.master.Enabled = false;
+
+            }
+            else
+            {
+                sidebar.master.Visible = true;
+                sidebar.master.Enabled = true;
+            }
+            SidebarActive = !SidebarActive;
         }
 
         public void Update(GameTime gameTime)
@@ -171,11 +189,17 @@ namespace OrbItProcs {
             MousePos = new Vector2(mouseState.X, mouseState.Y);
             WorldMousePos = MousePos * room.mapzoom;
             //ignore mouse clicks outside window
-            if (mouseState.X >= sWidth || mouseState.X < 0 || mouseState.Y >= sHeight || mouseState.Y < 0)
-                return;
+            if (!Game1.isFullScreen)
+            {
+                if (mouseState.X >= sWidth || mouseState.X < 0 || mouseState.Y >= sHeight || mouseState.Y < 0)
+                    return;
+            }
+
+            
 
             //make sure clicks inside the ui are ignored by game logic
-            if (mouseState.X >= sWidth - sidebar.Width - 5)
+            //if (mouseState.X >= sWidth - sidebar.Width - 5)
+            if (!keyManager.MouseInGameBox)
             {
                 if (mouseState.Y > sidebar.lstMain.Top + 24 && mouseState.Y < sidebar.lstMain.Top + sidebar.lstMain.Height + 24)
                 {
