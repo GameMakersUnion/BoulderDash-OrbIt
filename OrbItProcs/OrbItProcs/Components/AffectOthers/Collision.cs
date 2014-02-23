@@ -89,6 +89,21 @@ namespace OrbItProcs
                     if (TriggerHandlers)
                     {
                         //todo:add to handler list....
+                        Dictionary<dynamic, dynamic> dict;
+                        if (parent.HasCollidedEvent())
+                        {
+                            dict = new Dictionary<dynamic, dynamic>() { 
+                                { "collidee", other },
+                            };
+                            parent.OnCollidePublic(dict);
+                        }
+                        if (other.HasCollidedEvent())
+                        {
+                            dict = new Dictionary<dynamic, dynamic>() { 
+                                { "collidee", parent },
+                            };
+                            other.OnCollidePublic(dict);
+                        }
                     }
 
                     if (ResolveCollision && other.collision.ResolveCollision)

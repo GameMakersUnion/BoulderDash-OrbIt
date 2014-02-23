@@ -510,64 +510,21 @@ namespace OrbItProcs
 
         }
 
-        public void spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)
+        public Node spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)
         {
-            Group activegroup = ui.sidebar.ActiveGroupFirst;
-            if (g == null && !activegroup.Spawnable) return;
-
+            Group spawngroup = ui.sidebar.ActiveGroupFirst;
+            if (g == null && !spawngroup.Spawnable) return null;
+            if (g != null)
+            {
+                spawngroup = g;
+            }
             newNode.name = "bullet" + Node.nodeCounter;
 
-            newNode.OnSpawn();
-            if (afterSpawnAction != null) afterSpawnAction(newNode);
-
-            
-
-            if (lifetime != -1)
-            {
-                if (!newNode.comps.ContainsKey(comp.lifetime))
-                {
-                    newNode.addComponent(comp.lifetime, true);
-                }
-                newNode.comps[comp.lifetime].maxmseconds = lifetime;
-                newNode.comps[comp.lifetime].immortal = false;
-            }
-            if (g == null)
-            {
-                activegroup.IncludeEntity(newNode);
-            }
-            else
-            {
-                g.IncludeEntity(newNode);
-            }
-
-            if (Group.IntToColor.ContainsKey(activegroup.GroupId))
-            {
-                newNode.body.color = Group.IntToColor[activegroup.GroupId];
-            }
-            else
-            {
-                int Enumsize = Enum.GetValues(typeof(KnownColor)).Length;
-
-                //int rand = Utils.random.Next(size - 1);
-                int index = 0;
-                foreach (char c in activegroup.Name.ToCharArray().ToList())
-                {
-                    index += (int)c;
-                }
-                index = index % (Enumsize - 1);
-
-                System.Drawing.Color syscolor = System.Drawing.Color.FromKnownColor((KnownColor)index);
-                Color xnacol = new Color(syscolor.R, syscolor.G, syscolor.B, syscolor.A);
-                newNode.body.color = xnacol;
-            }
+            return SpawnNodeHelper(newNode, afterSpawnAction, spawngroup, lifetime);
         }
-
-
         public Node spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null, bool blank = false, int lifetime = -1)
         {
-            
             Group activegroup = ui.sidebar.ActiveGroupFirst;
-            //if (activegroup.Name.Equals("master")) return;
             if (!activegroup.Spawnable) return null;
             Node newNode = new Node();
             if (!blank)
@@ -582,25 +539,29 @@ namespace OrbItProcs
                 }
             }
             newNode.name = activegroup.Name + Node.nodeCounter;
-
             newNode.acceptUserProps(userProperties);
-
+            //newNode.Collided += delegate(Dictionary<dynamic, dynamic> dict) { newNode.body.color = Color.Red; };
             AssignColor(activegroup, newNode);
 
+            return SpawnNodeHelper(newNode, afterSpawnAction, activegroup, lifetime);
+        }
+        private Node SpawnNodeHelper(Node newNode, Action<Node> afterSpawnAction = null, Group g = null, int lifetime = -1)
+        {
             newNode.OnSpawn();
             if (afterSpawnAction != null) afterSpawnAction(newNode);
-
-            
-            
             if (lifetime != -1)
             {
+                if (!newNode.comps.ContainsKey(comp.lifetime))
+                {
+                    newNode.addComponent(comp.lifetime, true);
+                }
                 newNode.comps[comp.lifetime].maxmseconds = lifetime;
                 newNode.comps[comp.lifetime].immortal = false;
             }
-            //activegroup.entities.Add(newNode);
-            activegroup.IncludeEntity(newNode);
+            g.IncludeEntity(newNode);
             return newNode;
         }
+
         public void spawnNode(int worldMouseX, int worldMouseY)
         {
             Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {

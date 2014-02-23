@@ -242,6 +242,11 @@ namespace OrbItProcs {
             }
         }
 
+        public bool HasCollidedEvent()
+        {
+            return Collided != null;
+        }
+
         public void storeInInstance(node val, Dictionary<dynamic,dynamic> dict)
         {
             if (val == node.active)             active                      = dict[val];
