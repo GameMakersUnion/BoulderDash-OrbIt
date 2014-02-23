@@ -11,6 +11,17 @@ namespace OrbItProcs
         //int clickCount = 0;
         List<Vector2> verts = new List<Vector2>();
 
+        private static int Orientation(Vector2 p1, Vector2 p2, Vector2 p)
+        {
+            // Determinant
+            float Orin = (p2.X - p1.X) * (p.Y - p1.Y) - (p.X - p1.X) * (p2.Y - p1.Y);
+            if (Orin > 0)
+                return -1; //          (* Orientaion is to the left-hand side  *)
+            if (Orin < 0)
+                return 1; // (* Orientaion is to the right-hand side *)
+            return 0; //  (* Orientaion is neutral aka collinear  *)
+        }
+
         public PolygonSpawner()
         {
             this.addProcessKeyAction("createVert", KeyCodes.LeftClick, OnPress: CreateVertice);
@@ -27,6 +38,7 @@ namespace OrbItProcs
 
         public void CreatePolygon()
         {
+            
             if (verts.Count < 3) return;
             Vector2[] vertices = verts.ToArray();
             Node newNode = new Node();
@@ -35,6 +47,7 @@ namespace OrbItProcs
             poly.body = newNode.body;
             //poly.FindCentroid(vertices);
             poly.SetCenterOfMass(vertices);
+
             newNode.body.shape = poly;
             room.game.spawnNode(newNode);
             verts = new List<Vector2>();

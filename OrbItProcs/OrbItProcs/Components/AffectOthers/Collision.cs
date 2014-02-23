@@ -20,6 +20,9 @@ namespace OrbItProcs
 
         public bool OldCollision { get; set; }
 
+        public bool ResolveCollision { get; set; }
+        public bool TriggerHandlers { get; set; }
+
         public override bool active
         {
             get { return _active; }
@@ -49,17 +52,16 @@ namespace OrbItProcs
             com = comp.collision; 
             methods = mtypes.affectother;
             OldCollision = false;
+            ResolveCollision = true;
+            TriggerHandlers = true;
         }
 
         public override void AffectOther(Node other)
         {
             if (!active || !other.collision.active) { return; }
 
-            //if ((!other.comps.ContainsKey(comp.collision) || !other.isCompActive(comp.collision))) { return; }
-
             //assuming other has been checked for 'active' from caller
             if (exclusions.Contains(other)) return;
-
 
             if (OldCollision)
             {
@@ -83,7 +85,15 @@ namespace OrbItProcs
                 m.Solve();
 
                 if (m.contact_count > 0)
-                    parent.room.AddManifold(m); //todo: add collision handler flag here
+                {
+                    if (TriggerHandlers)
+                    {
+                        //todo:add to handler list....
+                    }
+
+                    if (ResolveCollision && other.collision.ResolveCollision)
+                        parent.room.AddManifold(m);
+                }
             }
         }
         public override void AffectSelf()

@@ -25,25 +25,13 @@ namespace OrbItProcs {
 
     public class Room
     {
-        public bool shit
-        {
-            get { //System.Diagnostics.Debugger.Break(); 
-                return false; 
-            }
-            set
-            {
-                //System.Diagnostics.Debugger.Break();
-                //throw new SystemException("Polenter.");
-            }
-        }
-        
-
         #region // State // --------------------------------------------
         public bool DrawLinks { get; set; }
         public float WallWidth { get; set; }
         public float mapzoom { get; set; }
         public int worldWidth { get; set; }
         public int worldHeight { get; set; }
+        public int colIterations { get; set; }
         #endregion
 
         #region // References // --------------------------------------------
@@ -66,6 +54,9 @@ namespace OrbItProcs {
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<string> groupHashes { get; set; }
         public ObservableHashSet<string> nodeHashes { get; set; }
+
+        public int timertimer = 0;
+        public int timermax = 60;
 
         private Group _masterGroup;
         public Group masterGroup
@@ -112,6 +103,7 @@ namespace OrbItProcs {
             groupHashes = new ObservableHashSet<string>();
             nodeHashes = new ObservableHashSet<string>();
             CollisionSet = new HashSet<Node>();
+            colIterations = 1;
         }
 
         public Room(Game1 game, int worldWidth, int worldHeight) : this()
@@ -182,17 +174,22 @@ namespace OrbItProcs {
 
             HashSet<Node> toDelete = new HashSet<Node>();
 
-            
+            if (++timertimer % timermax == 0)
+                Console.WriteLine("=======================UPDATE START==========");
+
+            if (timertimer % timermax == 0)
+                Testing.StartTimer();
             //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
             masterGroup.childGroups["General Groups"].ForEachFullSet(delegate(Node n) 
             {
                 gridsystem.insert(n);
             });
-
+            Testing.StopTimer("gridsystem insert");
             //
             UpdateCollision();
-            
-            //game.testing.StartTimer();
+
+            if (timertimer % timermax == 0)
+                Testing.StartTimer();
             foreach(Node n in masterGroup.fullSet.ToList())
             {
                 if (n.active)
@@ -200,7 +197,7 @@ namespace OrbItProcs {
                     n.Update(gametime);
                 }
             }
-            //game.testing.StopTimer("room update");
+            Testing.StopTimer("node update");
 
             //masterGroup.ForEachThreading(gametime);
             
@@ -224,6 +221,8 @@ namespace OrbItProcs {
 
         public void UpdateCollision()
         {
+            if (timertimer % timermax == 0)
+                Testing.StartTimer();
             gridsystemCollision.clear();
             CollisionSet.ToList().ForEach(delegate(Node n) { gridsystemCollision.insert(n); });
             gridsystemCollision.alreadyVisited = new HashSet<Node>();
@@ -231,8 +230,17 @@ namespace OrbItProcs {
             {
                 if (n.active)
                 {
-                    //int reach = 5; //update later based on cell size and radius (or polygon size.. maybe based on it's AABB)
-                    List<Node> retrievedNodes = gridsystemCollision.retrieve(n);
+                    int reach; //update later based on cell size and radius (or polygon size.. maybe based on it's AABB)
+                    if (n.body.shape is Polygon)
+                    {
+                        reach = 20;
+                    }
+                    else
+                    {
+                        reach = (int)(n.body.radius * 5) / gridsystemCollision.cellWidth;
+                    }
+                    //Console.WriteLine(reach);
+                    List<Node> retrievedNodes = gridsystemCollision.retrieve(n, reach);
                     gridsystemCollision.alreadyVisited.Add(n);
                     retrievedNodes.ForEach(delegate(Node r)
                     {
@@ -242,19 +250,22 @@ namespace OrbItProcs {
                     });
                 }
             });
-
+            Testing.StopTimer("Manifold generation");
             //COLLISION
             foreach (Manifold m in contacts)
+            {
                 m.Initialize();
-            int iterations = 10;
-            for (int ii = 0; ii < iterations; ii++)
+            }
+            if (timertimer % timermax == 0)
+                Testing.StartTimer();
+            for (int ii = 0; ii < colIterations; ii++)
             {
                 foreach (Manifold m in contacts)
                 {
-                    
                     m.ApplyImpulse();
                 }
             }
+            Testing.StopTimer("Manifold apply impulse");
             foreach (Node n in masterGroup.fullSet)
             {
                 if (n.movement.active)

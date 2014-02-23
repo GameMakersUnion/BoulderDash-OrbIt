@@ -295,18 +295,19 @@ namespace OrbItProcs
             int len = verts.Length;
             if (len < 3) return;
 
-            Vector2 centroid = FindCentroid(verts);
+            Set(verts, len);
 
-            Vector2[] newverts = new Vector2[len];
-            for (int i = 0; i < len; i++)
+            Vector2 centroid = FindCentroid(vertices, vertexCount);
+
+            for (int i = 0; i < vertexCount; i++)
             {
-                newverts[i] = new Vector2(verts[i].X - centroid.X, verts[i].Y - centroid.Y);
+                vertices[i] = new Vector2(vertices[i].X - centroid.X, vertices[i].Y - centroid.Y);
             }
             //body.pos = new Vector2(x, y);
-            Set(newverts, len);
+            Set(vertices, vertexCount);
 
-            Vector2 newCentroid = FindCentroid(vertices, vertexCount);
-            body.pos = centroid + newCentroid;
+            //Vector2 newCentroid = FindCentroid(vertices, vertexCount);
+            body.pos = centroid;// +newCentroid;
             
         }
 
@@ -386,7 +387,7 @@ namespace OrbItProcs
             int outCount = 0;
             int indexHull = rightMost;
 
-            for (;;)
+            for (; ; )
             {
                 hull[outCount] = indexHull;
                 // search for next index that wraps around the hull
@@ -430,6 +431,11 @@ namespace OrbItProcs
             for (int i = 0; i < vertexCount; ++i)
                 vertices[i] = verts[hull[i]];
 
+            ComputeNormals();
+        }
+
+        private void ComputeNormals()
+        {
             // Compute face normals
             for (int i1 = 0; i1 < vertexCount; ++i1)
             {
@@ -444,7 +450,6 @@ namespace OrbItProcs
                 normals[i1].Normalize();
             }
         }
-
         // The extreme point along a direction within a polygon
         public Vector2 GetSupport(Vector2 dir)
         {

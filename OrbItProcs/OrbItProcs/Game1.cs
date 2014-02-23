@@ -314,11 +314,13 @@ namespace OrbItProcs
             t2d.SetData<byte>(screenData);
 
             int i = 0;
-            string name = "Screenshots//ScreenShot" + i.ToString() + ".png";
+            string date = DateTime.Now.ToShortDateString().Replace('/', '-');
+            //date = date.Replace;
+            string name = "Screenshots//SS_" + date + "_#" + i + ".png";
             while (File.Exists(name))
             {
                 i += 1;
-                name = "Screenshots//ScreenShot" + i.ToString() + ".png";
+                name = "Screenshots//SS_" + date + "_#" + i + ".png";
 
             }
 

@@ -16,8 +16,8 @@ namespace OrbItProcs
     {
         public Room room;
         public Redirector redirector;
-        public DateTime before;
-        public bool timerStarted = false;
+        public static DateTime before;
+        public static bool timerStarted = false;
 
         public Testing()
         {
@@ -34,17 +34,17 @@ namespace OrbItProcs
         public List<int> lints = new List<int>();
         public ObservableCollection<int> oblist = new ObservableCollection<int>();
 
-        public void StartTimer()
+        public static void StartTimer()
         {
             timerStarted = true;
             before = DateTime.Now;
         }
-        public void StopTimer(string message = "")
+        public static void StopTimer(string message = "")
         {
             DateTime after = DateTime.Now;
             if (!timerStarted)
             {
-                Console.WriteLine("Timer was not previously started, so timer cannot be stopped.");
+                //Console.WriteLine("Timer was not previously started, so timer cannot be stopped.");
                 return;
             }
             if (before == null) return;

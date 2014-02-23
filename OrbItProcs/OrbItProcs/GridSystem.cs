@@ -36,28 +36,6 @@ namespace OrbItProcs {
                 }
             } 
         }
-       
-
-        /*//obsolete constructor
-        public GridSystem(Room room, int gridwidth, int gridheight, int cellsX, int cellsY, int cellReach = 4)
-        {
-            this.room = room;
-            this.gridWidth = gridwidth;
-            this.gridHeight = gridheight;
-            this.cellsX = cellsX;
-            this.cellsY = cellsY;
-            this.cellReach = cellReach;
-            cellWidth = gridwidth / cellsX;
-            cellHeight = gridheight / cellsY;
-            grid = new List<Node>[cellsX, cellsY];
-            for (int i = 0; i < cellsX; i++)
-            {
-                for (int j = 0; j < cellsY; j++)
-                {
-                    grid[i, j] = new List<Node>();
-                }
-            }
-        }*/
 
         public GridSystem() 
         {
