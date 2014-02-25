@@ -9,6 +9,8 @@ using System.Text;
 namespace OrbItProcs
 {
     public delegate void ProcessMethod (Dictionary<dynamic,dynamic> args); // to be 'classoverloaded' later
+
+    
     
 
     public class Process
@@ -20,7 +22,7 @@ namespace OrbItProcs
         public event Action<SpriteBatch> Draw;
         public event ProcessMethod Create;
         public event ProcessMethod Destroy;
-        public event ProcessMethod Collision;
+        public event Action<Node,Node> Collision;
         public event ProcessMethod OutOfBounds;
 
         public Dictionary<KeyAction, KeyBundle> processKeyActions = new Dictionary<KeyAction,KeyBundle>();
@@ -86,11 +88,11 @@ namespace OrbItProcs
             if (Create != null) Create(pargs);
         }
 
-        public void OnCollision(Dictionary<dynamic,dynamic> args)
+        public void OnCollision(Node me, Node it)
         {
             if (Collision != null)
             {
-                Collision(args);
+                Collision(me, it);
             }
         }
 

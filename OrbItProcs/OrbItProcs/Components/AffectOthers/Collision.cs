@@ -9,6 +9,10 @@ namespace OrbItProcs
 {
     public class Collision : Component, ILinkable
     {
+        public HashSet<Node> collisions1= new HashSet<Node>();
+        public HashSet<Node> collisions2 = new HashSet<Node>();
+        private bool isCollisions1 = true;
+
         public static Action<Manifold, Body, Body>[,] Dispatch = new Action<Manifold, Body, Body>[2, 2]
         {
             {CircletoCircle, CircletoPolygon},
@@ -32,8 +36,6 @@ namespace OrbItProcs
                 {
                     if (!_active && value && parent != parent.room.game.ui.sidebar.ActiveDefaultNode)
                     {
-                        
-                        
                         parent.room.CollisionSet.Add(parent);
                     }
                     else if (_active && !value)
@@ -59,20 +61,14 @@ namespace OrbItProcs
         public override void AffectOther(Node other)
         {
             if (!active || !other.collision.active) { return; }
-
-            //assuming other has been checked for 'active' from caller
             if (exclusions.Contains(other)) return;
 
             if (OldCollision)
             {
                 if (Utils.checkCollision(parent, other))
                 {
-                    Dictionary<dynamic, dynamic> dict = new Dictionary<dynamic, dynamic>() { 
-                    { "collidee", other },
-                    };
-                    parent.OnCollidePublic(dict);
-                    dict["collidee"] = parent;
-                    other.OnCollidePublic(dict);
+                    parent.OnCollisionInvoke(other);
+                    other.OnCollisionInvoke(parent);
                     Utils.resolveCollision(parent, other);
                 }
             }
@@ -88,21 +84,37 @@ namespace OrbItProcs
                 {
                     if (TriggerHandlers)
                     {
-                        //todo:add to handler list....
-                        Dictionary<dynamic, dynamic> dict;
-                        if (parent.HasCollidedEvent())
+                        //todo:add to handler list
+                        if (parent.HasCollision())
                         {
-                            dict = new Dictionary<dynamic, dynamic>() { 
-                                { "collidee", other },
-                            };
-                            parent.OnCollidePublic(dict);
+                            parent.OnCollisionInvoke(other);
                         }
-                        if (other.HasCollidedEvent())
+                        bool parentstart = parent.HasCollisionStart();
+                        if (parentstart || parent.HasCollisionEnd())
                         {
-                            dict = new Dictionary<dynamic, dynamic>() { 
-                                { "collidee", parent },
-                            };
-                            other.OnCollidePublic(dict);
+                            HashSet<Node> lastframe = isCollisions1 ? collisions1 : collisions2;
+                            HashSet<Node> thisframe = !isCollisions1 ? collisions1 : collisions2;
+                            thisframe.Add(other);
+                            if (!lastframe.Contains(other) && parentstart)
+                            {
+                                parent.OnCollisionStartInvoke(other);
+                            }
+                        }
+
+                        if (other.HasCollision())
+                        {
+                            other.OnCollisionInvoke(parent);
+                        }
+                        bool otherstart = other.HasCollisionStart();
+                        if (otherstart || other.HasCollisionEnd())
+                        {
+                            HashSet<Node> lastframe = other.collision.isCollisions1 ? other.collision.collisions1 : other.collision.collisions2;
+                            HashSet<Node> thisframe = !other.collision.isCollisions1 ? other.collision.collisions1 : other.collision.collisions2;
+                            thisframe.Add(parent);
+                            if (!lastframe.Contains(parent) && otherstart)
+                            {
+                                other.OnCollisionStartInvoke(parent);
+                            }
                         }
                     }
 
@@ -111,6 +123,48 @@ namespace OrbItProcs
                 }
             }
         }
+
+        public void ClearCollisionList()
+        {
+            if (!active) return;
+            HashSet<Node> lastframe = isCollisions1 ? collisions1 : collisions2;
+            HashSet<Node> thisframe = !isCollisions1 ? collisions1 : collisions2;
+
+            if (lastframe.Count == 0 && thisframe.Count > 0)
+            {
+                parent.body.color = Color.Blue;
+            }
+            else if (lastframe.Count > 0 && thisframe.Count == 0)
+            {
+                parent.body.color = Color.White;
+            }
+
+            foreach(Node n in lastframe.ToList())
+            {
+                if (!thisframe.Contains(n) && parent.HasCollisionEnd() && TriggerHandlers)
+                {
+                    parent.OnCollisionEndInvoke(n);
+                }
+                lastframe.Remove(n);
+            }
+            isCollisions1 = !isCollisions1;
+        }
+
+
+
+        public IEnumerable<List<Node>> CollisionHelper(List<Node> list)
+        {
+            List<Node> list1 = new List<Node>();
+            List<Node> list2 = new List<Node>();
+            while(true)
+            {
+                list1 = list;
+                yield return list2;
+                list2 = list;
+                yield return list1;
+            }
+        }
+
         public override void AffectSelf()
         {
         }

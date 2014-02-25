@@ -41,7 +41,6 @@ namespace OrbItProcs
         private float _dynamicFriction = 0.3f;
         private float _restitution = 0.2f;
 
-
         private float _radius = 25f;
         private float _scale = 1f;
 

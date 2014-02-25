@@ -284,5 +284,33 @@ namespace OrbItProcs {
             }
             else return;
         }
+
+        public static void Infect(Node newNode)
+        {
+            if (Utils.random.Next(50000) == 0)
+            {
+                newNode.body.color = Color.Red;
+                CollisionDelegate evil = null;
+                Action<Node> doAfter = delegate(Node n)
+                {
+                    n.body.color = Color.Red;
+                    n.OnCollision += evil;
+                };
+
+
+                evil = delegate(Node source, Node target)
+                {
+                    if (target == null) return;
+                    if (target.CheckData<bool>("infected")) return;
+                    if (target.comps.ContainsKey(comp.scheduler))
+                    {
+                        target.GetComponent<Scheduler>().doAfterXSeconds(doAfter, Utils.random.Next(5000));
+                        target.SetData("infected", true);
+                    }
+                };
+                newNode.OnCollision += evil;
+            }
+        }
+
     } // end of class.
 }

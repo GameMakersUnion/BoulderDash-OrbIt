@@ -661,7 +661,7 @@ namespace OrbItProcs
         ForwardClick = 258,
         BackClick = 259,
     }
-
+    
 
     #endregion
 
@@ -677,6 +677,7 @@ namespace OrbItProcs
     
     public struct KeyBundle
     {
+        
         //public static KeyMouse km(KeyCodes k ) { return new KeyMouse(k); } //to be deleted
         public KeyCodes? effectiveKey;
         public KeyCodes? mod1;
@@ -785,6 +786,9 @@ namespace OrbItProcs
     //================================================== KEY MANAGER ==========================================
     public class KeyManager
     {
+
+        public static int HoldCounter = 0;
+
         public Dictionary<KeyBundle, KeyAction> PressedBundles = new Dictionary<KeyBundle, KeyAction>();
 
         public UserInterface ui;
@@ -970,12 +974,11 @@ namespace OrbItProcs
             {
                 ProcessKeyboard();
                 ProcessMouse();
-
                 ProcessHolds();
             }
 
-            oldKeyboardState = Keyboard.GetState();
-            oldMouseState = Mouse.GetState();
+            oldKeyboardState = newKeyboardState;
+            oldMouseState = newMouseState;
 
             
         }
@@ -1002,6 +1005,8 @@ namespace OrbItProcs
                     if (CheckMouseDown(kb.effectiveKey))
                     {
                         if (PressedBundles[kb].holdAction != null) PressedBundles[kb].holdAction();
+                        Console.WriteLine("Exec Hold action: " + HoldCounter++);
+                        
                     }
                     else
                     {
@@ -1044,30 +1049,56 @@ namespace OrbItProcs
             DetectMouseButton(newMouseState.MiddleButton, oldMouseState.MiddleButton, KeyCodes.MiddleClick);
             DetectMouseButton(newMouseState.XButton1, oldMouseState.XButton1, KeyCodes.BackClick);
             DetectMouseButton(newMouseState.XButton2, oldMouseState.XButton2, KeyCodes.ForwardClick);
+
+
+            //bool pressbool = newMouseState.LeftButton == ButtonState.Pressed;// && oldMouseState.LeftButton == ButtonState.Released;
+            //bool releasebool = newMouseState.LeftButton == ButtonState.Released;// && oldMouseState.LeftButton == ButtonState.Pressed;
+            //Console.WriteLine("pressed : {0}   |    released : ", newMouseState.LeftButton);
         }
 
         public void DetectMouseButton(ButtonState newButtonState, ButtonState oldButtonState, KeyCodes press)
         {
-            if (newButtonState == ButtonState.Pressed && oldButtonState == ButtonState.Released)
-            {
-                KeyCodes kc = (KeyCodes)press;
-                
-                if (!PressedKeys.Contains(kc) && PressedKeys.Count < 3)
-                {
-                    PressedKeys.Add(kc);
-                    TryAction();
-                }
-                //PrintPressedKeys();
-                
-            }
-            else if (newButtonState == ButtonState.Released && oldButtonState == ButtonState.Pressed)
-            {
-                KeyCodes kc = (KeyCodes)press;
-                //while (PressedKeys.ElementAt(PressedKeys.Count) != kc) PressedKeys.Pop();
-                //PressedKeys.Pop();
-                PressedKeys.Remove(kc);
+            bool pressbool = newButtonState == ButtonState.Pressed && oldButtonState == ButtonState.Released;
+            bool releasebool = newButtonState == ButtonState.Released && oldButtonState == ButtonState.Pressed;
 
-                //PrintPressedKeys(true);
+            bool event1 = newButtonState != oldButtonState;
+            
+
+            if (pressbool || releasebool)
+            {
+                //Console.WriteLine("----------------");
+            }
+            if (event1)
+            {
+                //Console.WriteLine(newButtonState);
+
+                if (newButtonState == ButtonState.Pressed)
+                {
+                    KeyCodes kc = (KeyCodes)press;
+                    //Console.WriteLine("Yp");
+                    if (!PressedKeys.Contains(kc) && PressedKeys.Count < 3)
+                    {
+                        PressedKeys.Add(kc);
+                        TryAction();
+                        //Console.WriteLine("New");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debugger.Break();
+                    }
+                    //PrintPressedKeys();
+                     //Console.WriteLine("key__press");
+                }
+                if (newButtonState == ButtonState.Released)
+                {
+                    KeyCodes kc = (KeyCodes)press;
+                    //while (PressedKeys.ElementAt(PressedKeys.Count) != kc) PressedKeys.Pop();
+                    //PressedKeys.Pop();
+                    PressedKeys.Remove(kc);
+
+                    //Console.WriteLine("Keyrelease");
+                    //PrintPressedKeys(true);
+                }
             }
         }
 
@@ -1109,6 +1140,7 @@ namespace OrbItProcs
 
         public void TryAction()
         {
+            
             KeyBundle kb = new KeyBundle(PressedKeys);
             string m1 = "none"; string m2 = "none";
             if (kb.mod1 != null) m1 = ((KeyCodes)kb.mod1).ToString();
@@ -1118,10 +1150,11 @@ namespace OrbItProcs
             //Console.WriteLine("ex: {0}\t\tmod1: {1}\t\tmod2: {2} \t\t extra: {3}", PressedKeys.ElementAt(0), PressedKeys.ElementAt(1), PressedKeys.ElementAt(2), PressedKeys.ElementAt(3));
             //Console.WriteLine("ex: {0}", PressedKeys.Count);
             
+            
             if (!Keybinds.ContainsKey(kb))
             {
                 KeyCodes? temp = null;
-            
+                
                 if (kb.mod2 != null) 
                 {
                     temp = kb.mod2;
@@ -1141,13 +1174,18 @@ namespace OrbItProcs
                     }
                 }
             }
-
+            
             KeyAction ka = Keybinds[kb];
             if (ka != null)
             {
+                
                 if (MouseInGameBox || (kb.effectiveKey != KeyCodes.LeftClick && kb.effectiveKey != KeyCodes.RightClick && kb.effectiveKey != KeyCodes.MiddleClick))
                 {
-                    if (ka.pressAction != null) ka.pressAction();
+                    
+                    if (ka.pressAction != null)
+                    {
+                        ka.pressAction();
+                    }
                     //if (!PressedBundles.ContainsKey(kb)) 
                     PressedBundles.Add(kb, ka); //exception
                 }

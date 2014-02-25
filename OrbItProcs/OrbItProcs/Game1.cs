@@ -54,6 +54,7 @@ namespace OrbItProcs
         
         hueshifter,
         lifetime,
+        scheduler,
 
         //draw components
         
@@ -99,6 +100,8 @@ namespace OrbItProcs
         public static string filepath = "Presets//Nodes/";
         public static bool isFullScreen = false;
         public static bool TakeScreenshot = false;
+
+        public static bool Debugging = false;
 
         public Dictionary<textures, Texture2D> textureDict;
         //Node node;
@@ -222,6 +225,8 @@ namespace OrbItProcs
                     //{ comp.queuer, true },
                     //{ comp.flow, true },
                     { comp.waver, false },
+                    { comp.scheduler, true },
+
                     //{ comp.tether, false },
                     
                 };
@@ -292,6 +297,7 @@ namespace OrbItProcs
             ui.keyManager.addProcessKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
             ui.keyManager.addProcessKeyAction("togglesidebar", KeyCodes.OemTilde, OnPress: ui.ToggleSidebar);
             ui.keyManager.addProcessKeyAction("screenshot", KeyCodes.PrintScreen, OnPress: TakeScreenShot);
+            ui.keyManager.addProcessKeyAction("removeall", KeyCodes.Delete, OnPress: () => ui.sidebar.btnRemoveAllNodes_Click(null, null));
 
             room.MakeWalls();
         }
@@ -435,66 +441,16 @@ namespace OrbItProcs
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            /*
-            if (!IsFixedTimeStep)
-            {
-                elapsedTimeDraw += gameTime.ElapsedGameTime;
-                if (elapsedTimeDraw >= targetElapsedTimeDraw)
-                {
-                    //frameRateCounter.UpdateElapsed(elapsedTimeDraw);
-                    elapsedTimeDraw = TimeSpan.Zero;
-                }
-                else
-                {
-                    //Manager.EndDraw();
-                    //return;
-                }
-            }
-            */
-
-            //if (!TimeToDraw) return;
-
             Manager.BeginDraw(gameTime);
             base.Draw(gameTime);
 
-
-            //BlendState bs = new BlendState();
-            //
-            ////bs.AlphaBlendFunction = BlendFunction.ReverseSubtract;
-            ////bs.AlphaSourceBlend = bs.AlphaDestinationBlend = Blend.One;
-            //
-            //bs.AlphaBlendFunction = BlendState.AlphaBlend.AlphaBlendFunction;
-            //bs.AlphaDestinationBlend = BlendState.AlphaBlend.AlphaDestinationBlend;
-            //bs.AlphaSourceBlend = BlendState.AlphaBlend.AlphaSourceBlend;
-            //bs.BlendFactor = BlendState.AlphaBlend.BlendFactor;
-            //bs.ColorBlendFunction = BlendState.AlphaBlend.ColorBlendFunction;
-            //bs.ColorDestinationBlend = BlendState.AlphaBlend.ColorDestinationBlend;
-            //bs.ColorSourceBlend = BlendState.AlphaBlend.ColorSourceBlend;
-            //bs.ColorWriteChannels = BlendState.AlphaBlend.ColorWriteChannels;
-            //bs.ColorWriteChannels1 = BlendState.AlphaBlend.ColorWriteChannels1;
-            //bs.ColorWriteChannels2 = BlendState.AlphaBlend.ColorWriteChannels2;
-            //bs.ColorWriteChannels3 = BlendState.AlphaBlend.ColorWriteChannels3;
-            //
-            ////bs.ColorBlendFunction = BlendFunction.Max;
-            //bs.ColorDestinationBlend = Blend.One;
-            //bs.ColorSourceBlend = Blend.Zero;
-            
-
             GraphicsDevice.Clear(Color.Black);
-            //spriteBatch.Begin();
-            //spriteBatch.Begin(SpriteSortMode.Deferred, bs, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone);
             spriteBatch.Begin();
 
             room.Draw(spriteBatch);
             frameRateCounter.Draw(spriteBatch, font);
 
-            //spriteBatch.Draw(whiteTexture, new Vector2(100, 100), null, Color.Black, 0, Vector2.Zero, new Vector2(10, 1), SpriteEffects.None, 0);
-
-            
-
             spriteBatch.End();
-
-            
 
             Manager.EndDraw();
 
@@ -503,11 +459,7 @@ namespace OrbItProcs
                 Screenshot(Manager.Graphics.GraphicsDevice);
                 TakeScreenshot = false;
             }
-
             TimeToDraw = false;
-
-            
-
         }
 
         public Node spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)
@@ -540,11 +492,43 @@ namespace OrbItProcs
             }
             newNode.name = activegroup.Name + Node.nodeCounter;
             newNode.acceptUserProps(userProperties);
-            //newNode.Collided += delegate(Dictionary<dynamic, dynamic> dict) { newNode.body.color = Color.Red; };
-            AssignColor(activegroup, newNode);
 
+            CollisionDelegate toggleWhite = delegate(Node source, Node target)
+            {
+                if (target == null) return;
+                if (source.body.color == Color.White)
+                    source.body.color = Utils.randomColor();
+                else
+                    source.body.color = Color.White;
+
+            };
+            CollisionDelegate randomCol = delegate(Node source, Node target)
+            {
+                if (target == null) return;
+                source.body.color = Utils.randomColor();
+            };
+            CollisionDelegate absorbColor = delegate(Node source, Node target)
+            {
+                if (target == null) return;
+                int div = 25;
+                int r = (int)source.body.color.R + ((int)target.body.color.R - (int)source.body.color.R) / div;
+                int g = (int)source.body.color.G + ((int)target.body.color.G - (int)source.body.color.G) / div;
+                int b = (int)source.body.color.B + ((int)target.body.color.B - (int)source.body.color.B) / div;
+                source.body.color = new Color(r, g, b, (int)source.body.color.A);
+            };
+            CollisionDelegate empty = delegate(Node s, Node t)
+            {
+
+            };
+
+            newNode.OnCollisionStart += empty;
+            newNode.OnCollisionEnd += empty;
+
+            AssignColor(activegroup, newNode);
             return SpawnNodeHelper(newNode, afterSpawnAction, activegroup, lifetime);
         }
+
+        
         private Node SpawnNodeHelper(Node newNode, Action<Node> afterSpawnAction = null, Group g = null, int lifetime = -1)
         {
             newNode.OnSpawn();
@@ -621,6 +605,27 @@ namespace OrbItProcs
             Console.WriteLine("Deleting file: " + p);
             File.Delete(Game1.filepath + p.name + ".xml");
             NodePresets.Remove(p);
+        }
+
+        public void StartStateMachine()
+        {
+            IEnumerable<bool> sm = StateMachine();
+            IEnumerator<bool> statemachine = sm.GetEnumerator();
+            bool state;
+            state = statemachine.MoveNext();
+            state = statemachine.MoveNext();
+            state = statemachine.MoveNext();
+        }
+
+        IEnumerable<bool> StateMachine()
+        {
+            bool state = false;
+            while(true)
+            {
+                Console.WriteLine("state:" + state);
+                yield return state;
+                state = !state;
+            }
         }
     }
 }

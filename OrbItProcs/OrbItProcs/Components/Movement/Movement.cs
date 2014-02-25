@@ -16,6 +16,7 @@ namespace OrbItProcs
         wallbounce,
         screenwrap,
         falloff,
+        halt,
     };
 
     public class Movement : Component {
@@ -42,8 +43,8 @@ namespace OrbItProcs
 
         private void IntegrateForces()
         {
-            if (parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
-            if (parent.body.force.IsFucked()) System.Diagnostics.Debugger.Break();
+            if (Game1.Debugging && parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
+            if (Game1.Debugging && parent.body.force.IsFucked()) System.Diagnostics.Debugger.Break();
 
             if (parent.body.invmass == 0)
                 return;
@@ -56,8 +57,8 @@ namespace OrbItProcs
         }
         public void IntegrateVelocity()
         {
-            if (parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
-            if (parent.body.force.IsFucked()) System.Diagnostics.Debugger.Break();
+            if (Game1.Debugging && parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
+            if (Game1.Debugging && parent.body.force.IsFucked()) System.Diagnostics.Debugger.Break();
 
             if (!active) return;
             if (parent.body.invmass == 0)
@@ -83,6 +84,7 @@ namespace OrbItProcs
             if (movementmode == movemode.screenwrap) screenWrap();
             if (movementmode == movemode.wallbounce) wallBounce();
             if (movementmode == movemode.falloff)    fallOff();
+            if (movementmode == movemode.halt) halt();
 
             //Trippy();
         }
@@ -147,30 +149,67 @@ namespace OrbItProcs
             {
                 parent.body.pos.X = levelwidth - parent.body.radius;
                 parent.body.velocity.X *= -1;
-                parent.OnCollidePublic(null);
+                parent.OnCollisionInvoke(null);
 
             }
             if (parent.body.pos.X < parent.body.radius)
             {
                 parent.body.pos.X = parent.body.radius;
                 parent.body.velocity.X *= -1;
-                parent.OnCollidePublic(null);
+                parent.OnCollisionInvoke(null);
             }
             if (parent.body.pos.Y >= (levelheight - parent.body.radius))
             {
                 parent.body.pos.Y = levelheight - parent.body.radius;
                 parent.body.velocity.Y *= -1;
-                parent.OnCollidePublic(null);
+                parent.OnCollisionInvoke(null);
             }
             if (parent.body.pos.Y < parent.body.radius)
             {
                 parent.body.pos.Y = parent.body.radius;
                 parent.body.velocity.Y *= -1;
-                parent.OnCollidePublic(null);
+                parent.OnCollisionInvoke(null);
             }
 
             
         }
+
+        public void halt()
+        {
+            //if (room.PropertiesDict["wallBounce"])
+            //float levelwidth = room.game...;
+            int levelwidth = parent.room.worldWidth;
+            int levelheight = parent.room.worldHeight;
+
+            if (parent.body.pos.X >= (levelwidth - parent.body.radius))
+            {
+                parent.body.pos.X = levelwidth - parent.body.radius;
+                parent.body.velocity.X *= 0;
+                parent.OnCollisionInvoke(null);
+
+            }
+            if (parent.body.pos.X < parent.body.radius)
+            {
+                parent.body.pos.X = parent.body.radius;
+                parent.body.velocity.X *= 0;
+                parent.OnCollisionInvoke(null);
+            }
+            if (parent.body.pos.Y >= (levelheight - parent.body.radius))
+            {
+                parent.body.pos.Y = levelheight - parent.body.radius;
+                parent.body.velocity.Y *= 0;
+                parent.OnCollisionInvoke(null);
+            }
+            if (parent.body.pos.Y < parent.body.radius)
+            {
+                parent.body.pos.Y = parent.body.radius;
+                parent.body.velocity.Y *= 0;
+                parent.OnCollisionInvoke(null);
+            }
+
+
+        }
+
 
         public void screenWrap()
         {

@@ -17,40 +17,30 @@ namespace OrbItProcs
             this.triggerNode = node;
 
             Collision += CollisionEvent;
-            triggerNode.Collided += OnCollision;
+            triggerNode.OnCollision += OnCollision;
         }
 
         
 
-        public void CollisionEvent(Dictionary<dynamic,dynamic> dict)
+        public void CollisionEvent(Node me, Node it)
         {
-            if (dict != null && dict.ContainsKey("collidee") && dict["collidee"] != null)
-            {
-                Console.WriteLine("Collided with node.");
-                Node n = dict["collidee"];
-                n.body.color = Microsoft.Xna.Framework.Color.LightSkyBlue;
-            }
-            else
-            {
-                return;
-            }
-
+            if (me == null) return;
             Console.WriteLine("event1");
             colCount++;
             if (colCount > 10)
             {
                 //Collision -= CollisionEvent;
-                triggerNode.Collided -= OnCollision;
+                me.OnCollision -= OnCollision;
                 Console.WriteLine("yes");
             }
             Node n1 = new Node(), n2 = new Node(), n3 = new Node();
-            Node.cloneObject(triggerNode, n1); // take params (...)
-            Node.cloneObject(triggerNode, n2);
-            Node.cloneObject(triggerNode, n3);
+            Node.cloneObject(me, n1); // take params (...)
+            Node.cloneObject(me, n2);
+            Node.cloneObject(me, n3);
             //CollisionArgs["trigger"].Collided -= Collision;
-            n1.Collided -= OnCollision;
-            n2.Collided -= OnCollision;
-            n3.Collided -= OnCollision;
+            n1.OnCollision -= OnCollision;
+            n2.OnCollision -= OnCollision;
+            n3.OnCollision -= OnCollision;
             n1.body.pos.X -= 150;
             n2.body.pos.X += 150;
             n3.body.pos.Y -= 150;

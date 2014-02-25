@@ -18,7 +18,6 @@ namespace OrbItProcs
             set
             {
                 _active = value;
-                if (!value && parent != null) parent.Collided -= onCollision;
                 if (parent != null && parent.comps.ContainsKey(com))
                 {
                     parent.triggerSortLists();
@@ -52,7 +51,6 @@ namespace OrbItProcs
             if (parent != null)
             {
                 this.parent = parent;
-                this.parent.Collided += onCollision;
             }
             com = comp.laser; 
             methods = mtypes.affectself | mtypes.draw; 
@@ -84,7 +82,6 @@ namespace OrbItProcs
         public override void Initialize(Node parent)
         {
             this.parent = parent;
-            parent.Collided += onCollision;
         }
 
         public override void AffectOther(Node other)
@@ -200,13 +197,6 @@ namespace OrbItProcs
                 count++;
             }
             
-        }
-
-        public void onCollision(Dictionary<dynamic, dynamic> args)
-        {
-            //currentscale = maxscale / queuecount;
-            //scalingcounter = 1;
-            //scales[queuecount - 1] = 1f;
         }
 
     }

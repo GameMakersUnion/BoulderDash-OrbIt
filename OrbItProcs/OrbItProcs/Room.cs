@@ -58,6 +58,8 @@ namespace OrbItProcs {
         public int timertimer = 0;
         public int timermax = 60;
 
+        public static long totalElapsedMilliseconds = 0;
+
         private Group _masterGroup;
         public Group masterGroup
         {
@@ -159,6 +161,11 @@ namespace OrbItProcs {
 
         public void Update(GameTime gametime)
         {
+            //Console.WriteLine(gametime.ElapsedGameTime.Milliseconds + " :: " + gametime.ElapsedGameTime.TotalMilliseconds);
+            long elapsed = 0;
+            if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
+            totalElapsedMilliseconds += elapsed;
+
             if (contacts.Count > 0) contacts = new List<Manifold>();
             //these make it convienient to check values after pausing the game my mouseing over
             if (defaultNode == null) defaultNode = null;
@@ -174,11 +181,10 @@ namespace OrbItProcs {
 
             HashSet<Node> toDelete = new HashSet<Node>();
 
-            if (++timertimer % timermax == 0)
-                Console.WriteLine("=======================UPDATE START==========");
-
-            if (timertimer % timermax == 0)
-                Testing.StartTimer();
+            //if (++timertimer % timermax == 0)
+            //    Console.WriteLine("=======================UPDATE START==========");
+            //if (timertimer % timermax == 0)
+            //    Testing.StartTimer();
             //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
             masterGroup.childGroups["General Groups"].ForEachFullSet(delegate(Node n) 
             {
@@ -188,8 +194,8 @@ namespace OrbItProcs {
             //
             UpdateCollision();
 
-            if (timertimer % timermax == 0)
-                Testing.StartTimer();
+            //if (timertimer % timermax == 0)
+            //    Testing.StartTimer();
             foreach(Node n in masterGroup.fullSet.ToList())
             {
                 if (n.active)
@@ -221,8 +227,8 @@ namespace OrbItProcs {
 
         public void UpdateCollision()
         {
-            if (timertimer % timermax == 0)
-                Testing.StartTimer();
+            //if (timertimer % timermax == 0)
+            //    Testing.StartTimer();
             gridsystemCollision.clear();
             CollisionSet.ToList().ForEach(delegate(Node n) { gridsystemCollision.insert(n); });
             gridsystemCollision.alreadyVisited = new HashSet<Node>();
@@ -256,8 +262,8 @@ namespace OrbItProcs {
             {
                 m.Initialize();
             }
-            if (timertimer % timermax == 0)
-                Testing.StartTimer();
+            //if (timertimer % timermax == 0)
+            //    Testing.StartTimer();
             for (int ii = 0; ii < colIterations; ii++)
             {
                 foreach (Manifold m in contacts)

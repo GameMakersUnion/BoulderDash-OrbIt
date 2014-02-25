@@ -127,6 +127,7 @@
     <Compile Include="Components\AffectOthers\Displace.cs" />
     <Compile Include="Components\AffectOthers\FixedForce.cs" />
     <Compile Include="Components\AffectOthers\Orbiter.cs" />
+    <Compile Include="Components\Scheduler.cs" />
     <Compile Include="Framework\Level.cs" />
     <Compile Include="Physics\Body.cs" />
     <Compile Include="Components\Drawers\BasicDraw.cs" />

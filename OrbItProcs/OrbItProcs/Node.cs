@@ -38,6 +38,7 @@ namespace OrbItProcs {
         on,
     }
     //public delegate void MyEventHandler (object sender, EventArgs e);
+    public delegate void CollisionDelegate(Node source, Node target);
 
     public class Node {
         private string _nodeHash = "";
@@ -64,7 +65,13 @@ namespace OrbItProcs {
 
         public event EventHandler OnAffectOthers;
 
-        public event ProcessMethod Collided;
+        public event CollisionDelegate OnCollision;
+        //public event CollisionDelegate CollidedFrame;
+        public event CollisionDelegate OnCollisionStart;
+        public event CollisionDelegate OnCollisionEnd;
+
+        public Dictionary<string, dynamic> DataStore = new Dictionary<string, dynamic>();
+
         //public Dictionary<dynamic, dynamic> CollideArgs;
         //static Dictionary<dynamic, dynamic> defaultProps = new Dictionary<dynamic, dynamic>() { };
         public T GetComponent<T>()
@@ -242,9 +249,38 @@ namespace OrbItProcs {
             }
         }
 
-        public bool HasCollidedEvent()
+        public bool HasCollision()
         {
-            return Collided != null;
+            return OnCollision != null;
+        }
+        public bool HasCollisionStart()
+        {
+            return OnCollisionStart != null;
+        }
+        public bool HasCollisionEnd()
+        {
+            return OnCollisionEnd != null;
+        }
+        public void OnCollisionInvoke(Node target)
+        {
+            if (OnCollision != null)
+            {
+                OnCollision(this, target);
+            }
+        }
+        public void OnCollisionStartInvoke(Node target)
+        {
+            if (OnCollisionStart != null)
+            {
+                OnCollisionStart(this, target);
+            }
+        }
+        public void OnCollisionEndInvoke(Node target)
+        {
+            if (OnCollisionEnd != null)
+            {
+                OnCollisionEnd(this, target);
+            }
         }
 
         public void storeInInstance(node val, Dictionary<dynamic,dynamic> dict)
@@ -331,8 +367,116 @@ namespace OrbItProcs {
             //if (Program.getGame() == null) Console.WriteLine("gnull");
             if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0,5);
             else name = name + nodeCounter;
+        }
 
-            
+        public T CheckData<T>(string key)
+        {
+            if (DataStore.ContainsKey(key))
+            {
+                return DataStore[key];
+            }
+            else
+            {
+                return default(T);
+            }
+        }
+
+        public void SetData(string key, dynamic data)
+        {
+            DataStore[key] = data;
+        }
+
+        public virtual void Update(GameTime gametime)
+        {
+            if (nodeState == state.off || nodeState == state.drawOnly) return;
+
+            if (aOtherProps.Count > 0)
+            {
+                List<Node> returnObjectsFinal = new List<Node>();
+
+                returnObjectsFinal = room.gridsystem.retrieve(this);
+
+                int cellReach = (int)(body.radius * 2) / room.gridsystem.cellWidth * 2;
+
+
+                if (comps.ContainsKey(comp.flow) && comps[comp.flow].active)
+                {
+                    returnObjectsFinal = new List<Node>();
+                    if (comps[comp.flow].activated)
+                    {
+                        returnObjectsFinal = comps[comp.flow].outgoing.ToList();
+                    }
+                }
+                returnObjectsFinal.Remove(this);
+
+                foreach (Node other in returnObjectsFinal)
+                {
+                    if (other.active)
+                    {
+                        foreach (comp c in aOtherProps)
+                        {
+                            comps[c].AffectOther(other);
+                        }
+                    }
+                }
+            }
+            collision.ClearCollisionList();
+
+            if (OnAffectOthers != null) OnAffectOthers.Invoke(this, null);
+
+            foreach (comp c in aSelfProps)
+            {
+                comps[c].AffectSelf();
+            }
+
+            if (movement.active) movement.AffectSelf(); //temporary until make movement list to update at the correct time
+
+            if (triggerSortComponentsUpdate)
+            {
+                SortComponentListsUpdate();
+                triggerSortComponentsUpdate = false;
+            }
+
+            if (triggerRemoveComponent)
+            {
+                RemoveComponentTriggered();
+            }
+
+        }
+
+        public void Draw(SpriteBatch spritebatch)
+        {
+            if (nodeState == state.off || nodeState == state.updateOnly) return;
+
+            int numOfSupers = 0;
+            foreach (comp c in drawProps)
+            {
+                if (!comps[c].CallDraw) continue;
+                if (!comps[c].active) continue;
+                if (drawPropsSuper.Contains(c))
+                {
+                    numOfSupers++;
+                    comps[c].Draw(spritebatch);
+                }
+                else
+                {
+                    if (numOfSupers > 0) break;
+                    comps[c].Draw(spritebatch);
+                    if (!comps[c].methods.HasFlag(mtypes.minordraw))
+                        break; //only executes the most significant draw component
+                }
+            }
+
+            if (triggerSortComponentsDraw)
+            {
+                SortComponentListsDraw();
+                triggerSortComponentsDraw = false;
+            }
+
+            if (triggerRemoveComponent)
+            {
+                RemoveComponentTriggered();
+            }
         }
 
         public override string ToString()
@@ -567,123 +711,6 @@ namespace OrbItProcs {
                 }
             }
         }
-
-        
-        
-        public virtual void Update(GameTime gametime)
-        {
-            
-            /*foreach (comp c in comps.Keys.ToList())
-            {
-                Component component = (Component)comps[c];
-                //if (component is BasicDraw && DebugFlag) System.Diagnostics.Debugger.Break();
-                component.parent = this;
-            }*/
-
-            //if (body != body.shape.body) body.shape.body = body;
-            if (nodeState == state.off || nodeState == state.drawOnly) return;
-
-            if (aOtherProps.Count > 0)
-            {
-                List<Node> returnObjectsFinal = new List<Node>();
-
-                returnObjectsFinal = room.gridsystem.retrieve(this);
-
-                int cellReach = (int)(body.radius * 2) / room.gridsystem.cellWidth * 2;
-
-
-                if (comps.ContainsKey(comp.flow) && comps[comp.flow].active)
-                {
-                    returnObjectsFinal = new List<Node>();
-                    if (comps[comp.flow].activated)
-                    {
-                        returnObjectsFinal = comps[comp.flow].outgoing.ToList();
-                    }
-                }
-                returnObjectsFinal.Remove(this);
-
-                foreach (Node other in returnObjectsFinal)
-                {
-                    if (other.active)
-                    {
-                        foreach (comp c in aOtherProps)
-                        {
-                            comps[c].AffectOther(other);
-                        }
-                    }
-                }
-            }
-
-            if (OnAffectOthers != null) OnAffectOthers.Invoke(this, null);
-
-            foreach (comp c in aSelfProps)
-            {
-                    comps[c].AffectSelf();
-            }
-
-            if (movement.active) movement.AffectSelf(); //temporary until make movement list to update at the correct time
-
-            if (triggerSortComponentsUpdate)
-            {
-                SortComponentListsUpdate();
-                triggerSortComponentsUpdate = false;
-            }
-
-            if (triggerRemoveComponent)
-            {
-                RemoveComponentTriggered();
-            }
-            
-        }
-
-        public void Draw(SpriteBatch spritebatch)
-        {
-            if (nodeState == state.off || nodeState == state.updateOnly) return;
-
-            int numOfSupers = 0;
-            foreach (comp c in drawProps)
-            {
-                if (!comps[c].CallDraw) continue;
-                if (!comps[c].active) continue;
-                if (drawPropsSuper.Contains(c))
-                {
-                    numOfSupers++;
-                    comps[c].Draw(spritebatch);
-                }
-                else
-                {
-                    if (numOfSupers > 0) break;
-                    comps[c].Draw(spritebatch);
-                    if (!comps[c].methods.HasFlag(mtypes.minordraw))
-                        break; //only executes the most significant draw component
-                }
-            }
-
-            if (triggerSortComponentsDraw)
-            {
-                SortComponentListsDraw();
-                triggerSortComponentsDraw = false;
-            }
-
-            if (triggerRemoveComponent)
-            {
-                RemoveComponentTriggered();
-            }
-        }
-
-        public void OnCollidePublic(Dictionary<dynamic, dynamic> dict)
-        {
-            OnCollideInvoker(dict);
-        }
-
-        protected virtual void OnCollideInvoker(Dictionary<dynamic,dynamic> dict)
-        {
-            if (Collided != null)
-            {
-                Collided(dict);
-            }
-        }
-
         public Texture2D getTexture()
         {
 

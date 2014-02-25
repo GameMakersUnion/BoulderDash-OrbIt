@@ -19,7 +19,7 @@ namespace OrbItProcs
             addProcessKeyAction("SetSpawnPosition", KeyCodes.LeftShift, OnPress: SetSpawnPosition);
             addProcessKeyAction("BatchSpawn", KeyCodes.RightClick, OnHold: BatchSpawn);
             addProcessKeyAction("DirectionalLaunch", KeyCodes.LeftShift, KeyCodes.RightClick, OnHold: DirectionalLaunch);
-            batchSpawnNum = 50;
+            batchSpawnNum = 5;
 
             addProcessKeyAction("testing", KeyCodes.OemPipe, OnPress: Testing);
 
@@ -175,9 +175,6 @@ namespace OrbItProcs
 
         public void BatchSpawn()
         {
-            if (rightClickCount > rightClickMax)
-            {
-                //new node(s)
                 int rad = 100;
                 for (int i = 0; i < batchSpawnNum; i++)
                 {
@@ -185,13 +182,6 @@ namespace OrbItProcs
                     int ry = Utils.random.Next(rad * 2) - rad;
                     room.game.spawnNode((int)UserInterface.WorldMousePos.X + rx, (int)UserInterface.WorldMousePos.Y + ry);
                 }
-
-                rightClickCount = 0;
-            }
-            else
-            {
-                rightClickCount++;
-            }
         }
 
         public void DirectionalLaunch()
