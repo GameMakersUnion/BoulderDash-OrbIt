@@ -620,7 +620,14 @@ namespace OrbItProcs
                         }
                         else
                         {
-                            temp = new InspectorItem(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.propertyInfo);
+                            if (next.fpinfo.propertyInfo == null)
+                            {
+                                temp = new InspectorItem(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.fieldInfo);
+                            }
+                            else
+                            {
+                                temp = new InspectorItem(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.propertyInfo);
+                            }
                         }
                     }
                     count++;
@@ -707,7 +714,6 @@ namespace OrbItProcs
                 {
                     PopUp.Toast(ui, "Casting exception: " + e.Message);
                     throw e;
-                    return;
                 }
 
             }
@@ -720,7 +726,6 @@ namespace OrbItProcs
             {
                 PopUp.Toast(ui, "Invoking exception: " + e.Message);
                 throw e;
-                return;
             }
         }
 
@@ -979,7 +984,6 @@ namespace OrbItProcs
                     PopUp.Toast(ui, "You didn't select a component.");
                     return; //I added this, because if not, the above toast does not show. -zck
                 }
-                bool writeable = true;
         }
     }
 }

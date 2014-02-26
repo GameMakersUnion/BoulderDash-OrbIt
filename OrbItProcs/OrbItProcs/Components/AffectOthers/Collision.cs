@@ -90,7 +90,7 @@ namespace OrbItProcs
                             parent.OnCollisionInvoke(other);
                         }
                         bool parentstart = parent.HasCollisionStart();
-                        if (parentstart || parent.HasCollisionEnd())
+                        if (parentstart || parent.HasCollisionEnd() || parent.HasCollisionFirst() || parent.HasCollisionNone())
                         {
                             HashSet<Node> lastframe = isCollisions1 ? collisions1 : collisions2;
                             HashSet<Node> thisframe = !isCollisions1 ? collisions1 : collisions2;
@@ -106,7 +106,7 @@ namespace OrbItProcs
                             other.OnCollisionInvoke(parent);
                         }
                         bool otherstart = other.HasCollisionStart();
-                        if (otherstart || other.HasCollisionEnd())
+                        if (otherstart || other.HasCollisionEnd() || other.HasCollisionFirst() || other.HasCollisionNone())
                         {
                             HashSet<Node> lastframe = other.collision.isCollisions1 ? other.collision.collisions1 : other.collision.collisions2;
                             HashSet<Node> thisframe = !other.collision.isCollisions1 ? other.collision.collisions1 : other.collision.collisions2;
@@ -117,6 +117,8 @@ namespace OrbItProcs
                             }
                         }
                     }
+
+                    
 
                     if (ResolveCollision && other.collision.ResolveCollision)
                         parent.room.AddManifold(m);
@@ -130,13 +132,13 @@ namespace OrbItProcs
             HashSet<Node> lastframe = isCollisions1 ? collisions1 : collisions2;
             HashSet<Node> thisframe = !isCollisions1 ? collisions1 : collisions2;
 
-            if (lastframe.Count == 0 && thisframe.Count > 0)
+            if (parent.HasCollisionFirst() && lastframe.Count == 0 && thisframe.Count > 0)
             {
-                parent.body.color = Color.Blue;
+                parent.OnCollisionFirstInvoke();
             }
-            else if (lastframe.Count > 0 && thisframe.Count == 0)
+            else if (parent.HasCollisionNone() && lastframe.Count > 0 && thisframe.Count == 0)
             {
-                parent.body.color = Color.White;
+                parent.OnCollisionNoneInvoke();
             }
 
             foreach(Node n in lastframe.ToList())

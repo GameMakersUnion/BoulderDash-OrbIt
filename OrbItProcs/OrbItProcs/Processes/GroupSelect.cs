@@ -16,11 +16,11 @@ namespace OrbItProcs
         {
             //LeftHold += LeftH;
             //LeftClick += LeftC;
-            addProcessKeyAction("grouph", KeyCodes.LeftClick, OnHold: LeftH, OnPress: LeftC, OnRelease: LeftR);
+            addProcessKeyAction("grouph", KeyCodes.LeftClick, OnHold: UpdateBox, OnPress: SetOrigin, OnRelease: SelectGroup);
 
         }
 
-        public void LeftH()
+        public void UpdateBox()
         {
             Vector2 mousePos = UserInterface.WorldMousePos;
 
@@ -33,12 +33,12 @@ namespace OrbItProcs
             //Console.WriteLine(mousePos.X + " " + glob.X);
         }
 
-        public void LeftC()
+        public void SetOrigin()
         {
             groupSelectionBoxOrigin = UserInterface.WorldMousePos;
         }
 
-        public void LeftR()
+        public void SelectGroup()
         {
             bool ctrlDown = UserInterface.oldKeyBState.IsKeyDown(Keys.LeftControl);
             bool altDown = UserInterface.oldKeyBState.IsKeyDown(Keys.LeftAlt);

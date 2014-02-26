@@ -230,7 +230,7 @@ namespace OrbItProcs
             Console.WriteLine("");
 
             HashSet<int> excludeset = new HashSet<int>() { 5 };
-            HashSet<int> newset;
+            //HashSet<int> newset;
             List<int> excludeInt = new List<int>() { 5 };
             StartTimer();
             for (int i = 0; i < 1000; i++)
@@ -253,6 +253,16 @@ namespace OrbItProcs
             }
         }
 
+        public void TriangleTest()
+        {
+            int mod = 10;
+            for(int i = 0; i < 100; i++)
+            {
+                Console.WriteLine("{0} : {1}", i, DelegateManager.TriangleFunction(i, mod));
+            }
+
+        }
+
 
         public void TestOnClick()
         {
@@ -261,7 +271,7 @@ namespace OrbItProcs
             object transformobj = room.defaultNode.body;
             dynamic nodedynamic = room.defaultNode;
             List<Func<Node, float>> delList = new List<Func<Node, float>>();
-            float total = 0;
+            //float total = 0;
 
             Movement movement = new Movement();
 
@@ -272,7 +282,7 @@ namespace OrbItProcs
             //Action<object, object> movementsetter = redirector.setters[typeof(Movement)]["active"];
             //Console.WriteLine(":::" + movement.active);
             //bool a = redirector.active;
-            bool a = false;
+            //bool a = false;
 
             StartTimer();
             for (int i = 0; i < 100000; i++)

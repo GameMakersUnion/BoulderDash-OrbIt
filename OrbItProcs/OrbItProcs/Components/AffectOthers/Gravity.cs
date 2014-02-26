@@ -42,22 +42,23 @@ namespace OrbItProcs {
             methods = mtypes.affectother;
             
         }
+        //public bool TestBool = false;
 
         public override void AffectOther(Node other)
         {
             if (!active) { return; }
             if (exclusions.Contains(other)) return;
 
-            if (!other.comps.ContainsKey(comp.gravity) && AffectsOnlyGravity)
+            if (AffectsOnlyGravity && !other.comps.ContainsKey(comp.gravity)) return;
+
+            //if (TestBool) return;
+
+
+            float distVects = Vector2.DistanceSquared(other.body.pos, parent.body.pos);
+
+            if (distVects < radius * radius)
             {
-                return;
-            }
-
-
-            float distVects = Vector2.Distance(other.body.pos, parent.body.pos);
-
-            if (distVects < radius)
-            {
+                distVects = (float)Math.Sqrt(distVects);
                 if (distVects < lowerbound) distVects = lowerbound;
                 double angle = Math.Atan2((parent.body.pos.Y - other.body.pos.Y), (parent.body.pos.X - other.body.pos.X));
                 //float counterforce = 100 / distVects;

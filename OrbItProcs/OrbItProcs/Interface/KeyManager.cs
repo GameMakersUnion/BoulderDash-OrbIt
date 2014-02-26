@@ -1005,7 +1005,7 @@ namespace OrbItProcs
                     if (CheckMouseDown(kb.effectiveKey))
                     {
                         if (PressedBundles[kb].holdAction != null) PressedBundles[kb].holdAction();
-                        Console.WriteLine("Exec Hold action: " + HoldCounter++);
+                        //Console.WriteLine("Exec Hold action: " + HoldCounter++);
                         
                     }
                     else
@@ -1081,10 +1081,6 @@ namespace OrbItProcs
                         PressedKeys.Add(kc);
                         TryAction();
                         //Console.WriteLine("New");
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debugger.Break();
                     }
                     //PrintPressedKeys();
                      //Console.WriteLine("key__press");

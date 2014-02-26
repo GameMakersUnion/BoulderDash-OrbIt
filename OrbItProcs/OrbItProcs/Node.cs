@@ -63,14 +63,7 @@ namespace OrbItProcs {
 
         public static int nodeCounter = 0;
 
-        public event EventHandler OnAffectOthers;
-
-        public event CollisionDelegate OnCollision;
-        //public event CollisionDelegate CollidedFrame;
-        public event CollisionDelegate OnCollisionStart;
-        public event CollisionDelegate OnCollisionEnd;
-
-        public Dictionary<string, dynamic> DataStore = new Dictionary<string, dynamic>();
+        
 
         //public Dictionary<dynamic, dynamic> CollideArgs;
         //static Dictionary<dynamic, dynamic> defaultProps = new Dictionary<dynamic, dynamic>() { };
@@ -249,6 +242,16 @@ namespace OrbItProcs {
             }
         }
 
+        public Dictionary<string, dynamic> DataStore = new Dictionary<string, dynamic>();
+
+        public event EventHandler OnAffectOthers;
+
+        public event CollisionDelegate OnCollision;
+        public event CollisionDelegate OnCollisionStart;
+        public event CollisionDelegate OnCollisionEnd;
+        public event Action<Node> OnCollisionFirst;
+        public event Action<Node> OnCollisionNone;
+
         public bool HasCollision()
         {
             return OnCollision != null;
@@ -260,6 +263,14 @@ namespace OrbItProcs {
         public bool HasCollisionEnd()
         {
             return OnCollisionEnd != null;
+        }
+        public bool HasCollisionFirst()
+        {
+            return OnCollisionFirst != null;
+        }
+        public bool HasCollisionNone()
+        {
+            return OnCollisionNone != null;
         }
         public void OnCollisionInvoke(Node target)
         {
@@ -280,6 +291,20 @@ namespace OrbItProcs {
             if (OnCollisionEnd != null)
             {
                 OnCollisionEnd(this, target);
+            }
+        }
+        public void OnCollisionFirstInvoke()
+        {
+            if (OnCollisionFirst != null)
+            {
+                OnCollisionFirst(this);
+            }
+        }
+        public void OnCollisionNoneInvoke()
+        {
+            if (OnCollisionNone != null)
+            {
+                OnCollisionNone(this);
             }
         }
 
@@ -892,41 +917,7 @@ namespace OrbItProcs {
                         field.SetValue(destNode, field.GetValue(sourceNode));
                     }
                 }
-                //field.SetValue(newobj, field.GetValue(obj));
-                //Console.WriteLine("{0}", field.FieldType);
             }
         }
-        
-        
-
-
-        /*
-         * - need to make sure that different components don't make the same calculations (grav and repel will both calculate: (dist, angle, force, etc))
-         *     however, it is important to note that sometimes values must be recalculated (if the calculation involves a value from the component's properties dictionary
-         * - somehow manage a priority list of which components are applied first
-         * - better to keep components in seperate dictionary from properties (if looping through components, this will be faster)
-         * - components will make use of their own properties (you want an object's gravComponent to have a multiplier of 20f,
-         *     but it's repelComponent to have a multiplier of 50f)
-         * - the component could be initialized with, for example 2/5 properites. 
-         *     the 2 will be used, and the missing 3 will be taken from the object's properties (rather than the compoent's properties)
-         * - the component's initialization must happen seperately from it's function, otherwise you'd need to check that everything was initialized every frame
-         * - need to make sure that using a properties dictionary isn't slower than using normal instance variables (due to lookup overhead) 
-         *     if so, system might need rethinking
-         * - each component will have certain 'meta properties' that describe what kind of component it is.
-         *      for example, some components will 'iterateOverAllNodes' (two of these together will perform calculations all in one loop)
-         * - during the Node intialization, the priority list of components will be referenced, and using the existing components attached to the node 
-         * (in the node's component dictionary) it will create an ordering of component execution (this list contains Only the present components)
-         *  this list will also be updated upon the AddComponent method, to support adding components at runtime and updating the priority list
-         *  - the components can be added to several ordered lists. all components that 'iterateOverAllNodes' will be put in that list (and ordered based 
-         *   on priority.) All components that 'changeSelf' will be thrown in that list also. The list will only contain references to the components
-         *   (I think...), so they can still be referenced any time from the componentDictionary of that Node.
-         * 
-         * 
-        */
-
-        //make a tree node (in fact, make a node based off every data structure
-
-        //---------------------------------------------------------------------------------START SHIT
-
     }
 }

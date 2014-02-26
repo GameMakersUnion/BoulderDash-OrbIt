@@ -34,6 +34,12 @@ namespace OrbItProcs
             o1 = (mod - (float)Math.Abs(((int)(m1) % (2 * mod) - mod))) / (mod / 5) + 0.5f;
             mi.fpInfos["o1"].SetValue(o1);
         }
+        public static float TriangleFunction(float num, int mod)
+        {
+            //return (mod - (float)Math.Abs(((int)(num) % (2 * mod) - mod))) / (mod / 5) + 0.5f;
+            //x = m - abs(i % (2*m) - m)
+            return mod - Math.Abs(num % (2 * mod) - mod);
+        }
 
         public static void VelocityToOutput (Dictionary<string, dynamic> args, ModifierInfo mi)
         {

@@ -147,26 +147,34 @@ namespace OrbItProcs
 
             if (parent.body.pos.X >= (levelwidth - parent.body.radius))
             {
-                parent.body.pos.X = levelwidth - parent.body.radius;
+                //float off = parent.body.pos.X - (levelwidth - parent.body.radius);
+                //parent.body.pos.X = (levelwidth - parent.body.radius - off) % parent.room.worldWidth;
+                parent.body.pos.X = DelegateManager.TriangleFunction(parent.body.pos.X, parent.room.worldWidth - (int)parent.body.radius);
                 parent.body.velocity.X *= -1;
                 parent.OnCollisionInvoke(null);
 
             }
             if (parent.body.pos.X < parent.body.radius)
             {
-                parent.body.pos.X = parent.body.radius;
+                //float off = parent.body.radius - parent.body.pos.X;
+                //parent.body.pos.X = (parent.body.radius + off) % parent.room.worldWidth;
+                parent.body.pos.X = DelegateManager.TriangleFunction(parent.body.pos.X - parent.body.radius, parent.room.worldWidth) + parent.body.radius;
                 parent.body.velocity.X *= -1;
                 parent.OnCollisionInvoke(null);
             }
             if (parent.body.pos.Y >= (levelheight - parent.body.radius))
             {
-                parent.body.pos.Y = levelheight - parent.body.radius;
+                //float off = parent.body.pos.Y - (levelheight - parent.body.radius);
+                //parent.body.pos.Y = (levelheight - parent.body.radius - off) % parent.room.worldHeight;
+                parent.body.pos.Y = DelegateManager.TriangleFunction(parent.body.pos.Y, parent.room.worldHeight - (int)parent.body.radius);
                 parent.body.velocity.Y *= -1;
                 parent.OnCollisionInvoke(null);
             }
             if (parent.body.pos.Y < parent.body.radius)
             {
-                parent.body.pos.Y = parent.body.radius;
+                //float off = parent.body.radius - parent.body.pos.Y;
+                //parent.body.pos.Y = (parent.body.radius + off) % parent.room.worldHeight;
+                parent.body.pos.Y = DelegateManager.TriangleFunction(parent.body.pos.Y - parent.body.radius, parent.room.worldHeight) + parent.body.radius;
                 parent.body.velocity.Y *= -1;
                 parent.OnCollisionInvoke(null);
             }
@@ -218,15 +226,16 @@ namespace OrbItProcs
             int levelwidth = parent.room.worldWidth;
             int levelheight = parent.room.worldHeight;
 
+            //todo: modulus screen width
             //hitting top/bottom of screen
             //teleport node
             if (parent.body.pos.X >= levelwidth)
             {
-                parent.body.pos.X = 1;
+                parent.body.pos.X = parent.body.pos.X - levelwidth;//1;
             }
             else if (parent.body.pos.X < 0)
             {
-                parent.body.pos.X = levelwidth - 1;
+                parent.body.pos.X = levelwidth - parent.body.pos.X;//1;
             }
             //show half texture on other side
             if (parent.body.pos.X >= (levelwidth - parent.body.radius))
@@ -242,11 +251,11 @@ namespace OrbItProcs
             //teleport node
             if (parent.body.pos.Y >= levelheight)
             {
-                parent.body.pos.Y = 1;
+                parent.body.pos.Y = parent.body.pos.Y - levelheight;//1;
             }
             else if (parent.body.pos.Y < 0)
             {
-                parent.body.pos.Y = levelheight - 1;
+                parent.body.pos.Y = levelheight - parent.body.pos.Y;//1;
             }
             //show half texture on other side
             if (parent.body.pos.Y >= (levelheight - parent.body.radius))

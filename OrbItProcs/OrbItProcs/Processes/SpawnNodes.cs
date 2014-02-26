@@ -19,7 +19,7 @@ namespace OrbItProcs
             addProcessKeyAction("SetSpawnPosition", KeyCodes.LeftShift, OnPress: SetSpawnPosition);
             addProcessKeyAction("BatchSpawn", KeyCodes.RightClick, OnHold: BatchSpawn);
             addProcessKeyAction("DirectionalLaunch", KeyCodes.LeftShift, KeyCodes.RightClick, OnHold: DirectionalLaunch);
-            batchSpawnNum = 5;
+            batchSpawnNum = 1;
 
             addProcessKeyAction("testing", KeyCodes.OemPipe, OnPress: Testing);
 

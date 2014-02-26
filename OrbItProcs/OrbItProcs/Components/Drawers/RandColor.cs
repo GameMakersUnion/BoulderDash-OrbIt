@@ -32,6 +32,8 @@ namespace OrbItProcs {
                 float num = (float)Utils.random.Next(100000) / (float)100000;
                 int n = (int)(num * 16000000);
                 parent.body.color = Utils.IntToColor(n);
+                parent.body.permaColor = parent.body.color;
+                
             }
         }
 

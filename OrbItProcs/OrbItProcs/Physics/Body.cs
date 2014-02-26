@@ -10,6 +10,7 @@ namespace OrbItProcs
     public class Body : Component
     {
         public Color color = new Color(255, 255, 255);
+        public Color permaColor = new Color(255, 255, 255);
         private textures _texture = textures.whitecircle;
 
         public Shape shape;

@@ -53,6 +53,7 @@ namespace OrbItProcs
         movement,
         
         hueshifter,
+        colorchanger,
         lifetime,
         scheduler,
 
@@ -65,6 +66,7 @@ namespace OrbItProcs
         flow,
 
         tether,
+        spring,
         tree,
         basicdraw,
 
@@ -191,7 +193,7 @@ namespace OrbItProcs
             if (!Directory.Exists(filepath)) Directory.CreateDirectory(filepath);
             textureDict = new Dictionary<textures, Texture2D>(){
             {textures.blueorb, Content.Load<Texture2D>("Textures/bluesphere"        )},
-            {textures.whiteorb, Content.Load<Texture2D>("Textures/whitesphere"      )},
+            {textures.whiteorb, Content.Load<Texture2D>("Textures/blackorb"      )},
             {textures.colororb, Content.Load<Texture2D>("Textures/colororb"         )},
             {textures.whitepixel, Content.Load<Texture2D>("Textures/whitepixel"     )},
             {textures.whitepixeltrans, Content.Load<Texture2D>("Textures/whitepixeltrans")},
@@ -516,13 +518,13 @@ namespace OrbItProcs
                 int b = (int)source.body.color.B + ((int)target.body.color.B - (int)source.body.color.B) / div;
                 source.body.color = new Color(r, g, b, (int)source.body.color.A);
             };
-            CollisionDelegate empty = delegate(Node s, Node t)
-            {
+            CollisionDelegate empty = delegate(Node s, Node t) { };
+            Action<Node> first = n => n.body.color = n.body.permaColor;
+            Action<Node> none = n => n.body.color = Color.White;
 
-            };
 
-            newNode.OnCollisionStart += empty;
-            newNode.OnCollisionEnd += empty;
+            newNode.OnCollisionFirst += first;
+            newNode.OnCollisionNone += none;
 
             AssignColor(activegroup, newNode);
             return SpawnNodeHelper(newNode, afterSpawnAction, activegroup, lifetime);
@@ -531,6 +533,8 @@ namespace OrbItProcs
         
         private Node SpawnNodeHelper(Node newNode, Action<Node> afterSpawnAction = null, Group g = null, int lifetime = -1)
         {
+            //testing.TriangleTest();
+
             newNode.OnSpawn();
             if (afterSpawnAction != null) afterSpawnAction(newNode);
             if (lifetime != -1)
