@@ -34,7 +34,7 @@ namespace OrbItProcs
             o1 = (mod - (float)Math.Abs(((int)(m1) % (2 * mod) - mod))) / (mod / 5) + 0.5f;
             mi.fpInfos["o1"].SetValue(o1);
         }
-        public static float TriangleFunction(float num, int mod)
+        public static float TriangleFunction(float num, float mod)
         {
             //return (mod - (float)Math.Abs(((int)(num) % (2 * mod) - mod))) / (mod / 5) + 0.5f;
             //x = m - abs(i % (2*m) - m)

@@ -79,8 +79,7 @@ namespace OrbItProcs
         public abstract void Draw(SpriteBatch spritebatch);
 
         public virtual void InitializeLists()
-        { 
-       
+        {
         }
 
         public virtual Texture2D getTexture()

@@ -37,40 +37,30 @@ namespace OrbItProcs {
         drawOnly,
         on,
     }
-    //public delegate void MyEventHandler (object sender, EventArgs e);
     public delegate void CollisionDelegate(Node source, Node target);
 
     public class Node {
         private string _nodeHash = "";
         public string nodeHash { get { return _nodeHash; } set 
-        { 
-            //if (room.nodeHashes.Contains(_nodeHash)) Console.WriteLine("Total Hashes:{0} , removed hash:{1}", room.nodeHashes.Count, _nodeHash);
+        {
             room.nodeHashes.Remove(_nodeHash);
             _nodeHash = value;
-            /*if (room.nodeHashes.Contains(value))
-            {
-                string unqStr = Utils.uniqueString(room.nodeHashes);
-                Group mstrGrp = room.masterGroup;
-
-                Node nd = mstrGrp.FindNodeByHash(value);
-                if (nd == null) System.Diagnostics.Debugger.Break();
-                nd.nodeHash = unqStr;
-
-            }*/
             room.nodeHashes.Add(value);
-            //Console.WriteLine("Total Hashes:{0} , added hash:{1}, with name: {2} ", room.nodeHashes.Count, value, this.name);
         } }
 
         public static int nodeCounter = 0;
 
-        
-
-        //public Dictionary<dynamic, dynamic> CollideArgs;
-        //static Dictionary<dynamic, dynamic> defaultProps = new Dictionary<dynamic, dynamic>() { };
         public T GetComponent<T>()
         {
-            //return comps[Game1.compEnums[typeof(T)]];
             return comps[Utils.compEnums[typeof(T)]];
+        }
+        public bool HasComponent(comp component)
+        {
+            return comps.ContainsKey(component);
+        }
+        public bool HasActiveComponent(comp component)
+        {
+            return comps.ContainsKey(component) && comps[component].active;
         }
 
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;

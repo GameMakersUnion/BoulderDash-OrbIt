@@ -105,11 +105,6 @@ namespace OrbItProcs
 
         public override void Draw(SpriteBatch spritebatch)
         {
-            //Color col = new Color(rgb[0], rgb[1], rgb[2],1);
-            
-           
-
-
         }
 
     }

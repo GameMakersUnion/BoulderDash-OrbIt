@@ -9,6 +9,16 @@ namespace OrbItProcs
 {
     public class ColorChanger : Component
     {
+        public enum ColorMode
+        {
+            none,
+            angle,
+            position,
+            velocity,
+            scale,
+
+        }
+
         private int timer = 0, _timerMax = 2;
         public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
 
@@ -27,6 +37,8 @@ namespace OrbItProcs
 
         public bool smartshifting { get; set; }
 
+        public ColorMode colormode { get; set; }
+
         public ColorChanger() : this(null) { }
         public ColorChanger(Node parent = null)
         {
@@ -34,26 +46,50 @@ namespace OrbItProcs
             if (parent != null) this.parent = parent;
             com = comp.colorchanger;
             methods = mtypes.affectself;
+            colormode = ColorMode.velocity;
         }
 
         public override void AffectSelf()
         {
-            timer++;
-            if ((timer) % timerMax == 0)
+            if (colormode == ColorMode.angle)
             {
-                int range = 20;
-                int tempinc = inc;
-                if (angle % 120 > 60 - range && angle % 120 < 60 + range)
-                {
-                    tempinc = inc * 2;
-                    //Console.WriteLine(angle);
-                }
-
-                int[] cols = getColorsFromAngle(angle, value, saturation);
-                parent.body.color = new Color(cols[0], cols[1], cols[2], 1);
-                angle = (angle + tempinc) % 360;
-
+                float angle = (float)((Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + Math.PI) * (180 / Math.PI));
+                parent.body.color = getColorFromHSV(angle, saturation, value);
             }
+            else if(colormode == ColorMode.position)
+            {
+                float r = parent.body.pos.X / (float)parent.room.worldWidth;
+                float g = parent.body.pos.Y / (float)parent.room.worldHeight;
+                float b = (parent.body.pos.X / parent.body.pos.Y) / ((float)parent.room.worldWidth / (float)parent.room.worldHeight);
+                parent.body.color = new Color(r, g, b);
+            }
+            else if (colormode == ColorMode.velocity)
+            {
+                float len = Vector2.Distance(parent.body.velocity, Vector2.Zero);
+                parent.body.color = getColorFromHSV((float)Math.Min(1.0, len / 20) * 360f, (float)Math.Min(1.0, len / 20), (float)Math.Min(1.0, len / 20));
+            }
+        }
+
+        public static void ShiftFloat(ref float f, float min, float max, float rate)
+        {
+            f += rate;
+            if (f < min)
+            {
+                f = min;
+                rate *= -1;
+            }
+            else if (f > max)
+            {
+                f = max;
+                rate *= -1;
+            }
+        }
+
+        public static float Sawtooth(int num, int mod)
+        {
+            int ret = num % mod;
+            if (ret < 0) ret = mod + ret;
+            return ret;
         }
 
         public static Color getColorFromHSV(float angle, float saturation = 1f, float value = 1f)
@@ -110,11 +146,6 @@ namespace OrbItProcs
 
         public override void Draw(SpriteBatch spritebatch)
         {
-            //Color col = new Color(rgb[0], rgb[1], rgb[2],1);
-
-
-
-
         }
 
     }

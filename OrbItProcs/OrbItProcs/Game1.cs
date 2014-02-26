@@ -54,6 +54,7 @@ namespace OrbItProcs
         
         hueshifter,
         colorchanger,
+        colorgravity,
         lifetime,
         scheduler,
 
@@ -523,8 +524,8 @@ namespace OrbItProcs
             Action<Node> none = n => n.body.color = Color.White;
 
 
-            newNode.OnCollisionFirst += first;
-            newNode.OnCollisionNone += none;
+            //newNode.OnCollisionFirst += first;
+            //newNode.OnCollisionNone += none;
 
             AssignColor(activegroup, newNode);
             return SpawnNodeHelper(newNode, afterSpawnAction, activegroup, lifetime);
