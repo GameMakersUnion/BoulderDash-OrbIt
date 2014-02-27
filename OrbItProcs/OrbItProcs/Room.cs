@@ -401,6 +401,7 @@ namespace OrbItProcs {
 
             game.processManager.Draw(spritebatch);
 
+            GraphData.DrawGraph();
             //Testing.TestHues();
             
         } 

@@ -479,7 +479,7 @@ namespace OrbItProcs {
                 if (obj.GetType().IsSubclassOf(typeof(Component)))
                 {
                     Component component = (Component)obj;
-                    return result + LastWord(component.GetType().ToString().ToUpper(), '.') + " : " + component.active;
+                    return result + component.GetType().ToString().ToUpper().LastWord('.') + " : " + component.active;
                 }
                 return result + fpinfo.Name + " : " + fpinfo.GetValue(parentItem.obj);
             }
@@ -499,11 +499,6 @@ namespace OrbItProcs {
             
             
             //return result + obj.ToString();
-        }
-
-        public string LastWord(string s, char delim)
-        {
-            return s.Substring(s.LastIndexOf(delim)+1);
         }
 
         public string Name()

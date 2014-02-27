@@ -10,7 +10,7 @@ using System.Collections.Specialized;
 
 namespace OrbItProcs {
     public static class Utils {
-        
+
         public static Dictionary<comp, Type> compTypes;
         public static Dictionary<Type, comp> compEnums;
 
@@ -57,6 +57,11 @@ namespace OrbItProcs {
             {
                 compEnums.Add(Utils.GetComponentTypeFromEnum(key), key);
             }
+        }
+
+        public static string LastWord(this string s, char delim)
+        {
+            return s.Substring(s.LastIndexOf(delim) + 1);
         }
 
         public static void Break()

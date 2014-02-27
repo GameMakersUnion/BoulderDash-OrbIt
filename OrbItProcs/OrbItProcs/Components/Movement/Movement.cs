@@ -86,6 +86,8 @@ namespace OrbItProcs
             if (movementmode == movemode.falloff)    fallOff();
             if (movementmode == movemode.halt) halt();
 
+            GraphData.AddFloat(parent.body.pos.X);
+
             //Trippy();
         }
 

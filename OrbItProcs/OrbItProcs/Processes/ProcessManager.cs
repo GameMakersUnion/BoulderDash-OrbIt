@@ -17,6 +17,7 @@ namespace OrbItProcs
         axismovement,
         polygonspawner,
         mapeditor,
+        graphdata,
 
     }
 
@@ -59,6 +60,7 @@ namespace OrbItProcs
             processDict.Add(proc.groupselect, new GroupSelect());
             processDict.Add(proc.polygonspawner, new PolygonSpawner());
             processDict.Add(proc.mapeditor, new MapEditor(room.level));
+            processDict.Add(proc.graphdata, new GraphData());
 
             activeInputProcess = processDict[proc.spawnnodes];
 
@@ -100,6 +102,11 @@ namespace OrbItProcs
             Keybindset.Add("mapeditor", new KeyBundle(KeyCodes.D5), delegate
             {
                 Keybindset.AddProcess(processDict[proc.mapeditor]);//, KeySwitchMethod.Overwrite);
+            });
+            //
+            Keybindset.Add("graphdata", new KeyBundle(KeyCodes.D6), delegate
+            {
+                Keybindset.AddProcess(processDict[proc.graphdata]);//, KeySwitchMethod.Overwrite);
             });
         }
 
