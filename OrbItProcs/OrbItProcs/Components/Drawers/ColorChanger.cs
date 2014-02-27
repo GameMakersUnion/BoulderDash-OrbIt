@@ -91,6 +91,12 @@ namespace OrbItProcs
             if (ret < 0) ret = mod + ret;
             return ret;
         }
+        public static float SawtoothFloat(float num, float mod)
+        {
+            float ret = num % mod;
+            if (ret < 0) ret = mod + ret;
+            return ret;
+        }
 
         public static Color getColorFromHSV(float angle, float saturation = 1f, float value = 1f)
         {

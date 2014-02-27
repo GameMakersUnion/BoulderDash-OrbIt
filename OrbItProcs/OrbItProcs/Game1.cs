@@ -252,9 +252,6 @@ namespace OrbItProcs
             firstdefault.name = "[G0]0";
             firstdefault.IsDefault = true;
 
-            Console.WriteLine((Double.Epsilon * 2) / 2);
-
-
             Group masterGroup = new Group(room.defaultNode, Name: room.defaultNode.name, Spawnable: false);
             room.masterGroup = masterGroup;
 
@@ -535,6 +532,7 @@ namespace OrbItProcs
         private Node SpawnNodeHelper(Node newNode, Action<Node> afterSpawnAction = null, Group g = null, int lifetime = -1)
         {
             //testing.TriangleTest();
+            //if (newNode[comp.body].pos is Vector2) System.Diagnostics.Debugger.Break();
 
             newNode.OnSpawn();
             if (afterSpawnAction != null) afterSpawnAction(newNode);

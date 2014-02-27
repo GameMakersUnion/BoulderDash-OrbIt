@@ -306,6 +306,7 @@ namespace OrbItProcs {
 
                 foreach (PropertyInfo pinfo in propertyInfos)
                 {
+                    if (pinfo.Name.Equals("Item")) continue;
                     InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, pinfo.GetValue(parent, null), pinfo);
                     if (iitem.CheckForChildren()) iitem.prefix = "+";
                     InsertItemSorted(list, iitem);
@@ -405,7 +406,6 @@ namespace OrbItProcs {
         {
             string result = whitespace + prefix;
 
-
             if (obj is Vector2)
             {
                 dynamic vect = obj;
@@ -446,7 +446,6 @@ namespace OrbItProcs {
                 }
                 return result + key + ":" + obj;
             }
-
             if (fpinfo != null)
             {
                 if (datatype == data_type.dict)
@@ -477,6 +476,11 @@ namespace OrbItProcs {
                     //System.Console.WriteLine(result + fpinfo.Name + " <" + ks + "," + vs + ">");
                     return result + fpinfo.Name + " <" + ks + ">";
                 }
+                if (obj.GetType().IsSubclassOf(typeof(Component)))
+                {
+                    Component component = (Component)obj;
+                    return result + LastWord(component.GetType().ToString().ToUpper(), '.') + " : " + component.active;
+                }
                 return result + fpinfo.Name + " : " + fpinfo.GetValue(parentItem.obj);
             }
             if (obj == null)
@@ -497,6 +501,11 @@ namespace OrbItProcs {
             //return result + obj.ToString();
         }
 
+        public string LastWord(string s, char delim)
+        {
+            return s.Substring(s.LastIndexOf(delim)+1);
+        }
+
         public string Name()
         {
             if (membertype == member_type.dictentry)
@@ -511,7 +520,11 @@ namespace OrbItProcs {
             {
                 return ((Node)obj).ToString();
             }
-            return "error_Name_99";
+            if (obj is Link)
+            {
+                return ((Link)obj).ToString();
+            }
+            return "error99";
         }
 
         public void RemoveChildren()

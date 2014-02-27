@@ -150,6 +150,7 @@ namespace OrbItProcs
             DrawCircle = true;
 
             AfterCloning();
+            active = true;
         }
 
         public override void AfterCloning()

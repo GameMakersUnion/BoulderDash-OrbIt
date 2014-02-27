@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Collections;
 using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs
 {
@@ -23,8 +24,8 @@ namespace OrbItProcs
         {
             room = Program.getRoom();
 
-            Redirector.PopulateDelegatesAll();
-            redirector = new Redirector();
+            //Redirector.PopulateDelegatesAll();
+            //redirector = new Redirector();
 
             //obints.CollectionChanged += (s, e) => { };
         }
@@ -52,6 +53,18 @@ namespace OrbItProcs
             if (mill < 0) mill += 1000;
             Console.WriteLine(" {0}: {1}", message, mill);
             timerStarted = false;
+        }
+
+        public static void TestHues()
+        {
+            //float hue = 0;
+            for(int i = 0; i < 360; i++)
+            {
+                Color col = ColorChanger.getColorFromHSV((float)i);
+                Room room = Program.getRoom();
+                float thickness = (float)room.worldWidth / 360f;
+                Utils.DrawLine(room, new Vector2(thickness * i, 0), new Vector2(thickness * i, room.worldHeight), thickness, col);
+            }
         }
 
 

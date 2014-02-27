@@ -141,10 +141,6 @@ namespace OrbItProcs
                         int sliderpos = (int)(((float)trkMain.Value / (float)trkMain.Range) * trkMain.Width);
                         if (relpos < sliderpos) trkMain.Range = trkMain.Range / 2;
                         else trkMain.Range = trkMain.Range * 2;
-
-                        //Console.WriteLine(relpos);
-                        
-                        
                     };
                     //trkMain.btnSlider.MouseUp += new TomShane.Neoforce.Controls.MouseEventHandler(trkMain_MouseUp);
                     panelControls.Add("trkMain", trkMain);

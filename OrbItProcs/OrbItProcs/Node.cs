@@ -62,6 +62,17 @@ namespace OrbItProcs {
         {
             return comps.ContainsKey(component) && comps[component].active;
         }
+        public dynamic this[comp component]
+        {
+            get
+            {
+                return comps[component];
+            }
+            set
+            {
+                comps[component] = value;
+            }
+        }
 
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;
         private Dictionary<comp, bool> tempCompActiveValues = new Dictionary<comp, bool>();
