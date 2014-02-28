@@ -46,7 +46,7 @@ namespace OrbItProcs
             //other.transform.position += parent.transform.velocity;
             other.body.pos += parent.body.effvelocity;
 
-            other.movement.movementmode = movemode.free;
+            other.movement.mode = movemode.free;
         }
         public override void AffectSelf()
         {

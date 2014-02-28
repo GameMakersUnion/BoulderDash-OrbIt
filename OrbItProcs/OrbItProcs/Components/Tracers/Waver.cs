@@ -15,8 +15,8 @@ namespace OrbItProcs
         public bool reflective { get { return _reflective; } set { _reflective = value; } }
         public Queue<Vector2> metapositions = new Queue<Vector2>();
         public Queue<Vector2> reflectpositions = new Queue<Vector2>();
-        private int _queuecount = 10;
-        public int queuecount { get { return _queuecount; } set { _queuecount = value;  } }
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public int queuecount { get { if (parent != null && parent.HasComponent(comp.queuer)) return parent[comp.queuer].queuecount; else return 10; } set { if (parent != null && parent.HasComponent(comp.queuer)) parent[comp.queuer].queuecount = value; } }
 
         private float _amp = 100;
         public float amp

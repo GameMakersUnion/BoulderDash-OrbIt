@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,23 +80,34 @@ namespace OrbItProcs
         }
         public static void DrawGraph()
         {
+            //Rectangle? sourceRect = null;
+            //Room roomm = Program.getRoom();
+            //Texture2D tex = roomm.game.textureDict[textures.whiteorb];
+            //Vector2 pos = new Vector2(300, 300);
+            //if (activated)
+            //{
+            //    sourceRect = new Rectangle(0, 0, 25, 25);
+            //    //pos += new Vector2(25, 25);
+            //}
+            //roomm.game.spriteBatch.Draw(tex, pos / roomm.mapzoom, sourceRect, Color.White, 0, new Vector2(tex.Width / 2, tex.Height / 2), 1f / roomm.mapzoom, SpriteEffects.None, 0);
+
             if (!drawing) return;
             ShowFloatGraph();
             float xRange = max.X - min.X;
             float yRange = max.Y - min.Y;
             Room room = Program.getRoom();
+            float datapoints = 0;
             foreach (float f in floatData.Keys)
             {
                 float ratio = (f - min.X) / (max.X - min.X);
                 float hue = ratio * 360;
                 float x = ratio * room.worldWidth;
-
                 float y = (room.worldHeight - ((floatData[f] - min.Y + 1) / (max.Y - min.Y + 1) * room.worldHeight * 0.5f));
-                
+                datapoints += floatData[f];
                 Utils.DrawLine(room, new Vector2(x, room.worldHeight), new Vector2(x, y), 1, ColorChanger.getColorFromHSV(hue));
             }
-            
 
+            if (datapoints % 100 == 0) Console.WriteLine("Datapoints: {0}  Size: {1}", datapoints, floatData.Count);
         }
 
 

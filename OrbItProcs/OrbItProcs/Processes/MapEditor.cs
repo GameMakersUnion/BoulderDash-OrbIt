@@ -57,7 +57,7 @@ namespace OrbItProcs
             newNode.body.shape = poly;
             newNode.body.SetStatic();
             newNode.body.SetOrient(0);
-            newNode.movement.movementmode = movemode.free;
+            newNode.movement.mode = movemode.free;
             newNode.body.restitution = 1f;
             room.game.spawnNode(newNode, g: room.masterGroup.childGroups["Walls"]);
             verts = new List<Vector2>();

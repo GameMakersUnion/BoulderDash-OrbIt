@@ -13,8 +13,8 @@ namespace OrbItProcs
         //public Queue<Vector2> positions;
         //public Queue<float> angles;
         //public Queue<float> scales;
-        private int _queuecount = 10;
-        public int queuecount { get { return _queuecount; } set { _queuecount = value; } }
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public int queuecount { get { if (parent != null && parent.HasComponent(comp.queuer)) return parent[comp.queuer].queuecount; else return 10; } set { if (parent != null && parent.HasComponent(comp.queuer)) parent[comp.queuer].queuecount = value; } }
 
         private int timer = 0, _timerMax = 1;
         public int timerMax { get { return _timerMax; } set { _timerMax = value; } }

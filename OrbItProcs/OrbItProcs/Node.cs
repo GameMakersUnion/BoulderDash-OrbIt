@@ -420,7 +420,16 @@ namespace OrbItProcs {
             {
                 List<Node> returnObjectsFinal = new List<Node>();
 
-                returnObjectsFinal = room.gridsystem.retrieve(this);
+                int reach; //update later based on cell size and radius (or polygon size.. maybe based on it's AABB)
+                if (body.shape is Polygon)
+                {
+                    reach = 20;
+                }
+                else
+                {
+                    reach = (int)(body.radius * 5) / room.gridsystem.cellWidth;
+                }
+                returnObjectsFinal = room.gridsystem.retrieve(this, reach);
 
                 int cellReach = (int)(body.radius * 2) / room.gridsystem.cellWidth * 2;
 

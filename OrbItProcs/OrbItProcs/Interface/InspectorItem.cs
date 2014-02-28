@@ -476,7 +476,7 @@ namespace OrbItProcs {
                     //System.Console.WriteLine(result + fpinfo.Name + " <" + ks + "," + vs + ">");
                     return result + fpinfo.Name + " <" + ks + ">";
                 }
-                if (obj.GetType().IsSubclassOf(typeof(Component)))
+                if (obj != null && obj.GetType().IsSubclassOf(typeof(Component)))
                 {
                     Component component = (Component)obj;
                     return result + component.GetType().ToString().ToUpper().LastWord('.') + " : " + component.active;

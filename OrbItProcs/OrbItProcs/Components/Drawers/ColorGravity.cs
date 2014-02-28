@@ -7,8 +7,11 @@ using Microsoft.Xna.Framework;
 
 namespace OrbItProcs.Components
 {
-    public class ColorGravity : Component
+    public class ColorGravity : Component, ILinkable
     {
+        private Link _link = null;
+        public Link link { get { return _link; } set { _link = value; } }
+
         public enum DistanceMod
         {
             color,
@@ -42,6 +45,7 @@ namespace OrbItProcs.Components
         public bool hueOnly { get; set; }
         public float hue { get; set; }
         public float huevelocity { get; set; }
+        public float friction { get; set; }
         public float divisor { get; set; }
         public float maxhuevel { get; set; }
         public ColorGravity() : this(null){ }
@@ -58,6 +62,7 @@ namespace OrbItProcs.Components
             hue = 0f;
             divisor = 1000f;
             maxhuevel = 10f;
+            friction = 0.9f;
         }
 
         public override void OnSpawn()
@@ -138,7 +143,7 @@ namespace OrbItProcs.Components
             {
                 if (huevelocity > maxhuevel) huevelocity = maxhuevel;
                 else if (huevelocity < -maxhuevel) huevelocity = -maxhuevel;
-
+                huevelocity *= friction;
                 hue += huevelocity;
                 //Console.WriteLine("1) {0} : HUE: {1}   HUEVEL: {2}", parent.name, hue, huevelocity);
                 //if (hue < 0) { hue = 0; huevelocity *= -1; }
@@ -149,9 +154,9 @@ namespace OrbItProcs.Components
             }
             else
             {
-                r += colvelocity.X;
-                g += colvelocity.Y;
-                b += colvelocity.Z;
+                r += colvelocity.X / friction;
+                g += colvelocity.Y / friction;
+                b += colvelocity.Z / friction;
                 if (r > 1f || r < 0f)
                 {
                     r = DelegateManager.TriangleFunction(r, 1f);

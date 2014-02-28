@@ -10,8 +10,8 @@ namespace OrbItProcs
 {
     public class PhaseOrb : Component
     {
-        private int _queuecount = 10;
-        public int queuecount { get { return _queuecount; } set { _queuecount = value; } }
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public int queuecount { get { if (parent != null && parent.HasComponent(comp.queuer)) return parent[comp.queuer].queuecount; else return 10; } set { if (parent != null && parent.HasComponent(comp.queuer)) parent[comp.queuer].queuecount = value; } }
 
         private int r1;// = Utils.random.Next(255) / 255f;
         private int g1;// = Utils.random.Next(255) / 255f;

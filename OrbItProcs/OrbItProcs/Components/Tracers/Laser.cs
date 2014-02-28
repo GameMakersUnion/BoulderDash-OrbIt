@@ -28,9 +28,8 @@ namespace OrbItProcs
         private Color color;
 
         private int alternating = 1;
-
-        private int _queuecount = 10;
-        public int queuecount { get { return _queuecount; } set { _queuecount = value; } }
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public int queuecount { get { if (parent != null && parent.HasComponent(comp.queuer)) return parent[comp.queuer].queuecount; else return 10; } set { if (parent != null && parent.HasComponent(comp.queuer)) parent[comp.queuer].queuecount = value; } }
         private bool _IsColorByAngle = true;
         public bool IsColorByAngle { get { return _IsColorByAngle; } set { _IsColorByAngle = value; } }
 
@@ -68,17 +67,13 @@ namespace OrbItProcs
             parent.comps[comp.queuer].qs = parent.comps[comp.queuer].qs | queues.scale | queues.position;// | queues.angle;
             //int i = 0;
         }
-
-
         public override void InitializeLists()
         {
             //positions = new Queue<Vector2>();
             //angles = new Queue<float>();
             //scales = new Queue<float>();
             color = Utils.randomColor();
-
         }
-
         public override void Initialize(Node parent)
         {
             this.parent = parent;
@@ -91,9 +86,6 @@ namespace OrbItProcs
         public override void AffectSelf()
         {
         }
-
-        
-
         public override void Draw(SpriteBatch spritebatch)
         {
             //it would be really cool to have some kind of blending effects so that every combination of components will look diff
@@ -124,8 +116,35 @@ namespace OrbItProcs
                 start = positions.ElementAt(i-1);
                 if (i == positions.Count) end = parent.body.pos;
                 else end = positions.ElementAt(i);
+
                 
-                Vector2 diff = (end - start) / mapzoom;
+                //don't draw lines from screen edge to edge if screenwrapping
+                //if (parent.movement.movementmode == movemode.screenwrap && diff.LengthSquared() > room.worldHeight * room.worldHeight / 4 && parent.body.velocity.LengthSquared() < room.worldHeight * room.worldHeight / 4) continue;
+                if (parent.movement.mode == movemode.screenwrap)
+                {
+                    float diffx = end.X - start.X;
+                    if (diffx > room.worldWidth / 2)
+                    {
+                        start.X += room.worldWidth;
+                    }
+                    else if (diffx < -room.worldWidth / 2)
+                    {
+                        start.X -= room.worldWidth;
+                    }
+                    float diffy = end.Y - start.Y;
+                    if (diffy > room.worldHeight / 2)
+                    {
+                        start.Y += room.worldHeight;
+                    }
+                    else if (diffy < -room.worldHeight / 2)
+                    {
+                        start.Y -= room.worldHeight;
+                    }
+
+                }
+
+                Vector2 diff = (end - start);
+                diff /= mapzoom;
                 Vector2 centerpoint = (end + start) / 2;
                 centerpoint /= mapzoom;
                 float len = diff.Length();
@@ -178,8 +197,8 @@ namespace OrbItProcs
                 scalevect.Y = outerscale * 0.9f;
                 //spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint + diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
                 //spritebatch.Draw(parent.getTexture(textures.whitepixel), centerpoint - diff, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
-
-                for (int j = 0; j < 4; j++)
+                int beamnum = 1;
+                for (int j = 0; j < beamnum; j++)
                 {
                     beamdist = (outerscale + j * yscale) / 2f;
                     //coll = new Color(new Vector4(coll.R, coll.G, coll.B, coll.A) - new Vector4(5, 5, 5, 0));

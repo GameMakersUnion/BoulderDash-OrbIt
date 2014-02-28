@@ -28,9 +28,9 @@ namespace OrbItProcs
         public float VelocityModifier { get { return _VelocityModifier; } set { _VelocityModifier = value; } }
 
         public Vector2 tempPosition = new Vector2(0, 0);
-        
-        private movemode _movementmode = movemode.wallbounce;
-        public movemode movementmode { get { return _movementmode; } set { _movementmode = value; } }
+
+        private movemode _mode = movemode.wallbounce;
+        public movemode mode { get { return _mode; } set { _mode = value; } }
 
         public Movement() : this(null) { }
         public Movement(Node parent = null)
@@ -80,11 +80,11 @@ namespace OrbItProcs
             //parent.body.position.Y += parent.body.velocity.Y * VelocityModifier;
 
 
-
-            if (movementmode == movemode.screenwrap) screenWrap();
-            if (movementmode == movemode.wallbounce) wallBounce();
-            if (movementmode == movemode.falloff)    fallOff();
-            if (movementmode == movemode.halt) halt();
+            //return;
+            if (mode == movemode.screenwrap) screenWrap();
+            if (mode == movemode.wallbounce) wallBounce();
+            if (mode == movemode.falloff)    fallOff();
+            if (mode == movemode.halt) halt();
 
             GraphData.AddFloat(parent.body.pos.X);
 
@@ -101,6 +101,7 @@ namespace OrbItProcs
         public override void Draw(SpriteBatch spritebatch)
         {
             //C3.XNA.Primitives2D.DrawCircle()
+            
         }
 
         public void fallOff()
