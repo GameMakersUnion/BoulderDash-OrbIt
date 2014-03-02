@@ -67,7 +67,7 @@ namespace OrbItProcs
         {
             int vertX = 0, vertY = 0;
             MouseToGrid(ref vertX, ref vertY);
-            Vector2 vert = new Vector2(vertX, vertY) / room.mapzoom;
+            Vector2 vert = new Vector2(vertX, vertY) * room.zoom;
 
             Texture2D tx = room.game.textureDict[textures.whitecircle];
             Vector2 cen = new Vector2(tx.Width / 2f, tx.Height / 2f);//store this in another textureDict to avoid recalculating
@@ -76,7 +76,7 @@ namespace OrbItProcs
 
             foreach(Vector2 v in verts)
             {
-                batch.Draw(room.game.textureDict[textures.whitecircle], v / room.mapzoom, null, Color.Red, 0f, cen, 0.3f, SpriteEffects.None, 0);
+                batch.Draw(room.game.textureDict[textures.whitecircle], v * room.zoom, null, Color.Red, 0f, cen, 0.3f, SpriteEffects.None, 0);
             }
         }
 

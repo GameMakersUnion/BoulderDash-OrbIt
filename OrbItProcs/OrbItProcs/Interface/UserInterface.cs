@@ -118,12 +118,9 @@ namespace OrbItProcs {
             keybState = Keyboard.GetState();
 
             if (GameInputDisabled) return;
-            //game.processManager.PollKeyboard();
 
             if (keybState.IsKeyDown(Keys.Y))
-            {
                 hovertargetting = true;
-            }
             else
                 hovertargetting = false;
 
@@ -131,7 +128,6 @@ namespace OrbItProcs {
             if (keybState.IsKeyDown(Keys.Space) && oldKeyBState.IsKeyUp(Keys.Space))
             {
                 room.Update(null);
-                System.Console.WriteLine(room.nodeHashes.Count);
             }
 
             if (keybState.IsKeyDown(Keys.LeftShift))
@@ -139,7 +135,7 @@ namespace OrbItProcs {
                 if (!isShiftDown)
                 { 
                     MouseState ms = Mouse.GetState();
-                    spawnPos = new Vector2(ms.X * room.mapzoom, ms.Y * room.mapzoom);
+                    spawnPos = new Vector2(ms.X, ms.Y) / room.zoom;
                 }
                 isShiftDown = true;
             }
@@ -187,7 +183,7 @@ namespace OrbItProcs {
             //    System.Console.WriteLine("X2");
 
             MousePos = new Vector2(mouseState.X, mouseState.Y);
-            WorldMousePos = MousePos * room.mapzoom;
+            WorldMousePos = (MousePos / room.zoom) + room.camera.pos;
             //ignore mouse clicks outside window
             if (!Game1.isFullScreen)
             {
@@ -257,11 +253,11 @@ namespace OrbItProcs {
 
             if (mouseState.ScrollWheelValue < oldMouseScrollValue)
             {
-                room.mapzoom /= zoomfactor;
+                room.zoom *= zoomfactor;
             }
             else if (mouseState.ScrollWheelValue > oldMouseScrollValue)
             {
-                room.mapzoom *= zoomfactor;
+                room.zoom /= zoomfactor;
             }
 
             oldMouseScrollValue = mouseState.ScrollWheelValue;

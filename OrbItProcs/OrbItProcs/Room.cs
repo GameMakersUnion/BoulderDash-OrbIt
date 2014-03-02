@@ -28,7 +28,7 @@ namespace OrbItProcs {
         #region // State // --------------------------------------------
         public bool DrawLinks { get; set; }
         public float WallWidth { get; set; }
-        public float mapzoom { get; set; }
+        
         public int worldWidth { get; set; }
         public int worldHeight { get; set; }
         public int colIterations { get; set; }
@@ -60,6 +60,8 @@ namespace OrbItProcs {
 
         public static long totalElapsedMilliseconds = 0;
 
+        public Camera camera;
+
         private Group _masterGroup;
         public Group masterGroup
         {
@@ -90,6 +92,8 @@ namespace OrbItProcs {
         [Polenter.Serialization.ExcludeFromSerialization]
         public Player player1 { get; set; }
 
+        public float zoom { get { return camera.zoom; } set { camera.zoom = value; } }
+
         #region // Links // ------------------------------------------------------
         public ObservableHashSet<Link> _AllActiveLinks = new ObservableHashSet<Link>();
         public ObservableHashSet<Link> AllActiveLinks { get { return _AllActiveLinks; } set { _AllActiveLinks = value; } }
@@ -106,11 +110,12 @@ namespace OrbItProcs {
             nodeHashes = new ObservableHashSet<string>();
             CollisionSet = new HashSet<Node>();
             colIterations = 1;
+            camera = new Camera(this, 0.5f);
         }
 
         public Room(Game1 game, int worldWidth, int worldHeight) : this()
         {
-            this.mapzoom = 2f;
+            //this.mapzoom = 2f;
             this.worldWidth = worldWidth;
             this.worldHeight = worldHeight;
 
@@ -120,44 +125,13 @@ namespace OrbItProcs {
 
             gridsystemCollision = new GridSystem(this, gridsystem.cellsX, 20);
             DrawLinks = true;
-            WallWidth = 500;
+            WallWidth = 10;
+            camera = new Camera(this, 0.5f);
 
 
         }
         
-        public void MakeWalls()
-        {
-            Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>() {
-                    { node.position, new Vector2(0, 0) },
-                    { comp.basicdraw, true },
-                    { comp.collision, true },
-                    //{ comp.movement, true },
-            };
-            Node left = ConstructWallPoly(props, (int)WallWidth / 2, worldHeight / 2, new Vector2(-WallWidth / 2, worldHeight / 2)); left.name = "left wall";
-            Node right = ConstructWallPoly(props, (int)WallWidth / 2, worldHeight / 2, new Vector2(worldWidth + WallWidth / 2, worldHeight / 2)); right.name = "right wall";
-            Node top = ConstructWallPoly(props, (worldWidth + (int)WallWidth * 2) / 2, (int)WallWidth / 2, new Vector2(worldWidth / 2, (int)-WallWidth / 2)); top.name = "top wall";
-            Node bottom = ConstructWallPoly(props, (worldWidth + (int)WallWidth * 2) / 2, (int)WallWidth / 2, new Vector2(worldWidth / 2, worldHeight + (int)WallWidth / 2)); bottom.name = "bottom wall";
-        }
-
-        public Node ConstructWallPoly(Dictionary<dynamic, dynamic> props, int hw, int hh, Vector2 pos)
-        {
-            Node n = new Node(props);
-            Polygon poly = new Polygon();
-            poly.body = n.body;
-            poly.body.pos = pos;
-            poly.SetBox(hw,hh);
-            //poly.SetOrient(0f);
-            
-            n.body.shape = poly;
-            n.body.SetStatic();
-            n.body.SetOrient(0);
-            //n.body.restitution = 1f;
-
-            //n.movement.pushable = false;
-
-            masterGroup.childGroups["Walls"].entities.Add(n);
-            return n;
-        }
+        
 
         public void Update(GameTime gametime)
         {
@@ -220,11 +194,6 @@ namespace OrbItProcs {
             //player1.Update(gametime);
         }
 
-        public void AddManifold(Manifold m)
-        {
-            contacts.Add(m);
-        }
-
         public void UpdateCollision()
         {
             //if (timertimer % timermax == 0)
@@ -284,6 +253,102 @@ namespace OrbItProcs {
             foreach (Manifold m in contacts)
                 m.PositionalCorrection();
             // \COLLISION
+            
+        }
+
+        public void Draw(SpriteBatch spritebatch)
+        {
+            //spritebatch.Draw(game.textureDict[textures.whitepixel], new Vector2(300, 300), null, Color.Black, 0f, Vector2.Zero, 100f, SpriteEffects.None, 0);
+
+            if (game.targetNode != null)
+            {
+                updateTargetNodeGraphic();
+                targetNodeGraphic.Draw(spritebatch);
+            }
+            HashSet<Node> groupset = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
+            if (groupset != null)
+            {
+                targetNodeGraphic.body.color = Color.LimeGreen;
+                foreach (Node n in groupset.ToList())
+                {
+                    targetNodeGraphic.body.pos = n.body.pos;
+                    targetNodeGraphic.body.scale = n.body.scale * 1.5f;
+                    targetNodeGraphic.Draw(spritebatch);
+                }
+            }
+
+            masterGroup.ForEachFullSet(delegate(Node n)
+            {
+                //Node n = (Node)o;
+                n.Draw(spritebatch);
+            });
+            int linecount = 0;
+
+            if (DrawLinks)
+            {
+                foreach (Link link in AllActiveLinks)
+                {
+                    link.GenericDraw(spritebatch);
+                }
+            }
+            //if (linkTest != null) linkTest.GenericDraw(spritebatch);
+
+            foreach (Rectangle rect in gridSystemLines)
+            {
+                //float scale = 1 / mapzoom;
+                Rectangle maprect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
+                spritebatch.DrawLine((new Vector2(maprect.X, maprect.Y) - camera.pos) * zoom, (new Vector2(maprect.Width, maprect.Height) - camera.pos) * zoom, Color.Green, 2);
+
+                linecount++;
+            }
+
+            //player1.Draw(spritebatch);
+            //level.Draw(spritebatch);
+
+            game.processManager.Draw(spritebatch);
+
+            GraphData.DrawGraph();
+            //Testing.TestHues();
+
+        }
+        public void AddManifold(Manifold m)
+        {
+            contacts.Add(m);
+        }
+
+        public void MakeWalls()
+        {
+            Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>() {
+                    { node.position, new Vector2(0, 0) },
+                    { comp.basicdraw, true },
+                    { comp.collision, true },
+                    //{ comp.movement, true },
+            };
+            Node left = ConstructWallPoly(props, (int)WallWidth / 2, worldHeight / 2, new Vector2(WallWidth / 2, worldHeight / 2)); left.name = "left wall";
+            Node right = ConstructWallPoly(props, (int)WallWidth / 2, worldHeight / 2, new Vector2(worldWidth - WallWidth / 2, worldHeight / 2)); right.name = "right wall";
+            Node top = ConstructWallPoly(props, (worldWidth + (int)WallWidth * 2) / 2, (int)WallWidth / 2, new Vector2(worldWidth / 2, (int)WallWidth / 2)); top.name = "top wall";
+            Node bottom = ConstructWallPoly(props, (worldWidth + (int)WallWidth * 2) / 2, (int)WallWidth / 2, new Vector2(worldWidth / 2, worldHeight - WallWidth / 2)); bottom.name = "bottom wall";
+        }
+
+        public Node ConstructWallPoly(Dictionary<dynamic, dynamic> props, int hw, int hh, Vector2 pos)
+        {
+            Node n = new Node(props);
+            n[comp.basicdraw].active = false;
+            Polygon poly = new Polygon();
+            poly.body = n.body;
+            poly.body.pos = pos;
+            poly.SetBox(hw, hh);
+            //poly.SetOrient(0f);
+
+            n.body.shape = poly;
+            n.body.SetStatic();
+            n.body.SetOrient(0);
+            //n.body.restitution = 1f;
+
+            //n.movement.pushable = false;
+
+            masterGroup.childGroups["Walls"].entities.Add(n);
+            return n;
         }
 
         public void updateTargetNodeGraphic()
@@ -350,61 +415,7 @@ namespace OrbItProcs {
             addRectangleLines((int)x, (int)y, (int)width, (int)height);
         }
 
-        public void Draw(SpriteBatch spritebatch)
-        {
-            //spritebatch.Draw(game.textureDict[textures.whitepixel], new Vector2(300, 300), null, Color.Black, 0f, Vector2.Zero, 100f, SpriteEffects.None, 0);
-
-            if (game.targetNode != null)
-            {
-                updateTargetNodeGraphic();
-                targetNodeGraphic.Draw(spritebatch);
-            }
-            HashSet<Node> groupset = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
-            if (groupset != null)
-            {
-                targetNodeGraphic.body.color = Color.LimeGreen;
-                foreach (Node n in groupset.ToList())
-                {
-                    targetNodeGraphic.body.pos = n.body.pos;
-                    targetNodeGraphic.body.scale = n.body.scale * 1.5f;
-                    targetNodeGraphic.Draw(spritebatch);
-                }
-            }
-
-            masterGroup.ForEachFullSet(delegate(Node n)
-            {
-                //Node n = (Node)o;
-                n.Draw(spritebatch);
-            });
-            int linecount = 0;
-
-            if (DrawLinks)
-            {
-                foreach (Link link in AllActiveLinks)
-                {
-                    link.GenericDraw(spritebatch);
-                }
-            }
-            //if (linkTest != null) linkTest.GenericDraw(spritebatch);
-
-            foreach (Rectangle rect in gridSystemLines)
-            {
-                //float scale = 1 / mapzoom;
-                Rectangle maprect = new Rectangle((int)(rect.X / mapzoom), (int)(rect.Y / mapzoom), (int)(rect.Width / mapzoom), (int)(rect.Height / mapzoom));
-                spritebatch.DrawLine(new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), Color.Green, 2);
-                
-                linecount++;
-            }
-
-            //player1.Draw(spritebatch);
-            //level.Draw(spritebatch);
-
-            game.processManager.Draw(spritebatch);
-
-            GraphData.DrawGraph();
-            //Testing.TestHues();
-            
-        } 
+        
         
         public void tether()
         {

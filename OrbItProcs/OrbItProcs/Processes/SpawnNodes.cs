@@ -193,8 +193,8 @@ namespace OrbItProcs
                 Vector2 positionToSpawn = spawnPos;
                 //positionToSpawn /= (game.room.mapzoom * 2);
                 //positionToSpawn /= (2);
-                Vector2 diff = UserInterface.MousePos;
-                diff *= room.mapzoom;
+                Vector2 diff = UserInterface.WorldMousePos;
+                //diff *= room.zoom;
                 diff = diff - positionToSpawn;
                 //diff.Normalize();
 

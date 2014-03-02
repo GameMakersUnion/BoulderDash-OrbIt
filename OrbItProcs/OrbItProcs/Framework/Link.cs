@@ -692,7 +692,7 @@ namespace OrbItProcs
             //if (!linkComponent.active)
                 //return;
 
-            float mapzoom = room.mapzoom;
+            //float mapzoom = room.zoom;
 
 
             Color col;

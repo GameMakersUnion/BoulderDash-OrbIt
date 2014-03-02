@@ -149,7 +149,7 @@ namespace OrbItProcs
         public override void Draw(SpriteBatch spritebatch)
         {
             Room room = parent.room;
-            float mapzoom = room.mapzoom;
+            float mapzoom = room.zoom;
 
             Color col = new Color(0, 0, 0, 0.3f);
             float a, b, c;
@@ -167,13 +167,13 @@ namespace OrbItProcs
                 col = new Color(a, b, c, 0.8f);
                 if (parent.comps.ContainsKey(comp.hueshifter) && parent.comps[comp.hueshifter].active) col = parent.body.color;
 
-                spritebatch.Draw(parent.getTexture(), pos / mapzoom, null, col, 0, parent.TextureCenter(), scales.ElementAt(count) / mapzoom, SpriteEffects.None, 0);
+                spritebatch.Draw(parent.getTexture(), pos * mapzoom, null, col, 0, parent.TextureCenter(), scales.ElementAt(count) * mapzoom, SpriteEffects.None, 0);
                 count++;
             }
 
             //float testangle = (float)(Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2));
             if (parent.comps.ContainsKey(comp.hueshifter)) col = parent.body.color;
-            spritebatch.Draw(parent.getTexture(), parent.body.pos / mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
 
         }
 

@@ -748,7 +748,6 @@ namespace OrbItProcs {
         }
         public Texture2D getTexture()
         {
-
             return room.game.textureDict[body.texture];
         }
         public Texture2D getTexture(textures t)

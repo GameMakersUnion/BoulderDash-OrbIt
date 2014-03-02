@@ -107,29 +107,15 @@ namespace OrbItProcs
         public static bool Debugging = false;
 
         public Dictionary<textures, Texture2D> textureDict;
-        //Node node;
-        
-
-        //public int worldWidth { get; set; }
-        //public int worldHeight { get; set; }
-
-        //string currentSelection = "placeNode";
+        public Dictionary<textures, Vector2> textureCenters;
         public Node targetNode = null;
 
-        TimeSpan elapsedTimeUpdate = new TimeSpan();
-        TimeSpan targetElapsedTimeUpdate = new TimeSpan(0, 0, 0, 0, 16);
-
-        //TimeSpan elapsedTimeDraw = new TimeSpan();
-        TimeSpan targetElapsedTimeDraw = new TimeSpan(0, 0, 0, 0, 16);
 
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
-        //public List<FileInfo> presetFileInfos = new List<FileInfo>();
 
         /////////////////////
         public Redirector redirector;
         public Testing testing;
-
-        public bool TimeToDraw;
 
         public Game1() : base(true)
         {
@@ -153,8 +139,6 @@ namespace OrbItProcs
             //MainWindow.Visible = false;
             
             //Manager.TargetFrames = 60;
-
-            TimeToDraw = false;
 
             //Collision col = new Collision();
             //col.AffectOther(null);
@@ -199,6 +183,14 @@ namespace OrbItProcs
             {textures.whitepixel, Content.Load<Texture2D>("Textures/whitepixel"     )},
             {textures.whitepixeltrans, Content.Load<Texture2D>("Textures/whitepixeltrans")},
             {textures.whitecircle, Content.Load<Texture2D>("Textures/whitecircle"   )}};
+
+            textureCenters = new Dictionary<textures, Vector2>();
+            foreach(var tex in textureDict.Keys)
+            {
+                Texture2D t = textureDict[tex];
+                textureCenters[tex] = new Vector2(t.Width / 2f, t.Height / 2f);
+            }
+
             font = Content.Load<SpriteFont>("Courier New");
 
             
@@ -394,6 +386,7 @@ namespace OrbItProcs
             // Create a new SpriteBatch, which can be used to draw textures.
             //spriteBatch = new SpriteBatch(GraphicsDevice);
             spriteBatch = new SpriteBatch(Graphics.GraphicsDevice);
+            room.camera.batch = spriteBatch;
             // TODO: use this.Content to load your game content here
         }
 
@@ -413,12 +406,12 @@ namespace OrbItProcs
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            if (!IsActive) return;
             GlobalGameTime = gameTime;
             base.Update(gameTime);
 
             //frameRateCounter.UpdateElapsed(gameTime.ElapsedGameTime);
             frameRateCounter.Update(gameTime);
-            
 
             if (!ui.IsPaused)
             {
@@ -432,8 +425,6 @@ namespace OrbItProcs
             }
 
             ui.Update(gameTime);
-
-            TimeToDraw = true;
         }
         /// <summary>
         /// This is called when the game should draw itself.
@@ -441,6 +432,7 @@ namespace OrbItProcs
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            if (!IsActive) return;
             Manager.BeginDraw(gameTime);
             base.Draw(gameTime);
 
@@ -459,7 +451,6 @@ namespace OrbItProcs
                 Screenshot(Manager.Graphics.GraphicsDevice);
                 TakeScreenshot = false;
             }
-            TimeToDraw = false;
         }
 
         public Node spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)
@@ -491,6 +482,7 @@ namespace OrbItProcs
                 }
             }
             newNode.name = activegroup.Name + Node.nodeCounter;
+            //userProperties[node.radius] = 100;
             newNode.acceptUserProps(userProperties);
 
             CollisionDelegate toggleWhite = delegate(Node source, Node target)
@@ -531,8 +523,8 @@ namespace OrbItProcs
         
         private Node SpawnNodeHelper(Node newNode, Action<Node> afterSpawnAction = null, Group g = null, int lifetime = -1)
         {
-            //testing.TriangleTest();
             //if (newNode[comp.body].pos is Vector2) System.Diagnostics.Debugger.Break();
+            //testing.TriangleTest2();
 
             newNode.OnSpawn();
             if (afterSpawnAction != null) afterSpawnAction(newNode);

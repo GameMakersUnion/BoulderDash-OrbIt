@@ -268,7 +268,7 @@ namespace OrbItProcs
         public override void Draw(SpriteBatch spritebatch)
         {
             Room room = parent.room;
-            float mapzoom = room.mapzoom;
+            float mapzoom = room.zoom;
 
             //int count = 0;
             //Queue<float> scales = parent.comps[comp.queuer].scales;
@@ -279,7 +279,7 @@ namespace OrbItProcs
             else
                 col = Color.White;
 
-            spritebatch.Draw(parent.getTexture(), parent.body.pos / mapzoom, null, col, 0, parent.TextureCenter(), (parent.body.scale / mapzoom) * 1.2f, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), (parent.body.scale * mapzoom) * 1.2f, SpriteEffects.None, 0);
 
             foreach (Node receiver in outgoing)
             {

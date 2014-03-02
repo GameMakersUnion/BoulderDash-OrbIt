@@ -94,7 +94,7 @@ namespace OrbItProcs
         public override void Draw(SpriteBatch spritebatch)
         {
             Room room = parent.room;
-            float mapzoom = room.mapzoom;
+            float mapzoom = room.zoom;
 
             Color col = new Color(0, 0, 0, 0.3f);
             
@@ -138,7 +138,7 @@ namespace OrbItProcs
                 }
                 if (!IsPolygon || (IsPolygon && parent.body.DrawCircle))
                 {
-                    spritebatch.Draw(parent.getTexture(), positions.ElementAt(i) / mapzoom, null, col, 0, parent.TextureCenter(), scales.ElementAt(i) / mapzoom, SpriteEffects.None, 0);
+                    spritebatch.Draw(parent.getTexture(), positions.ElementAt(i) * mapzoom, null, col, 0, parent.TextureCenter(), scales.ElementAt(i) * mapzoom, SpriteEffects.None, 0);
                 }
 
                 count++;
@@ -149,7 +149,7 @@ namespace OrbItProcs
             if (parent.comps.ContainsKey(comp.hueshifter)) col = parent.body.color;
             if (!IsPolygon || (IsPolygon && parent.body.DrawCircle))
             {
-                spritebatch.Draw(parent.getTexture(), parent.body.pos / mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
+                spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
             }
 
         }

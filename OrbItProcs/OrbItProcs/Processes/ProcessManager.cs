@@ -18,6 +18,7 @@ namespace OrbItProcs
         polygonspawner,
         mapeditor,
         graphdata,
+        cameracontrol,
 
     }
 
@@ -61,6 +62,7 @@ namespace OrbItProcs
             processDict.Add(proc.polygonspawner, new PolygonSpawner());
             processDict.Add(proc.mapeditor, new MapEditor(room.level));
             processDict.Add(proc.graphdata, new GraphData());
+            processDict.Add(proc.cameracontrol, new CameraControl(room.camera));
 
             activeInputProcess = processDict[proc.spawnnodes];
 
@@ -108,11 +110,14 @@ namespace OrbItProcs
             {
                 Keybindset.AddProcess(processDict[proc.graphdata]);//, KeySwitchMethod.Overwrite);
             });
+            //
+            Keybindset.AddProcess(processDict[proc.cameracontrol], false);
+
         }
 
         public void Update()
         {
-            foreach (Process p in processes)
+            /*foreach (Process p in processes)
             {
                 if (p.active)
                 {
@@ -120,7 +125,9 @@ namespace OrbItProcs
                 }
             }
             if (activeInputProcess != null)
-                activeInputProcess.OnUpdate();
+                activeInputProcess.OnUpdate();*/
+
+
 
         }
         

@@ -213,13 +213,14 @@ namespace OrbItProcs {
         public static Vector2 CENTER_TEXTURE = new Vector2(0.5f, 0.5f);
         public static void DrawLine(Room room, Vector2 start, Vector2 end, float thickness, Color color)
         {
-            float mapzoom = room.mapzoom;
+            float mapzoom = room.zoom;
             
             //Vector2 centerTexture = new Vector2(0.5f, 0.5f);
-            Vector2 diff = (end - start) / mapzoom;
+            Vector2 diff = (end - start) * mapzoom;
             Vector2 centerpoint = (end + start) / 2;
-            centerpoint /= mapzoom;
+            centerpoint *= mapzoom;
             float len = diff.Length();
+            thickness *= 2f * mapzoom;
             Vector2 scalevect = new Vector2(len, thickness);
             float testangle = (float)(Math.Atan2(diff.Y, diff.X));// + (Math.PI / 2));
 

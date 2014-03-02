@@ -103,6 +103,7 @@
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.configuration" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
@@ -131,7 +132,9 @@
     <Compile Include="Components\Drawers\ColorChanger.cs" />
     <Compile Include="Components\Drawers\ColorGravity.cs" />
     <Compile Include="Components\Scheduler.cs" />
+    <Compile Include="Framework\Camera.cs" />
     <Compile Include="Framework\Level.cs" />
+    <Compile Include="Processes\CameraControl.cs" />
     <Compile Include="Processes\GraphData.cs" />
     <Compile Include="Physics\Body.cs" />
     <Compile Include="Components\Drawers\BasicDraw.cs" />

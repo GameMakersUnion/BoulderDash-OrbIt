@@ -57,7 +57,7 @@ namespace OrbItProcs
             lineXScale = -1;
             lineYScale = -1;
             alphaFade = 0.1f;
-            beamRatio = 0.5f;
+            beamRatio = 0.7f;
         }
 
         public override void AfterCloning()
@@ -90,14 +90,14 @@ namespace OrbItProcs
         {
             //it would be really cool to have some kind of blending effects so that every combination of components will look diff
             Room room = parent.room;
-            float mapzoom = room.mapzoom;
+            float mapzoom = room.zoom;
             //Color col = new Color(0f, 0f, 0f);
 
             Queue<float> scales = parent.comps[comp.queuer].scales;
             //Queue<float> angles = parent.comps[comp.queuer].angles;
             Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
 
-            Vector2 screenPos = parent.body.pos / mapzoom;
+            Vector2 screenPos = parent.body.pos * mapzoom;
             Vector2 centerTexture = new Vector2(0.5f, 0.5f);
 
             Vector2 start = parent.body.pos;
@@ -144,9 +144,9 @@ namespace OrbItProcs
                 }
 
                 Vector2 diff = (end - start);
-                diff /= mapzoom;
+                diff *= mapzoom;
                 Vector2 centerpoint = (end + start) / 2;
-                centerpoint /= mapzoom;
+                centerpoint *= mapzoom;
                 float len = diff.Length();
                 Vector2 scalevect;
                 float xscale = len;
@@ -164,6 +164,9 @@ namespace OrbItProcs
                     
 
                 }
+                yscale *= 2 * mapzoom;
+                outerscale *= 2 * mapzoom;
+
                 scalevect = new Vector2(xscale, yscale);
 
                 float testangle = (float)(Math.Atan2(diff.Y, diff.X));// + (Math.PI / 2));
@@ -200,7 +203,7 @@ namespace OrbItProcs
                 int beamnum = 1;
                 for (int j = 0; j < beamnum; j++)
                 {
-                    beamdist = (outerscale + j * yscale) / 2f;
+                    beamdist = (outerscale * j + yscale) / 2f;
                     //coll = new Color(new Vector4(coll.R, coll.G, coll.B, coll.A) - new Vector4(5, 5, 5, 0));
                     spritebatch.Draw(parent.getTexture(textures.whitepixeltrans), centerpoint + diff * beamdist, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
                     spritebatch.Draw(parent.getTexture(textures.whitepixeltrans), centerpoint - diff * beamdist, null, /*parent.transform.color*/coll, testangle, centerTexture, scalevect, SpriteEffects.None, 0);

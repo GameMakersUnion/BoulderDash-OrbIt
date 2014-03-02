@@ -55,6 +55,17 @@ namespace OrbItProcs
             timerStarted = false;
         }
 
+        public void TriangleTest2()
+        {
+            float mod = 50;
+            for(int i = -200; i < 201; i++)
+            {
+                float output = DelegateManager.Triangle(i, mod);
+                Console.WriteLine("{0} :  {1}  =  {2}", i, mod, output);
+            }
+
+        }
+
         public static void TestHues()
         {
             //float hue = 0;
@@ -271,7 +282,7 @@ namespace OrbItProcs
             int mod = 10;
             for(int i = 0; i < 100; i++)
             {
-                Console.WriteLine("{0} : {1}", i, DelegateManager.TriangleFunction(i, mod));
+                Console.WriteLine("{0} : {1}", i, DelegateManager.Triangle(i, mod));
             }
 
         }

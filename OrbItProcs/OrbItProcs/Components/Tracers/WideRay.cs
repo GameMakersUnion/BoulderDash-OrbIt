@@ -83,14 +83,14 @@ namespace OrbItProcs
         public override void Draw(SpriteBatch spritebatch)
         {
             Room room = parent.room;
-            float mapzoom = room.mapzoom;
+            float mapzoom = room.zoom;
 
             Queue<float> scales = parent.comps[comp.queuer].scales;
             Queue<float> angles = parent.comps[comp.queuer].angles;
             Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
-            
 
-            Vector2 screenPos = parent.body.pos / mapzoom;
+
+            Vector2 screenPos = parent.body.pos * mapzoom;
             Vector2 centerTexture = new Vector2(0.5f, 0.5f);
 
             int count = 0;
@@ -99,13 +99,13 @@ namespace OrbItProcs
             for (int i = 0; i < min; i++)
             {
                 scalevect.X = scales.ElementAt(i) * 50;
-                spritebatch.Draw(parent.getTexture(textures.whitepixel), positions.ElementAt(i) / mapzoom, null, parent.body.color, angles.ElementAt(i), centerTexture, scalevect, SpriteEffects.None, 0);
+                spritebatch.Draw(parent.getTexture(textures.whitepixel), positions.ElementAt(i) * mapzoom, null, parent.body.color, angles.ElementAt(i), centerTexture, scalevect, SpriteEffects.None, 0);
                 count++;
             }
 
             float testangle = (float)(Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + (Math.PI / 2));
             scalevect.X = parent.body.scale * 50;
-            spritebatch.Draw(parent.getTexture(textures.whitepixel), parent.body.pos / mapzoom, null, parent.body.color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(textures.whitepixel), parent.body.pos * mapzoom, null, parent.body.color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
             
         }
 

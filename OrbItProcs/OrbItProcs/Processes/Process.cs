@@ -18,7 +18,7 @@ namespace OrbItProcs
         public Room room;
         public bool active { get; set; }
 
-        public event ProcessMethod Update;
+        public event Action Update;
         public event Action<SpriteBatch> Draw;
         public event ProcessMethod Create;
         public event ProcessMethod Destroy;
@@ -63,7 +63,8 @@ namespace OrbItProcs
                     p.OnUpdate();
                 }
             }
-            if (Update != null) Update(pargs);
+            if (Update != null) 
+                Update();
         }
         public void OnDraw(SpriteBatch batch)
         {

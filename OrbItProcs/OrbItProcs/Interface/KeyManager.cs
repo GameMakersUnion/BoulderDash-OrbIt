@@ -802,9 +802,9 @@ namespace OrbItProcs
         public Stack<KeyCodes> PressedKeysS = new Stack<KeyCodes>(); //max of three KeyMouse detected at a time
         public List<KeyCodes> PressedKeys = new List<KeyCodes>();
 
-        public KeyboardState newKeyboardState, oldKeyboardState;
+        public static KeyboardState newKeyboardState, oldKeyboardState;
 
-        public MouseState newMouseState, oldMouseState;
+        public static MouseState newMouseState, oldMouseState;
 
         public bool MouseInGameBox = false;
 
@@ -815,8 +815,8 @@ namespace OrbItProcs
         {
             this.ui = ui;
             //this.newKeyboardState = Keyboard.GetState();
-            this.oldKeyboardState = Keyboard.GetState();
-            this.oldMouseState = Mouse.GetState();
+            oldKeyboardState = Keyboard.GetState();
+            oldMouseState = Mouse.GetState();
 
             if (Keybinds != null)
             {
@@ -975,6 +975,16 @@ namespace OrbItProcs
                 ProcessKeyboard();
                 ProcessMouse();
                 ProcessHolds();
+            }
+
+            foreach(var p in PermanentProcesses)
+            {
+                //if (p.active)
+                    p.OnUpdate();
+            }
+            if (TemporaryProcess != null) // && TemporaryProcess.active
+            {
+                TemporaryProcess.OnUpdate();
             }
 
             oldKeyboardState = newKeyboardState;

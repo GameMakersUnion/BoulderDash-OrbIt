@@ -9,9 +9,10 @@ namespace OrbItProcs
 {
     public class BasicDraw : Component
     {
+        public bool DrawCircle { get; set; }
+        public bool DrawMirror { get; set; }
 
-        private bool _DrawCircle = true;
-        public bool DrawCircle { get { return _DrawCircle; } set { _DrawCircle = value; } }
+
 
         public BasicDraw() : this(null) { }
         public BasicDraw(Node parent = null) 
@@ -19,6 +20,8 @@ namespace OrbItProcs
             if (parent != null) this.parent = parent;
             com = comp.basicdraw; 
             methods = mtypes.draw;
+            DrawCircle = true;
+            DrawMirror = true;
         }
         
         public override void AffectSelf()
@@ -36,27 +39,24 @@ namespace OrbItProcs
             }
 
             Room room = parent.room;
-            float mapzoom = room.mapzoom;
+            float mapzoom = room.zoom;
 
-            if (parent.DebugFlag) System.Diagnostics.Debugger.Break();
-
-            //spritebatch.Draw()
             Texture2D tex = parent.getTexture();
-
-            Rectangle? sourceRect = null;
-            bool wrapDouble = false;
+            /*Rectangle? sourceRect = null;
             int minx = 0, miny = 0, maxx = tex.Width, maxy = tex.Height;
             bool needsModifying = false;
             if (parent.movement.active)
             {
                 if (parent.movement.mode == movemode.screenwrap)
                 {
+                    int offset = 5;
                     float tip = parent.body.pos.X - parent.body.radius;
+                    float radiusFactor = tex.Width / (parent.body.radius * 2f); //assuming texture width == height
                     if (tip < 0) //x
                     {
                         needsModifying = true;
-                        if (tip < -parent.body.radius) return;
-                        minx = (int)(-tip * parent.body.radius * 2 / tex.Width);
+                        if (tip < -parent.body.radius - offset) return;
+                        minx = (int)(-tip * radiusFactor);
                     }
                     else
                     {
@@ -64,16 +64,16 @@ namespace OrbItProcs
                         if (tip > room.worldWidth)
                         {
                             needsModifying = true;
-                            if (tip > room.worldWidth + parent.body.radius) return;
-                            maxx = maxx - (int)((tip - room.worldWidth) * parent.body.radius * 2 / tex.Width);
+                            if (tip > room.worldWidth + (parent.body.radius + offset)) return;
+                            maxx = maxx - (int)((tip - room.worldWidth) * radiusFactor);
                         }
                     }
                     tip = parent.body.pos.Y - parent.body.radius;
                     if (tip < 0) //y
                     {
                         needsModifying = true;
-                        if (tip < -parent.body.radius) return;
-                        miny = (int)(-tip * parent.body.radius * 2 / tex.Height);
+                        if (tip < -parent.body.radius - offset) return;
+                        miny = (int)(-tip * radiusFactor);
                     }
                     else
                     {
@@ -81,8 +81,8 @@ namespace OrbItProcs
                         if (tip > room.worldHeight)
                         {
                             needsModifying = true;
-                            if (tip > room.worldHeight + parent.body.radius) return;
-                            maxy = maxy - (int)((tip - room.worldHeight) * parent.body.radius * 2 / tex.Height);
+                            if (tip > room.worldHeight + (parent.body.radius + offset)) return;
+                            maxy = maxy - (int)((tip - room.worldHeight) * radiusFactor);
                         }
                     }
                     if (needsModifying)
@@ -98,15 +98,67 @@ namespace OrbItProcs
             }
             if (sourceRect != null)
             {
-                spritebatch.Draw(tex, (parent.body.pos + new Vector2(minx, miny)) / mapzoom, sourceRect, parent.body.color, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
+                float radiusFactor = tex.Width / (parent.body.radius * 2f);
+                spritebatch.Draw(tex, (parent.body.pos + new Vector2(minx, miny) / radiusFactor) * mapzoom, sourceRect, parent.body.color, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
+                if (DrawMirror)
+                {
+                    Rectangle old = (Rectangle)sourceRect;
+                    Rectangle mirror = new Rectangle(0, 0, tex.Width, tex.Height);
+                    Vector2 pos = parent.body.pos;
+                    if (old.Width != tex.Width)
+                    {
+                        if (old.X == 0) //actual node is on the right border
+                        {
+                            mirror.X = old.Width;
+                            pos.X = parent.body.pos.X - room.worldWidth;
+                        }
+                        else //actual node is on the left border
+                        {
+                            mirror.X = 0;
+                            pos.X = parent.body.pos.X + room.worldWidth;
+                        }
+                        mirror.Width = tex.Width - old.Width;
+                    }
+                    if (old.Height != tex.Height)
+                    {
+                        if (old.Y == 0) //actual node is on the bottom border
+                        {
+                            mirror.Y = old.Height;
+                            pos.Y = parent.body.pos.Y - room.worldHeight;
+                        }
+                        else //actual node is on the top border
+                        {
+                            mirror.Y = 0;
+                            pos.Y = parent.body.pos.Y + room.worldHeight;
+                        }
+                        mirror.Height = tex.Height - old.Height;
+                    }
+                    //mirror.X = old.X == 0 ? old.Width : 0; //actual node is at right or left border
+                    //mirror.Y = old.Y == 0 ? old.Height : 0; //actual node is at bottom or top border
+                    Vector2 newpos = pos + new Vector2(mirror.X, mirror.Y) / radiusFactor;
+                    bool widths = old.Width != tex.Width;
+                    bool heights = old.Height != tex.Height;
+                    if (widths || heights)
+                    {
+                        spritebatch.Draw(tex, newpos * mapzoom, mirror, parent.body.color, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
+                        if (widths && heights)
+                        {
+
+                        }
+                    }
+                    
+                }
             }
             else
             {
-                spritebatch.Draw(tex, parent.body.pos / mapzoom, sourceRect, parent.body.color, 0, parent.TextureCenter(), parent.body.scale / mapzoom, SpriteEffects.None, 0);
-            }
-            
-            
+                spritebatch.Draw(tex, parent.body.pos * mapzoom, sourceRect, parent.body.color, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
+            }*/
+
+
+            //spritebatch.Draw(tex, parent.body.pos * mapzoom, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
+            room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale);
         }
 
+        //public static void CameraDraw(this SpriteBatch batch, Texture2D tex, Vector2 position, )
     }
 }

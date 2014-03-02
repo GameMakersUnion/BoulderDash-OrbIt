@@ -159,17 +159,17 @@ namespace OrbItProcs.Components
                 b += colvelocity.Z / friction;
                 if (r > 1f || r < 0f)
                 {
-                    r = DelegateManager.TriangleFunction(r, 1f);
+                    r = DelegateManager.Triangle(r, 1f);
                     colvelocity.X *= -1;
                 }
                 if (g > 1f || g < 0f)
                 {
-                    g = DelegateManager.TriangleFunction(g, 1f);
+                    g = DelegateManager.Triangle(g, 1f);
                     colvelocity.Y *= -1;
                 }
                 if (b > 1f || b < 0f)
                 {
-                    b = DelegateManager.TriangleFunction(b, 1f);
+                    b = DelegateManager.Triangle(b, 1f);
                     colvelocity.Z *= -1;
                 }
                 parent.body.color = new Color(r, g, b);

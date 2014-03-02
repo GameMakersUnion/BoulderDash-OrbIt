@@ -184,7 +184,7 @@ namespace OrbItProcs
         public override void Draw(SpriteBatch spritebatch)
         {
             Room room = parent.room;
-            float mapzoom = room.mapzoom;
+            float mapzoom = room.zoom;
 
             //int count = 0;
             //Queue<float> scales = parent.comps[comp.queuer].scales;
@@ -196,7 +196,7 @@ namespace OrbItProcs
                 col = Color.Red;
 
 
-            spritebatch.Draw(parent.getTexture(), parent.body.pos / mapzoom, null, col, 0, parent.TextureCenter(), (parent.body.scale / mapzoom) * 1.2f, SpriteEffects.None, 0);
+            spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), (parent.body.scale * mapzoom) * 1.2f, SpriteEffects.None, 0);
 
             foreach (Node receiver in outgoing)
             {
@@ -226,7 +226,7 @@ namespace OrbItProcs
 
             //spriteBatch.Begin();
 
-            spritebatch.DrawString(room.game.font, gatestring, parent.body.pos/mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            spritebatch.DrawString(room.game.font, gatestring, parent.body.pos * mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
             //spriteBatch.DrawString(spriteFont, fps, new Vector2(1, 1), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
             //spritebatch.DrawString(room.game.font, gatestring, new Vector2(2, Game1.sHeight - 40), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
 
