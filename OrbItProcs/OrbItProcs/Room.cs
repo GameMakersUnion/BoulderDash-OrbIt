@@ -19,6 +19,8 @@ namespace OrbItProcs {
         whitecircle,
         whitepixel,
         whitepixeltrans,
+        blackorb,
+        whitesphere,
     }
 
     
@@ -90,7 +92,12 @@ namespace OrbItProcs {
         public Node targetNodeGraphic { get; set; }
 
         [Polenter.Serialization.ExcludeFromSerialization]
-        public Player player1 { get; set; }
+        //public Player player1 { get; set; }
+        public HashSet<Player> players { get; set; }
+        public IEnumerable<Node> playerNodes { get { return players.Select<Player, Node>(p => p.node); } }
+
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public Scheduler scheduler { get; set; }
 
         public float zoom { get { return camera.zoom; } set { camera.zoom = value; } }
 
@@ -111,6 +118,7 @@ namespace OrbItProcs {
             CollisionSet = new HashSet<Node>();
             colIterations = 1;
             camera = new Camera(this, 0.5f);
+            scheduler = new Scheduler();
         }
 
         public Room(Game1 game, int worldWidth, int worldHeight) : this()
@@ -127,7 +135,9 @@ namespace OrbItProcs {
             DrawLinks = true;
             WallWidth = 10;
             camera = new Camera(this, 0.5f);
+            scheduler = new Scheduler();
 
+            players = new HashSet<Player>();
 
         }
         
@@ -192,6 +202,12 @@ namespace OrbItProcs {
             updateTargetNodeGraphic();
 
             //player1.Update(gametime);
+            foreach(var player in players)
+            {
+                player.Update(gametime);
+            }
+
+            scheduler.AffectSelf();
         }
 
         public void UpdateCollision()
@@ -319,7 +335,7 @@ namespace OrbItProcs {
         public void MakeWalls()
         {
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>() {
-                    { node.position, new Vector2(0, 0) },
+                    { nodeE.position, new Vector2(0, 0) },
                     { comp.basicdraw, true },
                     { comp.collision, true },
                     //{ comp.movement, true },

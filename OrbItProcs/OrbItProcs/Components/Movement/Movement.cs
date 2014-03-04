@@ -46,6 +46,7 @@ namespace OrbItProcs
             if (Game1.Debugging && parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
             if (Game1.Debugging && parent.body.force.IsFucked()) System.Diagnostics.Debugger.Break();
 
+            if (!active) return;
             if (parent.body.invmass == 0)
                 return;
 
@@ -86,7 +87,7 @@ namespace OrbItProcs
             if (mode == movemode.falloff)    fallOff();
             if (mode == movemode.halt) halt();
 
-            GraphData.AddFloat(parent.body.pos.X);
+            //GraphData.AddFloat(parent.body.pos.X);
 
             //Trippy();
         }

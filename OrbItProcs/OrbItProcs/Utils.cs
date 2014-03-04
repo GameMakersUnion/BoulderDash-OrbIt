@@ -227,8 +227,12 @@ namespace OrbItProcs {
             //diff.Normalize();
             //diff = new Vector2(diff.Y, diff.X);
 
-            room.game.spriteBatch.Draw(room.game.textureDict[textures.whitepixel], centerpoint, null, color, testangle, CENTER_TEXTURE, scalevect, SpriteEffects.None, 0);
+            //room.game.spriteBatch.Draw(room.game.textureDict[textures.whitepixel], centerpoint, null, color, testangle, CENTER_TEXTURE, scalevect, SpriteEffects.None, 0);
 
+
+
+
+            room.camera.Draw(room.game.textureDict[textures.whitepixel], centerpoint, null, color, testangle, room.game.textureCenters[textures.whitepixel], scalevect, SpriteEffects.None, 0);
         }
 
         public static bool checkCollision(Node o1, Node o2)
@@ -310,7 +314,7 @@ namespace OrbItProcs {
                     if (target.CheckData<bool>("infected")) return;
                     if (target.comps.ContainsKey(comp.scheduler))
                     {
-                        target.GetComponent<Scheduler>().doAfterXSeconds(doAfter, Utils.random.Next(5000));
+                        target.GetComponent<Scheduler>().doAfterXMilliseconds(doAfter, Utils.random.Next(5000));
                         target.SetData("infected", true);
                     }
                 };

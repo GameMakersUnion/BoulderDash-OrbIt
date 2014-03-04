@@ -15,7 +15,7 @@ using System.Collections.Specialized;
 
 namespace OrbItProcs {
 
-    public enum node {
+    public enum nodeE {
         active,
         position,
         velocity,
@@ -159,6 +159,9 @@ namespace OrbItProcs {
         public List<comp> compsToRemove = new List<comp>();
         public List<comp> compsToAdd = new List<comp>();
 
+        private HashSet<string> _tags = new HashSet<string>();
+        public HashSet<string> tags { get { return _tags; } set { _tags = value; } }
+
         public Body body;
         public Body BODY
         {
@@ -253,6 +256,15 @@ namespace OrbItProcs {
         public event Action<Node> OnCollisionFirst;
         public event Action<Node> OnCollisionNone;
 
+        public void ClearCollisionHandlers()
+        {
+            OnCollision -= OnCollision;
+            OnCollisionStart -= OnCollisionStart;
+            OnCollisionEnd -= OnCollisionEnd;
+            OnCollisionFirst -= OnCollisionFirst;
+            OnCollisionNone -= OnCollisionNone;
+        }
+
         public bool HasCollision()
         {
             return OnCollision != null;
@@ -309,20 +321,20 @@ namespace OrbItProcs {
             }
         }
 
-        public void storeInInstance(node val, Dictionary<dynamic,dynamic> dict)
+        public void storeInInstance(nodeE val, Dictionary<dynamic,dynamic> dict)
         {
-            if (val == node.active)             active                      = dict[val];
-            if (val == node.position)           body.pos          = dict[val];
-            if (val == node.velocity)           body.velocity          = dict[val];
-            if (val == node.multiplier)         multiplier                  = dict[val];
-            if (val == node.effectiveRadius)    effectiveRadius             = dict[val];
-            if (val == node.radius)             body.radius            = dict[val];
-            if (val == node.mass)               body.mass              = dict[val];
-            if (val == node.scale)              body.scale             = dict[val];
-            if (val == node.texture)            body.texture           = dict[val];
-            if (val == node.name)               name                        = dict[val];
-            if (val == node.lifetime)           lifetime                    = dict[val];
-            if (val == node.color)              body.color             = dict[val];
+            if (val == nodeE.active)             active                      = dict[val];
+            if (val == nodeE.position)           body.pos          = dict[val];
+            if (val == nodeE.velocity)           body.velocity          = dict[val];
+            if (val == nodeE.multiplier)         multiplier                  = dict[val];
+            if (val == nodeE.effectiveRadius)    effectiveRadius             = dict[val];
+            if (val == nodeE.radius)             body.radius            = dict[val];
+            if (val == nodeE.mass)               body.mass              = dict[val];
+            if (val == nodeE.scale)              body.scale             = dict[val];
+            if (val == nodeE.texture)            body.texture           = dict[val];
+            if (val == nodeE.name)               name                        = dict[val];
+            if (val == nodeE.lifetime)           lifetime                    = dict[val];
+            if (val == nodeE.color)              body.color             = dict[val];
         }
         //these comes will allow eachother's draws to be called (all 4 could draw at once)
         public static List<comp> drawPropsSuper = new List<comp>()
@@ -383,7 +395,7 @@ namespace OrbItProcs {
                     fetchComponent(p, userProps[p]);
                 }
                 // if the key is a node type, we need to update the instance variable value
-                else if (p is node)
+                else if (p is nodeE)
                     storeInInstance(p, userProps);
             }
             SortComponentLists();
@@ -412,8 +424,17 @@ namespace OrbItProcs {
             DataStore[key] = data;
         }
 
+        public void AddTag(string tag)
+        {
+            tags.Add(tag);
+        }
+        public void RemoveTag(string tag)
+        {
+            tags.Remove(tag);
+        }
         public virtual void Update(GameTime gametime)
         {
+            collision.ClearCollisionList();
             if (nodeState == state.off || nodeState == state.drawOnly) return;
 
             if (aOtherProps.Count > 0)
@@ -455,7 +476,8 @@ namespace OrbItProcs {
                     }
                 }
             }
-            collision.ClearCollisionList();
+
+            
 
             if (OnAffectOthers != null) OnAffectOthers.Invoke(this, null);
 
@@ -553,7 +575,7 @@ namespace OrbItProcs {
             foreach (dynamic p in userProps.Keys)
             {
                 // if the key is a node type, (and not a bool) we need to update the instance variable value
-                if (p is node)// && !(userProps[p] is bool))
+                if (p is nodeE)// && !(userProps[p] is bool))
                     storeInInstance(p, userProps);
                 // if the key is a comp type, we need to add the component to comps dict
                 if (p is comp)

@@ -21,7 +21,7 @@ namespace OrbItProcs
         static bool activated = false;
         static Vector2 min = Vector2.Zero;
         static Vector2 max = Vector2.Zero;
-        static float roundFactor = 4f;
+        static float roundFactor = 1f;
         public static Dictionary<float, int> floatData = new Dictionary<float, int>();
 
         

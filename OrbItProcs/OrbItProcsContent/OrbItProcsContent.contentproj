@@ -91,6 +91,21 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="coin.wav">
+      <Name>coin</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="croc.wav">
+      <Name>croc</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="fanfare.wav">
+      <Name>fanfare</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
     <Content Include="Skins\Default.skin">
       <Name>Default</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

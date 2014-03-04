@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.ObjectModel;
+using Microsoft.Xna.Framework.Audio;
 
 namespace OrbItProcs
 {
@@ -18,6 +19,9 @@ namespace OrbItProcs
 
     public class Scheduler : Component
     {
+        public static SoundEffect start;
+        public static SoundEffect end;
+        public static SoundEffect fanfare;
         public override bool active
         {
             get
@@ -40,6 +44,9 @@ namespace OrbItProcs
         public Scheduler() : this(null) { }
         public Scheduler(Node parent = null)
         {
+            start = Program.getGame().Content.Load<SoundEffect>("croc");
+            end = Program.getGame().Content.Load<SoundEffect>("coin");
+            fanfare = Program.getGame().Content.Load<SoundEffect>("fanfare");
             if (parent != null) this.parent = parent;
             com = comp.scheduler;
             methods = mtypes.affectself;
@@ -83,20 +90,35 @@ namespace OrbItProcs
             }
             if (sort)
             {
-                appointments.OrderBy(a => a.scheduledTime);
+                SortAppointments();    //appointments.OrderBy(a => a.scheduledTime);
             }
         }
-        public void doAfterXSeconds(Action<Node> action, int X){
+        public void doAfterXMilliseconds(Action<Node> action, int X, bool playSound = false)
+        {
+            if (playSound) start.Play();
             AppointmentDelegate a = delegate(Node n, Dictionary<string, dynamic> d) { action(n); };
-            Appointment appt = new Appointment(a, X);
-            AddAppointment(appt);
+            Appointment appt = new Appointment(a, X, playSound: playSound);
             appt.SetTimer();
+            AddAppointment(appt);
+            
+        }
+        public void doEveryXMilliseconds(Action<Node> action, int X, bool playSound = false)
+        {
+            if (playSound) start.Play();
+            AppointmentDelegate a = delegate(Node n, Dictionary<string, dynamic> d) { action(n); };
+            Appointment appt = new Appointment(a, X, infinite: true, playSound: playSound);
+            appt.SetTimer();
+            AddAppointment(appt);
+        }
+        public void SortAppointments()
+        {
+            appointments = appointments.OrderBy(a => a.scheduledTime).ToList();
         }
 
         public void AddAppointment(Appointment app)
         {
             appointments.Add(app);
-            appointments.OrderBy(a => a.scheduledTime);
+            SortAppointments();
         }
         public void RemoveAppointment(Appointment app)
         {
@@ -126,12 +148,13 @@ namespace OrbItProcs
     {
         public List<AppointmentDelegate> actions { get; set; }
         public bool infinite { get; set; }
+        public bool playSound { get; set; }
         public int repetitions { get; set; }
         public int interval { get; set; }
         public Dictionary<string, dynamic> dataStore { get; set; }
         public long scheduledTime { get; set; }
 
-        public Appointment(AppointmentDelegate action, int interval, int repetitions = 1, bool infinite = false, Dictionary<string, dynamic> dataStore = null)
+        public Appointment(AppointmentDelegate action, int interval, int repetitions = 1, bool infinite = false, Dictionary<string, dynamic> dataStore = null, bool playSound = false)
         {
             actions = new List<AppointmentDelegate>();
             if (action != null) actions.Add(action);
@@ -140,10 +163,13 @@ namespace OrbItProcs
             this.dataStore = dataStore;
             this.interval = interval;
             this.scheduledTime = -1;
+            this.playSound = playSound;
         }
 
         public void InvokeAppointment(Node n)
         {
+            if (playSound) {
+                Scheduler.end.Play(); }
             foreach(var a in actions)
             {
                 a(n, dataStore);

@@ -105,6 +105,7 @@ namespace OrbItProcs {
         {
             ProcessKeyboard();
             ProcessMouse();
+            ProcessController();
 
             //game.testing.KeyManagerTest(() => Keybindset.Update());
             keyManager.Update();
@@ -170,6 +171,13 @@ namespace OrbItProcs {
                 }
             }
             return found;
+        }
+
+        public void ProcessController()
+        {
+            //GamePad.SetVibration(PlayerIndex.Two, 0.1f, 0.9f);
+            //System.Console.WriteLine(GamePad.GetState(PlayerIndex.Two).ThumbSticks.Left.X);
+            //GraphData.AddFloat(GamePad.GetState(PlayerIndex.Two).ThumbSticks.Left.X * 10);
         }
 
         public void ProcessMouse()

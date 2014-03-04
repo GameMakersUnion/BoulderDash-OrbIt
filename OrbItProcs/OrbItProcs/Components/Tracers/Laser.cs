@@ -88,6 +88,105 @@ namespace OrbItProcs
         }
         public override void Draw(SpriteBatch spritebatch)
         {
+            Room room = parent.room;
+            //float mapzoom = room.zoom;
+
+            Queue<float> scales = parent.comps[comp.queuer].scales;
+            Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
+
+            //Vector2 pos = parent.body.pos;
+            //Vector2 centerTexture = new Vector2(0.5f, 0.5f);
+
+            Vector2 start = parent.body.pos;
+            Vector2 end = Vector2.Zero;
+            int count = 0;
+
+            int min = Math.Min(positions.Count, scales.Count);
+            for (int i = 1; i <= min; i++)
+            {
+                start = positions.ElementAt(i - 1);
+                if (i == positions.Count) end = parent.body.pos;
+                else end = positions.ElementAt(i);
+
+                //don't draw lines from screen edge to edge if screenwrapping
+                if (parent.movement.mode == movemode.screenwrap)
+                {
+                    float diffx = end.X - start.X;
+                    if (diffx > room.worldWidth / 2)
+                    {
+                        start.X += room.worldWidth;
+                    }
+                    else if (diffx < -room.worldWidth / 2)
+                    {
+                        start.X -= room.worldWidth;
+                    }
+                    float diffy = end.Y - start.Y;
+                    if (diffy > room.worldHeight / 2)
+                    {
+                        start.Y += room.worldHeight;
+                    }
+                    else if (diffy < -room.worldHeight / 2)
+                    {
+                        start.Y -= room.worldHeight;
+                    }
+                }
+
+                Vector2 diff = (end - start);
+                Vector2 centerpoint = (end + start) / 2;
+                float len = diff.Length();
+                Vector2 scalevect;
+                float xscale = len;
+                float yscale = scales.ElementAt(i - 1) * 3;
+                float outerscale = yscale;
+                float beamdist = 1f;
+                if (lineXScale >= 0)
+                {
+                    xscale = lineXScale;
+                }
+                if (lineYScale >= 0)
+                {
+                    yscale = lineYScale;
+                    outerscale = yscale * beamRatio;
+
+
+                }
+
+                scalevect = new Vector2(xscale, yscale);
+
+                float testangle = (float)(Math.Atan2(diff.Y, diff.X));
+
+                diff.Normalize();
+                diff = new Vector2(-diff.Y, diff.X);
+
+                //uncommet later when not using direction based color shit
+                Color coll;
+                if (IsColorByAngle)
+                {
+                    int[] collarr = HueShifter.getColorsFromAngle((testangle + (float)Math.PI) * (float)(180 / Math.PI));
+                    coll = new Color(collarr[0], collarr[1], collarr[2]);
+                }
+                else
+                {
+                    coll = parent.body.color;
+                }
+
+                room.camera.Draw(textures.whitepixeltrans, centerpoint, new Color(255, 255, 255, coll.A), scalevect, testangle);
+
+                scalevect.Y = outerscale * 0.9f;
+                int beamnum = 1;
+                for (int j = 0; j < beamnum; j++)
+                {
+                    beamdist = (outerscale * j + yscale) / 2f;
+                    room.camera.Draw(textures.whitepixeltrans, centerpoint + diff * beamdist, coll, scalevect, testangle);
+                    room.camera.Draw(textures.whitepixeltrans, centerpoint - diff * beamdist, coll, scalevect, testangle);
+                }
+                count++;
+            }
+
+        }
+
+        public void DrawOld(SpriteBatch spritebatch)
+        {
             //it would be really cool to have some kind of blending effects so that every combination of components will look diff
             Room room = parent.room;
             float mapzoom = room.zoom;

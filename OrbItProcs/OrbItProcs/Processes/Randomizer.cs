@@ -38,7 +38,7 @@ namespace OrbItProcs
             Dictionary<dynamic, dynamic> dict = savedDicts.ElementAt(savedDicts.Count - queuePos - 1);
             Group g = savedGroups.ElementAt(savedDicts.Count - queuePos - 1);
 
-            dict[node.position] = UserInterface.WorldMousePos;
+            dict[nodeE.position] = UserInterface.WorldMousePos;
 
             Node n = room.game.spawnNode(dict, blank: true, lifetime: 5000);
             if (n != null) g.entities.Add(n);
@@ -71,7 +71,7 @@ namespace OrbItProcs
 
             //new node(s)
             Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
-                                { node.position, pos },
+                                { nodeE.position, pos },
             };
             HashSet<comp> comps = new HashSet<comp>() { comp.basicdraw, comp.randcolor, comp.movement, comp.lifetime };
             HashSet<comp> allComps = new HashSet<comp>();

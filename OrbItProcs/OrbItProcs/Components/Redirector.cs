@@ -207,7 +207,6 @@ namespace OrbItProcs
             // Convert the slow MethodInfo into a fast, strongly typed, open delegate
             Func<TTarget, TReturn> func = (Func<TTarget, TReturn>)Delegate.CreateDelegate
                 (typeof(Func<TTarget, TReturn>), method);
-
             // Now create a more weakly typed delegate which will call the strongly typed one
             Func<object, object> ret = (object target) => func((TTarget)target);
             return ret;
@@ -330,32 +329,36 @@ namespace OrbItProcs
                 Type[] types = new Type[] { type, info.PropertyType };
                 if (!getters[type].ContainsKey(info.Name))
                 {
-                    MethodInfo getmethod = info.GetGetMethod();
-                    
-                    
-                    if (getmethod != null)
+                    try
                     {
-                        Type methodtype = Expression.GetFuncType(types);
-                        //getters[type][info.Name] = Delegate.CreateDelegate(methodtype, getmethod);
-                        Delegate get = Delegate.CreateDelegate(methodtype, getmethod);
-                        getters[type][info.Name] = MagicFunc(get.Method);
+                        MethodInfo getmethod = info.GetGetMethod();
 
-                        
+                        if (getmethod != null)
+                        {
+                            Type methodtype = Expression.GetFuncType(types);
+                            //getters[type][info.Name] = Delegate.CreateDelegate(methodtype, getmethod);
+                            Delegate get = Delegate.CreateDelegate(methodtype, getmethod);
+                            getters[type][info.Name] = MagicFunc(get.Method);
+                        }
                     }
+                    catch { }
                 }
                 if (!setters[type].ContainsKey(info.Name))
                 {
-                    MethodInfo setmethod = info.GetSetMethod();
-                    if (setmethod != null)
+                    try
                     {
-                        Type methodtype = Expression.GetActionType(types);
-                        //setters[type][info.Name] = Delegate.CreateDelegate(methodtype, setmethod);
-                        Delegate set = Delegate.CreateDelegate(methodtype, setmethod);
-                        setters[type][info.Name] = MagicAction(set.Method);
-                        if (type == typeof(Movement))
-                            Console.WriteLine(propertyinfos);
-                        
+                        MethodInfo setmethod = info.GetSetMethod();
+                        if (setmethod != null)
+                        {
+                            Type methodtype = Expression.GetActionType(types);
+                            //setters[type][info.Name] = Delegate.CreateDelegate(methodtype, setmethod);
+                            Delegate set = Delegate.CreateDelegate(methodtype, setmethod);
+                            setters[type][info.Name] = MagicAction(set.Method);
+                            //if (type == typeof(Movement))
+                            //    Console.WriteLine(propertyinfos);
+                        }
                     }
+                    catch { }
                 }
             }
 

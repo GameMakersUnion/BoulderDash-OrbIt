@@ -87,6 +87,19 @@ namespace OrbItProcs {
                 //todo:make dynamic string handling
             }
 
+
+            //draw player scores
+            Vector2 pos = new Vector2(2, 2);
+            foreach(var p in room.players)
+            {
+                string score = (p.score / 100f).ToString();
+                spriteBatch.DrawString(spriteFont, score, pos, p.pColor, 0f, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
+                spriteBatch.DrawString(spriteFont, score, new Vector2(pos.X - 1, pos.Y - 1), p.pColor, 0f, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
+                pos.X += 100;
+
+            }
+
+
             //spriteBatch.DrawString(spriteFont, fpsups, new Vector2(Game1.sWidth - 100, Game1.sHeight - 70), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
 
         }

@@ -216,8 +216,8 @@ namespace OrbItProcs
                             //{ comp.hueshifter, true },
                             //{ comp.phaseorb, true },
                             //{ comp.collision, false },
-                            { node.position, positionToSpawn },
-                            { node.velocity, diff },
+                            { nodeE.position, positionToSpawn },
+                            { nodeE.velocity, diff },
                         };
 
                 if (UserInterface.oldKeyBState.IsKeyDown(Keys.LeftControl))

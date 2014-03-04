@@ -9,9 +9,15 @@ namespace OrbItProcs
 {
     public class Collision : Component, ILinkable
     {
-        public HashSet<Node> collisions1= new HashSet<Node>();
+        public HashSet<Node> collisions1 = new HashSet<Node>();
         public HashSet<Node> collisions2 = new HashSet<Node>();
-        private bool isCollisions1 = true;
+        public HashSet<Node> currentCollision { get { 
+            return currentIsCol1 ? collisions1 : collisions2; 
+        } set { } }
+        public HashSet<Node> previousCollision { get { 
+            return !currentIsCol1 ? collisions1 : collisions2; 
+        } set { } }
+        private bool currentIsCol1 = true;
 
         public static Action<Manifold, Body, Body>[,] Dispatch = new Action<Manifold, Body, Body>[2, 2]
         {
@@ -92,8 +98,10 @@ namespace OrbItProcs
                         bool parentstart = parent.HasCollisionStart();
                         if (parentstart || parent.HasCollisionEnd() || parent.HasCollisionFirst() || parent.HasCollisionNone())
                         {
-                            HashSet<Node> lastframe = isCollisions1 ? collisions1 : collisions2;
-                            HashSet<Node> thisframe = !isCollisions1 ? collisions1 : collisions2;
+                            //HashSet<Node> lastframe = currentIsCol1 ? collisions1 : collisions2;
+                            //HashSet<Node> thisframe = !currentIsCol1 ? collisions1 : collisions2;
+                            HashSet<Node> lastframe = previousCollision;
+                            HashSet<Node> thisframe = currentCollision;
                             thisframe.Add(other);
                             if (!lastframe.Contains(other) && parentstart)
                             {
@@ -108,8 +116,10 @@ namespace OrbItProcs
                         bool otherstart = other.HasCollisionStart();
                         if (otherstart || other.HasCollisionEnd() || other.HasCollisionFirst() || other.HasCollisionNone())
                         {
-                            HashSet<Node> lastframe = other.collision.isCollisions1 ? other.collision.collisions1 : other.collision.collisions2;
-                            HashSet<Node> thisframe = !other.collision.isCollisions1 ? other.collision.collisions1 : other.collision.collisions2;
+                            //HashSet<Node> lastframe = other.collision.currentIsCol1 ? other.collision.collisions1 : other.collision.collisions2;
+                            //HashSet<Node> thisframe = !other.collision.currentIsCol1 ? other.collision.collisions1 : other.collision.collisions2;
+                            HashSet<Node> lastframe = other.collision.previousCollision;
+                            HashSet<Node> thisframe = other.collision.currentCollision;
                             thisframe.Add(parent);
                             if (!lastframe.Contains(parent) && otherstart)
                             {
@@ -129,8 +139,10 @@ namespace OrbItProcs
         public void ClearCollisionList()
         {
             if (!active) return;
-            HashSet<Node> lastframe = isCollisions1 ? collisions1 : collisions2;
-            HashSet<Node> thisframe = !isCollisions1 ? collisions1 : collisions2;
+            //HashSet<Node> lastframe = isCollisions1 ? collisions1 : collisions2;
+            //HashSet<Node> thisframe = !isCollisions1 ? collisions1 : collisions2;
+            HashSet<Node> lastframe = previousCollision;
+            HashSet<Node> thisframe = currentCollision;
 
             if (parent.HasCollisionFirst() && lastframe.Count == 0 && thisframe.Count > 0)
             {
@@ -149,7 +161,7 @@ namespace OrbItProcs
                 }
                 lastframe.Remove(n);
             }
-            isCollisions1 = !isCollisions1;
+            currentIsCol1 = !currentIsCol1;
         }
 
 

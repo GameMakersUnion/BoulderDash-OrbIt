@@ -24,8 +24,8 @@ namespace OrbItProcs
         {
             room = Program.getRoom();
 
-            //Redirector.PopulateDelegatesAll();
-            //redirector = new Redirector();
+            Redirector.PopulateDelegatesAll();
+            redirector = new Redirector();
 
             //obints.CollectionChanged += (s, e) => { };
         }
@@ -53,6 +53,16 @@ namespace OrbItProcs
             if (mill < 0) mill += 1000;
             Console.WriteLine(" {0}: {1}", message, mill);
             timerStarted = false;
+        }
+
+        public void NotEvenOnce()
+        {
+            Action<string> d = StopTimer;
+            Action<string> dd = (Action<string>)Delegate.CreateDelegate(typeof(Action<string>), d.Method);
+            Type t = typeof(Node);
+            MethodInfo mi = t.GetMethod("RemoveTag");
+            Collision col = new Collision();
+            //dynamic meth = Delegate.CreateDelegate(mi.)
         }
 
         public void TriangleTest2()
@@ -287,6 +297,32 @@ namespace OrbItProcs
 
         }
 
+        public void TestRedirect()
+        {
+
+            Movement move = new Movement();
+            Collision col = new Collision();
+            Node nod = new Node();
+            move.active = true;
+            col.active = true;
+            nod.active = true;
+
+            Console.WriteLine(move.active + " " + col.active + " " + nod.active);
+
+            
+
+            redirector.AssignObjectToPropertySet("active", move);
+            redirector.active = false;
+
+            redirector.AssignObjectToPropertySet("active", col);
+            redirector.active = false;
+
+            redirector.AssignObjectToPropertySet("active", nod);
+            redirector.active = false;
+
+            Console.WriteLine(move.active + " " + col.active + " " + nod.active);
+
+        }
 
         public void TestOnClick()
         {

@@ -177,12 +177,14 @@ namespace OrbItProcs
         {
             if (!Directory.Exists(filepath)) Directory.CreateDirectory(filepath);
             textureDict = new Dictionary<textures, Texture2D>(){
-            {textures.blueorb, Content.Load<Texture2D>("Textures/bluesphere"        )},
-            {textures.whiteorb, Content.Load<Texture2D>("Textures/blackorb"      )},
-            {textures.colororb, Content.Load<Texture2D>("Textures/colororb"         )},
-            {textures.whitepixel, Content.Load<Texture2D>("Textures/whitepixel"     )},
+            {textures.blueorb, Content.Load<Texture2D>("Textures/bluesphere"            )},
+            {textures.whiteorb, Content.Load<Texture2D>("Textures/whiteorb"             )},
+            {textures.colororb, Content.Load<Texture2D>("Textures/colororb"             )},
+            {textures.whitepixel, Content.Load<Texture2D>("Textures/whitepixel"        )},
             {textures.whitepixeltrans, Content.Load<Texture2D>("Textures/whitepixeltrans")},
-            {textures.whitecircle, Content.Load<Texture2D>("Textures/whitecircle"   )}};
+            {textures.whitecircle, Content.Load<Texture2D>("Textures/whitecircle"   )},
+            {textures.whitesphere, Content.Load<Texture2D>("Textures/whitesphere"   )},
+            {textures.blackorb, Content.Load<Texture2D>("Textures/blackorb"   )}};
 
             textureCenters = new Dictionary<textures, Vector2>();
             foreach(var tex in textureDict.Keys)
@@ -199,8 +201,8 @@ namespace OrbItProcs
             processManager = new ProcessManager(room);
             #region ///Default User props///
             Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {
-                    { node.position, new Vector2(0, 0) },
-                    { node.texture, textures.whitecircle },
+                    { nodeE.position, new Vector2(0, 0) },
+                    { nodeE.texture, textures.whitecircle },
                     //{ node.radius, 50 },
                     { comp.basicdraw, true },
                     { comp.collision, true },
@@ -261,7 +263,7 @@ namespace OrbItProcs
 
             
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
-                    { comp.basicdraw, true }, { node.texture, textures.whitecircle } };
+                    { comp.basicdraw, true }, { nodeE.texture, textures.whitecircle } };
 
             room.targetNodeGraphic = new Node(userPropsTarget);
             room.targetNodeGraphic.name = "TargetNodeGraphic";
@@ -281,9 +283,14 @@ namespace OrbItProcs
             ui.sidebar.cbGroupT.ItemIndex = 2;
             InitializePresets();
 
-            room.player1 = new Player();
-            room.player1.body.pos = new Vector2(100, 100);
-            processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
+            //room.player1 = new Player();
+            //room.player1.body.pos = new Vector2(100, 100);
+            //processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
+
+            for (int i = 1; i < 5; i++)
+            {
+                room.players.Add(new Player(i));
+            }
 
             processManager.SetProcessKeybinds(ui.keyManager);
             ui.keyManager.addProcessKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
@@ -406,7 +413,7 @@ namespace OrbItProcs
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (!IsActive) return;
+            
             GlobalGameTime = gameTime;
             base.Update(gameTime);
 
@@ -424,7 +431,7 @@ namespace OrbItProcs
                 room.gridSystemLines = new List<Microsoft.Xna.Framework.Rectangle>();
             }
 
-            ui.Update(gameTime);
+            if (IsActive) ui.Update(gameTime);
         }
         /// <summary>
         /// This is called when the game should draw itself.
@@ -432,7 +439,7 @@ namespace OrbItProcs
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            if (!IsActive) return;
+            //if (!IsActive) return;
             Manager.BeginDraw(gameTime);
             base.Draw(gameTime);
 
@@ -515,6 +522,7 @@ namespace OrbItProcs
 
             //newNode.OnCollisionFirst += first;
             //newNode.OnCollisionNone += none;
+            //newNode.OnCollisionEnd += (mm, mmm) => { };
 
             AssignColor(activegroup, newNode);
             return SpawnNodeHelper(newNode, afterSpawnAction, activegroup, lifetime);
@@ -525,6 +533,7 @@ namespace OrbItProcs
         {
             //if (newNode[comp.body].pos is Vector2) System.Diagnostics.Debugger.Break();
             //testing.TriangleTest2();
+            //testing.TestRedirect();
 
             newNode.OnSpawn();
             if (afterSpawnAction != null) afterSpawnAction(newNode);
@@ -541,12 +550,20 @@ namespace OrbItProcs
             return newNode;
         }
 
-        public void spawnNode(int worldMouseX, int worldMouseY)
+        public Node spawnNode()
         {
             Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
-                                { node.position, new Vector2(worldMouseX,worldMouseY) },
+                                { nodeE.position, UserInterface.WorldMousePos },
             };
-            spawnNode(userP);
+            return spawnNode(userP);
+        }
+
+        public Node spawnNode(int worldMouseX, int worldMouseY)
+        {
+            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
+                                { nodeE.position, new Vector2(worldMouseX,worldMouseY) },
+            };
+            return spawnNode(userP);
         }
 
         public void AssignColor(Group activegroup, Node newNode)
