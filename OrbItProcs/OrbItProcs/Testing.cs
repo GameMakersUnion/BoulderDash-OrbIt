@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Diagnostics;
 
 
 using System.Reflection;
@@ -20,6 +20,29 @@ namespace OrbItProcs
         public static DateTime before;
         public static bool timerStarted = false;
 
+        public static int count = 0;
+        public static int modcount = 10;
+        public static bool usingMod = true;
+        [DoNotInspect]
+        //public static Stopwatch this[string name]
+        //{
+        //    get
+        //    {
+        //        if (!stopwatches.ContainsKey(name)) stopwatches[name] = new Stopwatch();
+        //        return stopwatches[name];
+        //    }
+        //    set
+        //    {
+        //        stopwatches[name] = value;
+        //    }
+        //}
+
+        public static Stopwatch stopwatch = new Stopwatch();
+        public static Stopwatch dummy = new Stopwatch();
+
+        public static Dictionary<string, Stopwatch> stopwatches = new Dictionary<string, Stopwatch>();
+        //public static Dictionary<string, bool> timerStarteds = new Dictionary<string, bool>();
+
         public Testing()
         {
             room = Program.getRoom();
@@ -34,15 +57,43 @@ namespace OrbItProcs
         public HashSet<int> hints = new HashSet<int>();
         public List<int> lints = new List<int>();
         public ObservableCollection<int> oblist = new ObservableCollection<int>();
+        
+        public static void modInc()
+        {
+            count++;
+        }
+        public static Stopwatch w(string name)
+        {
+            if (usingMod && count % modcount != 0) return dummy;
+            if (!stopwatches.ContainsKey(name)) stopwatches[name] = new Stopwatch();
+            return stopwatches[name];
+        }
 
-        public static void StartTimer()
+        public static void RestartTimer(string timer)
+        {
+            if (usingMod && count % modcount != 0) return;
+            if (!stopwatches.ContainsKey(timer)) stopwatches[timer] = new Stopwatch();
+            else stopwatches[timer].Restart();
+        }
+
+        public static void PrintTimer(string timer, bool reset = true)
+        {
+            return;
+            if (usingMod && count % modcount != 0) return;
+            if (!stopwatches.ContainsKey(timer)) { Console.WriteLine(timer + " doesn't have a stopwatch."); return; }
+            Console.WriteLine(timer + "\t:\t" + stopwatches[timer].Elapsed + "\t" + stopwatches[timer].ElapsedMilliseconds + "\t" +stopwatches[timer].ElapsedTicks);
+            if (reset) stopwatches[timer].Reset();
+        }
+
+        public static void OldStartTimer()
         {
             timerStarted = true;
             before = DateTime.Now;
         }
-        public static void StopTimer(string message = "")
+        public static void OldStopTimer(string message = "")
         {
             DateTime after = DateTime.Now;
+
             if (!timerStarted)
             {
                 //Console.WriteLine("Timer was not previously started, so timer cannot be stopped.");
@@ -57,7 +108,7 @@ namespace OrbItProcs
 
         public void NotEvenOnce()
         {
-            Action<string> d = StopTimer;
+            Action<string> d = OldStopTimer;
             Action<string> dd = (Action<string>)Delegate.CreateDelegate(typeof(Action<string>), d.Method);
             Type t = typeof(Node);
             MethodInfo mi = t.GetMethod("RemoveTag");
@@ -111,7 +162,7 @@ namespace OrbItProcs
 
         public void LoopTesting()
         {
-            StartTimer();
+            OldStartTimer();
             int it = 40000000;
             dynamic a = 0;
             for(int i = 0; i < it; i++)
@@ -119,7 +170,7 @@ namespace OrbItProcs
                 a = a * a;
             }
             string output = "::" + it + " iterations."; 
-            StopTimer(output);
+            OldStopTimer(output);
         }
 
         private static int NewMethod(int a)
@@ -137,36 +188,36 @@ namespace OrbItProcs
                 ints.Add(i);
             }
             int count = 0;
-            StartTimer();
+            OldStartTimer();
             foreach (int i in ints)
             {
                 count += i;
             }
-            StopTimer("foreach:");
+            OldStopTimer("foreach:");
             Console.WriteLine(count);
-            StartTimer();
+            OldStartTimer();
             ints.ToList().ForEach(i => count += i);
-            StopTimer("tolist:");
+            OldStopTimer("tolist:");
             Console.WriteLine(count);
         }
 
         public void KeyPresses(KeyManager kbs)
         {
-            StartTimer();
+            OldStartTimer();
             kbs.Update();
-            StopTimer("keypresses:");
+            OldStopTimer("keypresses:");
         }
 
         public void KeyManagerTest(Action a)
         {
-            StartTimer();
+            OldStartTimer();
             a();
-            StopTimer("KeyManager");
+            OldStopTimer("KeyManager");
         }
 
         public void NormalizeTest()
         {
-            StartTimer();
+            OldStartTimer();
             int count = 0;
             for(int i = 0; i < 100; i++)
             {
@@ -184,52 +235,52 @@ namespace OrbItProcs
                 }
             }
             Console.WriteLine("COUNT-----------------:" + count);
-            StopTimer("Normalizes:");
+            OldStopTimer("Normalizes:");
         }
 
         public void TestHashSet()
         {
-            StartTimer();
+            OldStartTimer();
             for (int i = 0; i < 100000; i++)
             {
                 hints.Add(i);
             }
-            StopTimer("HashSetAdd");
-            StartTimer();
+            OldStopTimer("HashSetAdd");
+            OldStartTimer();
             for (int i = 0; i < 100000; i++)
             {
                 obints.Add(i);
             }
-            StopTimer(" ObsHashSetAdd");
+            OldStopTimer(" ObsHashSetAdd");
             
-            StartTimer();
+            OldStartTimer();
             for (int i = 0; i < 100000; i++)
             {
                 lints.Add(i);
             }
-            StopTimer(" ListAdd");
+            OldStopTimer(" ListAdd");
 
-            StartTimer();
+            OldStartTimer();
             for (int i = 0; i < 100000; i++)
             {
                 oblist.Add(i);
             }
-            StopTimer(" ObsListAdd");
+            OldStopTimer(" ObsListAdd");
             Console.WriteLine("");
             
             ///
-            StartTimer();
+            OldStartTimer();
             for (int i = 0; i < 100000; i++)
             {
                 hints.Contains(i);
             }
-            StopTimer("HashSetContains");
-            StartTimer();
+            OldStopTimer("HashSetContains");
+            OldStartTimer();
             for (int i = 0; i < 100000; i++)
             {
                 obints.Contains(i);
             }
-            StopTimer(" ObsHashSetContains");
+            OldStopTimer(" ObsHashSetContains");
             /*
             StartTimer();
             for (int i = 0; i < 100000; i++)
@@ -241,18 +292,18 @@ namespace OrbItProcs
             Console.WriteLine("");
 
             ///
-            StartTimer();
+            OldStartTimer();
             for (int i = 0; i < 100000; i++)
             {
                 hints.Remove(i);
             }
-            StopTimer("HashSetRemove");
-            StartTimer();
+            OldStopTimer("HashSetRemove");
+            OldStartTimer();
             for (int i = 0; i < 100000; i++)
             {
                 obints.Remove(i);
             }
-            StopTimer(" ObsHashSetRemove");
+            OldStopTimer(" ObsHashSetRemove");
             /*
             StartTimer();
             for (int i = 0; i < 100000; i++)
@@ -266,7 +317,7 @@ namespace OrbItProcs
             HashSet<int> excludeset = new HashSet<int>() { 5 };
             //HashSet<int> newset;
             List<int> excludeInt = new List<int>() { 5 };
-            StartTimer();
+            OldStartTimer();
             for (int i = 0; i < 1000; i++)
             {
                 //hints.ExceptWith(excludeset);
@@ -344,7 +395,7 @@ namespace OrbItProcs
             //bool a = redirector.active;
             //bool a = false;
 
-            StartTimer();
+            OldStartTimer();
             for (int i = 0; i < 100000; i++)
             {
                 //if (i > 0) if (i > 1) if (i > 2) if (i > 3) if (i > 4) total++;
@@ -367,7 +418,7 @@ namespace OrbItProcs
 
             }
             //Movement move = room.defaultNode.comps[comp.movement];
-            StopTimer();
+            OldStopTimer();
             //Console.WriteLine(total);
             /* //this code won't run right now, but it represents the ability to make a specific generic method based on type variables from another generic method, and then invoke it... (this is slow)
             MethodInfo method = GetType().GetMethod("DoesEntityExist")

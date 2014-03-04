@@ -49,7 +49,7 @@ namespace OrbItProcs
         
 
         public static Node bigtony = null;
-        public static float maxScore = 10000;
+        public static float maxScore = 50000;
 
         public float score { get; set; }
 
@@ -69,7 +69,7 @@ namespace OrbItProcs
                 {
                     int rx = Utils.random.Next(rad * 2) - rad;
                     int ry = Utils.random.Next(rad * 2) - rad;
-                    room.game.spawnNode(room.worldWidth / 2 + rx, room.worldHeight / 2 + ry);
+                    //room.game.spawnNode(room.worldWidth / 2 + rx, room.worldHeight / 2 + ry);
 
                 }
             }, 2000);
@@ -177,6 +177,7 @@ namespace OrbItProcs
             float y = dist * (float)Math.Sin(angle);
             spawnPos = new Vector2(room.worldWidth / 2, room.worldHeight / 2) - new Vector2(x, y);
             node = room.game.spawnNode((int)spawnPos.X, (int)spawnPos.Y);
+            node.name = "player" + playerIndex;
 
             SwitchPlayerNode(node);
 
@@ -227,6 +228,7 @@ namespace OrbItProcs
             nodeCollision.OnCollisionStart += onCollisionStart;
             nodeCollision.OnCollisionEnd += onCollisionEnd; //todo: make warning when needing to update nodes that are already in collision list
             room.masterGroup.fullSet.Add(nodeCollision);
+            nodeCollision.name = "phantom" + playerIndex;
 
         }
         bool switchAvailable = true;
@@ -244,8 +246,10 @@ namespace OrbItProcs
             }
             if (other != null)
             {
+                //if (room.playerNodes.Contains(other.node))
                 //if (playerNode != null) playerNode.ClearCollisionHandlers();
                 node.body.color = other.node.body.color;
+                
                 //playerNode.OnCollisionStart -= onCollisionStart;
                 Node temp = node;
                 node = other.node;
@@ -259,13 +263,13 @@ namespace OrbItProcs
                 //playerNode.OnCollisionStart += onCollision;
                 other.switchAvailable = false;
                 switchAvailable = false;
-                room.scheduler.doAfterXMilliseconds(nn => other.switchAvailable = true, 100);
+                room.scheduler.doAfterXMilliseconds(nn => other.switchAvailable = true, 1000);
             }
             else
             {
                 //if (node != null) node.ClearCollisionHandlers();
-                node.body.color = Color.Red;
-                node.body.texture = textures.whiteorb;
+                node.body.color = Color.White;
+                node.body.texture = textures.whitecircle;
                 //node.OnCollisionStart -= onCollisionStart;
                 if (node != bigtony) node.body.mass = smallmass;
                 node = n;
@@ -298,7 +302,8 @@ namespace OrbItProcs
             if (node == null) return;
 
             nodeCollision.body.pos = body.pos;
-            nodeCollision.body.radius = body.radius * 1.3f;
+            if (node != bigtony) nodeCollision.body.radius = body.radius * 1.05f;
+            else nodeCollision.body.radius = body.radius * 1.0f;
 
             Vector2 stick;
             PlayerIndex index;
@@ -358,40 +363,42 @@ namespace OrbItProcs
         {
             var list = nodeCollision.collision.previousCollision;
             if (list.Count <= 1) return;
-            Node n = null;
-            Player pp = null;
-            if (false && list.Any(a => room.players.Any(p => { n = a; pp = p; return p.node == a && p.node != node; })))
+            //Node n = null;
+            //Player pp = null;
+            //if (list.Any(a => room.players.Any(p => { n = a; pp = p; return p.node == a && p.node != node; })))
+            //{
+            //    SwitchPlayerNode(n, false, false, pp);
+            //}
+            foreach(var p in room.players)
             {
-                SwitchPlayerNode(n, false, false, pp);
-            }
-            else if (true)
-            {
-                float master = -1.1f;
-                float current;
-                foreach (Node q in list)
+                if (p == this) continue;
+                if (list.Contains(p.nodeCollision))
                 {
-                    if (q == node) continue;
-                    Vector2 dir = q.body.pos - body.pos; VMath.NormalizeSafe(ref dir);
-                    Vector2 stickN = stick; VMath.NormalizeSafe(ref stickN);
-
-                    if ((current = Vector2.Dot(dir, stickN)) > master)
-                    {
-                        master = current;
-                        n = q;
-                    }
+                    SwitchPlayerNode(p.node, false, false, p);
+                    return;
                 }
-                //Console.WriteLine(master);
-
-                //n = list.ElementAt(Utils.random.Next(list.Count));
-                SwitchPlayerNode(n, false, false);
             }
-            else
+            Node n = null;
+            float master = -10000000f;
+            float current;
+            var playernodes = room.playerNodes;
+            foreach (Node q in list)
             {
-                //oreach (Node q in list)
-                //
-                //   if (q == node) continue;
-                //
+                if (q == node || playernodes.Contains(q)) continue; //fixed?
+                Vector2 dir = q.body.pos - body.pos; VMath.NormalizeSafe(ref dir);
+                Vector2 stickN = stick; VMath.NormalizeSafe(ref stickN);
+
+                if ((current = Vector2.Dot(dir, stickN)) > master)
+                {
+                    master = current;
+                    n = q;
+                }
             }
+            Console.WriteLine(master);
+
+            //n = list.ElementAt(Utils.random.Next(list.Count));
+            SwitchPlayerNode(n, false, false);
+
             
             
         }

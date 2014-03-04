@@ -306,6 +306,7 @@ namespace OrbItProcs {
 
                 foreach (PropertyInfo pinfo in propertyInfos)
                 {
+                    if (pinfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
                     if (pinfo.Name.Equals("Item")) continue;
                     InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, pinfo.GetValue(parent, null), pinfo);
                     if (iitem.CheckForChildren()) iitem.prefix = "+";
@@ -327,6 +328,7 @@ namespace OrbItProcs {
 
                     foreach (FieldInfo finfo in fieldInfos)
                     {
+                        if (finfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
                         InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, finfo.GetValue(parent), finfo);
                         if (iitem.CheckForChildren()) iitem.prefix = "+";
                         InsertItemSorted(list, iitem);

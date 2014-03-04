@@ -132,6 +132,7 @@
     <Compile Include="Components\Drawers\ColorChanger.cs" />
     <Compile Include="Components\Drawers\ColorGravity.cs" />
     <Compile Include="Components\Scheduler.cs" />
+    <Compile Include="DoNotInspect.cs" />
     <Compile Include="Framework\Camera.cs" />
     <Compile Include="Framework\Level.cs" />
     <Compile Include="Processes\CameraControl.cs" />

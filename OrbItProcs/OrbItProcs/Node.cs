@@ -62,6 +62,7 @@ namespace OrbItProcs {
         {
             return comps.ContainsKey(component) && comps[component].active;
         }
+        [DoNotInspect]
         public dynamic this[comp component]
         {
             get

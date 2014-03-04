@@ -94,6 +94,7 @@ namespace OrbItProcs {
         [Polenter.Serialization.ExcludeFromSerialization]
         //public Player player1 { get; set; }
         public HashSet<Player> players { get; set; }
+        [DoNotInspect]
         public IEnumerable<Node> playerNodes { get { return players.Select<Player, Node>(p => p.node); } }
 
         [Polenter.Serialization.ExcludeFromSerialization]
@@ -174,7 +175,7 @@ namespace OrbItProcs {
             {
                 gridsystem.insert(n);
             });
-            Testing.StopTimer("gridsystem insert");
+            Testing.OldStopTimer("gridsystem insert");
             //
             UpdateCollision();
 
@@ -187,7 +188,7 @@ namespace OrbItProcs {
                     n.Update(gametime);
                 }
             }
-            Testing.StopTimer("node update");
+            Testing.OldStopTimer("node update");
 
             //masterGroup.ForEachThreading(gametime);
             
@@ -212,10 +213,11 @@ namespace OrbItProcs {
 
         public void UpdateCollision()
         {
-            //if (timertimer % timermax == 0)
-            //    Testing.StartTimer();
+            Testing.modInc();
+            Testing.w("insertion").Start();
             gridsystemCollision.clear();
             CollisionSet.ToList().ForEach(delegate(Node n) { gridsystemCollision.insert(n); });
+            Testing.PrintTimer("insertion");
             gridsystemCollision.alreadyVisited = new HashSet<Node>();
             CollisionSet.ToList().ForEach(delegate(Node n)
             {
@@ -231,7 +233,10 @@ namespace OrbItProcs {
                         reach = (int)(n.body.radius * 5) / gridsystemCollision.cellWidth;
                     }
                     //Console.WriteLine(reach);
+                    Testing.w("retrieve").Start();
                     List<Node> retrievedNodes = gridsystemCollision.retrieve(n, reach);
+                    Testing.w("retrieve").Stop();
+                    Testing.w("manifolds").Start();
                     gridsystemCollision.alreadyVisited.Add(n);
                     retrievedNodes.ForEach(delegate(Node r)
                     {
@@ -239,9 +244,12 @@ namespace OrbItProcs {
                             return;
                         n.collision.AffectOther(r);
                     });
+                    Testing.w("manifolds").Stop();
                 }
             });
-            Testing.StopTimer("Manifold generation");
+            Testing.PrintTimer("insertion");
+            Testing.PrintTimer("retrieve");
+            Testing.PrintTimer("manifolds");
             //COLLISION
             foreach (Manifold m in contacts)
             {
@@ -256,7 +264,7 @@ namespace OrbItProcs {
                     m.ApplyImpulse();
                 }
             }
-            Testing.StopTimer("Manifold apply impulse");
+            Testing.OldStopTimer("Manifold apply impulse");
             foreach (Node n in masterGroup.fullSet)
             {
                 if (n.movement.active)
