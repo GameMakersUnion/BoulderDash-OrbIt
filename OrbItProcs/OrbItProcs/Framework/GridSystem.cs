@@ -23,6 +23,8 @@ namespace OrbItProcs {
         public List<Node>[,] grid;
         public HashSet<Node> alreadyVisited;
 
+        
+
         public bool PolenterHack { get { return false; } 
             set 
             {
@@ -94,6 +96,62 @@ namespace OrbItProcs {
             Tuple<int, int> indexs = getIndexs(node);
             //if (node == room.game.targetNode) Console.WriteLine("target indexs: {0} {1}",indexs.Item1,indexs.Item2);
             grid[indexs.Item1, indexs.Item2].Add(node);
+        }
+
+        //todo: save indexs of nodes upon insertion (duh.)
+        // save 3d lookup table of retrieveBuckets lists (per x,y,reach)
+        // 
+
+        public void GenerateReachOffsets()
+        {
+            Console.WriteLine(" ::::" + cellsX + "," + cellsY + "\t");
+            SortedDictionary<float, List<Tuple<int, int>>> distToCoords = new SortedDictionary<float, List<Tuple<int, int>>>();
+            for (int x = 0; x < cellsX; x++)
+            {
+                for (int y = 0; y < cellsY; y++)
+                {
+                    int offsetX = cellsX - x - 1;
+                    int offsetY = cellsY - y - 1;
+                    float dist = (float)Math.Sqrt(offsetX * offsetX + offsetY * offsetY);
+                    if (!distToCoords.ContainsKey(dist)) distToCoords.Add(dist, new List<Tuple<int, int>>());
+                    distToCoords[dist].Add(new Tuple<int, int>(x, y));
+                }
+            }
+            foreach(var f in distToCoords.Keys)
+            {
+                Console.Write(f + "\t:\t");
+                foreach(var t in distToCoords[f])
+                {
+                    Console.Write(t.Item1 + "," + t.Item2 + "\t");
+                }
+                Console.WriteLine();
+            }
+        }
+
+
+        public void testRetrieve(int x, int y, int reach)
+        {
+            Console.WriteLine("Retrieve at: {0},{1}\tReach: {2}", x, y, reach);
+            for (int i = 0; i < cellsX; i++)
+            {
+                for (int j = 0; j < cellsY; j++)
+                {
+                    // Wow. Never use Math class >.<
+                    //double dist = Math.Pow(Math.Abs(x - i), 2) + Math.Pow(Math.Abs(y - j), 2);
+                    int xd = (x - i) * (x - i);
+                    if (xd < 0) xd *= -1;
+                    int yd = (y - j) * (y - j);
+                    if (yd < 0) yd *= -1;
+                    int dist = xd + yd;
+
+                    if (dist <= reach * reach)
+                    {
+                        Console.Write(i + "," + j + "\t");
+                    }
+
+                }
+            }
+            Console.WriteLine();
         }
 
         public List<Node> retrieve(Node node, int reach = -1)

@@ -116,6 +116,12 @@ namespace OrbItProcs
             //dynamic meth = Delegate.CreateDelegate(mi.)
         }
 
+        public void Gridsystem()
+        {
+            for (int i = 0; i < 4; i++)
+                room.gridsystem.testRetrieve(10, 10, i);
+        }
+
         public void TriangleTest2()
         {
             float mod = 50;

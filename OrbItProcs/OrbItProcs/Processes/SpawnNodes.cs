@@ -34,6 +34,17 @@ namespace OrbItProcs
             addProcessKeyAction("serial1", KeyCodes.F9, OnPress: Serialize_Room_Binary);
             addProcessKeyAction("deserial2", KeyCodes.F10, OnPress: Deserialize_Room_Binary);
         }
+        public void SpawnNode()
+        {
+            //testing.TriangleTest2();
+            //testing.TestRedirect();
+            //room.game.testing.Gridsystem();
+            //room.gridsystem.GenerateReachOffsets();
+
+
+            ///
+            room.game.spawnNode((int)UserInterface.WorldMousePos.X, (int)UserInterface.WorldMousePos.Y);
+        }
 
         public void Testing()
         {
@@ -168,10 +179,7 @@ namespace OrbItProcs
             spawnPos = UserInterface.WorldMousePos;
         }
 
-        public void SpawnNode()
-        {
-            room.game.spawnNode((int)UserInterface.WorldMousePos.X, (int)UserInterface.WorldMousePos.Y);
-        }
+        
 
         public void BatchSpawn()
         {

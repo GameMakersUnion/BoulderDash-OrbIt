@@ -237,7 +237,11 @@ namespace OrbItProcs
 
         public void ForEachFullSet(Action<Node> action)
         {
-            fullSet.ToList().ForEach(action);
+            //fullSet.ToList().ForEach(action);
+            foreach(var n in fullSet) // ToList()
+            {
+                action(n);
+            }
         }
 
         

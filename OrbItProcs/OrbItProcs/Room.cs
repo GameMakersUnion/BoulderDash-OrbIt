@@ -171,10 +171,10 @@ namespace OrbItProcs {
             //if (timertimer % timermax == 0)
             //    Testing.StartTimer();
             //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
-            masterGroup.childGroups["General Groups"].ForEachFullSet(delegate(Node n) 
+            foreach (var n in masterGroup.childGroups["General Groups"].fullSet)
             {
                 gridsystem.insert(n);
-            });
+            }
             Testing.OldStopTimer("gridsystem insert");
             //
             UpdateCollision();
@@ -216,10 +216,17 @@ namespace OrbItProcs {
             Testing.modInc();
             Testing.w("insertion").Start();
             gridsystemCollision.clear();
-            CollisionSet.ToList().ForEach(delegate(Node n) { gridsystemCollision.insert(n); });
+            foreach (var n in CollisionSet) //.ToList() 
+            {
+                gridsystemCollision.insert(n);
+            }
+
             Testing.PrintTimer("insertion");
             gridsystemCollision.alreadyVisited = new HashSet<Node>();
-            CollisionSet.ToList().ForEach(delegate(Node n)
+
+            //todo: remove tolists if possible
+
+            foreach (var n in CollisionSet) //.ToList() 
             {
                 if (n.active)
                 {
@@ -238,15 +245,15 @@ namespace OrbItProcs {
                     Testing.w("retrieve").Stop();
                     Testing.w("manifolds").Start();
                     gridsystemCollision.alreadyVisited.Add(n);
-                    retrievedNodes.ForEach(delegate(Node r)
+                    foreach(var r in retrievedNodes) //todo: this may be iterating over a deleted node (or removed)
                     {
                         if (gridsystemCollision.alreadyVisited.Contains(r))
-                            return;
+                            continue;
                         n.collision.AffectOther(r);
-                    });
+                    }
                     Testing.w("manifolds").Stop();
                 }
-            });
+            }
             Testing.PrintTimer("insertion");
             Testing.PrintTimer("retrieve");
             Testing.PrintTimer("manifolds");
@@ -300,12 +307,11 @@ namespace OrbItProcs {
                     targetNodeGraphic.Draw(spritebatch);
                 }
             }
-
-            masterGroup.ForEachFullSet(delegate(Node n)
+            foreach(var n in masterGroup.fullSet)
             {
                 //Node n = (Node)o;
                 n.Draw(spritebatch);
-            });
+            }
             int linecount = 0;
 
             if (DrawLinks)

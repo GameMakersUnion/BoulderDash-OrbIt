@@ -95,6 +95,7 @@ namespace OrbItProcs
         public ProcessManager processManager { get; set; }
         public static int sWidth = 1000;
         public static int sHeight = 600;
+        public static bool soundEnabled = false;
         //public static int fullWidth = 1680;
         //public static int fullHeight = 1050;
 
@@ -531,10 +532,6 @@ namespace OrbItProcs
         
         private Node SpawnNodeHelper(Node newNode, Action<Node> afterSpawnAction = null, Group g = null, int lifetime = -1)
         {
-            //if (newNode[comp.body].pos is Vector2) System.Diagnostics.Debugger.Break();
-            //testing.TriangleTest2();
-            //testing.TestRedirect();
-
             newNode.OnSpawn();
             if (afterSpawnAction != null) afterSpawnAction(newNode);
             if (lifetime != -1)

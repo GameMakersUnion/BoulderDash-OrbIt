@@ -63,7 +63,7 @@ namespace OrbItProcs
             }
             Node tony = new Node(userP);
             room.scheduler.doEveryXMilliseconds(delegate{
-                Scheduler.end.Play(0.3f, -0.5f, 0f);
+                if (Game1.soundEnabled) Scheduler.end.Play(0.3f, -0.5f, 0f);
                 int rad = 100;
                 for (int i = 0; i < 10; i++)
                 {
@@ -99,7 +99,7 @@ namespace OrbItProcs
                                 pp.node.ClearCollisionHandlers();
                                 pp.nodeCollision.ClearCollisionHandlers();
                             }
-                            Scheduler.fanfare.Play();
+                            if (Game1.soundEnabled) Scheduler.fanfare.Play();
                             bigtony.OnAffectOthers -= updateScores;
                         }
                     }
@@ -290,7 +290,7 @@ namespace OrbItProcs
                 //Console.WriteLine(Game1.GlobalGameTime.TotalGameTime.Milliseconds);
                 this.switchAvailable = true;
             };
-            Scheduler.start.Play(0.2f, 0f, 0f);
+            if (Game1.soundEnabled) Scheduler.start.Play(0.2f, 0f, 0f);
             room.scheduler.doAfterXMilliseconds(time, 1000, false); //todo:fix other todos for fucks sake
         }
 
