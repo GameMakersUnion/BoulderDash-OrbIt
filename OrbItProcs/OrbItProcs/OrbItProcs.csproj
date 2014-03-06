@@ -134,6 +134,7 @@
     <Compile Include="Components\Scheduler.cs" />
     <Compile Include="DoNotInspect.cs" />
     <Compile Include="Framework\Camera.cs" />
+    <Compile Include="Framework\CountArray.cs" />
     <Compile Include="Framework\Level.cs" />
     <Compile Include="Processes\CameraControl.cs" />
     <Compile Include="Processes\GraphData.cs" />

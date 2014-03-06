@@ -290,7 +290,7 @@ namespace OrbItProcs
 
             for (int i = 1; i < 5; i++)
             {
-                room.players.Add(new Player(i));
+                //room.players.Add(new Player(i));
             }
 
             processManager.SetProcessKeybinds(ui.keyManager);
@@ -322,14 +322,13 @@ namespace OrbItProcs
             int i = 0;
             string date = DateTime.Now.ToShortDateString().Replace('/', '-');
             //date = date.Replace;
-            string name = "Screenshots//SS_" + date + "_#" + i + ".png";
+            //string name = "Screenshots//SS_" + date + "_#" + i + ".png";
+            string name = "..//..//..//Screenshots//SS_" + date + "_#" + i + ".png";
             while (File.Exists(name))
             {
                 i += 1;
-                name = "Screenshots//SS_" + date + "_#" + i + ".png";
-
+                name = "..//..//..//Screenshots//SS_" + date + "_#" + i + ".png";
             }
-
             Stream st = new FileStream(name, FileMode.Create);
 
             t2d.SaveAsPng(st, t2d.Width, t2d.Height);

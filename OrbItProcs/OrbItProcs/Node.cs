@@ -451,11 +451,10 @@ namespace OrbItProcs {
                 {
                     reach = (int)(body.radius * 5) / room.gridsystem.cellWidth;
                 }
+
+                ///*
                 returnObjectsFinal = room.gridsystem.retrieve(this, reach);
-
-                int cellReach = (int)(body.radius * 2) / room.gridsystem.cellWidth * 2;
-
-
+                //int cellReach = (int)(body.radius * 2) / room.gridsystem.cellWidth * 2;
                 if (comps.ContainsKey(comp.flow) && comps[comp.flow].active)
                 {
                     returnObjectsFinal = new List<Node>();
@@ -476,6 +475,27 @@ namespace OrbItProcs {
                         }
                     }
                 }
+                //*/
+                /*
+                var buckets = room.gridsystem.retrieveBuckets(this, 115);
+                if (buckets != null)
+                {
+                    foreach (var bucket in buckets)
+                    {
+                        foreach (var nn in bucket)
+                        {
+                            if (nn.active)
+                            {
+                                foreach (comp c in aOtherProps)
+                                {
+                                    comps[c].AffectOther(nn);
+                                }
+                            }
+                        }
+                    }
+                }
+                //*/
+
             }
 
             

@@ -125,7 +125,6 @@ namespace OrbItProcs
             metapos *= yval;
             Vector2 metaposfinal = parent.body.pos + metapos;
 
-
             if (metapositions.Count > queuecount)
             {
                 metapositions.Dequeue();
@@ -161,13 +160,15 @@ namespace OrbItProcs
                 count++;
                 
             }
-            count = 0;
-            foreach (Vector2 relectpos in reflectpositions)
+            if (reflective)
             {
-                spritebatch.Draw(parent.getTexture(), relectpos * mapzoom, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
-                count++;
+                count = 0;
+                foreach (Vector2 relectpos in reflectpositions)
+                {
+                    spritebatch.Draw(parent.getTexture(), relectpos * mapzoom, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
+                    count++;
+                }
             }
-
             //spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, parent.transform.color, 0, parent.TextureCenter(), parent.transform.scale / mapzoom, SpriteEffects.None, 0);
 
         }

@@ -326,11 +326,12 @@ namespace OrbItProcs
             
             foreach (PropertyInfo info in propertyinfos)
             {
+                if (info.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
                 Type[] types = new Type[] { type, info.PropertyType };
                 if (!getters[type].ContainsKey(info.Name))
                 {
-                    try
-                    {
+                    //try
+                    //{
                         MethodInfo getmethod = info.GetGetMethod();
 
                         if (getmethod != null)
@@ -340,13 +341,13 @@ namespace OrbItProcs
                             Delegate get = Delegate.CreateDelegate(methodtype, getmethod);
                             getters[type][info.Name] = MagicFunc(get.Method);
                         }
-                    }
-                    catch { }
+                    //}
+                    //catch { }
                 }
                 if (!setters[type].ContainsKey(info.Name))
                 {
-                    try
-                    {
+                    //try
+                    //{
                         MethodInfo setmethod = info.GetSetMethod();
                         if (setmethod != null)
                         {
@@ -357,8 +358,8 @@ namespace OrbItProcs
                             //if (type == typeof(Movement))
                             //    Console.WriteLine(propertyinfos);
                         }
-                    }
-                    catch { }
+                    //}
+                    //catch { }
                 }
             }
 

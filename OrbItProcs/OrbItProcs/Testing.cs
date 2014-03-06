@@ -15,14 +15,14 @@ namespace OrbItProcs
 {
     public class Testing
     {
-        public Room room;
+        public static Room room;
         public Redirector redirector;
         public static DateTime before;
         public static bool timerStarted = false;
 
         public static int count = 0;
         public static int modcount = 10;
-        public static bool usingMod = true;
+        public static bool usingMod = false;
         [DoNotInspect]
         //public static Stopwatch this[string name]
         //{
@@ -78,11 +78,15 @@ namespace OrbItProcs
 
         public static void PrintTimer(string timer, bool reset = true)
         {
-            return;
             if (usingMod && count % modcount != 0) return;
-            if (!stopwatches.ContainsKey(timer)) { Console.WriteLine(timer + " doesn't have a stopwatch."); return; }
+            if (!stopwatches.ContainsKey(timer)) { /*Console.WriteLine(timer + " doesn't have a stopwatch.");*/ return; }
             Console.WriteLine(timer + "\t:\t" + stopwatches[timer].Elapsed + "\t" + stopwatches[timer].ElapsedMilliseconds + "\t" +stopwatches[timer].ElapsedTicks);
             if (reset) stopwatches[timer].Reset();
+        }
+
+        public static float ByteToMegabyte(int i)
+        {
+            return (float)i / 1024f / 1024f;
         }
 
         public static void OldStartTimer()
@@ -104,6 +108,114 @@ namespace OrbItProcs
             if (mill < 0) mill += 1000;
             Console.WriteLine(" {0}: {1}", message, mill);
             timerStarted = false;
+        }
+        private static int standardizedCounter = 0;
+
+        public static void StandardizedTesting2(int max)
+        {
+            if (++standardizedCounter <= max)
+            {
+                Room room = Program.getRoom();
+                Dictionary<dynamic, dynamic> standardDictionary = new Dictionary<dynamic, dynamic>(){
+                    { nodeE.position, new Vector2(room.worldWidth / 2, room.worldHeight / 2) },
+                    { comp.randinitialvel, true },
+                    //{ comp.gravity, true },
+                };
+                for (int i = 0; i < 10; i++)
+                    Program.getGame().spawnNode(standardDictionary);
+            }
+            else
+            {
+                Program.getGame().Exit();
+            }
+        }
+        
+        public static void StandardizedTesting(int max)
+        {
+
+            if (++standardizedCounter <= max)
+            {
+                Room room = Program.getRoom();
+                Dictionary<dynamic, dynamic> standardDictionary = new Dictionary<dynamic, dynamic>(){
+                    { nodeE.position, new Vector2(room.worldWidth / 2, room.worldHeight / 2) },
+                    { comp.randinitialvel, true },
+                    //{ comp.gravity, true },
+                };
+
+                Program.getGame().spawnNode(standardDictionary);
+            }
+            else
+            {
+                Program.getGame().Exit();
+            }
+        }
+
+        public static void TestCountArray()
+        {
+            //Weird.
+            int length = 1000000;
+            int[] ints = new int[length];
+            CountArray<int> counted = new CountArray<int>(new int[length]);
+            List<int> list = new List<int>();
+            w("count").Start();
+            for (int i = 0; i < counted.count; i++)
+            {
+                counted.array[i] = i;
+            }
+            w("count").Stop();
+            int len = ints.Length;
+            w("array").Start();
+            for (int i = 0; i < len; i++)
+            {
+                ints[i] = i;
+            }
+            w("array").Stop();
+
+            w("listadd").Start();
+            for (int i = 0; i < length; i++)
+            {
+                list.Add(i);
+            }
+            w("listadd").Stop();
+            w("listmod").Start();
+            for (int i = 0; i < length; i++)
+            {
+                list[i] = i+1;
+            }
+            w("listmod").Stop();
+            
+            PrintTimer("count");
+            PrintTimer("array");
+            PrintTimer("listadd");
+            PrintTimer("listmod");
+        }
+
+        public static void IndexsGridsystem()
+        {
+            string[] ind = new string[room.masterGroup.fullSet.Count];
+            int c = 0;
+            Testing.w("oldindex").Start();
+            for (int i = 0; i < 100; i++)
+            {
+                foreach (var n in room.masterGroup.fullSet)
+                {
+                    Tuple<int, int> t = room.gridsystem.getIndexs(n);
+                    if (i == 0)
+                        ind[c] += t.Item1 + "," + t.Item2 + " ";
+                }
+            }
+            Testing.PrintTimer("oldindex");
+            Testing.w("newindex").Start();
+            for (int i = 0; i < 100; i++)
+            {
+                foreach (var n in room.masterGroup.fullSet)
+                {
+                    Tuple<int, int> t = room.gridsystem.getIndexsNew(n);
+                    if (i == 0)
+                        ind[c] += t.Item1 + "," + t.Item2 + " ";
+                }
+            }
+            Testing.PrintTimer("newindex");
         }
 
         public void NotEvenOnce()

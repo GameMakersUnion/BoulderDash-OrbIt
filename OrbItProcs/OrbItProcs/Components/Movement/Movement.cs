@@ -36,7 +36,7 @@ namespace OrbItProcs
         public Movement(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.movement; 
+            com = comp.movement;
             methods = mtypes.affectself;
             active = false;
         }
@@ -52,7 +52,6 @@ namespace OrbItProcs
 
             Body b = parent.body;
             b.velocity += VMath.MultVectDouble(b.force, b.invmass); //* dt / 2.0;
-            
             b.angularVelocity += b.torque * b.invinertia; // * dt / 2.0;
 
         }

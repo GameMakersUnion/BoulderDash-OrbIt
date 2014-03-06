@@ -43,6 +43,7 @@ namespace OrbItProcs {
         {
             room = Program.getRoom();
             alreadyVisited = new HashSet<Node>();
+            GenerateAllReachOffsetsPerCoord(300);
         }
 
         public GridSystem(Room room, int cellsX, int cellReach = 4): this()
@@ -66,6 +67,9 @@ namespace OrbItProcs {
                     grid[i, j] = new List<Node>();
                 }
             }
+            distToOffsets = GenerateReachOffsets();
+            GenerateAllReachOffsetsPerCoord(300);
+            bucketLists = new List<List<Node>>[cellsX, cellsY];
         }
 
         public GridSystem(Room room, int cellsX, int cellsY, int cellReach = 4)
@@ -89,45 +93,236 @@ namespace OrbItProcs {
                     grid[i, j] = new List<Node>();
                 }
             }
+            distToOffsets = GenerateReachOffsets();
+            GenerateAllReachOffsetsPerCoord(300);
+            bucketLists = new List<List<Node>>[cellsX, cellsY];
         }
 
+
+
+        static int largest = 0;
         public void insert(Node node)
         {
             Tuple<int, int> indexs = getIndexs(node);
             //if (node == room.game.targetNode) Console.WriteLine("target indexs: {0} {1}",indexs.Item1,indexs.Item2);
             grid[indexs.Item1, indexs.Item2].Add(node);
+            if (grid[indexs.Item1, indexs.Item2].Count > largest)
+            {
+                largest = grid[indexs.Item1, indexs.Item2].Count;
+                Console.WriteLine(largest);
+            }
+            //grid[indexs.Item1, indexs.Item2].ToArray();
         }
 
         //todo: save indexs of nodes upon insertion (duh.)
         // save 3d lookup table of retrieveBuckets lists (per x,y,reach)
         // 
-
-        public void GenerateReachOffsets()
+        SortedDictionary<float, List<Tuple<int, int>>> distToOffsets;
+        public SortedDictionary<float, List<Tuple<int, int>>> GenerateReachOffsets()
         {
-            Console.WriteLine(" ::::" + cellsX + "," + cellsY + "\t");
-            SortedDictionary<float, List<Tuple<int, int>>> distToCoords = new SortedDictionary<float, List<Tuple<int, int>>>();
+            SortedDictionary<float, List<Tuple<int, int>>> offsets = new SortedDictionary<float, List<Tuple<int, int>>>();
             for (int x = 0; x < cellsX; x++)
             {
                 for (int y = 0; y < cellsY; y++)
                 {
-                    int offsetX = cellsX - x - 1;
-                    int offsetY = cellsY - y - 1;
-                    float dist = (float)Math.Sqrt(offsetX * offsetX + offsetY * offsetY);
-                    if (!distToCoords.ContainsKey(dist)) distToCoords.Add(dist, new List<Tuple<int, int>>());
-                    distToCoords[dist].Add(new Tuple<int, int>(x, y));
+                    float dist = (float)Math.Sqrt(x * x + y * y) * cellWidth;
+                    if (!offsets.ContainsKey(dist)) offsets.Add(dist, new List<Tuple<int, int>>());
+
+                    offsets[dist].Add(new Tuple<int, int>(x, y));
+
+                    if (x == 0 && y > 0)
+                    {
+                        offsets[dist].Add(new Tuple<int, int>(x, -y));
+                    }
+                    else if (x > 0 && y == 0)
+                    {
+                        offsets[dist].Add(new Tuple<int, int>(-x, y));
+                    }
+                    else if (x > 0 && y > 0)
+                    {
+                        offsets[dist].Add(new Tuple<int, int>(-x, y));
+                        offsets[dist].Add(new Tuple<int, int>(x, -y));
+                        offsets[dist].Add(new Tuple<int, int>(-x, -y));
+                    }
                 }
             }
-            foreach(var f in distToCoords.Keys)
+            return offsets;
+        }
+        public SortedDictionary<float, List<Tuple<int, int>>>[,] offsetsArray;
+
+        public void GenerateAllReachOffsetsPerCoord(float maxdist = float.MaxValue)
+        {
+            //GC.GetTotalMemory(true);
+            offsetsArray = new SortedDictionary<float, List<Tuple<int, int>>>[cellsX, cellsY];
+            for (int x = 0; x < cellsX; x++)
             {
-                Console.Write(f + "\t:\t");
-                foreach(var t in distToCoords[f])
+                for (int y = 0; y < cellsY; y++)
                 {
-                    Console.Write(t.Item1 + "," + t.Item2 + "\t");
+                    offsetsArray[x,y] = new SortedDictionary<float, List<Tuple<int, int>>>();
+                    foreach(float dist in distToOffsets.Keys)
+                    {
+                        if (dist > maxdist) break;
+                        foreach(Tuple<int,int> tuple in distToOffsets[dist])
+                        {
+                            if (tuple.Item1 + x < 0 || tuple.Item1 + x >= cellsX || tuple.Item2 + y < 0 || tuple.Item2 + y >= cellsY) continue;
+                            if (!offsetsArray[x, y].ContainsKey(dist)) offsetsArray[x, y][dist] = new List<Tuple<int, int>>();
+                            offsetsArray[x, y][dist].Add(tuple);
+                        }
+                    }
+                }
+            }
+        }
+        public void retrieveFromAllOffsets(Node node, float reachDistance, Action<Node> action)
+        {
+            int x = (int)node.body.pos.X / cellWidth;
+            int y = (int)node.body.pos.Y / cellHeight;
+            if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
+            for (int i = 0; i < FindCount(reachDistance); i++)
+            {
+                foreach(var tuple in distToOffsets.ElementAt(i).Value)
+                {
+                    foreach(Node n in grid[tuple.Item1, tuple.Item2])
+                    {
+                        action(n);
+                    }
+                }
+            }
+        }
+        public List<List<Node>>[,] bucketLists;
+        public int preexistingCounter = 0;
+        public List<List<Node>> retrieveBuckets(Node node, float reachDistance)
+        {
+            int x = (int)node.body.pos.X / cellWidth;
+            int y = (int)node.body.pos.Y / cellHeight;
+            
+            if (x < 0 || x >= cellsX || y < 0 || y >= cellsY)
+            {
+                return null;
+            }
+            else
+            {
+                if (bucketLists[x, y] != null)
+                {
+                    preexistingCounter++;
+                    return bucketLists[x, y];
+                }
+                bucketLists[x, y] = new List<List<Node>>();
+
+                int count = FindCount(reachDistance);
+                var dict = offsetsArray[x, y];
+                if (dict.Count <= count)
+                {
+                    throw new SystemException("Count too big exception");
+                }
+                //int cellsHit = 0;
+                for (int i = 0; i < count; i++)
+                {
+                    List<Tuple<int, int>> tuples = dict.ElementAt(i).Value;
+                    foreach (var tuple in tuples)
+                    {
+                        bucketLists[x, y].Add(grid[tuple.Item1 + x, tuple.Item2 + y]);
+                    }
+                }
+                //Console.WriteLine(cellsHit);
+                return bucketLists[x, y];
+            }
+        }
+
+        public void retrieveFromOptimizedOffsets(Node node, float reachDistance, Action<Node> action)
+        {
+            int x = (int)node.body.pos.X / cellWidth;
+            int y = (int)node.body.pos.Y / cellHeight;
+            if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
+            int count = FindCount(reachDistance);
+            var dict = offsetsArray[x, y];
+            if (dict.Count <= count)
+            {
+                throw new SystemException("Count too big exception");
+            }
+            //int cellsHit = 0;
+            for (int i = 0; i < count; i++)
+            {
+                foreach (var tuple in dict.ElementAt(i).Value)
+                {
+                    foreach (Node n in grid[tuple.Item1 + x, tuple.Item2 + y])
+                    {
+                        action(n);
+                    }
+                    //cellsHit++;
+                }
+            }
+            //Console.WriteLine(cellsHit);
+        }
+
+        public Dictionary<float, int> distToCount = new Dictionary<float, int>();
+        public void retrieveNew(Node node, float reachDistance, Action<Node> action)
+        {
+            int x = (int)node.body.pos.X / cellWidth;
+            int y = (int)node.body.pos.Y / cellHeight;
+            if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
+
+            foreach(float dist in distToOffsets.Keys)
+            {
+                if (dist > reachDistance) break;
+                foreach(var tuple in distToOffsets[dist])
+                {
+                    foreach(Node n in grid[x + tuple.Item1, y + tuple.Item2])
+                    {
+                        action(n);
+                        
+                    }
+                }
+            }
+        }
+
+        public int FindCount(float dist)
+        {
+            if (distToCount.ContainsKey(dist)) return distToCount[dist];
+            int count = 0;
+            foreach(float f in distToOffsets.Keys)
+            {
+                count++;
+                if (f > dist) return count;
+            }
+            return count;
+        }
+
+
+        public void PrintOffsets(int max = int.MaxValue, bool printOffsets = true, int x = -1, int y = -1)
+        {
+            var offsets = distToOffsets;
+            if (x >= 0 && y >= 0)
+            {
+                offsets = offsetsArray[x, y];
+            }
+            Console.WriteLine(" ::::" + cellsX + "," + cellsY + "\t");
+            int c = 0;
+            foreach (var f in offsets.Keys)
+            {
+                if (c++ > max) break;
+                Console.Write("{0,10} ", f);
+                if (!printOffsets)
+                {
+                    Console.WriteLine();
+                    continue;
+                }
+                foreach (var t in offsets[f])
+                {
+                    string s = t.Item1 + "," + t.Item2;
+                    Console.Write("{0,10} ", s);
                 }
                 Console.WriteLine();
             }
         }
 
+        
+
+        // gets the index of the node in the gridsystem, without correcting out of bounds nodes.
+        public Tuple<int, int> getIndexsNew(Node node)
+        {
+            //int a = (int)node.body.pos.X / cellWidth;
+            return new Tuple<int, int>((int)node.body.pos.X / cellWidth, (int)node.body.pos.Y / cellHeight);
+        }
 
         public void testRetrieve(int x, int y, int reach)
         {
@@ -148,7 +343,6 @@ namespace OrbItProcs {
                     {
                         Console.Write(i + "," + j + "\t");
                     }
-
                 }
             }
             Console.WriteLine();
@@ -156,6 +350,8 @@ namespace OrbItProcs {
 
         public List<Node> retrieve(Node node, int reach = -1)
         {
+            //CountArray<Node>[,] nodes;
+
             if (reach == -1) reach = cellReach;
             List<Node> returnList = new List<Node>();
             Tuple<int, int> indexs = getIndexs(node);
@@ -184,12 +380,12 @@ namespace OrbItProcs {
                     {
                         returnList.Add(n);
                     }
-
                 }
             }
             */
             //return circle of slots
             ///*
+            //int cellsHit = 0;
             for (int i = xbegin; i < xend; i++)
             {
                 for (int j = ybegin; j < yend; j++)
@@ -209,10 +405,13 @@ namespace OrbItProcs {
                         //{
                         //    returnList.Add(n);
                         //}
+                        //cellsHit++;
                     }
 
                 }
+                
             }
+            //Console.WriteLine("Cells hit: {0}", cellsHit);
             ///*
             //Console.WriteLine("xbegin:{0} + xend:{1} + ybegin:{2} + yend:{3}", xbegin, xend, ybegin, yend);
             return returnList;
@@ -245,10 +444,13 @@ namespace OrbItProcs {
             {
                 for (int j = 0; j < cellsY; j++)
                 {
-                    //grid[i, j] = new List<Node>();
-                    grid[i, j].RemoveRange(0, grid[i, j].Count);
+                    grid[i, j] = new List<Node>();
+                    //grid[i, j].RemoveRange(0, grid[i, j].Count);
+                    bucketLists[i, j] = null;
                 }
             }
+            //Console.WriteLine(preexistingCounter);
+            preexistingCounter = 0;
         }
 
         public bool ContainsNode(Node n)

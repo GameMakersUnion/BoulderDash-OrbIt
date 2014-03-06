@@ -52,69 +52,85 @@ namespace OrbItProcs
         public static float maxScore = 50000;
 
         public float score { get; set; }
-
-        public Color pColor;
-
+                               
+        public Color pColor;   
+                               
         public static void MakeBigTony(Room room)
-        {
+        {                      
             if (bigtony != null)
-            {
-                return;
+            {                  
+                return;        
             }
-            Node tony = new Node(userP);
+            Dictionary<dynamic, dynamic> tonyProps = new Dictionary<dynamic, dynamic>()
+            {
+                { nodeE.position, new Vector2(room.worldWidth/2,room.worldHeight/2) },
+                { nodeE.texture, textures.blackorb },
+                { comp.movement, true },
+                { comp.collision, true },
+                { comp.basicdraw, true },
+                { comp.maxvel, true },
+                { comp.phaseorb, true },
+                { comp.randinitialvel, true },
+                //{ comp.laser, true },
+                //{ comp.gravity, true },
+            };
+            Node tony = new Node(tonyProps);
             room.scheduler.doEveryXMilliseconds(delegate{
                 if (Game1.soundEnabled) Scheduler.end.Play(0.3f, -0.5f, 0f);
-                int rad = 100;
+                int rad = 100; 
                 for (int i = 0; i < 10; i++)
-                {
+                {              
                     int rx = Utils.random.Next(rad * 2) - rad;
                     int ry = Utils.random.Next(rad * 2) - rad;
                     //room.game.spawnNode(room.worldWidth / 2 + rx, room.worldHeight / 2 + ry);
-
-                }
-            }, 2000);
-            tony.body.pos = new Vector2(room.worldWidth / 2, room.worldHeight / 2);
+                               
+                }              
+            }, 2000);          
+            //tony.body.pos = new Vector2(room.worldWidth / 2, room.worldHeight / 2);
             tony.body.radius = 64;
             tony.body.mass = tonymass;
+            tony.body.velocity *= 100;
             tony.name = "bigTony";
             tony.body.texture = textures.blackorb;
-
-            room.masterGroup.fullSet.Add(tony);
-            bigtony = tony;
-
+            tony[comp.queuer].queuecount = 100;
+            
+            bigtony = tony;    
+                               
             EventHandler updateScores = null;
             updateScores = (ooo,eee)=>
-            {
+            {                  
                 foreach(var p in room.players)
-                {
+                {              
                     if (p.node == bigtony)
-                    {
+                    {          
                         p.score += Game1.GlobalGameTime.ElapsedGameTime.Milliseconds;
                         if (p.score >= maxScore)
-                        {
+                        {      
                             p.node.body.radius += 500;
                             p.node.body.mass += 100;
                             foreach (var pp in room.players)
-                            {
+                            {  
                                 pp.node.ClearCollisionHandlers();
                                 pp.nodeCollision.ClearCollisionHandlers();
-                            }
+                            }  
                             if (Game1.soundEnabled) Scheduler.fanfare.Play();
                             bigtony.OnAffectOthers -= updateScores;
-                        }
-                    }
-                }
-            };
+                        }      
+                    }          
+                }              
+            };                 
             bigtony.OnAffectOthers += updateScores;
-        }
 
-        
-
+            //room.masterGroup.fullSet.Add(bigtony);
+        }                      
+                               
+                               
+                               
         public static Color Add(Color c, Color b)
-        {
+        {                      
             c = new Color(c.R + b.R, c.G + b.G, c.B + b.B, c.A);
-            return c;
-        }
+            return c;          
+        }                      
         public static Color Subtract(Color c, Color b)
         {
             c = new Color(c.R - b.R, c.G - b.G, c.B - b.B, c.A);
@@ -169,15 +185,33 @@ namespace OrbItProcs
             }
 
             Vector2 spawnPos = Vector2.Zero;
-
             double angle = Utils.random.NextDouble() * Math.PI * 2;
             angle -= Math.PI;
             float dist = 200;
             float x = dist * (float)Math.Cos(angle);
             float y = dist * (float)Math.Sin(angle);
             spawnPos = new Vector2(room.worldWidth / 2, room.worldHeight / 2) - new Vector2(x, y);
-            node = room.game.spawnNode((int)spawnPos.X, (int)spawnPos.Y);
+
+
+            Dictionary<dynamic, dynamic> playerProps = new Dictionary<dynamic, dynamic>()
+            {
+                { nodeE.position, spawnPos },
+                { nodeE.texture, textures.blackorb },
+                { comp.movement, true },
+                { comp.collision, true },
+                { comp.basicdraw, true },
+                { comp.maxvel, true },
+                { comp.phaseorb, true },
+                { comp.randinitialvel, true },
+                //{ comp.laser, true },
+                //{ comp.gravity, true },
+            };
+
+            //node = room.game.spawnNode((int)spawnPos.X, (int)spawnPos.Y);
+            node = room.game.spawnNode(playerProps);
             node.name = "player" + playerIndex;
+
+            node[comp.queuer].queuecount = 100;
 
             SwitchPlayerNode(node);
 

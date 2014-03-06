@@ -146,6 +146,9 @@ namespace OrbItProcs {
 
         public void Update(GameTime gametime)
         {
+            //Testing.StandardizedTesting(700);
+            //Testing.StandardizedTesting2(200);
+
             //Console.WriteLine(gametime.ElapsedGameTime.Milliseconds + " :: " + gametime.ElapsedGameTime.TotalMilliseconds);
             long elapsed = 0;
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
@@ -205,7 +208,7 @@ namespace OrbItProcs {
             //player1.Update(gametime);
             foreach(var player in players)
             {
-                player.Update(gametime);
+                //player.Update(gametime);
             }
 
             scheduler.AffectSelf();
@@ -214,9 +217,9 @@ namespace OrbItProcs {
         public void UpdateCollision()
         {
             Testing.modInc();
-            Testing.w("insertion").Start();
+            //Testing.w("insertion").Start();
             gridsystemCollision.clear();
-            foreach (var n in CollisionSet) //.ToList() 
+            foreach (var n in CollisionSet) //.ToList()
             {
                 gridsystemCollision.insert(n);
             }
@@ -239,19 +242,68 @@ namespace OrbItProcs {
                     {
                         reach = (int)(n.body.radius * 5) / gridsystemCollision.cellWidth;
                     }
-                    //Console.WriteLine(reach);
-                    Testing.w("retrieve").Start();
-                    List<Node> retrievedNodes = gridsystemCollision.retrieve(n, reach);
-                    Testing.w("retrieve").Stop();
-                    Testing.w("manifolds").Start();
                     gridsystemCollision.alreadyVisited.Add(n);
+
+                    ///*
+                    //Testing.w("retrieve").Start();
+                    List<Node> retrievedNodes = gridsystemCollision.retrieve(n, reach);
+                    //Testing.w("retrieve").Stop();
+                    //Testing.w("manifolds").Start();
                     foreach(var r in retrievedNodes) //todo: this may be iterating over a deleted node (or removed)
                     {
                         if (gridsystemCollision.alreadyVisited.Contains(r))
                             continue;
                         n.collision.AffectOther(r);
                     }
-                    Testing.w("manifolds").Stop();
+                    //Testing.w("manifolds").Stop();
+                    //*/
+                    /*
+                    gridsystem.retrieveFromOptimizedOffsets(n, 115, delegate(Node node)
+                    {
+                        if (gridsystemCollision.alreadyVisited.Contains(node))
+                            return;
+                        n.collision.AffectOther(node);
+                    });
+                    //*/
+
+                    /*
+                    int x = (int)n.body.pos.X / gridsystemCollision.cellWidth;
+                    int y = (int)n.body.pos.Y / gridsystemCollision.cellHeight;
+                    if (x < 0 || x >= gridsystemCollision.cellsX || y < 0 || y >= gridsystemCollision.cellsY) continue;
+                    int count = gridsystemCollision.FindCount(115);
+                    var dict = gridsystemCollision.offsetsArray[x, y];
+                    if (dict.Count <= count) throw new SystemException("Count exceeded dictionary count");
+                    for (int i = 0; i < count; i++)
+                    {
+
+                        foreach (var tuple in dict.ElementAt(i).Value)
+                        {
+                            foreach (Node nn in gridsystemCollision.grid[tuple.Item1 + x, tuple.Item2 + y])
+                            {
+                                //action(nn);
+                                if (gridsystemCollision.alreadyVisited.Contains(nn))
+                                    continue;
+                                n.collision.AffectOther(nn);
+                            }
+                        }
+                    }
+                    //*/
+
+                    /*
+                    var buckets = gridsystemCollision.retrieveBuckets(n, 115);
+                    if (buckets != null)
+                    {
+                        foreach (var bucket in buckets)
+                        {
+                            foreach (var nn in bucket)
+                            {
+                                if (gridsystemCollision.alreadyVisited.Contains(nn))
+                                    continue;
+                                n.collision.AffectOther(nn);
+                            }
+                        }
+                    }
+                    //*/
                 }
             }
             Testing.PrintTimer("insertion");
