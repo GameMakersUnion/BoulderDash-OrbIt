@@ -213,15 +213,26 @@ namespace OrbItProcs {
 
             scheduler.AffectSelf();
         }
-
+        static int algorithm = 5;
         public void UpdateCollision()
         {
             Testing.modInc();
             //Testing.w("insertion").Start();
-            gridsystemCollision.clear();
-            foreach (var n in CollisionSet) //.ToList()
+            if (algorithm <= 4)
             {
-                gridsystemCollision.insert(n);
+                gridsystemCollision.clear();
+                foreach (var n in CollisionSet) //.ToList()
+                {
+                    gridsystemCollision.insert(n);
+                }
+            }
+            if (algorithm == 5)
+            {
+                gridsystemCollision.clearBuckets();
+                foreach (var n in CollisionSet) //.ToList()
+                {
+                    gridsystemCollision.insertToBuckets(n);
+                }
             }
 
             Testing.PrintTimer("insertion");
@@ -241,69 +252,97 @@ namespace OrbItProcs {
                     else
                     {
                         reach = (int)(n.body.radius * 5) / gridsystemCollision.cellWidth;
+                        //reach = 2;
                     }
                     gridsystemCollision.alreadyVisited.Add(n);
 
-                    ///*
-                    //Testing.w("retrieve").Start();
-                    List<Node> retrievedNodes = gridsystemCollision.retrieve(n, reach);
-                    //Testing.w("retrieve").Stop();
-                    //Testing.w("manifolds").Start();
-                    foreach(var r in retrievedNodes) //todo: this may be iterating over a deleted node (or removed)
-                    {
-                        if (gridsystemCollision.alreadyVisited.Contains(r))
-                            continue;
-                        n.collision.AffectOther(r);
-                    }
-                    //Testing.w("manifolds").Stop();
-                    //*/
-                    /*
-                    gridsystem.retrieveFromOptimizedOffsets(n, 115, delegate(Node node)
-                    {
-                        if (gridsystemCollision.alreadyVisited.Contains(node))
-                            return;
-                        n.collision.AffectOther(node);
-                    });
-                    //*/
 
-                    /*
-                    int x = (int)n.body.pos.X / gridsystemCollision.cellWidth;
-                    int y = (int)n.body.pos.Y / gridsystemCollision.cellHeight;
-                    if (x < 0 || x >= gridsystemCollision.cellsX || y < 0 || y >= gridsystemCollision.cellsY) continue;
-                    int count = gridsystemCollision.FindCount(115);
-                    var dict = gridsystemCollision.offsetsArray[x, y];
-                    if (dict.Count <= count) throw new SystemException("Count exceeded dictionary count");
-                    for (int i = 0; i < count; i++)
+                    if (algorithm == 1)
                     {
-
-                        foreach (var tuple in dict.ElementAt(i).Value)
+                        ///*
+                        //Testing.w("retrieve").Start();
+                        List<Node> retrievedNodes = gridsystemCollision.retrieve(n, reach);
+                        //Testing.w("retrieve").Stop();
+                        //Testing.w("manifolds").Start();
+                        foreach (var r in retrievedNodes) //todo: this may be iterating over a deleted node (or removed)
                         {
-                            foreach (Node nn in gridsystemCollision.grid[tuple.Item1 + x, tuple.Item2 + y])
+                            if (gridsystemCollision.alreadyVisited.Contains(r))
+                                continue;
+                            n.collision.AffectOther(r);
+                        }
+                        //Testing.w("manifolds").Stop();
+                    }
+                    else if (algorithm == 2)
+                    {
+                        //*/
+                        gridsystem.retrieveFromOptimizedOffsets(n, 115, delegate(Node node)
+                        {
+                            if (gridsystemCollision.alreadyVisited.Contains(node))
+                                return;
+                            n.collision.AffectOther(node);
+                        });
+                        //*/
+                    }
+                    else if (algorithm == 3)
+                    {
+                        ///*
+                        int x = (int)n.body.pos.X / gridsystemCollision.cellWidth;
+                        int y = (int)n.body.pos.Y / gridsystemCollision.cellHeight;
+                        if (x < 0 || x >= gridsystemCollision.cellsX || y < 0 || y >= gridsystemCollision.cellsY) continue;
+                        int count = gridsystemCollision.FindCount(115);
+                        var dict = gridsystemCollision.offsetsArray[x, y];
+                        if (dict.Count <= count) throw new SystemException("Count exceeded dictionary count");
+                        for (int i = 0; i < count; i++)
+                        {
+
+                            foreach (var tuple in dict.ElementAt(i).Value)
                             {
-                                //action(nn);
-                                if (gridsystemCollision.alreadyVisited.Contains(nn))
-                                    continue;
-                                n.collision.AffectOther(nn);
+                                foreach (Node nn in gridsystemCollision.grid[tuple.Item1 + x, tuple.Item2 + y])
+                                {
+                                    //action(nn);
+                                    if (gridsystemCollision.alreadyVisited.Contains(nn))
+                                        continue;
+                                    n.collision.AffectOther(nn);
+                                }
+                            }
+                        }
+                        //*/
+                    }
+                    else if (algorithm == 4)
+                    {
+                        ///*
+                        var buckets = gridsystemCollision.retrieveBuckets(n, 115);
+                        if (buckets != null)
+                        {
+                            foreach (var bucket in buckets)
+                            {
+                                foreach (var nn in bucket)
+                                {
+                                    if (gridsystemCollision.alreadyVisited.Contains(nn))
+                                        continue;
+                                    n.collision.AffectOther(nn);
+                                }
+                            }
+                        }
+                        //*/
+                    }
+                    else if (algorithm == 5)
+                    {
+                        var bucketBag = gridsystemCollision.retrieveBucketBags(n);
+                        if (bucketBag != null)
+                        {
+                            for (int i = 0; i < bucketBag.index; i++)
+                            {
+                                for (int j = 0; j < bucketBag.array[i].index; j++)
+                                {
+                                    Node nn = bucketBag.array[i].array[j];
+                                    if (gridsystemCollision.alreadyVisited.Contains(nn))
+                                        continue;
+                                    n.collision.AffectOther(nn);
+                                }
                             }
                         }
                     }
-                    //*/
-
-                    /*
-                    var buckets = gridsystemCollision.retrieveBuckets(n, 115);
-                    if (buckets != null)
-                    {
-                        foreach (var bucket in buckets)
-                        {
-                            foreach (var nn in bucket)
-                            {
-                                if (gridsystemCollision.alreadyVisited.Contains(nn))
-                                    continue;
-                                n.collision.AffectOther(nn);
-                            }
-                        }
-                    }
-                    //*/
                 }
             }
             Testing.PrintTimer("insertion");

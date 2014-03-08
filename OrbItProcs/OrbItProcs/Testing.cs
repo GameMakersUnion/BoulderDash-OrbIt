@@ -155,10 +155,10 @@ namespace OrbItProcs
             //Weird.
             int length = 1000000;
             int[] ints = new int[length];
-            CountArray<int> counted = new CountArray<int>(new int[length]);
+            IndexArray<int> counted = new IndexArray<int>(new int[length]);
             List<int> list = new List<int>();
             w("count").Start();
-            for (int i = 0; i < counted.count; i++)
+            for (int i = 0; i < counted.index; i++)
             {
                 counted.array[i] = i;
             }

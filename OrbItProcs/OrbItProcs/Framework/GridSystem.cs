@@ -67,37 +67,61 @@ namespace OrbItProcs {
                     grid[i, j] = new List<Node>();
                 }
             }
-            distToOffsets = GenerateReachOffsets();
-            GenerateAllReachOffsetsPerCoord(300);
-            bucketLists = new List<List<Node>>[cellsX, cellsY];
-        }
-
-        public GridSystem(Room room, int cellsX, int cellsY, int cellReach = 4)
-        {
-            this.room = room;
-            this.gridWidth = room.worldWidth;
-            this.gridHeight = room.worldHeight;
-            this.cellsX = cellsX;
-            this.cellsY = cellsY;
-
-            this.cellReach = cellReach;
-            cellWidth = gridWidth / cellsX;
-            cellHeight = gridHeight / cellsY;
-            alreadyVisited = new HashSet<Node>();
-            //cellheight = gridheight / cellsY;
-            grid = new List<Node>[cellsX, cellsY];
-            for (int i = 0; i < cellsX; i++)
+            
+            //
+            arrayGrid = new IndexArray<Node>[cellsX][];
+            for(int i = 0; i < cellsX; i++)
             {
-                for (int j = 0; j < cellsY; j++)
+                arrayGrid[i] = new IndexArray<Node>[cellsY];
+                for(int j = 0; j < cellsY; j++)
                 {
-                    grid[i, j] = new List<Node>();
+                    arrayGrid[i][j] = new IndexArray<Node>(100);
                 }
             }
+            bucketBags = new IndexArray<IndexArray<Node>>[cellsX][];
+            for (int i = 0; i < cellsX; i++)
+            {
+                bucketBags[i] = new IndexArray<IndexArray<Node>>[cellsY];
+                for (int j = 0; j < cellsY; j++)
+                {
+                    bucketBags[i][j] = new IndexArray<IndexArray<Node>>(20);
+                }
+            }
+            //
             distToOffsets = GenerateReachOffsets();
             GenerateAllReachOffsetsPerCoord(300);
             bucketLists = new List<List<Node>>[cellsX, cellsY];
-        }
 
+        }
+        public IndexArray<Node>[][] arrayGrid;
+        //public IndexArray<Node>[][][] bucketBags;
+        public IndexArray<IndexArray<Node>>[][] bucketBags;
+
+
+        public IndexArray<IndexArray<Node>> retrieveBucketBags(Node node)
+        {
+            int x = (int)node.body.pos.X / cellWidth;
+            int y = (int)node.body.pos.Y / cellHeight;
+            if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return null;
+            return bucketBags[x][y];
+        }
+        public void insertToBuckets(Node node)
+        {
+            int x = (int)node.body.pos.X / cellWidth;
+            int y = (int)node.body.pos.Y / cellHeight;
+            if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
+            arrayGrid[x][y].AddItem(node);
+        }
+        public void clearBuckets()
+        {
+            for(int x = 0; x < cellsX; x++)
+            {
+                for(int y = 0; y < cellsY; y++)
+                {
+                    arrayGrid[x][y].index = 0;
+                }
+            }
+        }
 
 
         static int largest = 0;
@@ -167,8 +191,11 @@ namespace OrbItProcs {
                             if (tuple.Item1 + x < 0 || tuple.Item1 + x >= cellsX || tuple.Item2 + y < 0 || tuple.Item2 + y >= cellsY) continue;
                             if (!offsetsArray[x, y].ContainsKey(dist)) offsetsArray[x, y][dist] = new List<Tuple<int, int>>();
                             offsetsArray[x, y][dist].Add(tuple);
+                            //add bucket to bucketBag
+                            bucketBags[x][y].AddItem(arrayGrid[x + tuple.Item1][y + tuple.Item2]);
                         }
                     }
+                    bucketBags[x][y].index = 20; //determins global reach
                 }
             }
         }

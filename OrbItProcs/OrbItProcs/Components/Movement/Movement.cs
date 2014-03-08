@@ -86,7 +86,7 @@ namespace OrbItProcs
             if (mode == movemode.falloff)    fallOff();
             if (mode == movemode.halt) halt();
 
-            //GraphData.AddFloat(parent.body.pos.X);
+            GraphData.AddFloat(parent.body.pos.X);
 
             //Trippy();
         }
@@ -101,7 +101,6 @@ namespace OrbItProcs
         public override void Draw(SpriteBatch spritebatch)
         {
             //C3.XNA.Primitives2D.DrawCircle()
-            
         }
 
         public void fallOff()
