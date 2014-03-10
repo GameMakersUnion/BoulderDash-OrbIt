@@ -27,8 +27,7 @@ namespace OrbItProcs
         public void AddItem(T item)
         {
             if (index >= array.Length) Array.Resize<T>(ref array, array.Length * 2); //todo: add check here and see if it effects performance
-            array[index++] = item; 
+            array[index++] = item;
         }
-
     }
 }

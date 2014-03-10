@@ -121,7 +121,7 @@ namespace OrbItProcs
             };                 
             bigtony.OnAffectOthers += updateScores;
 
-            //room.masterGroup.fullSet.Add(bigtony);
+            //room.masterGroup.fullSet.Add(bigtony); //#bigtony
         }                      
                                
                                
@@ -348,7 +348,6 @@ namespace OrbItProcs
                 case 2: index = PlayerIndex.Three; break;
                 case 3: index = PlayerIndex.Four; break;
                 default: index = PlayerIndex.One; break;
-                
             }
             bool clicked = false;
             newGamePadState = GamePad.GetState(index);
@@ -361,6 +360,7 @@ namespace OrbItProcs
             }
             else
             {
+                
                 stick = GamePad.GetState(index).ThumbSticks.Right;
                 //clicked = (newGamePadState.Buttons.RightStick == ButtonState.Pressed && oldGamePadState.Buttons.RightStick == ButtonState.Released)
                 //    || (newGamePadState.Buttons.RightShoulder == ButtonState.Pressed && oldGamePadState.Buttons.RightShoulder == ButtonState.Released);
@@ -505,7 +505,7 @@ namespace OrbItProcs
             if (node == null) return;
             Vector2 pos = UserInterface.WorldMousePos;
             Node newNode = new Node();
-            Node.cloneObject(launchNode, newNode);
+            Node.cloneNode(launchNode, newNode);
             newNode.body.velocity = pos - body.pos;
             newNode.body.pos = body.pos + body.velocity * 5;
             room.game.spawnNode(newNode, lifetime: bulletlife);
@@ -523,7 +523,7 @@ namespace OrbItProcs
 
             Vector2 pos = UserInterface.WorldMousePos;
             Node newNode = new Node();
-            Node.cloneObject(launchNode, newNode);
+            Node.cloneNode(launchNode, newNode);
             newNode.body.velocity = pos - body.pos;
             newNode.body.pos = body.pos + body.velocity * 5;
 

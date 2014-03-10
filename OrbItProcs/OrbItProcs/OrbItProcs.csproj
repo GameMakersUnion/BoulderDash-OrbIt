@@ -136,6 +136,7 @@
     <Compile Include="Framework\Camera.cs" />
     <Compile Include="Framework\IndexArray.cs" />
     <Compile Include="Framework\Level.cs" />
+    <Compile Include="Physics\Collider.cs" />
     <Compile Include="Processes\CameraControl.cs" />
     <Compile Include="Processes\GraphData.cs" />
     <Compile Include="Physics\Body.cs" />

@@ -194,6 +194,7 @@ namespace OrbItProcs
             Vector2 normal = b.pos - a.pos;
             float distSquared = normal.LengthSquared();
             double radius = a.radius + b.radius;
+            
             if (distSquared >= (float)(radius * radius))
             {
                 m.contact_count = 0;

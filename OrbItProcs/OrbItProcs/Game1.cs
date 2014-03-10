@@ -243,7 +243,7 @@ namespace OrbItProcs
             });
 
             Node firstdefault = new Node();
-            Node.cloneObject(room.defaultNode, firstdefault);
+            Node.cloneNode(room.defaultNode, firstdefault);
             firstdefault.name = "[G0]0";
             firstdefault.IsDefault = true;
 
@@ -290,7 +290,7 @@ namespace OrbItProcs
 
             for (int i = 1; i < 5; i++)
             {
-                //room.players.Add(new Player(i));
+                //room.players.Add(new Player(i)); //#bigtony
             }
 
             processManager.SetProcessKeybinds(ui.keyManager);
@@ -481,15 +481,14 @@ namespace OrbItProcs
             {
                 if (ui.spawnerNode != null)
                 {
-                    Node.cloneObject(ui.spawnerNode, newNode);
+                    Node.cloneNode(ui.spawnerNode, newNode);
                 }
                 else
                 {
-                    Node.cloneObject(ui.sidebar.ActiveDefaultNode, newNode);
+                    Node.cloneNode(ui.sidebar.ActiveDefaultNode, newNode);
                 }
             }
             newNode.name = activegroup.Name + Node.nodeCounter;
-            //userProperties[node.radius] = 100;
             newNode.acceptUserProps(userProperties);
 
             CollisionDelegate toggleWhite = delegate(Node source, Node target)
@@ -595,7 +594,7 @@ namespace OrbItProcs
             Action completeSave = delegate{
             ui.sidebar.inspectorArea.editNode.name = name;
             Node serializenode = new Node();
-            Node.cloneObject(ui.sidebar.inspectorArea.editNode, serializenode);
+            Node.cloneNode(ui.sidebar.inspectorArea.editNode, serializenode);
             room.game.serializer.Serialize(serializenode, filename);
             ui.game.NodePresets.Add(serializenode);
             };

@@ -34,9 +34,9 @@ namespace OrbItProcs
                 Console.WriteLine("yes");
             }
             Node n1 = new Node(), n2 = new Node(), n3 = new Node();
-            Node.cloneObject(me, n1); // take params (...)
-            Node.cloneObject(me, n2);
-            Node.cloneObject(me, n3);
+            Node.cloneNode(me, n1); // take params (...)
+            Node.cloneNode(me, n2);
+            Node.cloneNode(me, n3);
             //CollisionArgs["trigger"].Collided -= Collision;
             n1.OnCollision -= OnCollision;
             n2.OnCollision -= OnCollision;

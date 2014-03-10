@@ -42,7 +42,7 @@ namespace OrbItProcs
             if (verts.Count < 3) return;
             Vector2[] vertices = verts.ToArray();
             Node newNode = new Node();
-            Node.cloneObject(room.game.ui.sidebar.ActiveDefaultNode, newNode);
+            Node.cloneNode(room.game.ui.sidebar.ActiveDefaultNode, newNode);
             Polygon poly = new Polygon();
             poly.body = newNode.body;
             //poly.FindCentroid(vertices);
@@ -67,7 +67,7 @@ namespace OrbItProcs
             Vector2[] vertices = randVerts.ToArray();
             //Node newNode = new Node(ShapeType.ePolygon);
             Node newNode = new Node();
-            Node.cloneObject(room.game.ui.sidebar.ActiveDefaultNode, newNode);
+            Node.cloneNode(room.game.ui.sidebar.ActiveDefaultNode, newNode);
             Polygon poly = new Polygon();
             poly.body = newNode.body;
             poly.SetCenterOfMass(vertices);
@@ -87,7 +87,7 @@ namespace OrbItProcs
             //Vector2[] vertices = verts.ToArray();
             //Node newNode = new Node(ShapeType.ePolygon);
             Node newNode = new Node();
-            Node.cloneObject(room.game.ui.sidebar.ActiveDefaultNode, newNode);
+            Node.cloneNode(room.game.ui.sidebar.ActiveDefaultNode, newNode);
             Polygon poly = new Polygon();
             poly.body = newNode.body;
             poly.SetBox(Utils.random.Next(100),Utils.random.Next(100));

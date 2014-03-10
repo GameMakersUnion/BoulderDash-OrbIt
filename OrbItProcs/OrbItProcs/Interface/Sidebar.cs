@@ -420,7 +420,7 @@ namespace OrbItProcs
         {
             Node n = (Node)lstMain.Items.ElementAt(lstMain.ItemIndex);
             Node newdefault = new Node();
-            Node.cloneObject(n, newdefault);
+            Node.cloneNode(n, newdefault);
             Group g = ActiveGroupFirst;
             g.defaultNode = newdefault;
             g.fullSet.Remove(n);
@@ -436,7 +436,7 @@ namespace OrbItProcs
             }
 
             Node newdefault = new Node();
-            Node.cloneObject(n, newdefault);
+            Node.cloneNode(n, newdefault);
             newdefault.body.velocity = new Vector2(0, 0);
             Group g = new Group(newdefault, parentGroup: room.masterGroup.childGroups["General Groups"]);
             newdefault.name = g.Name;

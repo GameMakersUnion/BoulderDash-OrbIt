@@ -15,12 +15,13 @@ namespace OrbItProcs
         
         public float radius
         {
-            get { return _radius; }
+            get { return shape.radius; }
             set
             {
                 float halfwidth = getTexture() != null ? (parent.getTexture().Width / 2f) : 25f;
                 if (_scale != (float)value / halfwidth) _scale = value / halfwidth;
-                _radius = value;
+                //_radius = value;
+                shape.radius = value;
             }
         }
         public float scale
@@ -29,7 +30,8 @@ namespace OrbItProcs
             set 
             {
                 float halfwidth = getTexture() != null ? (parent.getTexture().Width / 2f) : 25f;
-                _radius = value * halfwidth;
+                //_radius = value * halfwidth;
+                shape.radius = value * halfwidth;
                 _scale = value;
             }
         }
@@ -66,9 +68,12 @@ namespace OrbItProcs
         private textures _texture = textures.whitecircle;
 
         
-        public Shape shapeP { get { return shape; } set { shape = value.Clone();} }
+        public Shape shapeP { get { return shape; }
+            set { 
+                shape = value.Clone();
+            }
+        }
 
-        
 
         public float[] positionP { get { return pos.toFloatArray(); }
             set { pos = new Vector2(value[0], value[1]); } }
@@ -93,7 +98,7 @@ namespace OrbItProcs
         private float _dynamicFriction = 0.3f;
         private float _restitution = 0.2f;
 
-        private float _radius = 25f;
+        //private float _radius = 25f;
         private float _scale = 1f;
 
         

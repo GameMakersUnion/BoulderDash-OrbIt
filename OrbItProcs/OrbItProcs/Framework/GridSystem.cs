@@ -195,7 +195,7 @@ namespace OrbItProcs {
                             bucketBags[x][y].AddItem(arrayGrid[x + tuple.Item1][y + tuple.Item2]);
                         }
                     }
-                    bucketBags[x][y].index = 20; //determins global reach
+                    bucketBags[x][y].index = 50; //determins global reach
                 }
             }
         }
