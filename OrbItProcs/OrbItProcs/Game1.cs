@@ -447,6 +447,10 @@ namespace OrbItProcs
 
             if (IsActive) ui.Update(gameTime);
         }
+        public float backgroundHue = 180;
+        public double x = 0;
+        public Color backgroundColor = Color.Black;
+
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
@@ -456,8 +460,15 @@ namespace OrbItProcs
             //if (!IsActive) return;
             Manager.BeginDraw(gameTime);
             base.Draw(gameTime);
-
-            GraphicsDevice.Clear(Color.Black);
+            if (!ui.IsPaused)
+            {
+                x += Math.PI / 360.0;
+                //backgroundHue = (backgroundHue + ((float)Math.Sin(x) + 1)/10f) % 360;
+                backgroundHue = (backgroundHue + 0.1f) % 360;
+                backgroundColor = ColorChanger.getColorFromHSV(backgroundHue, value: 0.2f);
+                //Console.WriteLine("Hue: {0}  R: {1}  G: {2}  B: {3}", backgroundHue, backgroundColor.R, backgroundColor.G, backgroundColor.B);
+            }
+            GraphicsDevice.Clear(backgroundColor);
             spriteBatch.Begin();
 
             room.Draw(spriteBatch);
@@ -557,12 +568,12 @@ namespace OrbItProcs
             }
             
 
-            Collider col = new Collider(new Circle(Utils.random.Next(200)), newNode);
+            Collider col = new Collider(new Circle(Utils.random.Next(200)));
             col.OnCollisionStay += delegate(Node source, Node target)
             {
                 source.body.color = Utils.randomColor();
             };
-            newNode.collision.AddCollider(col);
+            //newNode.collision.AddCollider(col);
 
             g.IncludeEntity(newNode);
             return newNode;

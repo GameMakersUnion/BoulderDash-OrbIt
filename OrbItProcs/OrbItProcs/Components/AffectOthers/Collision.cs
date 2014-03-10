@@ -151,7 +151,7 @@ namespace OrbItProcs
         {
             Color c = Color.Black;
             //if (Room.totalElapsedMilliseconds / 1000 % 2 == 0) c = Color.White;
-            parent.room.camera.Draw(textures.ring, parent.body.pos, c, parent.body.scale * 1.05f);
+            //parent.room.camera.Draw(textures.ring, parent.body.pos, c, parent.body.scale * 1.05f);
             parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color, parent.body.scale);
 
             foreach(Collider cc in colliders)

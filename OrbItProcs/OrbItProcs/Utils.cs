@@ -215,17 +215,13 @@ namespace OrbItProcs {
         {
             float mapzoom = room.zoom;
             
-            //Vector2 centerTexture = new Vector2(0.5f, 0.5f);
-            Vector2 diff = (end - start) * mapzoom;
+            Vector2 diff = (end - start);// *mapzoom;
             Vector2 centerpoint = (end + start) / 2;
-            centerpoint *= mapzoom;
+            //centerpoint *= mapzoom;
             float len = diff.Length();
-            thickness *= 2f * mapzoom;
+            //thickness *= 2f * mapzoom;
             Vector2 scalevect = new Vector2(len, thickness);
-            float testangle = (float)(Math.Atan2(diff.Y, diff.X));// + (Math.PI / 2));
-
-            //diff.Normalize();
-            //diff = new Vector2(diff.Y, diff.X);
+            float testangle = (float)(Math.Atan2(diff.Y, diff.X));
 
             //room.game.spriteBatch.Draw(room.game.textureDict[textures.whitepixel], centerpoint, null, color, testangle, CENTER_TEXTURE, scalevect, SpriteEffects.None, 0);
 

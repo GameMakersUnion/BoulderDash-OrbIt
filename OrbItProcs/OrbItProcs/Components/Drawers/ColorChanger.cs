@@ -98,12 +98,37 @@ namespace OrbItProcs
             return ret;
         }
 
-        public static Color getColorFromHSV(float angle, float saturation = 1f, float value = 1f)
-        {
-            int[] col = getColorsFromAngle(angle, saturation, value);
-            return new Color(col[0], col[1], col[2]);
-        }
+        //public static Color getColorFromHSV(float angle, float saturation = 1f, float value = 1f)
+        //{
+        //    int[] col = getColorsFromAngle(angle, saturation, value);
+        //    return new Color(col[0], col[1], col[2]);
+        //}
 
+        public static Color getColorFromHSV(float hue, float saturation = 1f, float value = 1f, int alpha = 255)
+        {
+            int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
+            double f = hue / 60 - Math.Floor(hue / 60);
+
+            value = value * 255;
+            int v = Convert.ToInt32(value);
+            int p = Convert.ToInt32(value * (1 - saturation));
+            int q = Convert.ToInt32(value * (1 - f * saturation));
+            int t = Convert.ToInt32(value * (1 - (1 - f) * saturation));
+
+            if (hi == 0)
+                return new Color(v, t, p, alpha);
+            else if (hi == 1)
+                return new Color(q, v, p, alpha);
+            else if (hi == 2)
+                return new Color(p, v, t, alpha);
+            else if (hi == 3)
+                return new Color(p, q, v, alpha);
+            else if (hi == 4)
+                return new Color(t, p, v, alpha);
+            else
+                return new Color(v, p, q, alpha);
+        }
+        /*
         public static int[] getColorsFromAngle(float angle, float saturation = 1f, float value = 1f)
         {
             int[] cols = new int[3];
@@ -148,7 +173,7 @@ namespace OrbItProcs
             }
 
             return cols;
-        }
+        }*/
 
         public override void Draw(SpriteBatch spritebatch)
         {
