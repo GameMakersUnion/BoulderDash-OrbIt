@@ -29,7 +29,7 @@ namespace OrbItProcs
     public enum comp
     {
         //transform,
-        body,
+        //body,
         queuer,
         linearpull,
         maxvel,
@@ -79,6 +79,19 @@ namespace OrbItProcs
         //chrono,
         //weird,
     };
+
+    public enum textures
+    {
+        blueorb,
+        whiteorb,
+        colororb,
+        whitecircle,
+        whitepixel,
+        whitepixeltrans,
+        blackorb,
+        whitesphere,
+        ring,
+    }
 
     public class Game1 : Application
     {
@@ -185,7 +198,8 @@ namespace OrbItProcs
             {textures.whitepixeltrans, Content.Load<Texture2D>("Textures/whitepixeltrans")},
             {textures.whitecircle, Content.Load<Texture2D>("Textures/whitecircle"   )},
             {textures.whitesphere, Content.Load<Texture2D>("Textures/whitesphere"   )},
-            {textures.blackorb, Content.Load<Texture2D>("Textures/blackorb"   )}};
+            {textures.blackorb, Content.Load<Texture2D>("Textures/blackorb"   )},
+            {textures.ring, Content.Load<Texture2D>("Textures/smoothEdge"   )}};
 
             textureCenters = new Dictionary<textures, Vector2>();
             foreach(var tex in textureDict.Keys)
@@ -541,6 +555,15 @@ namespace OrbItProcs
                 newNode.comps[comp.lifetime].maxmseconds = lifetime;
                 newNode.comps[comp.lifetime].immortal = false;
             }
+            
+
+            Collider col = new Collider(new Circle(Utils.random.Next(200)), newNode);
+            col.OnCollisionStay += delegate(Node source, Node target)
+            {
+                source.body.color = Utils.randomColor();
+            };
+            newNode.collision.AddCollider(col);
+
             g.IncludeEntity(newNode);
             return newNode;
         }

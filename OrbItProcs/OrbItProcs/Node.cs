@@ -87,7 +87,6 @@ namespace OrbItProcs {
             get { return _active; }
             set
             {
-                OnAffectOthers += Node_OnAffectOthers;
                 if (_active && !value)
                 {
                     foreach (comp c in comps.Keys.ToList())
@@ -98,6 +97,7 @@ namespace OrbItProcs {
                             comps[c].active = false;
                         }
                     }
+                    collision.RemoveCollidersFromSet();
                 }
                 else if (!_active && value)
                 {
@@ -109,14 +109,21 @@ namespace OrbItProcs {
                             else comps[c].active = true;
                         }
                     }
+                    if (collision != null) collision.UpdateCollisionSet();
                 }
                 _active = value;
             }
         }
-
-        void Node_OnAffectOthers(object sender, EventArgs e)
+        ///<summary>
+        ///Warning: Do not call in update Loop. BE CAREFUL
+        ///</summary>
+        public IEnumerable<Collider> GetColliders()
         {
-            
+            foreach(Collider c in collision.colliders)
+            {
+                yield return c;
+            }
+            yield return body;
         }
 
         private bool _IsDeleted = false;
@@ -170,14 +177,6 @@ namespace OrbItProcs {
             set
             {
                 body = value;
-                if (comps != null && value != null)
-                {
-                    if (comps.ContainsKey(comp.body))
-                    {
-                        comps.Remove(comp.body);
-                    }
-                    comps.Add(comp.body, value);
-                }
             } 
         }
 
@@ -250,77 +249,6 @@ namespace OrbItProcs {
         public Dictionary<string, dynamic> DataStore = new Dictionary<string, dynamic>();
 
         public event EventHandler OnAffectOthers;
-
-        public event CollisionDelegate OnCollision;
-        public event CollisionDelegate OnCollisionStart;
-        public event CollisionDelegate OnCollisionEnd;
-        public event Action<Node> OnCollisionFirst;
-        public event Action<Node> OnCollisionNone;
-
-        public void ClearCollisionHandlers()
-        {
-            OnCollision -= OnCollision;
-            OnCollisionStart -= OnCollisionStart;
-            OnCollisionEnd -= OnCollisionEnd;
-            OnCollisionFirst -= OnCollisionFirst;
-            OnCollisionNone -= OnCollisionNone;
-        }
-
-        public bool HasCollision()
-        {
-            return OnCollision != null;
-        }
-        public bool HasCollisionStart()
-        {
-            return OnCollisionStart != null;
-        }
-        public bool HasCollisionEnd()
-        {
-            return OnCollisionEnd != null;
-        }
-        public bool HasCollisionFirst()
-        {
-            return OnCollisionFirst != null;
-        }
-        public bool HasCollisionNone()
-        {
-            return OnCollisionNone != null;
-        }
-        public void OnCollisionInvoke(Node target)
-        {
-            if (OnCollision != null)
-            {
-                OnCollision(this, target);
-            }
-        }
-        public void OnCollisionStartInvoke(Node target)
-        {
-            if (OnCollisionStart != null)
-            {
-                OnCollisionStart(this, target);
-            }
-        }
-        public void OnCollisionEndInvoke(Node target)
-        {
-            if (OnCollisionEnd != null)
-            {
-                OnCollisionEnd(this, target);
-            }
-        }
-        public void OnCollisionFirstInvoke()
-        {
-            if (OnCollisionFirst != null)
-            {
-                OnCollisionFirst(this);
-            }
-        }
-        public void OnCollisionNoneInvoke()
-        {
-            if (OnCollisionNone != null)
-            {
-                OnCollisionNone(this);
-            }
-        }
 
         public void storeInInstance(nodeE val, Dictionary<dynamic,dynamic> dict)
         {
@@ -435,12 +363,13 @@ namespace OrbItProcs {
         }
         public virtual void Update(GameTime gametime)
         {
-            collision.ClearCollisionList();
+            //collision.ClearCollisionList();
+            collision.ClearCollisionLists();
             if (nodeState == state.off || nodeState == state.drawOnly) return;
 
             if (aOtherProps.Count > 0)
             {
-                List<Node> returnObjectsFinal = new List<Node>();
+                List<Collider> returnObjectsFinal = new List<Collider>();
 
                 int reach; //update later based on cell size and radius (or polygon size.. maybe based on it's AABB)
                 if (body.shape is Polygon)
@@ -453,25 +382,25 @@ namespace OrbItProcs {
                 }
 
                 ///*
-                returnObjectsFinal = room.gridsystem.retrieve(this, reach);
+                returnObjectsFinal = room.gridsystem.retrieve(body, reach);
                 //int cellReach = (int)(body.radius * 2) / room.gridsystem.cellWidth * 2;
                 if (comps.ContainsKey(comp.flow) && comps[comp.flow].active)
                 {
-                    returnObjectsFinal = new List<Node>();
+                    returnObjectsFinal = new List<Collider>();
                     if (comps[comp.flow].activated)
                     {
                         returnObjectsFinal = comps[comp.flow].outgoing.ToList();
                     }
                 }
-                returnObjectsFinal.Remove(this);
+                returnObjectsFinal.Remove(body);
 
-                foreach (Node other in returnObjectsFinal)
+                foreach (Collider other in returnObjectsFinal)
                 {
-                    if (other.active)
+                    if (other.parent.active)
                     {
                         foreach (comp c in aOtherProps)
                         {
-                            comps[c].AffectOther(other);
+                            comps[c].AffectOther(other.parent);
                         }
                     }
                 }
@@ -646,10 +575,6 @@ namespace OrbItProcs {
                 collision.active = active;
                 return true;
             }
-            else if (c == comp.body)
-            {
-                return true;
-            }
 
             Component component = MakeComponent(c, active, this);
 
@@ -762,7 +687,7 @@ namespace OrbItProcs {
 
             foreach (comp c in clist)
             {
-                if (c == comp.movement || c == comp.body || c == comp.collision) continue;
+                if (c == comp.movement || c == comp.collision) continue;
                 if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.affectother) == mtypes.affectother))
                 {
                     aOtherProps.Add(c);
@@ -770,7 +695,7 @@ namespace OrbItProcs {
             }
             foreach (comp c in clist)
             {
-                if (c == comp.movement || c == comp.body || c == comp.collision) continue;
+                if (c == comp.movement) continue;
                 if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.affectself) == mtypes.affectself))
                 {
                     aSelfProps.Add(c);
@@ -886,14 +811,14 @@ namespace OrbItProcs {
                     Dictionary<comp, dynamic> dict = sourceNode.comps;
                     foreach (comp key in dict.Keys)
                     {
-                        if (key == comp.body || key == comp.collision || key == comp.movement) continue;
+                        if (key == comp.collision || key == comp.movement) continue;
                         destNode.addComponent(key, sourceNode.comps[key].active);
                         Component.CloneComponent(dict[key], destNode.comps[key]);
                         destNode.comps[key].Initialize(destNode);
                     }
                     foreach (comp key in destNode.comps.Keys.ToList())
                     {
-                        if (key == comp.body || key == comp.collision || key == comp.movement) continue;
+                        if (key == comp.collision || key == comp.movement) continue;
                         Component component = destNode.comps[key];
                         MethodInfo mInfo = component.GetType().GetMethod("AfterCloning");
                         if (mInfo != null

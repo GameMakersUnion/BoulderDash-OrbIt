@@ -110,8 +110,8 @@ namespace OrbItProcs
                             p.node.body.mass += 100;
                             foreach (var pp in room.players)
                             {  
-                                pp.node.ClearCollisionHandlers();
-                                pp.nodeCollision.ClearCollisionHandlers();
+                                pp.node.body.ClearHandlers();
+                                pp.nodeCollision.body.ClearHandlers();
                             }  
                             if (Game1.soundEnabled) Scheduler.fanfare.Play();
                             bigtony.OnAffectOthers -= updateScores;
@@ -258,9 +258,9 @@ namespace OrbItProcs
             };
             nodeCollision = new Node(userPP);
             nodeCollision.collision.ResolveCollision = false;
-            nodeCollision.OnCollision += onCollision;
-            nodeCollision.OnCollisionStart += onCollisionStart;
-            nodeCollision.OnCollisionEnd += onCollisionEnd; //todo: make warning when needing to update nodes that are already in collision list
+            nodeCollision.body.OnCollisionStay += onCollision;
+            nodeCollision.body.OnCollisionEnter += onCollisionStart;
+            nodeCollision.body.OnCollisionExit += onCollisionEnd; //todo: make warning when needing to update nodes that are already in collision list
             room.masterGroup.fullSet.Add(nodeCollision);
             nodeCollision.name = "phantom" + playerIndex;
 
@@ -395,7 +395,7 @@ namespace OrbItProcs
 
         public void SwitchPlayer(Vector2 stick)
         {
-            var list = nodeCollision.collision.previousCollision;
+            var list = nodeCollision.body.previousCollision;
             if (list.Count <= 1) return;
             //Node n = null;
             //Player pp = null;
@@ -406,7 +406,7 @@ namespace OrbItProcs
             foreach(var p in room.players)
             {
                 if (p == this) continue;
-                if (list.Contains(p.nodeCollision))
+                if (list.Contains(p.nodeCollision.body))
                 {
                     SwitchPlayerNode(p.node, false, false, p);
                     return;
@@ -416,16 +416,16 @@ namespace OrbItProcs
             float master = -10000000f;
             float current;
             var playernodes = room.playerNodes;
-            foreach (Node q in list)
+            foreach (Collider q in list)
             {
-                if (q == node || playernodes.Contains(q)) continue; //fixed?
-                Vector2 dir = q.body.pos - body.pos; VMath.NormalizeSafe(ref dir);
+                if (q.parent == node || playernodes.Contains(q.parent)) continue; //fixed?
+                Vector2 dir = q.pos - body.pos; VMath.NormalizeSafe(ref dir);
                 Vector2 stickN = stick; VMath.NormalizeSafe(ref stickN);
 
                 if ((current = Vector2.Dot(dir, stickN)) > master)
                 {
                     master = current;
-                    n = q;
+                    n = q.parent;
                 }
             }
             Console.WriteLine(master);

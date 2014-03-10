@@ -9,47 +9,117 @@ namespace OrbItProcs
 {
     public class Collision : Component, ILinkable
     {
-        public HashSet<Node> collisions1 = new HashSet<Node>();
-        public HashSet<Node> collisions2 = new HashSet<Node>();
-        public HashSet<Node> currentCollision { get { 
-            return currentIsCol1 ? collisions1 : collisions2; 
-        } set { } }
-        public HashSet<Node> previousCollision { get { 
-            return !currentIsCol1 ? collisions1 : collisions2; 
-        } set { } }
-        private bool currentIsCol1 = true;
-
-        public static Action<Manifold, Body, Body>[,] Dispatch = new Action<Manifold, Body, Body>[2, 2]
+        public static Func<Manifold, Collider, Collider, bool>[,] Dispatch = new Func<Manifold, Collider, Collider, bool>[2, 2]
         {
             {CircletoCircle, CircletoPolygon},
             {PolygontoCircle, PolygontoPolygon},
         };
 
+        public static Func<Collider, Collider, bool>[,] CheckDispatch = new Func<Collider, Collider, bool>[2, 2]
+        {
+            {CircletoCircleCheck, CircletoPolygonCheck},
+            {PolygontoCircleCheck, PolygontoPolygonCheck},
+        };
+
+        public static bool CheckCollision(Collider aa, Collider bb)
+        {
+            return Collision.CheckDispatch[(int)aa.shape.GetShapeType(), (int)bb.shape.GetShapeType()](aa, bb);
+        }
+
         private Link _link = null;
         public Link link { get { return _link; } set { _link = value; } }
 
-        public bool OldCollision { get; set; }
+        public HashSet<Collider> colliders = new HashSet<Collider>();
 
-        public bool ResolveCollision { get; set; }
-        public bool TriggerHandlers { get; set; }
+        public void AddCollider(Collider col)
+        {
+            colliders.Add(col);
+            col.parent = parent;
+        }
 
+        public bool ResolveCollision { get { return parent.body.ResolveCollision; } set { parent.body.ResolveCollision = value; } }
+        private bool _AllHandlersEnabled = true;
+        public bool AllHandlersEnabled
+        {
+            get { return _AllHandlersEnabled; }
+            set
+            {
+                if (_active && parent != null && parent.active)
+                {
+                    if (!_AllHandlersEnabled && value)
+                    {
+                        if (parent.body.HandlersEnabled) parent.room.CollisionSet.Add(parent.body);
+                        foreach(Collider col in colliders)
+                        {
+                            if (col.HandlersEnabled) parent.room.CollisionSet.Add(col);
+                        }
+                    }
+                    if (_AllHandlersEnabled && !value)
+                    {
+                        if (!parent.body.ResolveCollision) parent.room.CollisionSet.Remove(parent.body);
+                        foreach (Collider col in colliders)
+                        {
+                            parent.room.CollisionSet.Remove(col);
+                        }
+                    }
+                }
+
+                _AllHandlersEnabled = value;
+            }
+        }
         public override bool active
         {
             get { return _active; }
             set
             {
-                if (parent != null && parent.room.game.ui != null)
+                if (parent != null && parent.room.game.ui != null && parent != parent.room.game.ui.sidebar.ActiveDefaultNode)
                 {
-                    if (!_active && value && parent != parent.room.game.ui.sidebar.ActiveDefaultNode)
+                    if (!_active && value)
                     {
-                        parent.room.CollisionSet.Add(parent);
+                        if (parent.body.ResolveCollision || parent.body.HandlersEnabled) parent.room.CollisionSet.Add(parent.body);
+                        foreach (Collider col in colliders)
+                        {
+                            if (col.HandlersEnabled) parent.room.CollisionSet.Add(col);
+                        }
                     }
                     else if (_active && !value)
                     {
-                        parent.room.CollisionSet.Remove(parent);
+                        parent.room.CollisionSet.Remove(parent.body);
+                        foreach (Collider col in colliders)
+                        {
+                            parent.room.CollisionSet.Remove(col);
+                        }
                     }
                 }
                 _active = value;
+            }
+        }
+
+        public void UpdateCollisionSet()
+        {
+            if (parent != null && parent.room.game.ui != null && parent != parent.room.game.ui.sidebar.ActiveDefaultNode)
+            {
+                if (active)
+                {
+                    if (parent.body.ResolveCollision || parent.body.HandlersEnabled) parent.room.CollisionSet.Add(parent.body);
+                    foreach (Collider col in colliders)
+                    {
+                        if (col.HandlersEnabled) parent.room.CollisionSet.Add(col);
+                    }
+                }
+                else
+                {
+                    RemoveCollidersFromSet();
+                }
+            }
+        }
+
+        public void RemoveCollidersFromSet()
+        {
+            parent.room.CollisionSet.Remove(parent.body);
+            foreach (Collider col in colliders)
+            {
+                parent.room.CollisionSet.Remove(col);
             }
         }
 
@@ -58,13 +128,43 @@ namespace OrbItProcs
         {
             if (parent != null) this.parent = parent;
             com = comp.collision; 
-            methods = mtypes.affectother;
-            OldCollision = false;
-            ResolveCollision = true;
-            TriggerHandlers = true;
+            methods = mtypes.affectself | mtypes.draw | mtypes.minordraw;//mtypes.affectother;
+            //ResolveCollision = true;
+            _AllHandlersEnabled = true;
         }
 
-        public override void AffectOther(Node other)
+        public override void AffectSelf()
+        {
+            if (AllHandlersEnabled)
+            {
+                foreach(Collider collider in colliders)
+                {
+                    if (collider.HandlersEnabled)
+                    {
+                        collider.pos = parent.body.pos + collider.objectSpacePos;
+                    }
+                }
+            }
+        }
+
+        public override void Draw(SpriteBatch batch)
+        {
+            Color c = Color.Black;
+            //if (Room.totalElapsedMilliseconds / 1000 % 2 == 0) c = Color.White;
+            parent.room.camera.Draw(textures.ring, parent.body.pos, c, parent.body.scale * 1.05f);
+            parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color, parent.body.scale);
+
+            foreach(Collider cc in colliders)
+            {
+                if (cc.HandlersEnabled)
+                {
+                    float scale = cc.radius / parent.getTexture().Width * 2;
+                    parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color, scale);
+                }
+            }
+        }
+
+        /*public override void AffectOther(Node other)
         {
             if (!active || !other.collision.active) { return; }
             if (exclusions.Contains(other)) return;
@@ -134,9 +234,9 @@ namespace OrbItProcs
                         parent.room.AddManifold(m);
                 }
             }
-        }
+        }*/
 
-        public void ClearCollisionList()
+        /*public void ClearCollisionList()
         {
             if (!active) return;
             //HashSet<Node> lastframe = isCollisions1 ? collisions1 : collisions2;
@@ -162,8 +262,17 @@ namespace OrbItProcs
                 lastframe.Remove(n);
             }
             currentIsCol1 = !currentIsCol1;
-        }
+        }*/
 
+        public void ClearCollisionLists()
+        {
+            if (!active) return;
+            parent.body.ClearCollisionList();
+            foreach(Collider c in colliders)
+            {
+                c.ClearCollisionList();
+            }
+        }
 
 
         public IEnumerable<List<Node>> CollisionHelper(List<Node> list)
@@ -179,15 +288,9 @@ namespace OrbItProcs
             }
         }
 
-        public override void AffectSelf()
-        {
-        }
 
-        public override void Draw(SpriteBatch spritebatch)
-        {
-        }
 
-        public static void CircletoCircle(Manifold m, Body a, Body b)
+        public static bool CircletoCircle(Manifold m, Collider a, Collider b)
         {
             Circle ca = (Circle)a.shape;
             Circle cb = (Circle)b.shape;
@@ -198,7 +301,7 @@ namespace OrbItProcs
             if (distSquared >= (float)(radius * radius))
             {
                 m.contact_count = 0;
-                return;
+                return false;
             }
 
             double distance = Math.Sqrt(distSquared);
@@ -216,16 +319,10 @@ namespace OrbItProcs
                 m.normal = VMath.MultVectDouble(normal, 1.0 / distance); //normal / distance;
                 m.contacts[0] = VMath.MultVectDouble(m.normal, ca.radius) + a.pos; //m.normal * ca.radius + a.body.position;
             }
+            return true;
         }
-        //////////////////////////////////////////////////////////
-        //public void CircletoPolygon(Manifold m, Node a, Node b)
-        //{
-        //    Circle ca = (Circle)a.body.shape;
-        //}
 
-
-
-        public static void CircletoPolygon(Manifold m, Body a, Body b)
+        public static bool CircletoPolygon(Manifold m, Collider a, Collider b)
         {
             Circle A = (Circle)a.shape;
             Polygon B = (Polygon)b.shape;
@@ -246,7 +343,7 @@ namespace OrbItProcs
 
                 if (s > A.radius)
                 {
-                    return;
+                    return false;
                 }
 
                 if (s > separation)
@@ -268,7 +365,7 @@ namespace OrbItProcs
                 m.normal = -(B.u * B.normals[faceNormal]);
                 m.contacts[0] = VMath.MultVectDouble(m.normal, A.radius) + a.pos;
                 m.penetration = A.radius;
-                return;
+                return true;
             }
 
             // Determine which voronoi region of the edge center of circle lies within
@@ -281,7 +378,7 @@ namespace OrbItProcs
             {
                 if (Vector2.DistanceSquared(center, v1) > A.radius * A.radius)
                 {
-                    return;
+                    return false;
                 }
                 m.contact_count = 1;
                 Vector2 n = v1 - center;
@@ -296,7 +393,7 @@ namespace OrbItProcs
             {
                 if (Vector2.DistanceSquared(center, v2) > A.radius * A.radius)
                 {
-                    return;
+                    return false;
                 }
 
                 m.contact_count = 1;
@@ -313,7 +410,7 @@ namespace OrbItProcs
                 Vector2 n = B.normals[faceNormal];
                 if (Vector2.Dot(center - v1, n) > A.radius)
                 {
-                    return;
+                    return false;
                 }
 
                 n = B.u * n;
@@ -321,12 +418,14 @@ namespace OrbItProcs
                 m.contacts[0] = VMath.MultVectDouble(m.normal, A.radius) + a.pos;
                 m.contact_count = 1;
             }
+            return true;
         }
 
-        public static void PolygontoCircle(Manifold m, Body a, Body b)
+        public static bool PolygontoCircle(Manifold m, Collider a, Collider b)
         {
-            CircletoPolygon(m, b, a);
+            bool ret = CircletoPolygon(m, b, a);
             m.normal = -m.normal;
+            return ret;
         }
 
         public static double FindAxisLeastPenetration(ref int faceIndex, Polygon A, Polygon B)
@@ -433,7 +532,7 @@ namespace OrbItProcs
             return sp;
         }
 
-        public static void PolygontoPolygon(Manifold m, Body a, Body b)
+        public static bool PolygontoPolygon(Manifold m, Collider a, Collider b)
         {
             Polygon A = (Polygon)a.shape;
             Polygon B = (Polygon)b.shape;
@@ -443,13 +542,13 @@ namespace OrbItProcs
             int faceA = 0;
             double penetrationA = FindAxisLeastPenetration(ref faceA, A, B);
             if (penetrationA >= 0.0f)
-                return;
+                return false;
 
             // Check for a separating axis with B's face planes
             int faceB = 0;
             double penetrationB = FindAxisLeastPenetration(ref faceB, B, A);
             if (penetrationB >= 0.0f)
-                return;
+                return false;
 
             int referenceIndex;
             bool flip; // Always point from a to b
@@ -515,10 +614,10 @@ namespace OrbItProcs
 
             // Clip incident face to reference face side planes
             if (Clip(-sidePlaneNormal, negSide, ref incidentFace) < 2)
-                return; // Due to floating point error, possible to not have required points
+                return false; // Due to floating point error, possible to not have required points
 
             if (Clip(sidePlaneNormal, posSide, ref incidentFace) < 2)
-                return; // Due to floating point error, possible to not have required points
+                return false; // Due to floating point error, possible to not have required points
 
             // Flip
             m.normal = flip ? -refFaceNormal : refFaceNormal;
@@ -546,8 +645,227 @@ namespace OrbItProcs
                 // Average penetration
                 m.penetration /= (double)cp;
             }
-
+            
             m.contact_count = cp;
+            return cp > 0;
+        }
+
+
+        ////////FUCKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+        public static bool CircletoCircleCheck(Collider a, Collider b)
+        {
+            Vector2 normal = b.pos - a.pos;
+            float distSquared = normal.LengthSquared();
+            double radius = a.radius + b.radius;
+            return distSquared < radius * radius;
+        }
+
+        public static bool CircletoPolygonCheck(Collider a, Collider b)
+        {
+            Circle A = (Circle)a.shape;
+            Polygon B = (Polygon)b.shape;
+
+            //m.contact_count = 0;
+
+            // Transform circle center to Polygon model space
+            Vector2 center = a.pos;
+            center = B.u.Transpose() * (center - b.pos);
+
+            // Find edge with minimum penetration
+            // Exact concept as using support points in Polygon vs Polygon
+            double separation = -float.MaxValue;
+            int faceNormal = 0;
+            for (int i = 0; i < B.vertexCount; ++i)
+            {
+                double s = Vector2.Dot(B.normals[i], center - B.vertices[i]);
+
+                if (s > A.radius)
+                {
+                    return false;
+                }
+
+                if (s > separation)
+                {
+                    separation = s;
+                    faceNormal = i;
+                }
+            }
+
+            // Grab face's vertices
+            Vector2 v1 = B.vertices[faceNormal];
+            int i2 = faceNormal + 1 < B.vertexCount ? faceNormal + 1 : 0;
+            Vector2 v2 = B.vertices[i2];
+
+            // Check to see if center is within polygon
+            if (separation < VMath.EPSILON)
+            {
+                //m.contact_count = 1;
+                //m.normal = -(B.u * B.normals[faceNormal]);
+                //m.contacts[0] = VMath.MultVectDouble(m.normal, A.radius) + a.pos;
+                //m.penetration = A.radius;
+                return true;
+            }
+
+            // Determine which voronoi region of the edge center of circle lies within
+            double dot1 = Vector2.Dot(center - v1, v2 - v1);
+            double dot2 = Vector2.Dot(center - v2, v1 - v2);
+            //m.penetration = A.radius - separation;
+
+            // Closest to v1
+            if (dot1 <= 0.0f)
+            {
+                if (Vector2.DistanceSquared(center, v1) > A.radius * A.radius)
+                {
+                    return false;
+                }
+                //m.contact_count = 1;
+                //Vector2 n = v1 - center;
+                //n = B.u * n;
+                //n.Normalize();
+                //m.normal = n;
+                //v1 = B.u * v1 + b.pos;
+                //m.contacts[0] = v1;
+            }
+            // Closest to v2
+            else if (dot2 <= 0.0f)
+            {
+                if (Vector2.DistanceSquared(center, v2) > A.radius * A.radius)
+                {
+                    return false;
+                }
+
+                //m.contact_count = 1;
+                //Vector2 n = v2 - center;
+                //v2 = B.u * v2 + b.pos;
+                //m.contacts[0] = v2;
+                //n = B.u * n;
+                //n.Normalize();
+                //m.normal = n;
+            }
+            // Closest to face
+            else
+            {
+                Vector2 n = B.normals[faceNormal];
+                if (Vector2.Dot(center - v1, n) > A.radius)
+                {
+                    return false;
+                }
+
+                //n = B.u * n;
+                //m.normal = -n;
+                //m.contacts[0] = VMath.MultVectDouble(m.normal, A.radius) + a.pos;
+                //m.contact_count = 1;
+            }
+            return true;
+        }
+
+        public static bool PolygontoCircleCheck(Collider a, Collider b)
+        {
+            return CircletoPolygonCheck(b, a);
+            //m.normal = -m.normal;
+            //return ret;
+        }
+
+        public static bool PolygontoPolygonCheck(Collider a, Collider b)
+        {
+            Polygon A = (Polygon)a.shape;
+            Polygon B = (Polygon)b.shape;
+            //m.contact_count = 0;
+
+            // Check for a separating axis with A's face planes
+            int faceA = 0;
+            double penetrationA = FindAxisLeastPenetration(ref faceA, A, B);
+            if (penetrationA >= 0.0f)
+                return false;
+
+            // Check for a separating axis with B's face planes
+            int faceB = 0;
+            double penetrationB = FindAxisLeastPenetration(ref faceB, B, A);
+            if (penetrationB >= 0.0f)
+                return false;
+
+            int referenceIndex;
+            bool flip; // Always point from a to b
+
+            Polygon RefPoly; // Reference
+            Polygon IncPoly; // Incident
+
+            // Determine which shape contains reference face
+            if (VMath.BiasGreaterThan(penetrationA, penetrationB))
+            {
+                RefPoly = A;
+                IncPoly = B;
+                referenceIndex = faceA;
+                flip = false;
+            }
+            else
+            {
+                RefPoly = B;
+                IncPoly = A;
+                referenceIndex = faceB;
+                flip = true;
+            }
+            // World space incident face
+            Vector2[] incidentFace = new Vector2[2];
+            FindIncidentFace(ref incidentFace, RefPoly, IncPoly, referenceIndex);
+            // Setup reference face vertices
+            Vector2 v1 = RefPoly.vertices[referenceIndex];
+            referenceIndex = referenceIndex + 1 == RefPoly.vertexCount ? 0 : referenceIndex + 1;
+            Vector2 v2 = RefPoly.vertices[referenceIndex];
+
+            // Transform vertices to world space
+            v1 = RefPoly.u * v1 + RefPoly.body.pos;
+            v2 = RefPoly.u * v2 + RefPoly.body.pos;
+
+            // Calculate reference face side normal in world space
+            Vector2 sidePlaneNormal = (v2 - v1);
+            sidePlaneNormal.Normalize();
+
+            // Orthogonalize
+            Vector2 refFaceNormal = new Vector2(sidePlaneNormal.Y, -sidePlaneNormal.X);
+
+            // ax + by = c
+            // c is distance from origin
+            double refC = Vector2.Dot(refFaceNormal, v1);
+            double negSide = -Vector2.Dot(sidePlaneNormal, v1);
+            double posSide = Vector2.Dot(sidePlaneNormal, v2);
+
+            // Clip incident face to reference face side planes
+            if (Clip(-sidePlaneNormal, negSide, ref incidentFace) < 2)
+                return false; // Due to floating point error, possible to not have required points
+
+            if (Clip(sidePlaneNormal, posSide, ref incidentFace) < 2)
+                return false; // Due to floating point error, possible to not have required points
+
+            // Flip
+            //m.normal = flip ? -refFaceNormal : refFaceNormal;
+
+            // Keep points behind reference face
+            int cp = 0; // clipped points behind reference face
+            double separation = Vector2.Dot(refFaceNormal, incidentFace[0]) - refC;
+            if (separation <= 0.0f)
+            {
+                //m.contacts[cp] = incidentFace[0];
+                //m.penetration = -separation;
+                ++cp;
+            }
+            //else
+            //    m.penetration = 0;
+
+            separation = Vector2.Dot(refFaceNormal, incidentFace[1]) - refC;
+            if (separation <= 0.0f)
+            {
+                //m.contacts[cp] = incidentFace[1];
+                //
+                //m.penetration += -separation;
+                ++cp;
+
+                // Average penetration
+                //m.penetration /= (double)cp;
+            }
+
+            //m.contact_count = cp;
+            return cp > 0;
         }
 
     }

@@ -17,7 +17,7 @@ namespace OrbItProcs
             this.triggerNode = node;
 
             Collision += CollisionEvent;
-            triggerNode.OnCollision += OnCollision;
+            triggerNode.body.OnCollisionStay += OnCollision;
         }
 
         
@@ -30,7 +30,7 @@ namespace OrbItProcs
             if (colCount > 10)
             {
                 //Collision -= CollisionEvent;
-                me.OnCollision -= OnCollision;
+                me.body.OnCollisionStay -= OnCollision;
                 Console.WriteLine("yes");
             }
             Node n1 = new Node(), n2 = new Node(), n3 = new Node();
@@ -38,9 +38,9 @@ namespace OrbItProcs
             Node.cloneNode(me, n2);
             Node.cloneNode(me, n3);
             //CollisionArgs["trigger"].Collided -= Collision;
-            n1.OnCollision -= OnCollision;
-            n2.OnCollision -= OnCollision;
-            n3.OnCollision -= OnCollision;
+            n1.body.OnCollisionStay -= OnCollision;
+            n2.body.OnCollisionStay -= OnCollision;
+            n3.body.OnCollisionStay -= OnCollision;
             n1.body.pos.X -= 150;
             n2.body.pos.X += 150;
             n3.body.pos.Y -= 150;

@@ -304,7 +304,7 @@ namespace OrbItProcs {
                 Action<Node> doAfter = delegate(Node n)
                 {
                     n.body.color = Color.Red;
-                    n.OnCollision += evil;
+                    n.body.OnCollisionStay += evil;
                 };
 
 
@@ -318,7 +318,7 @@ namespace OrbItProcs {
                         target.SetData("infected", true);
                     }
                 };
-                newNode.OnCollision += evil;
+                newNode.body.OnCollisionStay += evil;
             }
         }
 

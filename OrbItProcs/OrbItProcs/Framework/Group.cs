@@ -252,7 +252,10 @@ namespace OrbItProcs
         {
             entities.Add(entity);
             if (entity.collision.active)
-                room.CollisionSet.Add(entity);
+            {
+                //room.CollisionSet.Add(entity);
+                entity.collision.UpdateCollisionSet();
+            }
 
             //if (parentGroup != null)
             //    parentGroup.IncludeEntity(entity);
@@ -283,7 +286,12 @@ namespace OrbItProcs
                 root = root.parentGroup;
             }
             root.DiscludeEntity(entity);
-            room.CollisionSet.Remove(entity);
+            foreach(Collider c in entity.collision.colliders)
+            {
+                room.CollisionSet.Remove(c);
+            }
+            room.CollisionSet.Remove(entity.body);
+            //room.CollisionSet.Remove(entity);
             entity.OnDelete();
         }
 
