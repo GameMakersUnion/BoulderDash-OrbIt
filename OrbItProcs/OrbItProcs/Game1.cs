@@ -304,7 +304,7 @@ namespace OrbItProcs
 
             for (int i = 1; i < 5; i++)
             {
-                //room.players.Add(new Player(i)); //#bigtony
+                room.players.Add(new Player(i)); //#bigtony
             }
 
             processManager.SetProcessKeybinds(ui.keyManager);
@@ -463,8 +463,8 @@ namespace OrbItProcs
             if (!ui.IsPaused)
             {
                 x += Math.PI / 360.0;
-                //backgroundHue = (backgroundHue + ((float)Math.Sin(x) + 1)/10f) % 360;
-                backgroundHue = (backgroundHue + 0.1f) % 360;
+                backgroundHue = (backgroundHue + ((float)Math.Sin(x) + 1)/10f) % 360;
+                //backgroundHue = (backgroundHue + 0.1f) % 360;
                 backgroundColor = ColorChanger.getColorFromHSV(backgroundHue, value: 0.2f);
                 //Console.WriteLine("Hue: {0}  R: {1}  G: {2}  B: {3}", backgroundHue, backgroundColor.R, backgroundColor.G, backgroundColor.B);
             }

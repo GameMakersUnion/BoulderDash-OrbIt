@@ -286,7 +286,7 @@ namespace OrbItProcs
                 root = root.parentGroup;
             }
             root.DiscludeEntity(entity);
-            foreach(Collider c in entity.collision.colliders)
+            foreach(Collider c in entity.collision.colliders.Values)
             {
                 room.CollisionSet.Remove(c);
             }

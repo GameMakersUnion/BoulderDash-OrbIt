@@ -194,7 +194,7 @@ namespace OrbItProcs {
             //player1.Update(gametime);
             foreach(var player in players)
             {
-                //player.Update(gametime); //#bigtony
+                player.Update(gametime); //#bigtony
             }
 
             scheduler.AffectSelf();

@@ -119,7 +119,7 @@ namespace OrbItProcs {
         ///</summary>
         public IEnumerable<Collider> GetColliders()
         {
-            foreach(Collider c in collision.colliders)
+            foreach(Collider c in collision.colliders.Values)
             {
                 yield return c;
             }

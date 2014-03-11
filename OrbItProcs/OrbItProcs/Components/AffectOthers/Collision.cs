@@ -29,12 +29,57 @@ namespace OrbItProcs
         private Link _link = null;
         public Link link { get { return _link; } set { _link = value; } }
 
-        public HashSet<Collider> colliders = new HashSet<Collider>();
+        public Dictionary<string, Collider> colliders = new Dictionary<string, Collider>();
 
-        public void AddCollider(Collider col)
+        public void AddCollider(string key, Collider col)
         {
-            colliders.Add(col);
+            int i = 0;
+            while(colliders.ContainsKey(key))
+            {
+                key = key + i++;
+            }
+            colliders.Add(key, col);
             col.parent = parent;
+            if (active && parent != null && parent.Groups.Count > 0)
+            {
+                UpdateCollisionSet();
+            }
+        }
+
+        public Collider GetCollider(string key, bool remove = false)
+        {
+            if (colliders.ContainsKey(key))
+            {
+                Collider col = colliders[key];
+                if (remove)
+                {
+                    colliders.Remove(key);
+                }
+                return col;
+            }
+            return null;
+        }
+        // Beware of undefined behaviour from the delegates on the colliders, they may contain context based references
+        public void SwapCollider(Node other, string key)
+        {
+            Collider temp = GetCollider(key, true);
+            Collider temp2 = other.collision.GetCollider(key, true);
+            if (temp != null)
+            {
+                other.collision.AddCollider(key, temp);
+            }
+            if (temp2 != null)
+            {
+                AddCollider(key, temp2);
+            }
+        }
+
+        public void SwapAllColliders(Node other)
+        {
+            foreach(string key in colliders.Keys)
+            {
+                SwapCollider(other, key);
+            }
         }
 
         public bool ResolveCollision { get { return parent.body.ResolveCollision; } set { parent.body.ResolveCollision = value; } }
@@ -49,7 +94,7 @@ namespace OrbItProcs
                     if (!_AllHandlersEnabled && value)
                     {
                         if (parent.body.HandlersEnabled) parent.room.CollisionSet.Add(parent.body);
-                        foreach(Collider col in colliders)
+                        foreach (Collider col in colliders.Values)
                         {
                             if (col.HandlersEnabled) parent.room.CollisionSet.Add(col);
                         }
@@ -57,7 +102,7 @@ namespace OrbItProcs
                     if (_AllHandlersEnabled && !value)
                     {
                         if (!parent.body.ResolveCollision) parent.room.CollisionSet.Remove(parent.body);
-                        foreach (Collider col in colliders)
+                        foreach (Collider col in colliders.Values)
                         {
                             parent.room.CollisionSet.Remove(col);
                         }
@@ -77,7 +122,7 @@ namespace OrbItProcs
                     if (!_active && value)
                     {
                         if (parent.body.ResolveCollision || parent.body.HandlersEnabled) parent.room.CollisionSet.Add(parent.body);
-                        foreach (Collider col in colliders)
+                        foreach (Collider col in colliders.Values)
                         {
                             if (col.HandlersEnabled) parent.room.CollisionSet.Add(col);
                         }
@@ -85,7 +130,7 @@ namespace OrbItProcs
                     else if (_active && !value)
                     {
                         parent.room.CollisionSet.Remove(parent.body);
-                        foreach (Collider col in colliders)
+                        foreach (Collider col in colliders.Values)
                         {
                             parent.room.CollisionSet.Remove(col);
                         }
@@ -102,7 +147,7 @@ namespace OrbItProcs
                 if (active)
                 {
                     if (parent.body.ResolveCollision || parent.body.HandlersEnabled) parent.room.CollisionSet.Add(parent.body);
-                    foreach (Collider col in colliders)
+                    foreach (Collider col in colliders.Values)
                     {
                         if (col.HandlersEnabled) parent.room.CollisionSet.Add(col);
                     }
@@ -117,7 +162,7 @@ namespace OrbItProcs
         public void RemoveCollidersFromSet()
         {
             parent.room.CollisionSet.Remove(parent.body);
-            foreach (Collider col in colliders)
+            foreach (Collider col in colliders.Values)
             {
                 parent.room.CollisionSet.Remove(col);
             }
@@ -137,7 +182,7 @@ namespace OrbItProcs
         {
             if (AllHandlersEnabled)
             {
-                foreach(Collider collider in colliders)
+                foreach (Collider collider in colliders.Values)
                 {
                     if (collider.HandlersEnabled)
                     {
@@ -154,7 +199,7 @@ namespace OrbItProcs
             //parent.room.camera.Draw(textures.ring, parent.body.pos, c, parent.body.scale * 1.05f);
             parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color, parent.body.scale);
 
-            foreach(Collider cc in colliders)
+            foreach (Collider cc in colliders.Values)
             {
                 if (cc.HandlersEnabled)
                 {
@@ -268,7 +313,7 @@ namespace OrbItProcs
         {
             if (!active) return;
             parent.body.ClearCollisionList();
-            foreach(Collider c in colliders)
+            foreach (Collider c in colliders.Values)
             {
                 c.ClearCollisionList();
             }
@@ -785,7 +830,7 @@ namespace OrbItProcs
                 return false;
 
             int referenceIndex;
-            bool flip; // Always point from a to b
+            //bool flip; // Always point from a to b
 
             Polygon RefPoly; // Reference
             Polygon IncPoly; // Incident
@@ -796,14 +841,14 @@ namespace OrbItProcs
                 RefPoly = A;
                 IncPoly = B;
                 referenceIndex = faceA;
-                flip = false;
+                //flip = false;
             }
             else
             {
                 RefPoly = B;
                 IncPoly = A;
                 referenceIndex = faceB;
-                flip = true;
+                //flip = true;
             }
             // World space incident face
             Vector2[] incidentFace = new Vector2[2];
