@@ -618,6 +618,11 @@ namespace OrbItProcs
                             if (!dict.ContainsKey(key)) break;
                             temp = new InspectorItem(null, temp, dict[key], key);
                         }
+                        //else if (next.membertype == member_type.collectionentry)
+                        //{
+                        //    dynamic coll = temp.obj;
+                        //    
+                        //}
                         else
                         {
                             if (next.fpinfo.propertyInfo == null)
@@ -915,7 +920,8 @@ namespace OrbItProcs
                 }
                 else
                 {
-                    return false;
+                    //return false; //this will prevent popup from closing..
+                    return true;
                 }
             }
         }
@@ -979,11 +985,11 @@ namespace OrbItProcs
         }
         void addComponent(object ans, Node n)
         {
-                if (ans == null)
-                {
-                    PopUp.Toast(ui, "You didn't select a component.");
-                    return; //I added this, because if not, the above toast does not show. -zck
-                }
+            if (ans == null)
+            {
+                PopUp.Toast(ui, "You didn't select a component.");
+                return; //I added this, because if not, the above toast does not show. -zck
+            }
         }
     }
 }

@@ -665,7 +665,8 @@ namespace OrbItProcs {
             {
                 dt = data_type.enm;
             }
-            else if (obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(Dictionary<,>))
+            //else if (obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(Dictionary<,>))
+            else if (obj.GetType().GetInterface("IDictionary") != null)
             {
                 //System.Console.WriteLine("Dictionary found.");
                 dt = data_type.dict;

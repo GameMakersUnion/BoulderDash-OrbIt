@@ -82,7 +82,7 @@ namespace OrbItProcs
             }
         }
 
-        public bool ResolveCollision { get { return parent.body.ResolveCollision; } set { parent.body.ResolveCollision = value; } }
+        public bool ResolveCollision { get { return parent != null && parent.body.ResolveCollision; } set { if (parent != null) parent.body.ResolveCollision = value; } }
         private bool _AllHandlersEnabled = true;
         public bool AllHandlersEnabled
         {
@@ -176,6 +176,17 @@ namespace OrbItProcs
             methods = mtypes.affectself | mtypes.draw | mtypes.minordraw;//mtypes.affectother;
             //ResolveCollision = true;
             _AllHandlersEnabled = true;
+        }
+
+        public override void AffectOther(Node other) //only for links (no handlers)
+        {
+            if (!active) return;
+            Manifold m = new Manifold(parent.body, other.body);
+            m.Solve();
+            if (m.contact_count > 0)
+            {
+                parent.room.AddManifold(m);
+            }
         }
 
         public override void AffectSelf()

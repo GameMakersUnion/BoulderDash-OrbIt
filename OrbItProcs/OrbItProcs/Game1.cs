@@ -28,8 +28,6 @@ namespace OrbItProcs
 
     public enum comp
     {
-        //transform,
-        //body,
         queuer,
         linearpull,
         maxvel,
@@ -46,7 +44,7 @@ namespace OrbItProcs
         randinitialvel,
         relativemotion,
         transfer,
-        circler, //if this goes after maxvel instead, it should have an impact on circler.
+        circler,
         
         modifier,
 
@@ -57,6 +55,7 @@ namespace OrbItProcs
         colorgravity,
         lifetime,
         scheduler,
+        delegator,
 
         //draw components
         
@@ -209,7 +208,7 @@ namespace OrbItProcs
             }
 
             font = Content.Load<SpriteFont>("Courier New");
-
+            DelegatorMethods.InitializeDelegateMethods();
             
             room = new Room(this, 1580, 1175);
 
@@ -304,7 +303,7 @@ namespace OrbItProcs
 
             for (int i = 1; i < 5; i++)
             {
-                room.players.Add(new Player(i)); //#bigtony
+                //room.players.Add(new Player(i)); //#bigtony
             }
 
             processManager.SetProcessKeybinds(ui.keyManager);
@@ -379,27 +378,17 @@ namespace OrbItProcs
 
         public void InitializePresets()
         {
-
-            //Console.WriteLine("Current Folder" + filepath);
             foreach (string file in Directory.GetFiles(filepath, "*.xml"))
             {
-                //Console.WriteLine("Current Files" + filepath);
-                //Console.WriteLine(file);
-                Node presetnode = (Node)room.game.serializer.Deserialize(file);
-                /*foreach (comp c in presetnode.comps.Keys.ToList())
+                try
                 {
-                    ((Component)presetnode.comps[c]).parent = presetnode;
+                    Node presetnode = (Node)room.game.serializer.Deserialize(file);
+                    NodePresets.Add(presetnode);
                 }
-                presetnode.body.parent = presetnode;
-                presetnode.collision.parent = presetnode;
-                presetnode.movement.parent = presetnode;*/
-                NodePresets.Add(presetnode);
-
-                //NodePresets.Add((Node)room.serializer.Deserialize(file));
-            }
-            foreach (Node snode in NodePresets)
-            {
-                //Console.WriteLine("Presetname: {0}", snode.name);
+                catch(Exception e)
+                {
+                    Console.WriteLine("Failed to deserialize node: {0}", e.Message);
+                }
             }
         }
         protected override void LoadContent()
@@ -516,7 +505,7 @@ namespace OrbItProcs
             newNode.name = activegroup.Name + Node.nodeCounter;
             newNode.acceptUserProps(userProperties);
 
-            CollisionDelegate toggleWhite = delegate(Node source, Node target)
+            /*CollisionDelegate toggleWhite = delegate(Node source, Node target)
             {
                 if (target == null) return;
                 if (source.body.color == Color.White)
@@ -543,10 +532,14 @@ namespace OrbItProcs
             Action<Node> first = n => n.body.color = n.body.permaColor;
             Action<Node> none = n => n.body.color = Color.White;
 
-
             //newNode.OnCollisionFirst += first;
             //newNode.OnCollisionNone += none;
-            //newNode.OnCollisionEnd += (mm, mmm) => { };
+            //newNode.OnCollisionEnd += (mm, mmm) => { };*/
+
+            
+
+            //newNode.delegator.AddAffectOther("switchVel", delegation);
+            //newNode.delegator.AddAffectSelfAndDS("sprint", sprint, dd);
 
             AssignColor(activegroup, newNode);
             return SpawnNodeHelper(newNode, afterSpawnAction, activegroup, lifetime);

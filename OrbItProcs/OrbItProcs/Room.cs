@@ -145,9 +145,6 @@ namespace OrbItProcs {
             if (defaultNode == null) defaultNode = null;
             //if (game.ui.sidebar.lstComp == null) game.ui.sidebar.lstComp = null;
 
-            ObservableHashSet<Node> hs = new ObservableHashSet<Node>();
-            ICollection<Node> i = hs;
-
             gridsystem.clear();
             gridSystemLines = new List<Rectangle>();
 
@@ -194,7 +191,7 @@ namespace OrbItProcs {
             //player1.Update(gametime);
             foreach(var player in players)
             {
-                player.Update(gametime); //#bigtony
+                //player.Update(gametime); //#bigtony
             }
 
             scheduler.AffectSelf();

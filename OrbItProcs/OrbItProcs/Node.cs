@@ -10,6 +10,7 @@ using System.Reflection;
 
 
 using System.Collections.Specialized;
+using System.Collections;
 
 
 
@@ -38,6 +39,19 @@ namespace OrbItProcs {
         on,
     }
     public delegate void CollisionDelegate(Node source, Node target);
+
+    public class DataStore : Dictionary<string, dynamic>
+    {
+        public DataStore() : base() { }
+
+        public DataStore (params Tuple<string, dynamic>[] items) : base(items.Length)
+        {
+            foreach(var item in items)
+            {
+                this[item.Item1] = item.Item2;
+            }
+        }
+    }
 
     public class Node {
         private string _nodeHash = "";
@@ -140,6 +154,8 @@ namespace OrbItProcs {
             }
         }
 
+
+
         public bool IsDefault = false;
 
         private float _multiplier = 1f;
@@ -226,7 +242,41 @@ namespace OrbItProcs {
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Group> Groups { get; set; }
 
-        
+        [Polenter.Serialization.ExcludeFromSerialization]
+        [DoNotInspect]
+        public Delegator delegator
+        {
+            get
+            {
+                if (!comps.ContainsKey(comp.delegator))
+                {
+                    addComponent(comp.delegator, true);
+                }
+                return comps[comp.delegator];
+            }
+            set
+            {
+                comps[comp.delegator] = value;
+            }
+        }
+        [Polenter.Serialization.ExcludeFromSerialization]
+        [DoNotInspect]
+        public Delegator scheduler
+        {
+            get
+            {
+                if (!comps.ContainsKey(comp.scheduler))
+                {
+                    addComponent(comp.scheduler, true);
+                }
+                return comps[comp.scheduler];
+            }
+            set
+            {
+                comps[comp.scheduler] = value;
+            }
+        }
+
 
         public bool DebugFlag { get; set; }
 
@@ -246,7 +296,7 @@ namespace OrbItProcs {
             }
         }
 
-        public Dictionary<string, dynamic> DataStore = new Dictionary<string, dynamic>();
+        public DataStore Kawasaki = new DataStore();
 
         public event EventHandler OnAffectOthers;
 
@@ -273,6 +323,16 @@ namespace OrbItProcs {
             comp.laser,
             comp.phaseorb
         };
+
+        //todo:never again
+        /*~Node()
+        {
+            Console.WriteLine("It was nice knowning you. -{0}", name);
+            while(true)
+            {
+
+            }
+        }*/
 
         public Node() : this(ShapeType.eCircle) { }
 
@@ -338,9 +398,9 @@ namespace OrbItProcs {
 
         public T CheckData<T>(string key)
         {
-            if (DataStore.ContainsKey(key))
+            if (Kawasaki.ContainsKey(key))
             {
-                return DataStore[key];
+                return Kawasaki[key];
             }
             else
             {
@@ -350,7 +410,7 @@ namespace OrbItProcs {
 
         public void SetData(string key, dynamic data)
         {
-            DataStore[key] = data;
+            Kawasaki[key] = data;
         }
 
         public void AddTag(string tag)

@@ -122,7 +122,7 @@ namespace OrbItProcs
             };                 
             bigtony.OnAffectOthers += updateScores;
 
-            room.masterGroup.fullSet.Add(bigtony); //#bigtony
+            //room.masterGroup.fullSet.Add(bigtony); //#bigtony
         }                      
                                
                                

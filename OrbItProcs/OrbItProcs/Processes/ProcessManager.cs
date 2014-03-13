@@ -96,11 +96,6 @@ namespace OrbItProcs
                 Keybindset.AddProcess(processDict[proc.polygonspawner]);//, KeySwitchMethod.Overwrite);
             });
             //
-            Keybindset.Add("axismovement", new KeyBundle(KeyCodes.D0), delegate
-            {
-                Keybindset.AddProcess(processDict[proc.axismovement]);//, KeySwitchMethod.Overwrite);
-            });
-            //
             Keybindset.Add("mapeditor", new KeyBundle(KeyCodes.D5), delegate
             {
                 Keybindset.AddProcess(processDict[proc.mapeditor]);//, KeySwitchMethod.Overwrite);
@@ -112,7 +107,11 @@ namespace OrbItProcs
             });
             //
             Keybindset.AddProcess(processDict[proc.cameracontrol], false);
-
+            //
+            //Keybindset.Add("axismovement", new KeyBundle(KeyCodes.D0), delegate
+            //{
+            //    Keybindset.AddProcess(processDict[proc.axismovement]);//, KeySwitchMethod.Overwrite);
+            //});
         }
 
         public void Update()

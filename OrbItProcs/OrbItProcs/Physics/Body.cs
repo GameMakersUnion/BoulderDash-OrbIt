@@ -261,7 +261,6 @@ namespace OrbItProcs
                 if (ResolveCollision && other.ResolveCollision)
                     parent.room.AddManifold(m);
             }
-
         }
 
         public override void CheckCollisionCollider(Collider other)

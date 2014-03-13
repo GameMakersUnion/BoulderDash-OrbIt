@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace OrbItProcs {
+
     public static class Utils {
 
         public static Dictionary<comp, Type> compTypes;
@@ -57,6 +58,16 @@ namespace OrbItProcs {
             {
                 compEnums.Add(Utils.GetComponentTypeFromEnum(key), key);
             }
+        }
+
+        public static int Sign(int i)
+        {
+            return (i > 0).ToInt() - (i < 0).ToInt();
+        }
+
+        public static int ToInt(this bool b)
+        {
+            return b ? 1 : 0;
         }
 
         public static string LastWord(this string s, char delim)
