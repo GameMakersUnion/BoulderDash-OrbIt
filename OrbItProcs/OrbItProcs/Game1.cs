@@ -290,7 +290,7 @@ namespace OrbItProcs
 
             for (int i = 1; i < 5; i++)
             {
-                //room.players.Add(new Player(i));
+                room.players.Add(new Player(i)); //#bigtony
             }
 
             processManager.SetProcessKeybinds(ui.keyManager);
@@ -601,10 +601,9 @@ namespace OrbItProcs
             };
 
             if (File.Exists(filename)){ //we must be overwriting, therefore don't update the live presetList
-                PopUp.Prompt(ui, "OverWrite?", "O/W?",
-                    delegate(bool c, object a) { if (c) {completeSave(); PopUp.Toast(ui, "Node was overridden"); } return true; });
+                PopUp.Prompt("OverWrite?", "O/W?", delegate(bool c, object a) { if (c) { completeSave(); PopUp.Toast("Node was overridden"); } return true; });
             }
-            else { PopUp.Toast(ui, "Node Saved"); completeSave(); }
+            else { PopUp.Toast("Node Saved"); completeSave(); }
 
         }
 

@@ -535,7 +535,7 @@ namespace OrbItProcs
             if (!(item.obj is Link))
             {
                 //Console.WriteLine("Error: The list item was not a link.");
-                PopUp.Toast(ui, "You haven't selected a Link.");
+                PopUp.Toast("You haven't selected a Link.");
                 return;
             }
             Link link = (Link)item.obj;

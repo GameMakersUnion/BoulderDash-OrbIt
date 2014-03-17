@@ -120,6 +120,8 @@ namespace OrbItProcs {
             colIterations = 1;
             camera = new Camera(this, 0.5f);
             scheduler = new Scheduler();
+
+            
         }
 
         public Room(Game1 game, int worldWidth, int worldHeight) : this()
@@ -208,7 +210,7 @@ namespace OrbItProcs {
             //player1.Update(gametime);
             foreach(var player in players)
             {
-                //player.Update(gametime);
+                player.Update(gametime);//#bigtony
             }
 
             scheduler.AffectSelf();

@@ -113,8 +113,8 @@ namespace OrbItProcs
             this.game = ui.game;
             this.room = ui.game.room;
             this.ui = ui;
-            NotImplemented = delegate { 
-                PopUp.Toast(ui, "Not Implemented. Take a hike.");
+            NotImplemented = delegate {
+                PopUp.Toast("Not Implemented. Take a hike.");
                 //throw new NotImplementedException();
             };
             manager = game.Manager;
@@ -550,12 +550,13 @@ namespace OrbItProcs
         void btnSaveNode_Click(object sender, EventArgs e)
         {
             if (inspectorArea.editNode == null)
-                PopUp.Toast(ui, "You haven't selected a Node.");
+                PopUp.Toast("You haven't selected a Node.");
             else
-                PopUp.Text(ui, "Pick a preset name", "Name preset",
-                                delegate(bool c, object input) {
-                                    if (c) ui.game.saveNode(inspectorArea.editNode, (string)input);
-                                        return true; });
+                PopUp.Text("Pick a preset name", "Name preset", delegate(bool c, object input)
+                {
+                    if (c) ui.game.saveNode(inspectorArea.editNode, (string)input);
+                    return true;
+                });
         }
 
         void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
@@ -658,7 +659,7 @@ namespace OrbItProcs
 
             if (text.Equals(""))
             {
-                PopUp.Toast(ui, "No Command Provided");
+                PopUp.Toast("No Command Provided");
                 consoletextbox.Text = "";
                 return;
             }
@@ -675,7 +676,7 @@ namespace OrbItProcs
             }
             else
             {
-                PopUp.Toast(ui, "No Command Provided");
+                PopUp.Toast("No Command Provided");
                 return;
             }
 
@@ -683,7 +684,7 @@ namespace OrbItProcs
 
             if (methinfo == null || methinfo.IsPrivate)
             {
-                PopUp.Toast(ui, "Invalid method specification.");
+                PopUp.Toast("Invalid method specification.");
                 return;
             }
 
@@ -703,7 +704,7 @@ namespace OrbItProcs
                         finalargs[i] = Type.Missing;
                         continue;
                     }
-                    PopUp.Toast(ui, "Parameter Inconsistenc[ies].");
+                    PopUp.Toast("Parameter Inconsistenc[ies].");
                     return;
                 }
                 try
@@ -712,7 +713,7 @@ namespace OrbItProcs
                 }
                 catch (Exception e)
                 {
-                    PopUp.Toast(ui, "Casting exception: " + e.Message);
+                    PopUp.Toast("Casting exception: " + e.Message);
                     throw e;
                 }
 
@@ -724,7 +725,7 @@ namespace OrbItProcs
             }
             catch (Exception e)
             {
-                PopUp.Toast(ui, "Invoking exception: " + e.Message);
+                PopUp.Toast("Invoking exception: " + e.Message);
                 throw e;
             }
         }
@@ -825,7 +826,7 @@ namespace OrbItProcs
 
             String presetName = ((Node)lstPresets.selected()).name + ".xml";
             string message = "Are you sure you want to delete this preset file? : " + presetName;
-            PopUp.Prompt(ui, message , action:
+            PopUp.Prompt(message, action:
             delegate(bool del, object ans)
             {
                 if (del)
@@ -858,7 +859,7 @@ namespace OrbItProcs
         void btnAddComponent_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             if (inspectorArea.editNode == null)
-                PopUp.Toast(ui, "You haven't selected a Node.");
+                PopUp.Toast("You haven't selected a Node.");
             else
             {
                 ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !inspectorArea.editNode.comps.ContainsKey(c))));
@@ -903,9 +904,7 @@ namespace OrbItProcs
                     inspectorArea.editNode.addComponent((comp)o[1], true);
                     inspectorArea.ActiveInspectorParent.DoubleClickItem(inspectorArea);
                 }
-                else PopUp.Prompt(ui,
-                            "The node already contains this component. Overwrite to default component?",
-                            action: delegate(bool k, object ans) { writeable = k; return true; });
+                else PopUp.Prompt("The node already contains this component. Overwrite to default component?", action: delegate(bool k, object ans) { writeable = k; return true; });
 
                 if (writeable)
                 {
@@ -981,7 +980,7 @@ namespace OrbItProcs
         {
                 if (ans == null)
                 {
-                    PopUp.Toast(ui, "You didn't select a component.");
+                    PopUp.Toast("You didn't select a component.");
                     return; //I added this, because if not, the above toast does not show. -zck
                 }
         }

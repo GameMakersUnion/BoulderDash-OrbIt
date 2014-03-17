@@ -11,6 +11,12 @@ using System.Collections.Specialized;
 namespace OrbItProcs {
     public static class Utils {
 
+        public const float rootOfTwo = 1.41421356237f;
+        public const float invRootOfTwo = 0.70710678118f;
+        
+
+
+
         public static Dictionary<comp, Type> compTypes;
         public static Dictionary<Type, comp> compEnums;
 
@@ -96,6 +102,7 @@ namespace OrbItProcs {
             if (float.IsInfinity(v.X) || float.IsNaN(v.X) || float.IsInfinity(v.Y) || float.IsNaN(v.Y)) return true;
             return false;
         }
+
 
         public static string wordWrap(this string message, int maxCharsPerLine)
         {
