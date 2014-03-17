@@ -106,6 +106,8 @@ namespace OrbItProcs {
             colIterations = 1;
             camera = new Camera(this, 0.5f);
             scheduler = new Scheduler();
+
+            
         }
 
         public Room(Game1 game, int worldWidth, int worldHeight) : this()
@@ -195,7 +197,7 @@ namespace OrbItProcs {
                 foreach (var player in players)
                 {
                     player.Update(gametime); //#bigtony
-                }
+            }
             }
 
             scheduler.AffectSelf();
@@ -282,40 +284,40 @@ namespace OrbItProcs {
                     {
                         var bucketBag = gridsystemCollision.retrieveBucketBags(c);
                         if (bucketBag != null)
-                        {
+                    {
                             if (c is Body)
-                            {
+                        {
                                 Body b = (Body)c;
                                 for (int i = 0; i < bucketBag.index; i++)
-                                {
+                            {
                                     for (int j = 0; j < bucketBag.array[i].index; j++)
-                                    {
+                                {
                                         Collider cc = bucketBag.array[i].array[j];
                                         if (cc.parent == b.parent) continue;
                                         if (gridsystemCollision.alreadyVisited.Contains(cc))
-                                            continue;
+                                        continue;
                                         if (cc is Body)
                                         {
                                             Body bb = (Body)cc;
                                             b.CheckCollisionBody(bb);
-                                        }
+                    }
                                         else
-                                        {
+                                {
                                             b.CheckCollisionCollider(cc);
-                                        }
-                                    }
                                 }
                             }
+                        }
+                    }
                             else
+                        {
+                            for (int i = 0; i < bucketBag.index; i++)
                             {
-                                for (int i = 0; i < bucketBag.index; i++)
+                                for (int j = 0; j < bucketBag.array[i].index; j++)
                                 {
-                                    for (int j = 0; j < bucketBag.array[i].index; j++)
-                                    {
                                         Collider cc = bucketBag.array[i].array[j];
                                         if (cc.parent == c.parent) continue;
                                         if (gridsystemCollision.alreadyVisited.Contains(cc))
-                                            continue;
+                                        continue;
                                         if (cc is Body)
                                         {
                                             Body bb = (Body)cc;

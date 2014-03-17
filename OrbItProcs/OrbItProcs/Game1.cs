@@ -211,7 +211,7 @@ namespace OrbItProcs
 
             font = Content.Load<SpriteFont>("Courier New");
             DelegatorMethods.InitializeDelegateMethods();
-            
+
             room = new Room(this, 1580, 1175);
 
             processManager = new ProcessManager(room);
@@ -305,10 +305,10 @@ namespace OrbItProcs
 
             if (bigTonyOn)
             {
-                for (int i = 1; i < 5; i++)
-                {
-                    room.players.Add(new Player(i)); //#bigtony
-                }
+            for (int i = 1; i < 5; i++)
+            {
+                room.players.Add(new Player(i)); //#bigtony
+            }
             }
 
             processManager.SetProcessKeybinds(ui.keyManager);
@@ -388,10 +388,10 @@ namespace OrbItProcs
                 try
                 {
                     Node presetnode = (Node)room.game.serializer.Deserialize(file);
-                    NodePresets.Add(presetnode);
-                }
+                NodePresets.Add(presetnode);
+            }
                 catch(Exception e)
-                {
+            {
                     Console.WriteLine("Failed to deserialize node: {0}", e.Message);
                 }
             }
@@ -632,10 +632,9 @@ namespace OrbItProcs
             };
 
             if (File.Exists(filename)){ //we must be overwriting, therefore don't update the live presetList
-                PopUp.Prompt(ui, "OverWrite?", "O/W?",
-                    delegate(bool c, object a) { if (c) {completeSave(); PopUp.Toast(ui, "Node was overridden"); } return true; });
+                PopUp.Prompt("OverWrite?", "O/W?", delegate(bool c, object a) { if (c) { completeSave(); PopUp.Toast("Node was overridden"); } return true; });
             }
-            else { PopUp.Toast(ui, "Node Saved"); completeSave(); }
+            else { PopUp.Toast("Node Saved"); completeSave(); }
 
         }
 

@@ -109,7 +109,7 @@ namespace OrbItProcs
                             p.node.body.radius += 500;
                             p.node.body.mass += 100;
                             foreach (var pp in room.players)
-                            {
+                            {  
                                 //pp.node.body.ClearHandlers();
                                 //pp.nodeCollision.body.ClearHandlers();
                                 pp.node.collision.AllHandlersEnabled = false;
@@ -145,12 +145,16 @@ namespace OrbItProcs
         float bigmass = 5;
         static float tonymass = 10;
 
+        public HalfController halfController;
+
         public Player(int playerIndex)
         {
             room = Program.getRoom();
             room.game.ui.SetSidebarActive(false);
             MakeBigTony(room);//todo:fix
             score = 0;
+
+            halfController = new HalfController(playerIndex, FullPadMode.mirrorMode);
 
 
             this.playerIndex = playerIndex;
@@ -346,43 +350,23 @@ namespace OrbItProcs
             room.scheduler.doAfterXMilliseconds(time, 1000, false); //todo:fix other todos for fucks sake
         }
 
-        GamePadState newGamePadState;
-        GamePadState oldGamePadState;
+
+        HalfPadState newHalfPadState;
+        HalfPadState oldHalfPadState;
 
         public void Update(GameTime gametime)
         {
             if (node == null) return;
-
+            newHalfPadState = halfController.getState();
             //nodeCollision.body.pos = body.pos;
             if (node != bigtony) node.collision.colliders["trigger"].radius = body.radius * 1.5f;//1.05f;
             else node.collision.colliders["trigger"].radius = body.radius * 1.2f;
 
             Vector2 stick;
-            PlayerIndex index;
-            switch ((playerIndex-1) / 2)
-            {
-                case 0: index = PlayerIndex.One; break;
-                case 1: index = PlayerIndex.Two; break;
-                case 2: index = PlayerIndex.Three; break;
-                case 3: index = PlayerIndex.Four; break;
-                default: index = PlayerIndex.One; break;
-            }
+
             bool clicked = false;
-            newGamePadState = GamePad.GetState(index);
-            if (playerIndex % 2 == 0)
-            {
-                stick = GamePad.GetState(index).ThumbSticks.Left;
-                //clicked = (newGamePadState.Buttons.LeftStick == ButtonState.Pressed && oldGamePadState.Buttons.LeftStick == ButtonState.Released)
-                //    || (newGamePadState.Buttons.LeftShoulder == ButtonState.Pressed && oldGamePadState.Buttons.LeftShoulder == ButtonState.Released);
-                clicked = newGamePadState.Buttons.LeftStick == ButtonState.Pressed || newGamePadState.Buttons.LeftShoulder == ButtonState.Pressed;
-            }
-            else
-            {
-                stick = GamePad.GetState(index).ThumbSticks.Right;
-                //clicked = (newGamePadState.Buttons.RightStick == ButtonState.Pressed && oldGamePadState.Buttons.RightStick == ButtonState.Released)
-                //    || (newGamePadState.Buttons.RightShoulder == ButtonState.Pressed && oldGamePadState.Buttons.RightShoulder == ButtonState.Released);
-                clicked = newGamePadState.Buttons.RightStick == ButtonState.Pressed || newGamePadState.Buttons.RightShoulder == ButtonState.Pressed;
-            }
+            stick = newHalfPadState.stick1.v2;
+            clicked = newHalfPadState.Btn3 == ButtonState.Pressed || newHalfPadState.Btn1 == ButtonState.Pressed;
 
             //Console.WriteLine(stick);
             stick.Y *= -1;
@@ -407,7 +391,8 @@ namespace OrbItProcs
 
             }
 
-            oldGamePadState = newGamePadState;
+            //oldGamePadState = newGamePadState;
+            oldHalfPadState = newHalfPadState;
         }
 
         public void SwitchPlayer(Vector2 stick)
