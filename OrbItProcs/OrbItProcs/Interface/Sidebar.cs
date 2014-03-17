@@ -30,6 +30,7 @@ namespace OrbItProcs
         public Game1 game;
         public Room room;
         public UserInterface ui;
+        public static UserLevel userLevel = UserLevel.Debug;
         //private Group _ActiveGroup;
         public Group ActiveGroupFirst { 
             get 

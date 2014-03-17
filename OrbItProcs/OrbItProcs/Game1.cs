@@ -123,6 +123,8 @@ namespace OrbItProcs
         public Dictionary<textures, Vector2> textureCenters;
         public Node targetNode = null;
 
+        public static bool bigTonyOn = false;
+
 
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
 
@@ -301,9 +303,12 @@ namespace OrbItProcs
             //room.player1.body.pos = new Vector2(100, 100);
             //processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
 
-            for (int i = 1; i < 5; i++)
+            if (bigTonyOn)
             {
-                //room.players.Add(new Player(i)); //#bigtony
+                for (int i = 1; i < 5; i++)
+                {
+                    room.players.Add(new Player(i)); //#bigtony
+                }
             }
 
             processManager.SetProcessKeybinds(ui.keyManager);
@@ -559,13 +564,13 @@ namespace OrbItProcs
                 newNode.comps[comp.lifetime].maxmseconds = lifetime;
                 newNode.comps[comp.lifetime].immortal = false;
             }
-            
 
-            Collider col = new Collider(new Circle(Utils.random.Next(200)));
-            col.OnCollisionStay += delegate(Node source, Node target)
-            {
-                source.body.color = Utils.randomColor();
-            };
+
+            //Collider col = new Collider(new Circle(Utils.random.Next(200)));
+            //col.OnCollisionStay += delegate(Node source, Node target)
+            //{
+            //    source.body.color = Utils.randomColor();
+            //};
             //newNode.collision.AddCollider(col);
 
             g.IncludeEntity(newNode);

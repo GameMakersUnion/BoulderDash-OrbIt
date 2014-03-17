@@ -306,7 +306,18 @@ namespace OrbItProcs {
 
                 foreach (PropertyInfo pinfo in propertyInfos)
                 {
+                    object[] attributes = pinfo.GetCustomAttributes(false);
                     if (pinfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
+
+                    var abstractions = pinfo.GetCustomAttributes(typeof(AbstractionLevel), false);
+                    if (abstractions.Length > 0)
+                    {
+                        if ((int)(abstractions[0] as AbstractionLevel).userLevel > (int)Sidebar.userLevel) continue;
+                    }
+                    else if (Sidebar.userLevel != UserLevel.Debug)
+                    {
+                        continue;
+                    }
                     if (pinfo.Name.Equals("Item")) continue;
                     InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, pinfo.GetValue(parent, null), pinfo);
                     if (iitem.CheckForChildren()) iitem.prefix = "+";
@@ -329,6 +340,15 @@ namespace OrbItProcs {
                     foreach (FieldInfo finfo in fieldInfos)
                     {
                         if (finfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
+                        var abstractions = finfo.GetCustomAttributes(typeof(AbstractionLevel), false);
+                        if (abstractions.Length > 0)
+                        {
+                            if ((int)(abstractions[0] as AbstractionLevel).userLevel > (int)Sidebar.userLevel) continue;
+                        }
+                        else if (Sidebar.userLevel != UserLevel.Debug)
+                        {
+                            continue;
+                        }
                         InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, finfo.GetValue(parent), finfo);
                         if (iitem.CheckForChildren()) iitem.prefix = "+";
                         InsertItemSorted(list, iitem);
@@ -452,6 +472,8 @@ namespace OrbItProcs {
             {
                 if (datatype == data_type.dict)
                 {
+                    if (fpinfo.Name.Equals("comps")) return result + "components";
+
                     Type k = obj.GetType().GetGenericArguments()[0];
                     Type v = obj.GetType().GetGenericArguments()[1];
                     string ks = k.ToString().Split('.').ToList().ElementAt(k.ToString().Split('.').ToList().Count-1);

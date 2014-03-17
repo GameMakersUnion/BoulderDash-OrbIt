@@ -140,7 +140,7 @@ namespace OrbItProcs {
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
             totalElapsedMilliseconds += elapsed;
 
-            if (contacts.Count > 0) contacts = new List<Manifold>();
+            
             //these make it convienient to check values after pausing the game my mouseing over
             if (defaultNode == null) defaultNode = null;
             //if (game.ui.sidebar.lstComp == null) game.ui.sidebar.lstComp = null;
@@ -164,6 +164,7 @@ namespace OrbItProcs {
             Testing.OldStopTimer("gridsystem insert");
             //
             UpdateCollision();
+            if (contacts.Count > 0) contacts = new List<Manifold>();
 
             //if (timertimer % timermax == 0)
             //    Testing.StartTimer();
@@ -189,9 +190,12 @@ namespace OrbItProcs {
             updateTargetNodeGraphic();
 
             //player1.Update(gametime);
-            foreach(var player in players)
+            if (Game1.bigTonyOn)
             {
-                //player.Update(gametime); //#bigtony
+                foreach (var player in players)
+                {
+                    player.Update(gametime); //#bigtony
+                }
             }
 
             scheduler.AffectSelf();
