@@ -389,9 +389,9 @@ namespace OrbItProcs
             childGroups.Add(name, group);
         }
 
-        public void GroupNamesToList(List<object> list)
+        public void GroupNamesToList(List<object> list, bool addSelf = true)
         {
-            list.Add(Name);
+            if (addSelf) list.Add(Name);
             foreach (Group g in childGroups.Values)
             {
                 g.GroupNamesToList(list);

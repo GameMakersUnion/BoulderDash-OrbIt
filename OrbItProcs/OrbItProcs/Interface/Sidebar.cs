@@ -30,7 +30,22 @@ namespace OrbItProcs
         public Game1 game;
         public Room room;
         public UserInterface ui;
-        public static UserLevel userLevel = UserLevel.Debug;
+        private UserLevel _userLevel = UserLevel.Debug;
+        public UserLevel userLevel
+        {
+            get { return _userLevel; }
+            set
+            {
+                if (value == _userLevel) return;
+                _userLevel = value;
+
+                //call refresh on inspector areas
+
+                
+            }
+        }
+
+
         //private Group _ActiveGroup;
         public Group ActiveGroupFirst { 
             get 
@@ -119,6 +134,8 @@ namespace OrbItProcs
                 //throw new NotImplementedException();
             };
             manager = game.Manager;
+
+
         }
 
         public void Initialize()
@@ -187,7 +204,7 @@ namespace OrbItProcs
             lstMain.Height = first.Height / 5; HeightCounter += VertPadding + lstMain.Height;
             lstMain.Anchor = Anchors.Top | Anchors.Left | Anchors.Bottom;
 
-            lstMain.HideSelection = false; // TODO WTF
+            lstMain.HideSelection = false;
             lstMain.ItemIndexChanged += lstMain_ItemIndexChanged;
             lstMain.Click += lstMain_Click;
             //room.nodes.CollectionChanged += nodes_Sync;
@@ -199,6 +216,9 @@ namespace OrbItProcs
             PromoteToDefault.Click += PromoteToDefault_Click;
             mainNodeContextMenu.Items.Add(ConvertIntoList);
             lstMain.ContextMenu = mainNodeContextMenu;
+
+            
+            ui.SetScrollableControl(lstMain, lstMain_ChangeScrollPosition);
             #endregion
 
             #region  /// List Picker ///
@@ -351,6 +371,7 @@ namespace OrbItProcs
 
             InitializeSecondPage();
             InitializeThirdPage();
+            InitializeFourthPage();
 
         }
 
@@ -463,6 +484,8 @@ namespace OrbItProcs
 
             UpdateGroupComboBox(cbGroupS);
             UpdateGroupComboBox(cbGroupT);
+
+            componentView.UpdateGroupComboBox();
         }
 
         public void UpdateGroupComboBox(ComboBox cb, params string[] additionalItems)
@@ -492,7 +515,6 @@ namespace OrbItProcs
         }
         void cbListPicker_ItemIndexChanged(object sender, EventArgs e)
         {
-            
             ComboBox cmb = (ComboBox)sender;
             string item = cmb.Items.ElementAt(cmb.ItemIndex).ToString();
             if (item.Equals("Other Objects"))
@@ -755,7 +777,6 @@ namespace OrbItProcs
         
         public void lstMain_ChangeScrollPosition(int change)
         {
-            
             if (lstMainScrollPosition + change < 0) lstMainScrollPosition = 0;
             else if (lstMainScrollPosition + change > lstMain.Items.Count-7) lstMainScrollPosition = lstMain.Items.Count-7;
             else lstMainScrollPosition += change;
@@ -892,10 +913,12 @@ namespace OrbItProcs
             bool writeable = false;
             if ((bool)o[2])
             {
-                foreach (Object n in ActiveGroupFirst.fullSet)
-                    if (!((Node)n).comps.ContainsKey((comp)o[1]))
-                        ((Node)n).addComponent((comp)o[1], true);
+                foreach (Node n in ActiveGroupFirst.fullSet)
+                    if (!n.comps.ContainsKey((comp)o[1]))
+                        n.addComponent((comp)o[1], true);
+
                 Node def = ActiveGroupFirst.defaultNode;
+                
                 if (!(def).comps.ContainsKey((comp)o[1]))
                     (def).addComponent((comp)o[1], true);
 
@@ -982,14 +1005,6 @@ namespace OrbItProcs
                 inspectorArea.editNode = null;
             }
             inspectorArea.propertyEditPanel.DisableControls();
-        }
-        void addComponent(object ans, Node n)
-        {
-                if (ans == null)
-                {
-                    PopUp.Toast("You didn't select a component.");
-                    return; //I added this, because if not, the above toast does not show. -zck
-                }
         }
     }
 }

@@ -37,6 +37,7 @@ namespace OrbItProcs
         } 
 
 
+
         private Dictionary<queues,int> _qcounts = new Dictionary<queues,int>();
         public Dictionary<queues, int> qcounts { get { return _qcounts; } set { _qcounts = value; } }
 
@@ -57,7 +58,6 @@ namespace OrbItProcs
             qcounts[queues.position] = queuecount;
             qcounts[queues.angle] = queuecount;
             qcounts[queues.scale] = queuecount;
-
         }
 
         public override void OnSpawn()

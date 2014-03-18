@@ -20,8 +20,6 @@ namespace OrbItProcs {
         active,
         position,
         velocity,
-        multiplier,
-        effectiveRadius,
         radius,
         mass,
         scale,
@@ -64,7 +62,7 @@ namespace OrbItProcs {
 
         public static int nodeCounter = 0;
 
-        public T GetComponent<T>()
+        public T GetComponent<T>() //todo: make Component dictionary (not dynamic) to see if casting to (T) is faster than dynamic (probably casts anyway)
         {
             return comps[Utils.compEnums[typeof(T)]];
         }
@@ -158,12 +156,7 @@ namespace OrbItProcs {
 
         public bool IsDefault = false;
 
-        private float _multiplier = 1f;
-        public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
-
         public int lifetime = -1;
-        private float _effectiveRadius = 100f;
-        public float effectiveRadius { get { return _effectiveRadius; } set { _effectiveRadius = value; } }
 
         private string _name = "node";
         public string name { get { return _name; } set { _name = value; } }
@@ -305,8 +298,6 @@ namespace OrbItProcs {
             if (val == nodeE.active)             active                      = dict[val];
             if (val == nodeE.position)           body.pos          = dict[val];
             if (val == nodeE.velocity)           body.velocity          = dict[val];
-            if (val == nodeE.multiplier)         multiplier                  = dict[val];
-            if (val == nodeE.effectiveRadius)    effectiveRadius             = dict[val];
             if (val == nodeE.radius)             body.radius            = dict[val];
             if (val == nodeE.mass)               body.mass              = dict[val];
             if (val == nodeE.scale)              body.scale             = dict[val];
@@ -438,7 +429,8 @@ namespace OrbItProcs {
                 }
                 else
                 {
-                    reach = (int)(body.radius * 5) / room.gridsystem.cellWidth;
+                    //reach = (int)(body.radius * 5) / room.gridsystem.cellWidth;
+                    reach = 20;
                 }
 
                 ///*
@@ -529,7 +521,7 @@ namespace OrbItProcs {
                 {
                     if (numOfSupers > 0) break;
                     comps[c].Draw(spritebatch);
-                    if (!comps[c].methods.HasFlag(mtypes.minordraw))
+                    if (comps[c].methods.HasFlag(mtypes.draw))
                         break; //only executes the most significant draw component
                 }
             }
@@ -673,7 +665,7 @@ namespace OrbItProcs {
         {
             if (!comps.ContainsKey(c))
             {
-                Console.WriteLine("Component already removed or doesn't exist.");
+                //Console.WriteLine("Component already removed or doesn't exist.");
                 return;
             }
             comps[c].active = false;
@@ -770,6 +762,13 @@ namespace OrbItProcs {
             var clist = comps.Keys.ToList();
             clist.Sort();
 
+            foreach (comp c in clist)
+            {
+                if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.minordraw) == mtypes.minordraw))
+                {
+                    drawProps.Add(c);
+                }
+            }
             foreach (comp c in clist)
             {
                 if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.draw) == mtypes.draw))

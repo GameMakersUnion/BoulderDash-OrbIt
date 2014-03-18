@@ -12,25 +12,26 @@ namespace OrbItProcs
     public class PropertyEditPanel
     {
         //public Sidebar sidebar;
+        public InspectorArea insArea;
         public GroupPanel grouppanel;
         public Dictionary<string, Control> panelControls;
         private InspectorItem activeInspectorItem;
         public Type editType;
 
-
         private int HeightCounter = 0;
         private int LeftPadding = 5;
         private bool triggerResizeSlider = true;
 
-        public PropertyEditPanel(GroupPanel grouppanel)
+        public PropertyEditPanel(InspectorArea insArea, GroupPanel grouppanel)
         {
             //this.sidebar = sidebar;
+            this.insArea = insArea;
             this.grouppanel = grouppanel;
             panelControls = new Dictionary<string, Control>();
 
         }
 
-        public void DisableControls()
+        public void DisableControls(bool erase = true)
         {
             List<string> list = panelControls.Keys.ToList(); // for some reason this isn't updated if you click quickly
             foreach (string key in list)
@@ -38,6 +39,9 @@ namespace OrbItProcs
                 grouppanel.Remove(panelControls[key]);
                 panelControls.Remove(key);
             }
+            grouppanel.Text = "Property";
+
+            if (erase) grouppanel.Visible = false;
         }
 
         public void UpdatePanel(InspectorItem inspectorItem)
@@ -47,28 +51,10 @@ namespace OrbItProcs
 
             if (panelControls.Keys.Count > 0) DisableControls();
 
+            grouppanel.Visible = true;
+            grouppanel.Refresh();
+
             activeInspectorItem = inspectorItem;
-
-            /*
-            if (inspectorItem.itemtype == treeitem.component)
-            {
-                //System.Console.WriteLine("Component, run boolean code");
-                CheckBox chkbox = new CheckBox(manager);
-                chkbox.Init();
-                chkbox.Parent = grouppanel;
-                chkbox.Left = LeftPadding;
-                chkbox.Top = 10;
-                chkbox.Width = 120;
-                chkbox.Checked = (bool)treeItem.node.isCompActive(treeItem.component);
-                chkbox.Text = treeItem.component + " (" + treeItem.node.isCompActive(treeItem.component) + ")";
-                chkbox.CheckedChanged += new TomShane.Neoforce.Controls.EventHandler(chkbox_CheckedChanged);
-
-                panelControls.Add("chkbox", chkbox);
-
-                return;
-            }
-            */
-
 
             //grouppanel.Text = activeInspectorItem.ToString(); //.Name();
             grouppanel.Text = activeInspectorItem.Name();
@@ -118,7 +104,7 @@ namespace OrbItProcs
 
                 if (editType == typeof(int) || editType == typeof(Single) || editType == typeof(byte))
                 {
-                    TrackBar trkMain = new TrackBar(grouppanel.Manager);
+                    Slider trkMain = new Slider(grouppanel.Manager);
                     trkMain.Init();
                     trkMain.Parent = grouppanel;
                     trkMain.Left = LeftPadding;
@@ -142,6 +128,8 @@ namespace OrbItProcs
                         if (relpos < sliderpos) trkMain.Range = trkMain.Range / 2;
                         else trkMain.Range = trkMain.Range * 2;
                     };
+                    //trkMain.
+                    trkMain.btnSlider.MouseUp += trkMain_MouseUp;
                     //trkMain.btnSlider.MouseUp += new TomShane.Neoforce.Controls.MouseEventHandler(trkMain_MouseUp);
                     panelControls.Add("trkMain", trkMain);
                 }
@@ -180,6 +168,8 @@ namespace OrbItProcs
                 cb.ItemIndexChanged += cb_ItemIndexChanged;
                 panelControls.Add("cb", cb);
             }
+
+            grouppanel.Refresh();
         }
 
         
@@ -187,22 +177,33 @@ namespace OrbItProcs
         void cb_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             ComboBox cb = (ComboBox) sender;
-            activeInspectorItem.SetValue(cb.ItemIndex);
+            //activeInspectorItem.SetValue(cb.ItemIndex);
+            insArea.SetItemValue(activeInspectorItem, cb.ItemIndex);
         }
 
-        //not called currently, but we should edit the access to this event in the trackbar class in neoforce again.
         void trkMain_MouseUp(object sender, TomShane.Neoforce.Controls.MouseEventArgs e)
         {
             //TrackBar trkbar = (TrackBar)sender;
-            //System.Console.WriteLine("yeah");
-            TrackBar trkbar = (TrackBar)panelControls["trkMain"];
+            Slider trkbar = (Slider)panelControls["trkMain"];
+            //if (trkbar.Value == trkbar.Range) trkbar.Range *= 2;
 
-            if (trkbar.Value == trkbar.Range) trkbar.Range *= 2;
+            if (activeInspectorItem.obj is int)
+            {
+                insArea.SetItemValue(activeInspectorItem, trkbar.Value);
+            }
+            else if (activeInspectorItem.obj is Single)
+            {
+                insArea.SetItemValue(activeInspectorItem, (Single)trkbar.Value);
+            }
+            else if (activeInspectorItem.obj is byte)
+            {
+                insArea.SetItemValue(activeInspectorItem, (byte)trkbar.Value);
+            }
         }
 
         void trkMain_ValueChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            TrackBar trkbar = (TrackBar)sender;
+            Slider trkbar = (Slider)sender;
             //GroupPanel gp = (GroupPanel)(trkbar.Parent.Parent);
 
             if (activeInspectorItem.obj is int)
@@ -240,7 +241,8 @@ namespace OrbItProcs
             }
             */
 
-            activeInspectorItem.SetValue(checkbox.Checked);
+            //activeInspectorItem.SetValue(checkbox.Checked);
+            insArea.SetItemValue(activeInspectorItem, checkbox.Checked);
             checkbox.Text = activeInspectorItem.Name() + " (" + activeInspectorItem.GetValue() + ")";
 
         }
@@ -256,26 +258,32 @@ namespace OrbItProcs
                 int integer;
                 if (str.Length < 1) return;
                 if (Int32.TryParse(str, out integer))
-                    activeInspectorItem.SetValue(integer);
+                {
+                    insArea.SetItemValue(activeInspectorItem, integer);
+                    //activeInspectorItem.SetValue(integer);
+                }
                 else
                     return;
             }
-            if (t == typeof(Single))
+            else if (t == typeof(Single))
             {
                 str = panelControls["txtbox"].Text.Trim();
                 float f;
                 if (str.Length < 1) return;
                 if (float.TryParse(str, out f))
-                    activeInspectorItem.SetValue(f);
+                {
+                    insArea.SetItemValue(activeInspectorItem, f);
+                    //activeInspectorItem.SetValue(f);
+                }
                 else
                     return;
             }
-            if (t == typeof(string))
+            else if (t == typeof(string))
             {
                 str = panelControls["txtbox"].Text;
                 if (str.Length < 1) return;
-                activeInspectorItem.SetValue(str);
-                return;
+                insArea.SetItemValue(activeInspectorItem, str);
+                //activeInspectorItem.SetValue(str);
             }
 
         }

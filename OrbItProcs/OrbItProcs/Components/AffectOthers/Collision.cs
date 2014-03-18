@@ -173,7 +173,7 @@ namespace OrbItProcs
         {
             if (parent != null) this.parent = parent;
             com = comp.collision; 
-            methods = mtypes.affectself | mtypes.draw | mtypes.minordraw;//mtypes.affectother;
+            methods = mtypes.affectself | mtypes.minordraw;//mtypes.affectother;
             //ResolveCollision = true;
             _AllHandlersEnabled = true;
         }

@@ -112,6 +112,9 @@ namespace OrbItProcs
             //{
             //    Keybindset.AddProcess(processDict[proc.axismovement]);//, KeySwitchMethod.Overwrite);
             //});
+
+
+            Keybindset.AddProcess(processDict[proc.spawnnodes]);
         }
 
         public void Update()

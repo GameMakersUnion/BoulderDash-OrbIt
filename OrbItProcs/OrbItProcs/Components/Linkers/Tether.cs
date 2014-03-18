@@ -69,7 +69,7 @@ namespace OrbItProcs
                 this.parent = parent;
             }
             com = comp.tether;
-            methods = mtypes.affectself | mtypes.draw | mtypes.minordraw;
+            methods = mtypes.affectself | mtypes.minordraw;
             //methods = mtypes.affectother | mtypes.draw | mtypes.minordraw;
             //InitializeLists();
         }

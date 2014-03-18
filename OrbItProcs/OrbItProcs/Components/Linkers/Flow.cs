@@ -66,7 +66,7 @@ namespace OrbItProcs
 
             }
             com = comp.flow;
-            methods = mtypes.affectself | mtypes.draw | mtypes.minordraw;
+            methods = mtypes.affectself | mtypes.minordraw;
             //InitializeLists();
 
         }

@@ -197,6 +197,9 @@ namespace OrbItProcs {
                 membertype = member_type.unimplemented;
             }
         }
+
+        
+
         /*
         public InspectorItem(object parent, FieldInfo fieldInfo, InspectorItem parentItem)
         {
@@ -304,6 +307,9 @@ namespace OrbItProcs {
                     propertyInfos = parent.GetType().GetProperties().ToList();
                 }
 
+                UserLevel userlevel = UserLevel.User;
+                if (parentItem != null) userlevel = parentItem.inspectorArea.sidebar.userLevel;
+
                 foreach (PropertyInfo pinfo in propertyInfos)
                 {
                     object[] attributes = pinfo.GetCustomAttributes(false);
@@ -312,9 +318,9 @@ namespace OrbItProcs {
                     var abstractions = pinfo.GetCustomAttributes(typeof(AbstractionLevel), false);
                     if (abstractions.Length > 0)
                     {
-                        if ((int)(abstractions[0] as AbstractionLevel).userLevel > (int)Sidebar.userLevel) continue;
+                        if ((int)(abstractions[0] as AbstractionLevel).userLevel > (int)userlevel) continue;
                     }
-                    else if (Sidebar.userLevel != UserLevel.Debug)
+                    else if (userlevel != UserLevel.Debug)
                     {
                         continue;
                     }
@@ -343,9 +349,9 @@ namespace OrbItProcs {
                         var abstractions = finfo.GetCustomAttributes(typeof(AbstractionLevel), false);
                         if (abstractions.Length > 0)
                         {
-                            if ((int)(abstractions[0] as AbstractionLevel).userLevel > (int)Sidebar.userLevel) continue;
+                            if ((int)(abstractions[0] as AbstractionLevel).userLevel > (int)userlevel) continue;
                         }
-                        else if (Sidebar.userLevel != UserLevel.Debug)
+                        else if (userlevel != UserLevel.Debug)
                         {
                             continue;
                         }
@@ -570,6 +576,8 @@ namespace OrbItProcs {
         }
         public void DoubleClickItem(InspectorArea inspectorArea)
         {
+            if (inspectorArea.sidebar.userLevel == UserLevel.User || inspectorArea.sidebar.userLevel == UserLevel.Advanced) return;
+
             bool haschildren = hasChildren();
             if (haschildren)
             {

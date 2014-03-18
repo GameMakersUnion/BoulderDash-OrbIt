@@ -35,7 +35,6 @@ namespace OrbItProcs
         collision,
         gravity,
         fixedforce,
-        fieldgravity,
         displace,
         orbiter,
 

@@ -405,7 +405,7 @@ namespace OrbItProcs
             datastores[name] = ds;
             if ((methods & mtypes.draw) != mtypes.draw)
             {
-                methods = methods | mtypes.draw | mtypes.minordraw;
+                methods = methods | mtypes.minordraw;
             }
             if (parent != null) parent.SortComponentListsDraw();
         }

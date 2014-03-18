@@ -10,6 +10,16 @@ namespace OrbItProcs
 {
     public class PhaseOrb : Component
     {
+        public static mtypes CompType = mtypes.minordraw;
+        public override mtypes compType
+        {
+            get
+            {
+                return CompType;
+            }
+        }
+
+
         [Polenter.Serialization.ExcludeFromSerialization]
         public int queuecount { get { if (parent != null && parent.HasComponent(comp.queuer)) return parent[comp.queuer].queuecount; else return 10; } set { if (parent != null && parent.HasComponent(comp.queuer)) parent[comp.queuer].queuecount = value; } }
 

@@ -150,7 +150,19 @@ namespace OrbItProcs
         /// </summary>
         public ButtonState BtnStart;
 
+        public static HalfPadState NullPadState = new HalfPadState();
 
+/*
+        public HalfPadState(bool nll)
+        {
+            stick1 = new Stick(Vector2.Zero);
+            stick2 = new Stick(Vector2.Zero);
+            Btn1 = ButtonState.Released;
+            Btn2 = ButtonState.Released;
+            Btn2AsTrigger = 0.0f;
+            Btn3 = ButtonState.Released;
+            BtnStart = ButtonState.Released;
+        }*/
         public HalfPadState(ControlSide side, PlayerIndex controllerIndex)
         {
             if (side == ControlSide.left)
@@ -290,6 +302,7 @@ namespace OrbItProcs
         public int playerNum;
         protected PlayerIndex controllerIndex;
         protected ControllerCodes controllerCode;
+        public bool enabled = true;
 
 
         public static Dictionary<int, PlayerIndex> intToPlayerIndex =
@@ -348,6 +361,7 @@ namespace OrbItProcs
             else
             {
                 PopUp.Toast("Insufficient controllers! Player "+ player +" will not work!");
+                enabled = false;
                 return;
             }
 
@@ -356,6 +370,7 @@ namespace OrbItProcs
         }
         public GamePadState getState()
         {
+            if (enabled == false) return new GamePadState();
             return GamePad.GetState(controllerIndex);
         }
     }
@@ -375,6 +390,7 @@ namespace OrbItProcs
 
         public HalfPadState getState()
         {
+            if (enabled == false) return HalfPadState.NullPadState;
             if (fullControllerAvailable == true)
             {
                     return new HalfPadState(fullPadMode, controllerIndex);
@@ -402,6 +418,7 @@ namespace OrbItProcs
                     else
                     {
                         PopUp.Toast("Insufficient controllers! Player " + playerNum + " will not work!");
+                        enabled = false;
                         return;
                     }
                 }

@@ -8,6 +8,13 @@ using Microsoft.Xna.Framework.Graphics;
 namespace OrbItProcs {
     public class Gravity : Component, ILinkable
     {
+        public enum Mode
+        {
+            Normal,
+            Strong,
+            ConstantForce,
+        }
+
         private Link _link = null;
         public Link link { get { return _link; } set { _link = value; } }
         private float _multiplier = 100f;
@@ -19,17 +26,15 @@ namespace OrbItProcs {
         private int _lowerbound = 20;
         public int lowerbound { get { return _lowerbound; } set { _lowerbound = value; } }
 
-        private bool _constant = false;
-        public bool constant { get { return _constant; } set { _constant = value; } }
-
         private bool _AffectsOnlyGravity = false;
         public bool AffectsOnlyGravity { get { return _AffectsOnlyGravity; } set { _AffectsOnlyGravity = value; } }
 
         private bool _AffectBoth = false;
         public bool AffectBoth { get { return _AffectBoth; } set { _AffectBoth = value; } }
 
-        private bool _StrongGravity = false;
-        public bool StrongGravity { get { return _StrongGravity; } set { _StrongGravity = value; } }
+        public Mode mode { get; set; }
+
+
 
         private int _angledelta = 0;
         public int angledelta { get { return _angledelta; } set { _angledelta = value; } }
@@ -40,7 +45,7 @@ namespace OrbItProcs {
             if (parent != null) this.parent = parent;
             com = comp.gravity; 
             methods = mtypes.affectother;
-            
+            mode = Mode.Normal;
         }
         //public bool TestBool = false;
 
@@ -51,9 +56,6 @@ namespace OrbItProcs {
 
             if (AffectsOnlyGravity && !other.comps.ContainsKey(comp.gravity)) return;
 
-            //if (TestBool) return;
-
-
             float distVects = Vector2.DistanceSquared(other.body.pos, parent.body.pos);
 
             if (distVects < radius * radius)
@@ -61,13 +63,21 @@ namespace OrbItProcs {
                 distVects = (float)Math.Sqrt(distVects);
                 if (distVects < lowerbound) distVects = lowerbound;
                 double angle = Math.Atan2((parent.body.pos.Y - other.body.pos.Y), (parent.body.pos.X - other.body.pos.X));
-                //float counterforce = 100 / distVects;
-                //float gravForce = multiplier / (distVects * distVects * counterforce);
 
-                //float gravForce = (multiplier * parent.transform.mass * other.transform.mass) / (distVects * distVects * counterforce);
-                double gravForce = (multiplier * parent.body.mass * other.body.mass) / (distVects);
+                double gravForce = (multiplier * parent.body.mass * other.body.mass);
 
-                if (!StrongGravity) gravForce /= distVects;
+                switch (mode)
+                {
+                    case Mode.Normal:
+                        gravForce /= distVects * distVects;
+                        break;
+                    case Mode.Strong:
+                        gravForce /= distVects;
+                        break;
+                    case Mode.ConstantForce:
+                        gravForce /= 20; //#magicnumber
+                        break;
+                }
 
                 if (angledelta != 0)
                     angle = (angle + Math.PI + (Math.PI * (float)(angledelta / 180.0f)) % (Math.PI * 2)) - Math.PI;
@@ -86,38 +96,12 @@ namespace OrbItProcs {
                 if (AffectBoth)
                 {
                     delta /= 2;
-
-                    if (constant)
-                    {
-                        other.body.velocity = delta * other.body.invmass;
-                        parent.body.velocity = -delta * parent.body.invmass;
-                        if (other.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
-                        if (parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
-
-                    }
-                    else
-                    {
-                        other.body.velocity += delta * other.body.invmass;
-                        parent.body.velocity -= delta * parent.body.invmass;
-                        if (other.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
-                        if (parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
-                    }
+                    other.body.velocity += delta * other.body.invmass;
+                    parent.body.velocity -= delta * parent.body.invmass;
                 }
                 else
                 {
-                    //delta /= 2;
-                    if (constant)
-                    {
-                        other.body.velocity = delta * parent.body.invmass;
-                        if (parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
-                    }
-                    else
-                    {
-                        //other.body.velocity += delta / other.body.mass;
-                        other.body.ApplyForce(delta);
-                        if (other.body.force.IsFucked()) System.Diagnostics.Debugger.Break();
-
-                    }
+                    other.body.ApplyForce(delta);
                 }
                 
                 

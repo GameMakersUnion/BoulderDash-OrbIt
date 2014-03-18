@@ -192,6 +192,20 @@ namespace OrbItProcs {
             //GraphData.AddFloat(GamePad.GetState(PlayerIndex.Two).ThumbSticks.Left.X * 10);
         }
 
+        public Action<int> ScrollAction;
+
+        public void SetScrollableControl(Control control, Action<int> action)
+        {
+            if (control == null || action == null) return;
+            control.MouseOver += (s, e) => {
+                ScrollAction = action;
+            };
+            control.MouseOut += (s, e) =>
+            {
+                ScrollAction = null;
+            };
+        }
+
         public void ProcessMouse()
         {
             mouseState = Mouse.GetState();
@@ -211,28 +225,19 @@ namespace OrbItProcs {
                     return;
             }
 
-            
-
-            //make sure clicks inside the ui are ignored by game logic
-            //if (mouseState.X >= sWidth - sidebar.Width - 5)
             if (!keyManager.MouseInGameBox)
             {
-                if (mouseState.Y > sidebar.lstMain.Top + 24 && mouseState.Y < sidebar.lstMain.Top + sidebar.lstMain.Height + 24)
+                if (ScrollAction != null)
                 {
                     if (mouseState.ScrollWheelValue < oldMouseState.ScrollWheelValue)
                     {
-                        sidebar.lstMain_ChangeScrollPosition(1);
-                        
+                        ScrollAction(1);
                     }
                     else if (mouseState.ScrollWheelValue > oldMouseState.ScrollWheelValue)
                     {
-                        sidebar.lstMain_ChangeScrollPosition(-1);
-                        
+                        ScrollAction(-1);
                     }
                 }
-
-                sidebar.inspectorArea.ScrollInsBox(mouseState, oldMouseState);
-                sidebar.insArea2.ScrollInsBox(mouseState, oldMouseState);
 
                 oldMouseState = mouseState;
                 return;

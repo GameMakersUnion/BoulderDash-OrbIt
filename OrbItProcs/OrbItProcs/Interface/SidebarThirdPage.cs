@@ -144,7 +144,7 @@ namespace OrbItProcs
             }
             cbUserLevel.ItemIndexChanged += (s, e) =>
             {
-                Sidebar.userLevel = (UserLevel)cbUserLevel.ItemIndex;
+                userLevel = (UserLevel)cbUserLevel.ItemIndex;
                 
             };
             cbUserLevel.ItemIndex = 3;

@@ -26,6 +26,8 @@ namespace OrbItProcs
 
     public abstract class Component {
 
+        public virtual mtypes compType { get; set; }
+
         protected bool _active = false;
         public virtual bool active
         {

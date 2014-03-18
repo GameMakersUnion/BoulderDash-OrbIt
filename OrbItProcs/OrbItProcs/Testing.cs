@@ -23,7 +23,7 @@ namespace OrbItProcs
         public static int count = 0;
         public static int modcount = 10;
         public static bool usingMod = false;
-        [DoNotInspect]
+        //[DoNotInspect]
         //public static Stopwatch this[string name]
         //{
         //    get

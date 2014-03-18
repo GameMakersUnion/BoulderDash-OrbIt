@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TomShane.Neoforce.Controls;
-
-
 using Component = OrbItProcs.Component;
 using Console = System.Console;
 using EventHandler = TomShane.Neoforce.Controls.EventHandler;
@@ -24,6 +22,8 @@ namespace OrbItProcs
         public InspectorItem ActiveInspectorParent;
         public Node editNode;
 
+        public UserLevel userLevel { get { return sidebar.userLevel; } set { sidebar.userLevel = value; } }
+
         public int Left;
         public int Top;
         public int Width;
@@ -42,14 +42,17 @@ namespace OrbItProcs
         //public GroupBox backPanel;
         public Panel backPanel;
         public Label lblInspectorAddress;
-        public Button btnToggleFields;
+        //public Button btnToggleFields;
         public InspectorBox InsBox;
         public PropertyEditPanel propertyEditPanel;
         public ContextMenu contextMenuInsBox;
         public MenuItem applyToAllNodesMenuItem, toggleComponentMenuItem, removeComponentMenuItem, toggleBoolMenuItem;
         public MenuItem toggleLinkMenuItem, removeLinkMenuItem, addComponentToLinkMenuItem;
-        
 
+        public Tuple<bool, string> OverrideString = new Tuple<bool, string>(false, "");
+
+        public ComponentView compView;
+        //public Group activeGroup = null;
 
         public InspectorArea(Sidebar sidebar, Control parent, int Left, int Top)
         {
@@ -64,12 +67,48 @@ namespace OrbItProcs
             this.Left = Left;
             this.Top = Top;
 
-            this.GenerateFields = false;
+            this.GenerateFields = false; //todo: set to true when usermode is set up (so you can see fields in debug)
             //this.ActiveInspectorParent = sidebar.ActiveInspectorParent;
             
             Initialize();
             
         }
+
+        public void ChangeUserLevel()
+        {
+            if (userLevel == UserLevel.Debug)
+            {
+            }
+        }
+
+        public void SetOverrideString(string name)
+        {
+            bool alreadyTrue = OverrideString.Item1;
+
+            OverrideString = new Tuple<bool, string>(true, name);
+            lblInspectorAddress.Text = OverrideString.Item2;
+            if (alreadyTrue) return;
+            if (lblInspectorAddress.Height == labelDoubleHeight)
+            {
+                InsBox.Top -= labelDoubleHeight / 2;
+                propertyEditPanel.grouppanel.Top -= labelDoubleHeight / 2;
+            }
+            lblInspectorAddress.Height = labelDoubleHeight / 2;
+        }
+
+        public void RemoveOverrideString()
+        {
+            OverrideString = new Tuple<bool, string>(false, OverrideString.Item2);
+            lblInspectorAddress.Text = "__";
+            if (lblInspectorAddress.Height == labelDoubleHeight / 2)
+            {
+                InsBox.Top += labelDoubleHeight / 2;
+                propertyEditPanel.grouppanel.Top += labelDoubleHeight / 2;
+            }
+            lblInspectorAddress.Height = labelDoubleHeight;
+        }
+
+        private int labelDoubleHeight = 0;
 
         public void Initialize()
         {
@@ -97,6 +136,7 @@ namespace OrbItProcs
             lblInspectorAddress.Top = HeightCounter; //HeightCounter += VertPadding + lblInspectorAddress.Height + 10;
             lblInspectorAddress.Width = Width - WidthReduction;
             lblInspectorAddress.Height = lblInspectorAddress.Height * 2; //HeightCounter += lblInspectorAddress.Height;
+            labelDoubleHeight = lblInspectorAddress.Height;
             //lblInspectorAddress.Left = LeftPadding;
             //lblInspectorAddress.Anchor = Anchors.Left;
             lblInspectorAddress.Text = ">No Node Selected<\u2190";
@@ -112,20 +152,22 @@ namespace OrbItProcs
                 changed = false;
             };
             #endregion
-            btnToggleFields = new Button(manager);
-            btnToggleFields.Init();
-            btnToggleFields.Parent = backPanel;
-            btnToggleFields.Left = LeftPadding + backPanel.Width - 30;
-            btnToggleFields.Width = 15;
-            btnToggleFields.Height = 20;
-            btnToggleFields.Top = HeightCounter + 10; HeightCounter += lblInspectorAddress.Height;
-            btnToggleFields.Text = "F";
-            btnToggleFields.Click += delegate(object s, EventArgs e)
-            {
-                this.GenerateFields = !this.GenerateFields;
-                //ResetInspectorBox(ActiveInspectorParent.obj);
-                ActiveInspectorParent.DoubleClickItem(this);
-            };
+            //btnToggleFields = new Button(manager);
+            //btnToggleFields.Init();
+            //btnToggleFields.Parent = backPanel;
+            //btnToggleFields.Left = LeftPadding + backPanel.Width - 30;
+            //btnToggleFields.Width = 15;
+            //btnToggleFields.Height = 20;
+            //btnToggleFields.Top = HeightCounter + 10; 
+            //btnToggleFields.Text = "F";
+            //btnToggleFields.Click += delegate(object s, EventArgs e)
+            //{
+            //    this.GenerateFields = !this.GenerateFields;
+            //    //ResetInspectorBox(ActiveInspectorParent.obj);
+            //    ActiveInspectorParent.DoubleClickItem(this);
+            //};
+
+            HeightCounter += lblInspectorAddress.Height;
 
 
             #region  /// Component List ///
@@ -142,6 +184,8 @@ namespace OrbItProcs
             InsBox.ItemIndexChanged += InsBox_ItemIndexChanged;
             InsBox.Click += InsBox_Click;
             InsBox.DoubleClick += InsBox_DoubleClick;
+
+            sidebar.ui.SetScrollableControl(InsBox, InsBox_ChangeScrollPosition);
 
             #region  /// Context Menu ///
             contextMenuInsBox = new ContextMenu(manager);
@@ -183,7 +227,7 @@ namespace OrbItProcs
 
 
             #region  /// PropertyEditPanel ///
-            propertyEditPanel = new PropertyEditPanel(groupPanel);
+            propertyEditPanel = new PropertyEditPanel(this, groupPanel);
             #endregion
 
             backPanel.Height = groupPanel.Top + groupPanel.Height;
@@ -200,11 +244,17 @@ namespace OrbItProcs
                 InsBox.Items.Remove(o);
             }
             lblInspectorAddress.Text = "/";
+
+            propertyEditPanel.DisableControls();
         }
 
         public void ResetInspectorBox(object rootobj)
         {
-
+            if (rootobj == null)
+            {
+                ClearInspectorBox();
+                return;
+            }
             InsBox.ItemIndex = 0;
             InspectorItem rootitem = new InspectorItem(InsBox.Items, rootobj, this);
             InsBox.rootitem = rootitem;
@@ -220,6 +270,7 @@ namespace OrbItProcs
             {
                 InsBox.Items.Add(o);
             }
+            InsBox.Refresh();
             if (rootobj is Node)
             {
                 editNode = (Node)rootobj;
@@ -228,6 +279,16 @@ namespace OrbItProcs
             else
             {
                 lblInspectorAddress.Text = rootobj.GetType().ToString();
+            }
+
+            if (OverrideString.Item1)
+            {
+                lblInspectorAddress.Text = OverrideString.Item2;
+                lblInspectorAddress.Height = labelDoubleHeight / 2;
+            }
+            else
+            {
+                lblInspectorAddress.Height = labelDoubleHeight;
             }
 
         }
@@ -257,8 +318,6 @@ namespace OrbItProcs
         {
             //InspectorBox InsBox = (InspectorBox)sender;
             MouseEventArgs mouseArgs = (MouseEventArgs)e;
-
-
 
             if (mouseArgs.Button == MouseButton.Right)
             {
@@ -321,8 +380,10 @@ namespace OrbItProcs
                     temp = temp.parentItem;
                     lbltext = lbltext.Insert(0, "/" + temp.Name());
                 }
-                lblInspectorAddress.Text = lbltext;
-
+                if (!OverrideString.Item1)
+                {
+                    lblInspectorAddress.Text = lbltext;
+                }
                 //Type t = item.obj.GetType();
 
                 //if (activeInspectorItem != item)
@@ -331,16 +392,30 @@ namespace OrbItProcs
             }
         }
 
+        public void SetItemValue(InspectorItem item, object value)
+        {
+            item.SetValue(value);
+            if (compView != null)
+            {
+                compView.ApplyToGroup(item.fpinfo, value);
+            }
+        }
+
         void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
         {
+            ApplyToAllNodes(sidebar.ActiveGroupFirst);
+        }
+
+        public void ApplyToAllNodes(Group group)
+        {
+            if (group == null) return;
             List<InspectorItem> itemspath = new List<InspectorItem>();
             InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
             object value = item.GetValue();
 
             BuildItemsPath(item, itemspath);
 
-            Group activeGroup = sidebar.ActiveGroupFirst;
-            activeGroup.ForEachAllSets(delegate(Node o)
+            group.ForEachAllSets(delegate(Node o)
             {
                 Node n = o;
                 if (n == itemspath.ElementAt(0).obj) return;
@@ -460,7 +535,8 @@ namespace OrbItProcs
                 return;
             }
 
-            item.SetValue(!(bool)item.GetValue());
+            //item.SetValue(!(bool)item.GetValue());
+            SetItemValue(item, !(bool)item.GetValue());
         }
 
 
@@ -473,7 +549,7 @@ namespace OrbItProcs
                 return;
             }
             Component component = (Component)item.obj;
-            if (component is Movement || component is Collision || component is Body)
+            if (component is Movement || component is Collision)
             {
                 return;
             }
@@ -492,30 +568,6 @@ namespace OrbItProcs
                 link.components.Remove(component as ILinkable);
                 item.RemoveChildren();
                 InsBox.Items.Remove(item);
-            }
-        }
-
-        public void ScrollInsBox(MouseState mouseState, MouseState oldMouseState)
-        {
-            int top = InsBox.Top;
-            Control par = InsBox.Parent;
-            while (par != null)
-            {
-                
-                top += par.Top;
-                par = par.Parent;
-            }
-
-            if (mouseState.Y > top && mouseState.Y < top + InsBox.Height)
-            {
-                if (mouseState.ScrollWheelValue < oldMouseState.ScrollWheelValue)
-                {
-                    InsBox_ChangeScrollPosition(1);
-                }
-                else if (mouseState.ScrollWheelValue > oldMouseState.ScrollWheelValue)
-                {
-                    InsBox_ChangeScrollPosition(-1);
-                }
             }
         }
 
