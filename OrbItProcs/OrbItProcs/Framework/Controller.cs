@@ -266,20 +266,20 @@ namespace OrbItProcs
         [Flags]
         public enum ControllerCodes
         {
-            None = 0,                                    //  00000000
-            FirstLeft = 1,                                    //  00000001
-            FirstRight = 1 << 1,                               //  00000010
-            SecondLeft = 1 << 2,                               //  00000100
+            None = 0,                                           //  00000000
+            FirstLeft = 1,                                      //  00000001
+            FirstRight = 1 << 1,                                //  00000010
+            SecondLeft = 1 << 2,                                //  00000100
             SecondRight = 1 << 3,                               //  00001000
-            ThirdLeft = 1 << 4,                               //  00010000
-            ThirdRight = 1 << 5,                               //  00100000
-            FourthLeft = 1 << 6,                               //  01000000
+            ThirdLeft = 1 << 4,                                 //  00010000
+            ThirdRight = 1 << 5,                                //  00100000
+            FourthLeft = 1 << 6,                                //  01000000
             FourthRight = 1 << 7,                               //  10000000
-            First = FirstLeft | FirstRight,               //  00000011
-            Second = SecondLeft | SecondRight,             //  00001100
-            Third = ThirdLeft | ThirdRight,               //  00110000
-            Fourth = FourthLeft | FourthRight,             //  11000000
-            All = First | Second | Third | Fourth       //  11111111
+            First = FirstLeft | FirstRight,                     //  00000011
+            Second = SecondLeft | SecondRight,                  //  00001100
+            Third = ThirdLeft | ThirdRight,                     //  00110000
+            Fourth = FourthLeft | FourthRight,                  //  11000000
+            All = First | Second | Third | Fourth               //  11111111
         }
         public static List<HalfController> halfControllers = new List<HalfController>();
         public static List<FullController> fullControllers = new List<FullController>();
@@ -309,7 +309,7 @@ namespace OrbItProcs
         protected void assign(ControllerCodes controller)
         {
             controllerCode = controller;
-            availableControllers = availableControllers ^ controller;
+            availableControllers ^= controller;
         }
         public virtual void unassign()
         {
