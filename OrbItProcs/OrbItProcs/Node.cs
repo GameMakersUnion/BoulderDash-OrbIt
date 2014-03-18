@@ -10,6 +10,7 @@ using System.Reflection;
 
 
 using System.Collections.Specialized;
+using System.Collections;
 
 
 
@@ -38,6 +39,19 @@ namespace OrbItProcs {
         on,
     }
     public delegate void CollisionDelegate(Node source, Node target);
+
+    public class DataStore : Dictionary<string, dynamic>
+    {
+        public DataStore() : base() { }
+
+        public DataStore (params Tuple<string, dynamic>[] items) : base(items.Length)
+        {
+            foreach(var item in items)
+            {
+                this[item.Item1] = item.Item2;
+            }
+        }
+    }
 
     public class Node {
         private string _nodeHash = "";
@@ -87,7 +101,6 @@ namespace OrbItProcs {
             get { return _active; }
             set
             {
-                OnAffectOthers += Node_OnAffectOthers;
                 if (_active && !value)
                 {
                     foreach (comp c in comps.Keys.ToList())
@@ -98,6 +111,7 @@ namespace OrbItProcs {
                             comps[c].active = false;
                         }
                     }
+                    collision.RemoveCollidersFromSet();
                 }
                 else if (!_active && value)
                 {
@@ -109,14 +123,21 @@ namespace OrbItProcs {
                             else comps[c].active = true;
                         }
                     }
+                    if (collision != null) collision.UpdateCollisionSet();
                 }
                 _active = value;
             }
         }
-
-        void Node_OnAffectOthers(object sender, EventArgs e)
+        ///<summary>
+        ///Warning: Do not call in update Loop. BE CAREFUL
+        ///</summary>
+        public IEnumerable<Collider> GetColliders()
         {
-            
+            foreach(Collider c in collision.colliders.Values)
+            {
+                yield return c;
+            }
+            yield return body;
         }
 
         private bool _IsDeleted = false;
@@ -132,6 +153,8 @@ namespace OrbItProcs {
                 _IsDeleted = value;
             }
         }
+
+
 
         public bool IsDefault = false;
 
@@ -150,7 +173,7 @@ namespace OrbItProcs {
 
         public Room room = Program.getRoom();
 
-        private Dictionary<comp, dynamic> _comps = new Dictionary<comp, dynamic>();
+        public Dictionary<comp, dynamic> _comps = new Dictionary<comp, dynamic>();
         public Dictionary<comp, dynamic> comps { get { return _comps; } set { _comps = value; } }
 
         public List<comp> aOtherProps = new List<comp>();
@@ -170,14 +193,6 @@ namespace OrbItProcs {
             set
             {
                 body = value;
-                if (comps != null && value != null)
-                {
-                    if (comps.ContainsKey(comp.body))
-                    {
-                        comps.Remove(comp.body);
-                    }
-                    comps.Add(comp.body, value);
-                }
             } 
         }
 
@@ -227,7 +242,41 @@ namespace OrbItProcs {
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Group> Groups { get; set; }
 
-        
+        [Polenter.Serialization.ExcludeFromSerialization]
+        [DoNotInspect]
+        public Delegator delegator
+        {
+            get
+            {
+                if (!comps.ContainsKey(comp.delegator))
+                {
+                    addComponent(comp.delegator, true);
+                }
+                return comps[comp.delegator];
+            }
+            set
+            {
+                comps[comp.delegator] = value;
+            }
+        }
+        [Polenter.Serialization.ExcludeFromSerialization]
+        [DoNotInspect]
+        public Delegator scheduler
+        {
+            get
+            {
+                if (!comps.ContainsKey(comp.scheduler))
+                {
+                    addComponent(comp.scheduler, true);
+                }
+                return comps[comp.scheduler];
+            }
+            set
+            {
+                comps[comp.scheduler] = value;
+            }
+        }
+
 
         public bool DebugFlag { get; set; }
 
@@ -247,80 +296,9 @@ namespace OrbItProcs {
             }
         }
 
-        public Dictionary<string, dynamic> DataStore = new Dictionary<string, dynamic>();
+        public DataStore Kawasaki = new DataStore();
 
         public event EventHandler OnAffectOthers;
-
-        public event CollisionDelegate OnCollision;
-        public event CollisionDelegate OnCollisionStart;
-        public event CollisionDelegate OnCollisionEnd;
-        public event Action<Node> OnCollisionFirst;
-        public event Action<Node> OnCollisionNone;
-
-        public void ClearCollisionHandlers()
-        {
-            OnCollision -= OnCollision;
-            OnCollisionStart -= OnCollisionStart;
-            OnCollisionEnd -= OnCollisionEnd;
-            OnCollisionFirst -= OnCollisionFirst;
-            OnCollisionNone -= OnCollisionNone;
-        }
-
-        public bool HasCollision()
-        {
-            return OnCollision != null;
-        }
-        public bool HasCollisionStart()
-        {
-            return OnCollisionStart != null;
-        }
-        public bool HasCollisionEnd()
-        {
-            return OnCollisionEnd != null;
-        }
-        public bool HasCollisionFirst()
-        {
-            return OnCollisionFirst != null;
-        }
-        public bool HasCollisionNone()
-        {
-            return OnCollisionNone != null;
-        }
-        public void OnCollisionInvoke(Node target)
-        {
-            if (OnCollision != null)
-            {
-                OnCollision(this, target);
-            }
-        }
-        public void OnCollisionStartInvoke(Node target)
-        {
-            if (OnCollisionStart != null)
-            {
-                OnCollisionStart(this, target);
-            }
-        }
-        public void OnCollisionEndInvoke(Node target)
-        {
-            if (OnCollisionEnd != null)
-            {
-                OnCollisionEnd(this, target);
-            }
-        }
-        public void OnCollisionFirstInvoke()
-        {
-            if (OnCollisionFirst != null)
-            {
-                OnCollisionFirst(this);
-            }
-        }
-        public void OnCollisionNoneInvoke()
-        {
-            if (OnCollisionNone != null)
-            {
-                OnCollisionNone(this);
-            }
-        }
 
         public void storeInInstance(nodeE val, Dictionary<dynamic,dynamic> dict)
         {
@@ -346,6 +324,16 @@ namespace OrbItProcs {
             comp.phaseorb
         };
 
+        //todo:never again
+        /*~Node()
+        {
+            Console.WriteLine("It was nice knowning you. -{0}", name);
+            while(true)
+            {
+
+            }
+        }*/
+
         public Node() : this(ShapeType.eCircle) { }
 
         public Node(bool createHash) : this(ShapeType.eCircle, createHash) { }
@@ -359,8 +347,8 @@ namespace OrbItProcs {
             }
             Groups = new ObservableHashSet<Group>();
             nodeCounter++;
-            movement = new Movement(this);
-            collision = new Collision(this);
+            MOVEMENT = new Movement(this);
+            COLLISION = new Collision(this);
             Shape shape;
             if (shapetype == ShapeType.eCircle)
             {
@@ -375,12 +363,12 @@ namespace OrbItProcs {
                 shape = new Circle(25); //in case there are more shapes
             }
 
-            body = new Body(shape: shape, parent: this);
+            BODY = new Body(shape: shape, parent: this);
             name = "blankname";
 
-            comps.Add(comp.body, body);
-            comps.Add(comp.movement, movement);
-            comps.Add(comp.collision, collision);
+            //comps.Add(comp.body, body);
+            //comps.Add(comp.movement, movement);
+            //comps.Add(comp.collision, collision);
             
         }
 
@@ -410,9 +398,9 @@ namespace OrbItProcs {
 
         public T CheckData<T>(string key)
         {
-            if (DataStore.ContainsKey(key))
+            if (Kawasaki.ContainsKey(key))
             {
-                return DataStore[key];
+                return Kawasaki[key];
             }
             else
             {
@@ -422,7 +410,7 @@ namespace OrbItProcs {
 
         public void SetData(string key, dynamic data)
         {
-            DataStore[key] = data;
+            Kawasaki[key] = data;
         }
 
         public void AddTag(string tag)
@@ -435,12 +423,13 @@ namespace OrbItProcs {
         }
         public virtual void Update(GameTime gametime)
         {
-            collision.ClearCollisionList();
+            //collision.ClearCollisionList();
+            collision.ClearCollisionLists();
             if (nodeState == state.off || nodeState == state.drawOnly) return;
 
             if (aOtherProps.Count > 0)
             {
-                List<Node> returnObjectsFinal = new List<Node>();
+                List<Collider> returnObjectsFinal = new List<Collider>();
 
                 int reach; //update later based on cell size and radius (or polygon size.. maybe based on it's AABB)
                 if (body.shape is Polygon)
@@ -453,25 +442,25 @@ namespace OrbItProcs {
                 }
 
                 ///*
-                returnObjectsFinal = room.gridsystem.retrieve(this, reach);
+                returnObjectsFinal = room.gridsystem.retrieve(body, reach);
                 //int cellReach = (int)(body.radius * 2) / room.gridsystem.cellWidth * 2;
                 if (comps.ContainsKey(comp.flow) && comps[comp.flow].active)
                 {
-                    returnObjectsFinal = new List<Node>();
+                    returnObjectsFinal = new List<Collider>();
                     if (comps[comp.flow].activated)
                     {
                         returnObjectsFinal = comps[comp.flow].outgoing.ToList();
                     }
                 }
-                returnObjectsFinal.Remove(this);
+                returnObjectsFinal.Remove(body);
 
-                foreach (Node other in returnObjectsFinal)
+                foreach (Collider other in returnObjectsFinal)
                 {
-                    if (other.active)
+                    if (other.parent.active)
                     {
                         foreach (comp c in aOtherProps)
                         {
-                            comps[c].AffectOther(other);
+                            comps[c].AffectOther(other.parent);
                         }
                     }
                 }
@@ -758,7 +747,7 @@ namespace OrbItProcs {
 
             foreach (comp c in clist)
             {
-                if (c == comp.movement || c == comp.body || c == comp.collision) continue;
+                if (c == comp.movement || c == comp.collision) continue;
                 if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.affectother) == mtypes.affectother))
                 {
                     aOtherProps.Add(c);
@@ -766,7 +755,7 @@ namespace OrbItProcs {
             }
             foreach (comp c in clist)
             {
-                if (c == comp.movement || c == comp.body || c == comp.collision) continue;
+                if (c == comp.movement) continue;
                 if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.affectself) == mtypes.affectself))
                 {
                     aSelfProps.Add(c);
@@ -849,11 +838,11 @@ namespace OrbItProcs {
         public Node CreateClone(bool CloneHash = false)
         {
             Node newNode = new Node(!CloneHash);
-            cloneObject(this, newNode, CloneHash);
+            cloneNode(this, newNode, CloneHash);
             return newNode;
         }
 
-        public static void cloneObject(Node sourceNode, Node destNode, bool CloneHash = false) //they must be the same type
+        public static void cloneNode(Node sourceNode, Node destNode, bool CloneHash = false) //they must be the same type
         {
             //dynamic returnval;
             List<FieldInfo> fields = sourceNode.GetType().GetFields().ToList();
@@ -867,6 +856,7 @@ namespace OrbItProcs {
             
             }
             //*/
+            //do not copy parent field
             foreach (FieldInfo field in fields)
             {
                 if (field.Name.Equals("_nodeHash"))
@@ -876,74 +866,52 @@ namespace OrbItProcs {
                         continue;
                     }
                 }
-                //Console.WriteLine("fieldtype: " + field.FieldType);
-                if (field.FieldType.ToString().Contains("Dictionary"))
+                if (field.Name.Equals("_comps"))
                 {
-                    if (field.FieldType.ToString().Contains("[OrbItProcs.comp,System.Object]"))//must be comps
+                    Dictionary<comp, dynamic> dict = sourceNode.comps;
+                    foreach (comp key in dict.Keys)
                     {
-                        //Console.WriteLine("COMPS");
-                        //dynamic node = sourceNode;
-                        Dictionary<comp, dynamic> dict = sourceNode.comps;
-                        //dynamic newNode = destNode;
-                        foreach (comp key in dict.Keys)
+                        if (key == comp.collision || key == comp.movement) continue;
+                        destNode.addComponent(key, sourceNode.comps[key].active);
+                        Component.CloneComponent(dict[key], destNode.comps[key]);
+                        destNode.comps[key].Initialize(destNode);
+                    }
+                    foreach (comp key in destNode.comps.Keys.ToList())
+                    {
+                        if (key == comp.collision || key == comp.movement) continue;
+                        Component component = destNode.comps[key];
+                        MethodInfo mInfo = component.GetType().GetMethod("AfterCloning");
+                        if (mInfo != null
+                            && mInfo.DeclaringType == component.GetType())
                         {
-                            destNode.addComponent(key, sourceNode.comps[key].active);
-                            //cloneObject<Component>(dict[key], destNode.comps[key]);
-                            Component.CloneComponent(dict[key], destNode.comps[key]);
-
-                            destNode.comps[key].Initialize(destNode);
-
-                            //MethodInfo mInfo = sourceNode.comps[key].GetType().GetMethod("InitializeLists");
-                            //if (mInfo != null &&
-                            //   mInfo.DeclaringType == sourceNode.comps[key].GetType()) Console.WriteLine(sourceNode.comps[key].GetType()+"initializelist exists");
-                            //else Console.WriteLine(sourceNode.comps[key].GetType()+"doesn't have initilizelists");
-
-                            //TODO: how can I check if there is a *non-empty* override of the onCollision method in this component
-                            // and if so, add it to the node's Collided event...
+                            component.AfterCloning();
                         }
-                        //Console.WriteLine(newNode.comps[comp.randinitialvel].multiplier);
 
-                        foreach (comp key in destNode.comps.Keys.ToList())
-                        {
-                            Component component = destNode.comps[key];
-                            MethodInfo mInfo = component.GetType().GetMethod("AfterCloning");
-                            if (mInfo != null
-                                && mInfo.DeclaringType == component.GetType())
-                            {
-                                component.AfterCloning();
-                            }
-
-                        }
                     }
                 }
-                else if ((field.FieldType.ToString().Equals("System.Int32"))
-                    || (field.FieldType.ToString().Equals("System.Single"))
-                    || (field.FieldType.ToString().Equals("System.Boolean"))
-                    || (field.FieldType.ToString().Equals("System.String")))
+                else if ((field.FieldType == typeof(int))
+                   || (field.FieldType == typeof(Single))
+                   || (field.FieldType == typeof(bool))
+                   || (field.FieldType == typeof(string)))
                 {
                     if (!field.Name.Equals("IsDefault"))
                         field.SetValue(destNode, field.GetValue(sourceNode));
                 }
-                else if (field.FieldType.ToString().Contains("Vector2"))
+                else if (field.FieldType == typeof(Vector2))
                 {
                     Vector2 vect = (Vector2)field.GetValue(sourceNode);
                     Vector2 newvect = new Vector2(vect.X, vect.Y);
                     field.SetValue(destNode, newvect);
                 }
-                else if (field.FieldType.ToString().Equals("Microsoft.Xna.Framework.Color"))
+                else if (field.FieldType == typeof(Color))
                 {
                     Color col = (Color)field.GetValue(sourceNode);
                     Color newcol = new Color(col.R, col.G, col.B, col.A);
                     field.SetValue(destNode, newcol);
                 }
-                else if (field.Name.Equals("parent"))
-                {
-                    //do nothing
-                }
                 else if (field.FieldType == (typeof(Collision)))
                 {
                     Component.CloneComponent(sourceNode.collision, destNode.collision);
-
                     destNode.collision.parent = destNode;
                     destNode.collision.AfterCloning();
                 }
@@ -955,19 +923,16 @@ namespace OrbItProcs {
                 }
                 else if (field.FieldType == (typeof(Body)))
                 {
-                    Component.CloneComponent(sourceNode.body, destNode.body);
+                    //Component.CloneComponent(sourceNode.body, destNode.body);
+
+                    Component.CloneObject(sourceNode.body, destNode.body);
                     destNode.body.parent = destNode;
                     destNode.body.shape.body = destNode.body;
                     destNode.body.AfterCloning();
                 }
-                else
+                else if (field.FieldType == typeof(Room))
                 {
-                    //this would be an object field
-                    //Console.WriteLine(field.Name + " is an object of some kind.");
-                    if (field.Name.Equals("room") || field.Name.Equals("_texture"))
-                    {
-                        field.SetValue(destNode, field.GetValue(sourceNode));
-                    }
+                    field.SetValue(destNode, field.GetValue(sourceNode));
                 }
             }
         }

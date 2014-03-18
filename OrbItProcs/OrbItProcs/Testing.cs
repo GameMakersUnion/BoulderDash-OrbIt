@@ -199,7 +199,7 @@ namespace OrbItProcs
             {
                 foreach (var n in room.masterGroup.fullSet)
                 {
-                    Tuple<int, int> t = room.gridsystem.getIndexs(n);
+                    Tuple<int, int> t = room.gridsystem.getIndexs(n.body);
                     if (i == 0)
                         ind[c] += t.Item1 + "," + t.Item2 + " ";
                 }
@@ -210,7 +210,7 @@ namespace OrbItProcs
             {
                 foreach (var n in room.masterGroup.fullSet)
                 {
-                    Tuple<int, int> t = room.gridsystem.getIndexsNew(n);
+                    Tuple<int, int> t = room.gridsystem.getIndexsNew(n.body);
                     if (i == 0)
                         ind[c] += t.Item1 + "," + t.Item2 + " ";
                 }

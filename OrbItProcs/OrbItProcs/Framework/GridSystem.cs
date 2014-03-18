@@ -20,20 +20,20 @@ namespace OrbItProcs {
         private int _cellReach;
         public int cellReach { get { return _cellReach; } set { if (value < 1) return; _cellReach = value; } }
 
-        public List<Node>[,] grid;
-        public HashSet<Node> alreadyVisited;
+        public List<Collider>[,] grid;
+        public HashSet<Collider> alreadyVisited;
 
         
 
         public bool PolenterHack { get { return false; } 
             set 
             {
-                grid = new List<Node>[cellsX, cellsY];
+                grid = new List<Collider>[cellsX, cellsY];
                 for (int i = 0; i < cellsX; i++)
                 {
                     for (int j = 0; j < cellsY; j++)
                     {
-                        grid[i, j] = new List<Node>();
+                        grid[i, j] = new List<Collider>();
                     }
                 }
             } 
@@ -42,7 +42,7 @@ namespace OrbItProcs {
         public GridSystem() 
         {
             room = Program.getRoom();
-            alreadyVisited = new HashSet<Node>();
+            alreadyVisited = new HashSet<Collider>();
             GenerateAllReachOffsetsPerCoord(300);
         }
 
@@ -59,58 +59,58 @@ namespace OrbItProcs {
             cellHeight = cellWidth;
             this.cellsY = gridHeight / cellHeight;
             //cellheight = gridheight / cellsY;
-            grid = new List<Node>[cellsX, cellsY];
+            grid = new List<Collider>[cellsX, cellsY];
             for (int i = 0; i < cellsX; i++)
             {
                 for (int j = 0; j < cellsY; j++)
                 {
-                    grid[i, j] = new List<Node>();
+                    grid[i, j] = new List<Collider>();
                 }
             }
             
             //
-            arrayGrid = new IndexArray<Node>[cellsX][];
+            arrayGrid = new IndexArray<Collider>[cellsX][];
             for(int i = 0; i < cellsX; i++)
             {
-                arrayGrid[i] = new IndexArray<Node>[cellsY];
+                arrayGrid[i] = new IndexArray<Collider>[cellsY];
                 for(int j = 0; j < cellsY; j++)
                 {
-                    arrayGrid[i][j] = new IndexArray<Node>(100);
+                    arrayGrid[i][j] = new IndexArray<Collider>(100);
                 }
             }
-            bucketBags = new IndexArray<IndexArray<Node>>[cellsX][];
+            bucketBags = new IndexArray<IndexArray<Collider>>[cellsX][];
             for (int i = 0; i < cellsX; i++)
             {
-                bucketBags[i] = new IndexArray<IndexArray<Node>>[cellsY];
+                bucketBags[i] = new IndexArray<IndexArray<Collider>>[cellsY];
                 for (int j = 0; j < cellsY; j++)
                 {
-                    bucketBags[i][j] = new IndexArray<IndexArray<Node>>(20);
+                    bucketBags[i][j] = new IndexArray<IndexArray<Collider>>(20);
                 }
             }
             //
             distToOffsets = GenerateReachOffsets();
             GenerateAllReachOffsetsPerCoord(300);
-            bucketLists = new List<List<Node>>[cellsX, cellsY];
+            bucketLists = new List<List<Collider>>[cellsX, cellsY];
 
         }
-        public IndexArray<Node>[][] arrayGrid;
+        public IndexArray<Collider>[][] arrayGrid;
         //public IndexArray<Node>[][][] bucketBags;
-        public IndexArray<IndexArray<Node>>[][] bucketBags;
+        public IndexArray<IndexArray<Collider>>[][] bucketBags;
 
 
-        public IndexArray<IndexArray<Node>> retrieveBucketBags(Node node)
+        public IndexArray<IndexArray<Collider>> retrieveBucketBags(Collider collider)
         {
-            int x = (int)node.body.pos.X / cellWidth;
-            int y = (int)node.body.pos.Y / cellHeight;
+            int x = (int)collider.pos.X / cellWidth;
+            int y = (int)collider.pos.Y / cellHeight;
             if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return null;
             return bucketBags[x][y];
         }
-        public void insertToBuckets(Node node)
+        public void insertToBuckets(Collider collider)
         {
-            int x = (int)node.body.pos.X / cellWidth;
-            int y = (int)node.body.pos.Y / cellHeight;
+            int x = (int)collider.pos.X / cellWidth;
+            int y = (int)collider.pos.Y / cellHeight;
             if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
-            arrayGrid[x][y].AddItem(node);
+            arrayGrid[x][y].AddItem(collider);
         }
         public void clearBuckets()
         {
@@ -125,15 +125,15 @@ namespace OrbItProcs {
 
 
         static int largest = 0;
-        public void insert(Node node)
+        public void insert(Collider collider)
         {
-            Tuple<int, int> indexs = getIndexs(node);
+            Tuple<int, int> indexs = getIndexs(collider);
             //if (node == room.game.targetNode) Console.WriteLine("target indexs: {0} {1}",indexs.Item1,indexs.Item2);
-            grid[indexs.Item1, indexs.Item2].Add(node);
+            grid[indexs.Item1, indexs.Item2].Add(collider);
             if (grid[indexs.Item1, indexs.Item2].Count > largest)
             {
                 largest = grid[indexs.Item1, indexs.Item2].Count;
-                Console.WriteLine(largest);
+                //Console.WriteLine(largest);
             }
             //grid[indexs.Item1, indexs.Item2].ToArray();
         }
@@ -195,32 +195,32 @@ namespace OrbItProcs {
                             bucketBags[x][y].AddItem(arrayGrid[x + tuple.Item1][y + tuple.Item2]);
                         }
                     }
-                    bucketBags[x][y].index = 20; //determins global reach
+                    bucketBags[x][y].index = 15; //determins global reach
                 }
             }
         }
-        public void retrieveFromAllOffsets(Node node, float reachDistance, Action<Node> action)
+        public void retrieveFromAllOffsets(Collider collider, float reachDistance, Action<Node> action)
         {
-            int x = (int)node.body.pos.X / cellWidth;
-            int y = (int)node.body.pos.Y / cellHeight;
+            int x = (int)collider.pos.X / cellWidth;
+            int y = (int)collider.pos.Y / cellHeight;
             if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
             for (int i = 0; i < FindCount(reachDistance); i++)
             {
                 foreach(var tuple in distToOffsets.ElementAt(i).Value)
                 {
-                    foreach(Node n in grid[tuple.Item1, tuple.Item2])
+                    foreach (Collider c in grid[tuple.Item1, tuple.Item2])
                     {
-                        action(n);
+                        action(c.parent);
                     }
                 }
             }
         }
-        public List<List<Node>>[,] bucketLists;
+        public List<List<Collider>>[,] bucketLists;
         public int preexistingCounter = 0;
-        public List<List<Node>> retrieveBuckets(Node node, float reachDistance)
+        public List<List<Collider>> retrieveBuckets(Collider collider, float reachDistance)
         {
-            int x = (int)node.body.pos.X / cellWidth;
-            int y = (int)node.body.pos.Y / cellHeight;
+            int x = (int)collider.pos.X / cellWidth;
+            int y = (int)collider.pos.Y / cellHeight;
             
             if (x < 0 || x >= cellsX || y < 0 || y >= cellsY)
             {
@@ -233,7 +233,7 @@ namespace OrbItProcs {
                     preexistingCounter++;
                     return bucketLists[x, y];
                 }
-                bucketLists[x, y] = new List<List<Node>>();
+                bucketLists[x, y] = new List<List<Collider>>();
 
                 int count = FindCount(reachDistance);
                 var dict = offsetsArray[x, y];
@@ -255,10 +255,10 @@ namespace OrbItProcs {
             }
         }
 
-        public void retrieveFromOptimizedOffsets(Node node, float reachDistance, Action<Node> action)
+        public void retrieveFromOptimizedOffsets(Collider collider, float reachDistance, Action<Node> action)
         {
-            int x = (int)node.body.pos.X / cellWidth;
-            int y = (int)node.body.pos.Y / cellHeight;
+            int x = (int)collider.pos.X / cellWidth;
+            int y = (int)collider.pos.Y / cellHeight;
             if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
             int count = FindCount(reachDistance);
             var dict = offsetsArray[x, y];
@@ -271,9 +271,9 @@ namespace OrbItProcs {
             {
                 foreach (var tuple in dict.ElementAt(i).Value)
                 {
-                    foreach (Node n in grid[tuple.Item1 + x, tuple.Item2 + y])
+                    foreach (Collider c in grid[tuple.Item1 + x, tuple.Item2 + y])
                     {
-                        action(n);
+                        action(c.parent);
                     }
                     //cellsHit++;
                 }
@@ -282,10 +282,10 @@ namespace OrbItProcs {
         }
 
         public Dictionary<float, int> distToCount = new Dictionary<float, int>();
-        public void retrieveNew(Node node, float reachDistance, Action<Node> action)
+        public void retrieveNew(Collider collider, float reachDistance, Action<Node> action)
         {
-            int x = (int)node.body.pos.X / cellWidth;
-            int y = (int)node.body.pos.Y / cellHeight;
+            int x = (int)collider.pos.X / cellWidth;
+            int y = (int)collider.pos.Y / cellHeight;
             if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
 
             foreach(float dist in distToOffsets.Keys)
@@ -293,9 +293,9 @@ namespace OrbItProcs {
                 if (dist > reachDistance) break;
                 foreach(var tuple in distToOffsets[dist])
                 {
-                    foreach(Node n in grid[x + tuple.Item1, y + tuple.Item2])
+                    foreach (Collider c in grid[x + tuple.Item1, y + tuple.Item2])
                     {
-                        action(n);
+                        action(c.parent);
                         
                     }
                 }
@@ -345,10 +345,10 @@ namespace OrbItProcs {
         
 
         // gets the index of the node in the gridsystem, without correcting out of bounds nodes.
-        public Tuple<int, int> getIndexsNew(Node node)
+        public Tuple<int, int> getIndexsNew(Collider collider)
         {
             //int a = (int)node.body.pos.X / cellWidth;
-            return new Tuple<int, int>((int)node.body.pos.X / cellWidth, (int)node.body.pos.Y / cellHeight);
+            return new Tuple<int, int>((int)collider.pos.X / cellWidth, (int)collider.pos.Y / cellHeight);
         }
 
         public void testRetrieve(int x, int y, int reach)
@@ -375,13 +375,13 @@ namespace OrbItProcs {
             Console.WriteLine();
         }
 
-        public List<Node> retrieve(Node node, int reach = -1)
+        public List<Collider> retrieve(Collider collider, int reach = -1)
         {
             //CountArray<Node>[,] nodes;
 
             if (reach == -1) reach = cellReach;
-            List<Node> returnList = new List<Node>();
-            Tuple<int, int> indexs = getIndexs(node);
+            List<Collider> returnList = new List<Collider>();
+            Tuple<int, int> indexs = getIndexs(collider);
             int x = indexs.Item1;
             int y = indexs.Item2;
             //grid[indexs.Item1, indexs.Item2].Add(node);
@@ -445,11 +445,11 @@ namespace OrbItProcs {
 
         }
 
-        public Tuple<int, int> getIndexs(Node node)
+        public Tuple<int, int> getIndexs(Collider collider)
         {
-            Vector2 pos = new Vector2(node.body.pos.X, node.body.pos.Y);
-            int x = (int)node.body.pos.X;
-            int y = (int)node.body.pos.Y;
+            Vector2 pos = new Vector2(collider.pos.X, collider.pos.Y);
+            int x = (int)collider.pos.X;
+            int y = (int)collider.pos.Y;
             int gridx = (int)pos.X - ((int)pos.X % cellWidth);
             x = gridx / cellWidth;
             //if ((int)pos.X - gridx > gridx + cellwidth - (int)node.transform.radius) x++;
@@ -471,7 +471,7 @@ namespace OrbItProcs {
             {
                 for (int j = 0; j < cellsY; j++)
                 {
-                    grid[i, j] = new List<Node>();
+                    grid[i, j] = new List<Collider>();
                     //grid[i, j].RemoveRange(0, grid[i, j].Count);
                     bucketLists[i, j] = null;
                 }
@@ -480,14 +480,13 @@ namespace OrbItProcs {
             preexistingCounter = 0;
         }
 
-        public bool ContainsNode(Node n)
+        public bool ContainsCollider(Collider collider)
         {
-
             for (int i = 0; i < cellsX; i++)
             {
                 for (int j = 0; j < cellsY; j++)
                 {
-                    if (grid[i, j].Contains(n)) return true;
+                    if (grid[i, j].Contains(collider)) return true;
                 }
             }
             return false;
@@ -500,13 +499,13 @@ namespace OrbItProcs {
             // coloring the nodes
             if (game.targetNode != null)
             {
-                List<Node> returnObjectsGridSystem = retrieve(game.targetNode);
+                List<Collider> returnObjectsGridSystem = retrieve(game.targetNode.body);
 
                 foreach (Node _node in room.masterGroup.fullSet)
                 {
                     if (_node.body.color != Color.Black)
                     {
-                        if (returnObjectsGridSystem.Contains(_node))
+                        if (returnObjectsGridSystem.Contains(_node.body))
                             _node.body.color = Color.Purple;
                         else
                             _node.body.color = Color.White;

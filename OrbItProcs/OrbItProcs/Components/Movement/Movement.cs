@@ -158,7 +158,7 @@ namespace OrbItProcs
                 //parent.body.pos.X = (levelwidth - parent.body.radius - off) % parent.room.worldWidth;
                 parent.body.pos.X = DelegateManager.Triangle(parent.body.pos.X, parent.room.worldWidth - (int)parent.body.radius);
                 parent.body.velocity.X *= -1;
-                parent.OnCollisionInvoke(null);
+                parent.body.InvokeOnCollisionStay(null);
 
             }
             if (parent.body.pos.X < parent.body.radius)
@@ -167,7 +167,7 @@ namespace OrbItProcs
                 //parent.body.pos.X = (parent.body.radius + off) % parent.room.worldWidth;
                 parent.body.pos.X = DelegateManager.Triangle(parent.body.pos.X - parent.body.radius, parent.room.worldWidth) + parent.body.radius;
                 parent.body.velocity.X *= -1;
-                parent.OnCollisionInvoke(null);
+                parent.body.InvokeOnCollisionStay(null);
             }
             if (parent.body.pos.Y >= (levelheight - parent.body.radius))
             {
@@ -175,7 +175,7 @@ namespace OrbItProcs
                 //parent.body.pos.Y = (levelheight - parent.body.radius - off) % parent.room.worldHeight;
                 parent.body.pos.Y = DelegateManager.Triangle(parent.body.pos.Y, parent.room.worldHeight - (int)parent.body.radius);
                 parent.body.velocity.Y *= -1;
-                parent.OnCollisionInvoke(null);
+                parent.body.InvokeOnCollisionStay(null);
             }
             if (parent.body.pos.Y < parent.body.radius)
             {
@@ -183,7 +183,7 @@ namespace OrbItProcs
                 //parent.body.pos.Y = (parent.body.radius + off) % parent.room.worldHeight;
                 parent.body.pos.Y = DelegateManager.Triangle(parent.body.pos.Y - parent.body.radius, parent.room.worldHeight) + parent.body.radius;
                 parent.body.velocity.Y *= -1;
-                parent.OnCollisionInvoke(null);
+                parent.body.InvokeOnCollisionStay(null);
             }
 
             
@@ -200,26 +200,26 @@ namespace OrbItProcs
             {
                 parent.body.pos.X = levelwidth - parent.body.radius;
                 parent.body.velocity.X *= 0;
-                parent.OnCollisionInvoke(null);
+                parent.body.InvokeOnCollisionStay(null);
 
             }
             if (parent.body.pos.X < parent.body.radius)
             {
                 parent.body.pos.X = parent.body.radius;
                 parent.body.velocity.X *= 0;
-                parent.OnCollisionInvoke(null);
+                parent.body.InvokeOnCollisionStay(null);
             }
             if (parent.body.pos.Y >= (levelheight - parent.body.radius))
             {
                 parent.body.pos.Y = levelheight - parent.body.radius;
                 parent.body.velocity.Y *= 0;
-                parent.OnCollisionInvoke(null);
+                parent.body.InvokeOnCollisionStay(null);
             }
             if (parent.body.pos.Y < parent.body.radius)
             {
                 parent.body.pos.Y = parent.body.radius;
                 parent.body.velocity.Y *= 0;
-                parent.OnCollisionInvoke(null);
+                parent.body.InvokeOnCollisionStay(null);
             }
 
 

@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace OrbItProcs {
+
     public static class Utils {
 
         public const float rootOfTwo = 1.41421356237f;
@@ -63,6 +64,16 @@ namespace OrbItProcs {
             {
                 compEnums.Add(Utils.GetComponentTypeFromEnum(key), key);
             }
+        }
+
+        public static int Sign(int i)
+        {
+            return (i > 0).ToInt() - (i < 0).ToInt();
+        }
+
+        public static int ToInt(this bool b)
+        {
+            return b ? 1 : 0;
         }
 
         public static string LastWord(this string s, char delim)
@@ -222,17 +233,13 @@ namespace OrbItProcs {
         {
             float mapzoom = room.zoom;
             
-            //Vector2 centerTexture = new Vector2(0.5f, 0.5f);
-            Vector2 diff = (end - start) * mapzoom;
+            Vector2 diff = (end - start);// *mapzoom;
             Vector2 centerpoint = (end + start) / 2;
-            centerpoint *= mapzoom;
+            //centerpoint *= mapzoom;
             float len = diff.Length();
-            thickness *= 2f * mapzoom;
+            //thickness *= 2f * mapzoom;
             Vector2 scalevect = new Vector2(len, thickness);
-            float testangle = (float)(Math.Atan2(diff.Y, diff.X));// + (Math.PI / 2));
-
-            //diff.Normalize();
-            //diff = new Vector2(diff.Y, diff.X);
+            float testangle = (float)(Math.Atan2(diff.Y, diff.X));
 
             //room.game.spriteBatch.Draw(room.game.textureDict[textures.whitepixel], centerpoint, null, color, testangle, CENTER_TEXTURE, scalevect, SpriteEffects.None, 0);
 
@@ -311,7 +318,7 @@ namespace OrbItProcs {
                 Action<Node> doAfter = delegate(Node n)
                 {
                     n.body.color = Color.Red;
-                    n.OnCollision += evil;
+                    n.body.OnCollisionStay += evil;
                 };
 
 
@@ -325,7 +332,7 @@ namespace OrbItProcs {
                         target.SetData("infected", true);
                     }
                 };
-                newNode.OnCollision += evil;
+                newNode.body.OnCollisionStay += evil;
             }
         }
 

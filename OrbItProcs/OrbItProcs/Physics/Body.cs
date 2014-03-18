@@ -7,20 +7,62 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs
 {
-    public class Body : Component
+    public class Body : Collider
     {
-        public Shape shape;
-        public Vector2 pos = new Vector2(0, 0);
+        //public Shape shape;
+        //public Vector2 pos = new Vector2(0, 0);
         public Vector2 velocity = new Vector2(0, 0);
-        
-        public float radius
+
+        public override bool HandlersEnabled
         {
-            get { return _radius; }
+            get { return _HandlersEnabled; }
+            set
+            {
+                if (parent != null && parent.room.game.ui != null && parent.collision.active && parent.collision.AllHandlersEnabled)
+                {
+                    if (!_HandlersEnabled && value && parent != parent.room.game.ui.sidebar.ActiveDefaultNode)
+                    {
+                        parent.room.CollisionSet.Add(this);
+                    }
+                    else if (_HandlersEnabled && !value && !_ResolveCollision)
+                    {
+                        parent.room.CollisionSet.Remove(this);
+                    }
+                }
+                _HandlersEnabled = value;
+            }
+        }
+
+        private bool _ResolveCollision = true;
+        public bool ResolveCollision
+        {
+            get { return _ResolveCollision; }
+            set 
+            {
+                if (parent != null && parent.room.game.ui != null && parent.collision.active)
+                {
+                    if (!_ResolveCollision && value && parent != parent.room.game.ui.sidebar.ActiveDefaultNode)
+                    {
+                        parent.room.CollisionSet.Add(this);
+                    }
+                    else if (_ResolveCollision && !value && !_HandlersEnabled)
+                    {
+                        parent.room.CollisionSet.Remove(this);
+                    }
+                }
+                _ResolveCollision = value; 
+            }
+        }
+        
+        public override float radius
+        {
+            get { return shape.radius; }
             set
             {
                 float halfwidth = getTexture() != null ? (parent.getTexture().Width / 2f) : 25f;
                 if (_scale != (float)value / halfwidth) _scale = value / halfwidth;
-                _radius = value;
+                //_radius = value;
+                shape.radius = value;
             }
         }
         public float scale
@@ -29,7 +71,8 @@ namespace OrbItProcs
             set 
             {
                 float halfwidth = getTexture() != null ? (parent.getTexture().Width / 2f) : 25f;
-                _radius = value * halfwidth;
+                //_radius = value * halfwidth;
+                shape.radius = value * halfwidth;
                 _scale = value;
             }
         }
@@ -65,17 +108,22 @@ namespace OrbItProcs
         public Color permaColor = new Color(255, 255, 255);
         private textures _texture = textures.whitecircle;
 
-        
-        public Shape shapeP { get { return shape; } set { shape = value.Clone();} }
+        [DoNotInspect]
+        public Shape shapeP { get { return shape; }
+            set { 
+                shape = value.Clone();
+            }
+        }
 
-        
-
+        [DoNotInspect]
         public float[] positionP { get { return pos.toFloatArray(); }
             set { pos = new Vector2(value[0], value[1]); } }
+        [DoNotInspect]
         public float[] velocityP { get { return velocity.toFloatArray(); }
             set { velocity = new Vector2(value[0], value[1]); } }
-        
+        [DoNotInspect]
         public Vector2 effvelocity = new Vector2(0, 0);
+        [DoNotInspect]
         public float[] effvelocityP
         {
             get { return effvelocity.toFloatArray(); }
@@ -93,7 +141,7 @@ namespace OrbItProcs
         private float _dynamicFriction = 0.3f;
         private float _restitution = 0.2f;
 
-        private float _radius = 25f;
+        //private float _radius = 25f;
         private float _scale = 1f;
 
         
@@ -107,7 +155,7 @@ namespace OrbItProcs
                 if (shape != null) shape.SetOrient(value);
             }
         }
-
+        [DoNotInspect]
         public Color colorP
         {
             get { return color; }
@@ -134,7 +182,7 @@ namespace OrbItProcs
             get { return _texture; }
             set { _texture = value; }
         }
-
+        [DoNotInspect]
         public bool PolenterHack
         {
             get { return true; }
@@ -148,19 +196,125 @@ namespace OrbItProcs
         public Body(Shape shape = null, Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.body;
-            methods = mtypes.none;
-
-            this.shape = shape ?? new Circle(radius);
+            //com = comp.body;
+            //methods = mtypes.none;
+            this.shape = shape ?? new Circle(25);
             this.shape.body = this;
             this.shape.Initialize();
             DrawCircle = true;
 
             AfterCloning();
-            active = true;
         }
 
-        public override void AfterCloning()
+
+        public override void CheckCollisionBody(Body other)
+        {
+            //if (!active || !other.active) { return; }
+            //if (exclusions.Contains(other)) return;
+            if (invmass == 0 && other.invmass == 0)
+                return;
+
+            Manifold m = new Manifold(this, other);
+            m.Solve();
+
+            if (m.contact_count > 0)
+            {
+                if (HandlersEnabled)
+                {
+                    //todo:add to handler list
+                    if (OnCollisionStay != null)
+                    {
+                        OnCollisionStay(parent, other.parent);
+                    }
+                    bool parentEnter = OnCollisionEnter != null;
+                    if (parentEnter || OnCollisionExit != null || OnCollisionFirstEnter != null || OnCollisionAllExit != null)
+                    {
+                        HashSet<Collider> lastframe = previousCollision;
+                        HashSet<Collider> thisframe = currentCollision;
+                        thisframe.Add(other);
+                        if (!lastframe.Contains(other) && parentEnter)
+                        {
+                            OnCollisionEnter(parent, other.parent);
+                        }
+                    }
+                }
+                if (other.HandlersEnabled)
+                {
+                    if (other.OnCollisionStay != null)
+                    {
+                        other.OnCollisionStay(other.parent, parent);
+                    }
+                    bool otherEnter = other.OnCollisionEnter != null;
+                    if (otherEnter || other.OnCollisionExit != null || other.OnCollisionFirstEnter != null || other.OnCollisionAllExit != null)
+                    {
+                        //HashSet<Node> lastframe = other.collision.currentIsCol1 ? other.collision.collisions1 : other.collision.collisions2;
+                        //HashSet<Node> thisframe = !other.collision.currentIsCol1 ? other.collision.collisions1 : other.collision.collisions2;
+                        HashSet<Collider> lastframe = other.previousCollision;
+                        HashSet<Collider> thisframe = other.currentCollision;
+                        thisframe.Add(this);
+                        if (!lastframe.Contains(this) && otherEnter)
+                        {
+                            other.OnCollisionEnter(other.parent, parent);
+                        }
+                    }
+                }
+                if (ResolveCollision && other.ResolveCollision)
+                    parent.room.AddManifold(m);
+            }
+        }
+
+        public override void CheckCollisionCollider(Collider other)
+        {
+            //if (!active || !other.active) { return; }
+            //if (exclusions.Contains(other)) return;
+
+            //Manifold m = new Manifold(this, other);
+            //m.Solve();
+            bool iscolliding = Collision.CheckCollision(this, other);
+
+            if (iscolliding)
+            {
+                if (other.HandlersEnabled)
+                {
+                    //todo:add to handler list
+                    //if (OnCollisionStay != null)
+                    //{
+                    //    OnCollisionStay(parent, other.parent);
+                    //}
+                    //bool parentEnter = OnCollisionEnter != null;
+                    //if (parentEnter || OnCollisionExit != null || OnCollisionFirstEnter != null || OnCollisionAllExit != null)
+                    //{
+                    //    HashSet<Collider> lastframe = previousCollision;
+                    //    HashSet<Collider> thisframe = currentCollision;
+                    //    thisframe.Add(other);
+                    //    if (!lastframe.Contains(other) && parentEnter)
+                    //    {
+                    //        OnCollisionEnter(parent, other.parent);
+                    //    }
+                    //}
+
+                    if (other.OnCollisionStay != null)
+                    {
+                        other.OnCollisionStay(other.parent, parent);
+                    }
+                    bool otherEnter = other.OnCollisionEnter != null;
+                    if (otherEnter || other.OnCollisionExit != null || other.OnCollisionFirstEnter != null || other.OnCollisionAllExit != null)
+                    {
+                        //HashSet<Node> lastframe = other.collision.currentIsCol1 ? other.collision.collisions1 : other.collision.collisions2;
+                        //HashSet<Node> thisframe = !other.collision.currentIsCol1 ? other.collision.collisions1 : other.collision.collisions2;
+                        HashSet<Collider> lastframe = other.previousCollision;
+                        HashSet<Collider> thisframe = other.currentCollision;
+                        thisframe.Add(this);
+                        if (!lastframe.Contains(this) && otherEnter)
+                        {
+                            other.OnCollisionEnter(other.parent, parent);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void AfterCloning()
         {
             this.mass = this.mass;
             this.inertia = this.inertia;
@@ -198,11 +352,14 @@ namespace OrbItProcs
             shape.SetOrient(radians);
         }
 
-        public override void AffectSelf()
+        public virtual Texture2D getTexture()
         {
+            if (parent != null)
+            {
+                return parent.getTexture();
+            }
+            return null;
         }
-        public override void Draw(SpriteBatch spritebatch)
-        {
-        }
+
     }
 }

@@ -30,6 +30,7 @@ namespace OrbItProcs
         public Game1 game;
         public Room room;
         public UserInterface ui;
+        public static UserLevel userLevel = UserLevel.Debug;
         //private Group _ActiveGroup;
         public Group ActiveGroupFirst { 
             get 
@@ -113,7 +114,7 @@ namespace OrbItProcs
             this.game = ui.game;
             this.room = ui.game.room;
             this.ui = ui;
-            NotImplemented = delegate {
+            NotImplemented = delegate { 
                 PopUp.Toast("Not Implemented. Take a hike.");
                 //throw new NotImplementedException();
             };
@@ -420,7 +421,7 @@ namespace OrbItProcs
         {
             Node n = (Node)lstMain.Items.ElementAt(lstMain.ItemIndex);
             Node newdefault = new Node();
-            Node.cloneObject(n, newdefault);
+            Node.cloneNode(n, newdefault);
             Group g = ActiveGroupFirst;
             g.defaultNode = newdefault;
             g.fullSet.Remove(n);
@@ -436,7 +437,7 @@ namespace OrbItProcs
             }
 
             Node newdefault = new Node();
-            Node.cloneObject(n, newdefault);
+            Node.cloneNode(n, newdefault);
             newdefault.body.velocity = new Vector2(0, 0);
             Group g = new Group(newdefault, parentGroup: room.masterGroup.childGroups["General Groups"]);
             newdefault.name = g.Name;
@@ -554,7 +555,7 @@ namespace OrbItProcs
             else
                 PopUp.Text("Pick a preset name", "Name preset", delegate(bool c, object input)
                 {
-                    if (c) ui.game.saveNode(inspectorArea.editNode, (string)input);
+                                    if (c) ui.game.saveNode(inspectorArea.editNode, (string)input);
                     return true;
                 });
         }
@@ -619,6 +620,11 @@ namespace OrbItProcs
                             if (!dict.ContainsKey(key)) break;
                             temp = new InspectorItem(null, temp, dict[key], key);
                         }
+                        //else if (next.membertype == member_type.collectionentry)
+                        //{
+                        //    dynamic coll = temp.obj;
+                        //    
+                        //}
                         else
                         {
                             if (next.fpinfo.propertyInfo == null)
@@ -914,7 +920,8 @@ namespace OrbItProcs
                 }
                 else
                 {
-                    return false;
+                    //return false; //this will prevent popup from closing..
+                    return true;
                 }
             }
         }

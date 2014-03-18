@@ -28,8 +28,6 @@ namespace OrbItProcs
 
     public enum comp
     {
-        //transform,
-        body,
         queuer,
         linearpull,
         maxvel,
@@ -46,7 +44,7 @@ namespace OrbItProcs
         randinitialvel,
         relativemotion,
         transfer,
-        circler, //if this goes after maxvel instead, it should have an impact on circler.
+        circler,
         
         modifier,
 
@@ -57,6 +55,7 @@ namespace OrbItProcs
         colorgravity,
         lifetime,
         scheduler,
+        delegator,
 
         //draw components
         
@@ -79,6 +78,19 @@ namespace OrbItProcs
         //chrono,
         //weird,
     };
+
+    public enum textures
+    {
+        blueorb,
+        whiteorb,
+        colororb,
+        whitecircle,
+        whitepixel,
+        whitepixeltrans,
+        blackorb,
+        whitesphere,
+        ring,
+    }
 
     public class Game1 : Application
     {
@@ -110,6 +122,8 @@ namespace OrbItProcs
         public Dictionary<textures, Texture2D> textureDict;
         public Dictionary<textures, Vector2> textureCenters;
         public Node targetNode = null;
+
+        public static bool bigTonyOn = false;
 
 
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
@@ -185,7 +199,8 @@ namespace OrbItProcs
             {textures.whitepixeltrans, Content.Load<Texture2D>("Textures/whitepixeltrans")},
             {textures.whitecircle, Content.Load<Texture2D>("Textures/whitecircle"   )},
             {textures.whitesphere, Content.Load<Texture2D>("Textures/whitesphere"   )},
-            {textures.blackorb, Content.Load<Texture2D>("Textures/blackorb"   )}};
+            {textures.blackorb, Content.Load<Texture2D>("Textures/blackorb"   )},
+            {textures.ring, Content.Load<Texture2D>("Textures/smoothEdge"   )}};
 
             textureCenters = new Dictionary<textures, Vector2>();
             foreach(var tex in textureDict.Keys)
@@ -195,8 +210,8 @@ namespace OrbItProcs
             }
 
             font = Content.Load<SpriteFont>("Courier New");
+            DelegatorMethods.InitializeDelegateMethods();
 
-            
             room = new Room(this, 1580, 1175);
 
             processManager = new ProcessManager(room);
@@ -243,7 +258,7 @@ namespace OrbItProcs
             });
 
             Node firstdefault = new Node();
-            Node.cloneObject(room.defaultNode, firstdefault);
+            Node.cloneNode(room.defaultNode, firstdefault);
             firstdefault.name = "[G0]0";
             firstdefault.IsDefault = true;
 
@@ -288,9 +303,12 @@ namespace OrbItProcs
             //room.player1.body.pos = new Vector2(100, 100);
             //processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
 
+            if (bigTonyOn)
+            {
             for (int i = 1; i < 5; i++)
             {
                 room.players.Add(new Player(i)); //#bigtony
+            }
             }
 
             processManager.SetProcessKeybinds(ui.keyManager);
@@ -365,27 +383,17 @@ namespace OrbItProcs
 
         public void InitializePresets()
         {
-
-            //Console.WriteLine("Current Folder" + filepath);
             foreach (string file in Directory.GetFiles(filepath, "*.xml"))
             {
-                //Console.WriteLine("Current Files" + filepath);
-                //Console.WriteLine(file);
-                Node presetnode = (Node)room.game.serializer.Deserialize(file);
-                /*foreach (comp c in presetnode.comps.Keys.ToList())
+                try
                 {
-                    ((Component)presetnode.comps[c]).parent = presetnode;
-                }
-                presetnode.body.parent = presetnode;
-                presetnode.collision.parent = presetnode;
-                presetnode.movement.parent = presetnode;*/
+                    Node presetnode = (Node)room.game.serializer.Deserialize(file);
                 NodePresets.Add(presetnode);
-
-                //NodePresets.Add((Node)room.serializer.Deserialize(file));
             }
-            foreach (Node snode in NodePresets)
+                catch(Exception e)
             {
-                //Console.WriteLine("Presetname: {0}", snode.name);
+                    Console.WriteLine("Failed to deserialize node: {0}", e.Message);
+                }
             }
         }
         protected override void LoadContent()
@@ -433,6 +441,10 @@ namespace OrbItProcs
 
             if (IsActive) ui.Update(gameTime);
         }
+        public float backgroundHue = 180;
+        public double x = 0;
+        public Color backgroundColor = Color.Black;
+
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
@@ -442,8 +454,15 @@ namespace OrbItProcs
             //if (!IsActive) return;
             Manager.BeginDraw(gameTime);
             base.Draw(gameTime);
-
-            GraphicsDevice.Clear(Color.Black);
+            if (!ui.IsPaused)
+            {
+                x += Math.PI / 360.0;
+                backgroundHue = (backgroundHue + ((float)Math.Sin(x) + 1)/10f) % 360;
+                //backgroundHue = (backgroundHue + 0.1f) % 360;
+                backgroundColor = ColorChanger.getColorFromHSV(backgroundHue, value: 0.2f);
+                //Console.WriteLine("Hue: {0}  R: {1}  G: {2}  B: {3}", backgroundHue, backgroundColor.R, backgroundColor.G, backgroundColor.B);
+            }
+            GraphicsDevice.Clear(backgroundColor);
             spriteBatch.Begin();
 
             room.Draw(spriteBatch);
@@ -481,18 +500,17 @@ namespace OrbItProcs
             {
                 if (ui.spawnerNode != null)
                 {
-                    Node.cloneObject(ui.spawnerNode, newNode);
+                    Node.cloneNode(ui.spawnerNode, newNode);
                 }
                 else
                 {
-                    Node.cloneObject(ui.sidebar.ActiveDefaultNode, newNode);
+                    Node.cloneNode(ui.sidebar.ActiveDefaultNode, newNode);
                 }
             }
             newNode.name = activegroup.Name + Node.nodeCounter;
-            //userProperties[node.radius] = 100;
             newNode.acceptUserProps(userProperties);
 
-            CollisionDelegate toggleWhite = delegate(Node source, Node target)
+            /*CollisionDelegate toggleWhite = delegate(Node source, Node target)
             {
                 if (target == null) return;
                 if (source.body.color == Color.White)
@@ -519,10 +537,14 @@ namespace OrbItProcs
             Action<Node> first = n => n.body.color = n.body.permaColor;
             Action<Node> none = n => n.body.color = Color.White;
 
-
             //newNode.OnCollisionFirst += first;
             //newNode.OnCollisionNone += none;
-            //newNode.OnCollisionEnd += (mm, mmm) => { };
+            //newNode.OnCollisionEnd += (mm, mmm) => { };*/
+
+            
+
+            //newNode.delegator.AddAffectOther("switchVel", delegation);
+            //newNode.delegator.AddAffectSelfAndDS("sprint", sprint, dd);
 
             AssignColor(activegroup, newNode);
             return SpawnNodeHelper(newNode, afterSpawnAction, activegroup, lifetime);
@@ -542,6 +564,15 @@ namespace OrbItProcs
                 newNode.comps[comp.lifetime].maxmseconds = lifetime;
                 newNode.comps[comp.lifetime].immortal = false;
             }
+
+
+            //Collider col = new Collider(new Circle(Utils.random.Next(200)));
+            //col.OnCollisionStay += delegate(Node source, Node target)
+            //{
+            //    source.body.color = Utils.randomColor();
+            //};
+            //newNode.collision.AddCollider(col);
+
             g.IncludeEntity(newNode);
             return newNode;
         }
@@ -595,7 +626,7 @@ namespace OrbItProcs
             Action completeSave = delegate{
             ui.sidebar.inspectorArea.editNode.name = name;
             Node serializenode = new Node();
-            Node.cloneObject(ui.sidebar.inspectorArea.editNode, serializenode);
+            Node.cloneNode(ui.sidebar.inspectorArea.editNode, serializenode);
             room.game.serializer.Serialize(serializenode, filename);
             ui.game.NodePresets.Add(serializenode);
             };

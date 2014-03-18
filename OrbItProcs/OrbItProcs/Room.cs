@@ -11,20 +11,6 @@ using System.Collections.ObjectModel;
 
 namespace OrbItProcs {
 
-    public enum textures
-    {
-        blueorb,
-        whiteorb,
-        colororb,
-        whitecircle,
-        whitepixel,
-        whitepixeltrans,
-        blackorb,
-        whitesphere,
-    }
-
-    
-
     public class Room
     {
         #region // State // --------------------------------------------
@@ -43,7 +29,7 @@ namespace OrbItProcs {
 
         #region // Lists // --------------------------------------------\
         [Polenter.Serialization.ExcludeFromSerialization]
-        public HashSet<Node> CollisionSet { get; set; }
+        public HashSet<Collider> CollisionSet { get; set; }
         public List<Rectangle> gridSystemLines = new List<Rectangle>(); //dns
         private List<Manifold> contacts = new List<Manifold>(); //dns
         #endregion
@@ -116,7 +102,7 @@ namespace OrbItProcs {
             game = Program.getGame();
             groupHashes = new ObservableHashSet<string>();
             nodeHashes = new ObservableHashSet<string>();
-            CollisionSet = new HashSet<Node>();
+            CollisionSet = new HashSet<Collider>();
             colIterations = 1;
             camera = new Camera(this, 0.5f);
             scheduler = new Scheduler();
@@ -156,13 +142,10 @@ namespace OrbItProcs {
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
             totalElapsedMilliseconds += elapsed;
 
-            if (contacts.Count > 0) contacts = new List<Manifold>();
+            
             //these make it convienient to check values after pausing the game my mouseing over
             if (defaultNode == null) defaultNode = null;
             //if (game.ui.sidebar.lstComp == null) game.ui.sidebar.lstComp = null;
-
-            ObservableHashSet<Node> hs = new ObservableHashSet<Node>();
-            ICollection<Node> i = hs;
 
             gridsystem.clear();
             gridSystemLines = new List<Rectangle>();
@@ -178,11 +161,12 @@ namespace OrbItProcs {
             //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
             foreach (var n in masterGroup.childGroups["General Groups"].fullSet)
             {
-                gridsystem.insert(n);
+                gridsystem.insert(n.body);
             }
             Testing.OldStopTimer("gridsystem insert");
             //
             UpdateCollision();
+            if (contacts.Count > 0) contacts = new List<Manifold>();
 
             //if (timertimer % timermax == 0)
             //    Testing.StartTimer();
@@ -208,9 +192,12 @@ namespace OrbItProcs {
             updateTargetNodeGraphic();
 
             //player1.Update(gametime);
-            foreach(var player in players)
+            if (Game1.bigTonyOn)
             {
-                player.Update(gametime);//#bigtony
+                foreach (var player in players)
+                {
+                    player.Update(gametime); //#bigtony
+            }
             }
 
             scheduler.AffectSelf();
@@ -223,9 +210,9 @@ namespace OrbItProcs {
             if (algorithm <= 4)
             {
                 gridsystemCollision.clear();
-                foreach (var n in CollisionSet) //.ToList()
+                foreach (var c in CollisionSet) //.ToList()
                 {
-                    gridsystemCollision.insert(n);
+                    gridsystemCollision.insert(c);
                 }
             }
             if (algorithm == 5)
@@ -238,111 +225,112 @@ namespace OrbItProcs {
             }
 
             Testing.PrintTimer("insertion");
-            gridsystemCollision.alreadyVisited = new HashSet<Node>();
+            gridsystemCollision.alreadyVisited = new HashSet<Collider>();
 
             //todo: remove tolists if possible
 
-            foreach (var n in CollisionSet) //.ToList() 
+            foreach (var c in CollisionSet) //.ToList() 
             {
-                if (n.active)
+                if (c.parent.active)
                 {
                     int reach; //update later based on cell size and radius (or polygon size.. maybe based on it's AABB)
-                    if (n.body.shape is Polygon)
+                    if (c.shape is Polygon)
                     {
                         reach = 20;
                     }
                     else
                     {
-                        reach = (int)(n.body.radius * 5) / gridsystemCollision.cellWidth;
+                        reach = (int)(c.radius * 5) / gridsystemCollision.cellWidth;
                         //reach = 2;
                     }
-                    gridsystemCollision.alreadyVisited.Add(n);
+                    gridsystemCollision.alreadyVisited.Add(c);
 
 
-                    if (algorithm == 1)
+                    //if (algorithm == 1)
+                    //{
+                    //    ///*
+                    //    //Testing.w("retrieve").Start();
+                    //    List<Collider> retrievedCollider = gridsystemCollision.retrieve(c, reach);
+                    //    //Testing.w("retrieve").Stop();
+                    //    //Testing.w("manifolds").Start();
+                    //    foreach (var r in retrievedCollider) //todo: this may be iterating over a deleted node (or removed)
+                    //    {
+                    //        if (gridsystemCollision.alreadyVisited.Contains(r))
+                    //            continue;
+                    //        //n.collision.AffectOther(r);
+                    //        c.CheckCollisionCollider(r);
+                    //    }
+                    //    //Testing.w("manifolds").Stop();
+                    //}
+                    //else if (algorithm == 4)
+                    //{
+                    //    ///*
+                    //    var buckets = gridsystemCollision.retrieveBuckets(c, 115);
+                    //    if (buckets != null)
+                    //    {
+                    //        foreach (var bucket in buckets)
+                    //        {
+                    //            foreach (var nn in bucket)
+                    //            {
+                    //                if (gridsystemCollision.alreadyVisited.Contains(nn))
+                    //                    continue;
+                    //                c.CheckCollisionCollider(nn);
+                    //            }
+                    //        }
+                    //    }
+                    //    //*/
+                    //}
+                    if (algorithm == 5)
                     {
-                        ///*
-                        //Testing.w("retrieve").Start();
-                        List<Node> retrievedNodes = gridsystemCollision.retrieve(n, reach);
-                        //Testing.w("retrieve").Stop();
-                        //Testing.w("manifolds").Start();
-                        foreach (var r in retrievedNodes) //todo: this may be iterating over a deleted node (or removed)
-                        {
-                            if (gridsystemCollision.alreadyVisited.Contains(r))
-                                continue;
-                            n.collision.AffectOther(r);
-                        }
-                        //Testing.w("manifolds").Stop();
-                    }
-                    else if (algorithm == 2)
-                    {
-                        //*/
-                        gridsystem.retrieveFromOptimizedOffsets(n, 115, delegate(Node node)
-                        {
-                            if (gridsystemCollision.alreadyVisited.Contains(node))
-                                return;
-                            n.collision.AffectOther(node);
-                        });
-                        //*/
-                    }
-                    else if (algorithm == 3)
-                    {
-                        ///*
-                        int x = (int)n.body.pos.X / gridsystemCollision.cellWidth;
-                        int y = (int)n.body.pos.Y / gridsystemCollision.cellHeight;
-                        if (x < 0 || x >= gridsystemCollision.cellsX || y < 0 || y >= gridsystemCollision.cellsY) continue;
-                        int count = gridsystemCollision.FindCount(115);
-                        var dict = gridsystemCollision.offsetsArray[x, y];
-                        if (dict.Count <= count) throw new SystemException("Count exceeded dictionary count");
-                        for (int i = 0; i < count; i++)
-                        {
-
-                            foreach (var tuple in dict.ElementAt(i).Value)
-                            {
-                                foreach (Node nn in gridsystemCollision.grid[tuple.Item1 + x, tuple.Item2 + y])
-                                {
-                                    //action(nn);
-                                    if (gridsystemCollision.alreadyVisited.Contains(nn))
-                                        continue;
-                                    n.collision.AffectOther(nn);
-                                }
-                            }
-                        }
-                        //*/
-                    }
-                    else if (algorithm == 4)
-                    {
-                        ///*
-                        var buckets = gridsystemCollision.retrieveBuckets(n, 115);
-                        if (buckets != null)
-                        {
-                            foreach (var bucket in buckets)
-                            {
-                                foreach (var nn in bucket)
-                                {
-                                    if (gridsystemCollision.alreadyVisited.Contains(nn))
-                                        continue;
-                                    n.collision.AffectOther(nn);
-                                }
-                            }
-                        }
-                        //*/
-                    }
-                    else if (algorithm == 5)
-                    {
-                        var bucketBag = gridsystemCollision.retrieveBucketBags(n);
+                        var bucketBag = gridsystemCollision.retrieveBucketBags(c);
                         if (bucketBag != null)
+                    {
+                            if (c is Body)
+                        {
+                                Body b = (Body)c;
+                                for (int i = 0; i < bucketBag.index; i++)
+                            {
+                                    for (int j = 0; j < bucketBag.array[i].index; j++)
+                                {
+                                        Collider cc = bucketBag.array[i].array[j];
+                                        if (cc.parent == b.parent) continue;
+                                        if (gridsystemCollision.alreadyVisited.Contains(cc))
+                                        continue;
+                                        if (cc is Body)
+                                        {
+                                            Body bb = (Body)cc;
+                                            b.CheckCollisionBody(bb);
+                    }
+                                        else
+                                {
+                                            b.CheckCollisionCollider(cc);
+                                }
+                            }
+                        }
+                    }
+                            else
                         {
                             for (int i = 0; i < bucketBag.index; i++)
                             {
                                 for (int j = 0; j < bucketBag.array[i].index; j++)
                                 {
-                                    Node nn = bucketBag.array[i].array[j];
-                                    if (gridsystemCollision.alreadyVisited.Contains(nn))
+                                        Collider cc = bucketBag.array[i].array[j];
+                                        if (cc.parent == c.parent) continue;
+                                        if (gridsystemCollision.alreadyVisited.Contains(cc))
                                         continue;
-                                    n.collision.AffectOther(nn);
+                                        if (cc is Body)
+                                        {
+                                            Body bb = (Body)cc;
+                                            c.CheckCollisionBody(bb);
+                                        }
+                                        else
+                                        {
+                                            //c.CheckCollision(cc);
+                                        }
+                                    }
                                 }
                             }
+                            
                         }
                     }
                 }

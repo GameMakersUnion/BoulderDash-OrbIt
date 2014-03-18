@@ -24,10 +24,12 @@ namespace OrbItProcs
             this.a = a;
             this.b = b;
         }
-        public void Solve()
+
+        public bool Solve()
         {
-            Collision.Dispatch[(int)a.shape.GetShapeType(),(int)b.shape.GetShapeType()](this, a, b);
+            return Collision.Dispatch[(int)a.shape.GetShapeType(),(int)b.shape.GetShapeType()](this, a, b);
         }
+
         public void Initialize()
         {
             e = Math.Min(a.restitution, b.restitution);

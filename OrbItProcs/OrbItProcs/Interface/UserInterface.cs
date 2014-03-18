@@ -80,9 +80,22 @@ namespace OrbItProcs {
             IsPaused = false;
             this.keyManager = new KeyManager(this);
             
-
-
             groupSelectSet = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet; //syncs group select set to process set
+        }
+
+        public void SetSidebarActive(bool active)
+        {
+            if (active)
+            {
+                sidebar.master.Visible = true;
+                sidebar.master.Enabled = true;
+            }
+            else
+            {
+                sidebar.master.Visible = false;
+                sidebar.master.Enabled = false;
+            }
+            SidebarActive = active;
         }
 
         public void ToggleSidebar()
@@ -91,7 +104,6 @@ namespace OrbItProcs {
             {
                 sidebar.master.Visible = false;
                 sidebar.master.Enabled = false;
-
             }
             else
             {

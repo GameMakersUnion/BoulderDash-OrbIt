@@ -34,15 +34,15 @@ namespace OrbItProcs
         public int firefreqCounter = 0;
 
         public Node node { get; private set; } //todo:rename enum
-        public Node nodeCollision { get; set; }
+        //public Node nodeCollision { get; set; }
 
         public Body body { get { return node.body; } }//{ get { return playerNode == null ? null : playerNode.body; } }
 
         public Dictionary<string, Node> savedNodes { get; set; }
 
-        public CollisionDelegate onCollision;
-        public CollisionDelegate onCollisionStart;
-        public CollisionDelegate onCollisionEnd;
+        public CollisionDelegate onCollisionStay;
+        public CollisionDelegate onCollisionEnter;
+        public CollisionDelegate onCollisionExit;
 
         public int playerIndex;
 
@@ -110,8 +110,9 @@ namespace OrbItProcs
                             p.node.body.mass += 100;
                             foreach (var pp in room.players)
                             {  
-                                pp.node.ClearCollisionHandlers();
-                                pp.nodeCollision.ClearCollisionHandlers();
+                                //pp.node.body.ClearHandlers();
+                                //pp.nodeCollision.body.ClearHandlers();
+                                pp.node.collision.AllHandlersEnabled = false;
                             }  
                             if (Game1.soundEnabled) Scheduler.fanfare.Play();
                             bigtony.OnAffectOthers -= updateScores;
@@ -121,7 +122,10 @@ namespace OrbItProcs
             };                 
             bigtony.OnAffectOthers += updateScores;
 
-            room.masterGroup.fullSet.Add(bigtony); //#bigtony
+            if (Game1.bigTonyOn)
+            {
+                room.masterGroup.fullSet.Add(bigtony); //#bigtony
+            }
         }                      
                                
                                
@@ -146,25 +150,27 @@ namespace OrbItProcs
         public Player(int playerIndex)
         {
             room = Program.getRoom();
+            room.game.ui.SetSidebarActive(false);
             MakeBigTony(room);//todo:fix
             score = 0;
 
             halfController = new HalfController(playerIndex, FullPadMode.mirrorMode);
-            
+
 
             this.playerIndex = playerIndex;
-            onCollision = delegate(Node s, Node t)
+            onCollisionStay = delegate(Node s, Node t)
             {
-                if (t != null && t != node) SwitchPlayerNode(t, requireKeypress: true);
+                //if (t != null && t != node) 
+                  //  SwitchPlayerNode(t);
             };
-            onCollisionStart = delegate(Node s, Node t)
+            onCollisionEnter = delegate(Node s, Node t)
             {
                 if (t != null && !room.playerNodes.Contains(t))
                 {
                     t.body.color = Add(node.body.color, new Color(colorChange, colorChange, colorChange));
                 }
             };
-            onCollisionEnd = delegate(Node s, Node t)
+            onCollisionExit = delegate(Node s, Node t)
             {
                 if (t != null && !room.playerNodes.Contains(t))
                 {
@@ -217,6 +223,12 @@ namespace OrbItProcs
 
             node[comp.queuer].queuecount = 100;
 
+            Collider collider = new Collider(new Circle(25));
+            node.collision.AddCollider("trigger", collider);
+            collider.OnCollisionStay += onCollisionStay;
+            collider.OnCollisionEnter += onCollisionEnter;
+            collider.OnCollisionExit += onCollisionExit;
+
             SwitchPlayerNode(node);
 
             accel = new Vector2(0, 0);
@@ -248,25 +260,26 @@ namespace OrbItProcs
             //room.game.ui.keyManager.addProcessKeyAction("firebullet", KeyCodes.LeftClick, OnPress: FireNode);
             //room.game.ui.keyManager.addProcessKeyAction("firebullets", KeyCodes.RightClick, OnHold: FireNodes);
 
+            
+
             room.masterGroup.fullSet.Add(node);
 
-
-            Dictionary<dynamic, dynamic> userPP = new Dictionary<dynamic, dynamic>()
-            {
-                {nodeE.position, new Vector2(0,0)},
-                {nodeE.texture, textures.whitecircle},
-                {comp.movement, false },
-                {comp.basicdraw, false },
-                {comp.maxvel, true },
-                { comp.collision, true },
-            };
-            nodeCollision = new Node(userPP);
-            nodeCollision.collision.ResolveCollision = false;
-            nodeCollision.OnCollision += onCollision;
-            nodeCollision.OnCollisionStart += onCollisionStart;
-            nodeCollision.OnCollisionEnd += onCollisionEnd; //todo: make warning when needing to update nodes that are already in collision list
-            room.masterGroup.fullSet.Add(nodeCollision);
-            nodeCollision.name = "phantom" + playerIndex;
+            //Dictionary<dynamic, dynamic> userPP = new Dictionary<dynamic, dynamic>()
+            //{
+            //    { nodeE.position, new Vector2(0,0) },
+            //    { nodeE.texture, textures.whitecircle },
+            //    { comp.movement, false },
+            //    { comp.basicdraw, false },
+            //    { comp.maxvel, true },
+            //    { comp.collision, true },
+            //};
+            //nodeCollision = new Node(userPP);
+            //nodeCollision.collision.ResolveCollision = false;
+            //nodeCollision.body.OnCollisionStay += onCollisionStay;
+            //nodeCollision.body.OnCollisionEnter += onCollisionEnter;
+            //nodeCollision.body.OnCollisionExit += onCollisionExit;
+            //room.masterGroup.fullSet.Add(nodeCollision);
+            //nodeCollision.name = "phantom" + playerIndex;
 
         }
         bool switchAvailable = true;
@@ -282,42 +295,47 @@ namespace OrbItProcs
             {
                 savedNodes[n.name] = n;
             }
-            if (other != null)
+            if (other != null) //swapping with player
             {
-                //if (room.playerNodes.Contains(other.node))
-                //if (playerNode != null) playerNode.ClearCollisionHandlers();
                 node.body.color = other.node.body.color;
-                
-                //playerNode.OnCollisionStart -= onCollisionStart;
                 Node temp = node;
+
+                //Collider trigger = temp.collision.GetCollider("trigger", true);
+                //temp.collision.AddCollider("trigger", other.node.collision.colliders["trigger"]);
+                //other.node.collision.colliders.Remove("trigger");
+                //other.node.collision.AddCollider("trigger", trigger);
+                node.collision.SwapCollider(other.node, "trigger");
+
                 node = other.node;
                 node.body.color = pColor;
-
-
                 other.node = temp;
-                //other.playerNode.body.color = playerNode.body.color;
-                //playerNode.OnCollisionStart -= onCollisionStart;
 
-                //playerNode.OnCollisionStart += onCollision;
                 other.switchAvailable = false;
                 switchAvailable = false;
                 room.scheduler.doAfterXMilliseconds(nn => other.switchAvailable = true, 1000);
             }
-            else
+            else //swapping with non-player node
             {
-                //if (node != null) node.ClearCollisionHandlers();
                 node.body.color = Color.White;
                 node.body.texture = textures.whitecircle;
-                //node.OnCollisionStart -= onCollisionStart;
                 if (node != bigtony) node.body.mass = smallmass;
+                //Collider trigger = node.collision.colliders["trigger"];
+                //node.collision.colliders.Remove("trigger");
+                node.collision.SwapCollider(n, "trigger");
+
+                Collider col = node.collision.GetCollider("trigger");
+                if (col != null) col.HandlersEnabled = false;
+
+                Collider col2 = n.collision.GetCollider("trigger");
+                if (col2 != null) col2.HandlersEnabled = true;
+
                 node = n;
                 if (node != bigtony) node.body.mass = bigmass;
+                //node.collision.AddCollider("trigger", trigger);
+
                 
                 node.body.texture = textures.blackorb;
                 node.body.color = pColor;
-                //node.OnCollisionEnd -= onCollisionEnd;
-
-                //node.OnCollisionStart += onCollision;
             }
             
             switchAvailable = false;
@@ -339,12 +357,10 @@ namespace OrbItProcs
         public void Update(GameTime gametime)
         {
             if (node == null) return;
-
             newHalfPadState = halfController.getState();
-
-            nodeCollision.body.pos = body.pos;
-            if (node != bigtony) nodeCollision.body.radius = body.radius * 1.05f;
-            else nodeCollision.body.radius = body.radius * 1.0f;
+            //nodeCollision.body.pos = body.pos;
+            if (node != bigtony) node.collision.colliders["trigger"].radius = body.radius * 1.5f;//1.05f;
+            else node.collision.colliders["trigger"].radius = body.radius * 1.2f;
 
             Vector2 stick;
 
@@ -381,8 +397,8 @@ namespace OrbItProcs
 
         public void SwitchPlayer(Vector2 stick)
         {
-            var list = nodeCollision.collision.previousCollision;
-            if (list.Count <= 1) return;
+            var list = node.collision.colliders["trigger"].previousCollision;
+            if (list.Count == 0) return;
             //Node n = null;
             //Player pp = null;
             //if (list.Any(a => room.players.Any(p => { n = a; pp = p; return p.node == a && p.node != node; })))
@@ -392,7 +408,7 @@ namespace OrbItProcs
             foreach(var p in room.players)
             {
                 if (p == this) continue;
-                if (list.Contains(p.nodeCollision))
+                if (list.Contains(p.node.body))
                 {
                     SwitchPlayerNode(p.node, false, false, p);
                     return;
@@ -402,16 +418,16 @@ namespace OrbItProcs
             float master = -10000000f;
             float current;
             var playernodes = room.playerNodes;
-            foreach (Node q in list)
+            foreach (Collider q in list)
             {
-                if (q == node || playernodes.Contains(q)) continue; //fixed?
-                Vector2 dir = q.body.pos - body.pos; VMath.NormalizeSafe(ref dir);
+                if (q.parent == node || playernodes.Contains(q.parent)) continue; //fixed?
+                Vector2 dir = q.pos - body.pos; VMath.NormalizeSafe(ref dir);
                 Vector2 stickN = stick; VMath.NormalizeSafe(ref stickN);
 
                 if ((current = Vector2.Dot(dir, stickN)) > master)
                 {
                     master = current;
-                    n = q;
+                    n = q.parent;
                 }
             }
             Console.WriteLine(master);
@@ -491,7 +507,7 @@ namespace OrbItProcs
             if (node == null) return;
             Vector2 pos = UserInterface.WorldMousePos;
             Node newNode = new Node();
-            Node.cloneObject(launchNode, newNode);
+            Node.cloneNode(launchNode, newNode);
             newNode.body.velocity = pos - body.pos;
             newNode.body.pos = body.pos + body.velocity * 5;
             room.game.spawnNode(newNode, lifetime: bulletlife);
@@ -509,7 +525,7 @@ namespace OrbItProcs
 
             Vector2 pos = UserInterface.WorldMousePos;
             Node newNode = new Node();
-            Node.cloneObject(launchNode, newNode);
+            Node.cloneNode(launchNode, newNode);
             newNode.body.velocity = pos - body.pos;
             newNode.body.pos = body.pos + body.velocity * 5;
 

@@ -16,6 +16,8 @@ namespace OrbItProcs
         CollapsePanel PresetsPanel;
         CollapsePanel CheckBoxes, c14, c15, c16, c17, c18;
 
+        ComboBox cbUserLevel;
+
         public int HeightCounter4;
         public int VertPadding4;
 
@@ -128,9 +130,27 @@ namespace OrbItProcs
 
             CheckBoxes.ExpandedHeight = 150;
 
+            HeightCounter4 = 0;
+
+            cbUserLevel = new ComboBox(manager);
+            cbUserLevel.Init();
+            cbUserLevel.Parent = CheckBoxes.panel;
+            cbUserLevel.Top = HeightCounter4;
+            cbUserLevel.Width = 150;
+            HeightCounter4 += cbUserLevel.Height;
+            foreach(string ul in Enum.GetNames(typeof(UserLevel)))
+            {
+                cbUserLevel.Items.Add(ul);
+            }
+            cbUserLevel.ItemIndexChanged += (s, e) =>
+            {
+                Sidebar.userLevel = (UserLevel)cbUserLevel.ItemIndex;
+                
+            };
+            cbUserLevel.ItemIndex = 3;
 
             #endregion
-            HeightCounter4 = 0;
+            
 
             Dictionary<string, EventHandler> checkBoxHandlers = new Dictionary<string, EventHandler>(){
                 { "FullScreen", (o,e) => {

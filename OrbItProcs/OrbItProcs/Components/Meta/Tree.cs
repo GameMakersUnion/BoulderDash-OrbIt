@@ -117,7 +117,7 @@ namespace OrbItProcs
                     //userP[node.name] = "node" + Node.nodeCounter;
 
                     Node newNode = new Node();
-                    Node.cloneObject(parent, newNode);
+                    Node.cloneNode(parent, newNode);
                     newNode.body.velocity = childvel;
                     if (newNode.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
                     newNode.name = "node" + Node.nodeCounter;
