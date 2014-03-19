@@ -346,15 +346,15 @@ namespace OrbItProcs {
                     foreach (FieldInfo finfo in fieldInfos)
                     {
                         if (finfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
-                        var abstractions = finfo.GetCustomAttributes(typeof(AbstractionLevel), false);
-                        if (abstractions.Length > 0)
-                        {
-                            if ((int)(abstractions[0] as AbstractionLevel).userLevel > (int)userlevel) continue;
-                        }
-                        else if (userlevel != UserLevel.Debug)
-                        {
-                            continue;
-                        }
+                        //var abstractions = finfo.GetCustomAttributes(typeof(AbstractionLevel), false);
+                        //if (abstractions.Length > 0)
+                        //{
+                        //    if ((int)(abstractions[0] as AbstractionLevel).userLevel > (int)userlevel) continue;
+                        //}
+                        //else if (userlevel != UserLevel.Debug)
+                        //{
+                        //    continue;
+                        //}
                         InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, finfo.GetValue(parent), finfo);
                         if (iitem.CheckForChildren()) iitem.prefix = "+";
                         InsertItemSorted(list, iitem);

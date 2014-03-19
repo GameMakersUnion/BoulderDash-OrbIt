@@ -166,11 +166,10 @@ namespace OrbItProcs
             tbcMain = new TabControl(manager);
             tbcMain.Init();
             tbcMain.Parent = master;
-
             tbcMain.Left = 0;
             tbcMain.Top = 0;
             tbcMain.Width = master.Width - 5;
-            tbcMain.Height = Game1.sWidth - 40; //TODO : WTF
+            tbcMain.Height = Game1.sWidth - 40;
             tbcMain.Anchor = Anchors.All;
             #endregion
 

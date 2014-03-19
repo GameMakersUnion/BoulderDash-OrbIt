@@ -47,12 +47,16 @@ namespace OrbItProcs {
             methods = mtypes.affectother;
             mode = Mode.Normal;
         }
-        //public bool TestBool = false;
+
+        //public bool EveryOther = false;
+        //public int counter = 0;
 
         public override void AffectOther(Node other)
         {
             if (!active) { return; }
             if (exclusions.Contains(other)) return;
+
+            //if (EveryOther && counter++ % 2 == 0) return;
 
             if (AffectsOnlyGravity && !other.comps.ContainsKey(comp.gravity)) return;
 

@@ -98,6 +98,11 @@ namespace OrbItProcs {
             SidebarActive = active;
         }
 
+        public void SwitchView()
+        {
+            sidebar.activeTabControl = (sidebar.activeTabControl == sidebar.tbcViews) ? sidebar.tbcMain : sidebar.tbcViews;
+        }
+
         public void ToggleSidebar()
         {
             if (SidebarActive)

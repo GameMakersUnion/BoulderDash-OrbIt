@@ -304,15 +304,16 @@ namespace OrbItProcs
 
             if (bigTonyOn)
             {
-            for (int i = 1; i < 5; i++)
-            {
-                room.players.Add(new Player(i)); //#bigtony
-            }
+                for (int i = 1; i < 5; i++)
+                {
+                    room.players.Add(new Player(i)); //#bigtony
+                }
             }
 
             processManager.SetProcessKeybinds(ui.keyManager);
             ui.keyManager.addProcessKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
             ui.keyManager.addProcessKeyAction("togglesidebar", KeyCodes.OemTilde, OnPress: ui.ToggleSidebar);
+            ui.keyManager.addProcessKeyAction("switchview", KeyCodes.PageDown, OnPress: ui.SwitchView);
             ui.keyManager.addProcessKeyAction("screenshot", KeyCodes.PrintScreen, OnPress: TakeScreenShot);
             ui.keyManager.addProcessKeyAction("removeall", KeyCodes.Delete, OnPress: () => ui.sidebar.btnRemoveAllNodes_Click(null, null));
 

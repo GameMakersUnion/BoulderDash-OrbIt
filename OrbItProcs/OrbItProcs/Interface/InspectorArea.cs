@@ -51,7 +51,7 @@ namespace OrbItProcs
 
         public Tuple<bool, string> OverrideString = new Tuple<bool, string>(false, "");
 
-        public ComponentView compView;
+        public ListView compView;
         //public Group activeGroup = null;
 
         public InspectorArea(Sidebar sidebar, Control parent, int Left, int Top)
@@ -67,7 +67,7 @@ namespace OrbItProcs
             this.Left = Left;
             this.Top = Top;
 
-            this.GenerateFields = false; //todo: set to true when usermode is set up (so you can see fields in debug)
+            this.GenerateFields = true; //todo: set to true when usermode is set up (so you can see fields in debug)
             //this.ActiveInspectorParent = sidebar.ActiveInspectorParent;
             
             Initialize();

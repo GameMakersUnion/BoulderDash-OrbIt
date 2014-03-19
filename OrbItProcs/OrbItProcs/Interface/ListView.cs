@@ -15,22 +15,56 @@ namespace OrbItProcs
     // Fourth sidebar tab page
     public partial class Sidebar
     {
-        public ComponentView componentView { get; set; }
+        public ListView componentView { get; set; }
+
+        public TabControl tbcViews;
+
+        private TabControl _activeTabControl;
+        public TabControl activeTabControl
+        {
+            get { return _activeTabControl; }
+            set
+            {
+                if (value != null)
+                {
+                    if (_activeTabControl != null && value != _activeTabControl)
+                    {
+                        _activeTabControl.Visible = false;
+                    }
+                }
+                _activeTabControl = value;
+                _activeTabControl.Visible = true;
+                _activeTabControl.Refresh();
+            }
+        }
 
         public void InitializeFourthPage()
         {
-            tbcMain.AddPage();
-            TabPage fourth = tbcMain.TabPages[3];
-            fourth.Text = "Fourth";
+            tbcMain.Visible = false;
 
-            tbcMain.SelectedIndex = 3;
+            tbcViews = new TabControl(manager);
+            tbcViews.Init();
+            tbcViews.Parent = master;
+            tbcViews.Left = 0;
+            tbcViews.Top = 0;
+            tbcViews.Width = master.Width - 5;
+            tbcViews.Height = Game1.sWidth - 40;
+            tbcViews.Anchor = Anchors.All;
 
-            componentView = new ComponentView(this, fourth, 0, 0);
+            tbcViews.AddPage();
+            TabPage editTab = tbcViews.TabPages[0];
+            editTab.Text = "Edit";
+
+            tbcViews.SelectedIndex = 0;
+
+            activeTabControl = tbcViews;
+
+            componentView = new ListView(this, editTab, 0, 0, true);
         }
     }
 
 
-    public class ComponentView
+    public class ListView
     {
 
         public Game1 game;
@@ -59,7 +93,7 @@ namespace OrbItProcs
         public Label lblComponents, lblGroup;
         public ComboBox cbActiveGroup;
         public Button btnAddComponent;
-        public Label lblDummy;
+        //public Label lblDummy;
 
         public Color backColor, textColor, selectedBackColor, selectedTextColor;
 
@@ -79,7 +113,6 @@ namespace OrbItProcs
             else
             {
                 SetComponent(null);
-
             }
 
             insArea.InsBox.Visible = visible;
@@ -88,7 +121,7 @@ namespace OrbItProcs
 
         public InspectorArea insArea;
 
-        public ComponentView(Sidebar sidebar, Control parent, int Left, int Top)
+        public ListView(Sidebar sidebar, Control parent, int Left, int Top, bool InspectorArea)
         {
             this.game = sidebar.game;
             this.room = sidebar.room;
@@ -100,25 +133,15 @@ namespace OrbItProcs
             this.Left = Left;
             this.Top = Top;
             
-            Initialize();
+            Initialize(InspectorArea);
             
         }
 
-        public List<ComponentItem> compItems;
-        private ComponentItem _selectedItem;
-        public ComponentItem selectedItem
-        {
-            get { return _selectedItem; }
-            set
-            {
-                _selectedItem = value;
-                //bool visible = value != null;
-                //SetVisible(visible);
-            }
-        }
+        public List<ViewItem> viewItems;
+        public ViewItem selectedItem { get; set; }
         
 
-        public void Initialize()
+        public void Initialize(bool InspectorArea)
         {
             HeightCounter = Top;
             Width = parent.Width - LeftPadding * 2;
@@ -196,12 +219,15 @@ namespace OrbItProcs
             btnAddComponent.Parent = parent;
             btnAddComponent.Text = "Add Component";
             btnAddComponent.Click += btnAddComponent_Click;
-            btnAddComponent.ToolTip.Text = "This is a test\nto see if multi\nline is doable";
+            //btnAddComponent.ToolTip.Text = "This is a test\nto see if multi\nline is doable";
             HeightCounter += btnAddComponent.Height;
 
-            insArea = new InspectorArea(sidebar, parent, Left + LeftPadding, HeightCounter);
-            insArea.compView = this;
-            insArea.SetOverrideString("Menu");
+            if (InspectorArea)
+            {
+                insArea = new InspectorArea(sidebar, parent, Left + LeftPadding, HeightCounter);
+                insArea.compView = this;
+                insArea.SetOverrideString("Menu");
+            }
 
             UpdateGroupComboBox();
 
@@ -270,6 +296,12 @@ namespace OrbItProcs
 
         public void SetComponent(object obj)
         {
+            //group view
+            if (obj is Group)
+            {
+                return;
+            }
+            //components view
             if (insArea == null) return;
             insArea.ResetInspectorBox(obj);
             insArea.propertyEditPanel.DisableControls();
@@ -287,29 +319,29 @@ namespace OrbItProcs
             if (selected != 3) sidebar.tbcMain.SelectedIndex = 3;
 
             int heightCount = 0;
-            if (compItems != null)
+            if (viewItems != null)
             {
-                foreach (ComponentItem item in compItems)
+                foreach (ViewItem item in viewItems)
                 {
                     compsBackPanel.Remove(item.textPanel);
                 }
             }
 
-            compItems = new List<ComponentItem>();
+            viewItems = new List<ViewItem>();
             int itemCount = rootNode.comps.Count + 2;
             int width = compsBackPanel.Width - 4; //#magic number
             if (itemCount >= 10) 
                 width -= 18;
 
-            compItems.Add(new ComponentItem(manager, this, rootNode, compsBackPanel, heightCount, LeftPadding, width));
+            viewItems.Add(new ViewItem(manager, this, rootNode, compsBackPanel, heightCount, LeftPadding, width));
             //compItems[0].textPanel.Color = Color.Blue;
-            heightCount += compItems[0].label.Height;
-            compItems.Add(new ComponentItem(manager, this, rootNode.body, compsBackPanel, heightCount, LeftPadding, width));
+            heightCount += viewItems[0].label.Height;
+            viewItems.Add(new ViewItem(manager, this, rootNode.body, compsBackPanel, heightCount, LeftPadding, width));
 
             foreach(object obj in rootNode.comps.Values)
             {
-                heightCount += compItems[0].label.Height;
-                compItems.Add(new ComponentItem(manager, this, obj, compsBackPanel, heightCount, LeftPadding, width));
+                heightCount += viewItems[0].label.Height;
+                viewItems.Add(new ViewItem(manager, this, obj, compsBackPanel, heightCount, LeftPadding, width));
             }
             //heightCount += compItems[0].label.Height;
             //compItems.Add(new ComponentItem(manager, this, null, compsBackPanel, heightCount, LeftPadding));
@@ -347,7 +379,7 @@ namespace OrbItProcs
         {
             string name = t.ToString().LastWord('.');
             int count = 0;
-            foreach(ComponentItem item in compItems)
+            foreach(ViewItem item in viewItems)
             {
                 if (item.label.Text.Equals(name))
                 {
@@ -413,13 +445,13 @@ namespace OrbItProcs
         }
     }
 
-    public class ComponentItem
+    public class ViewItem
     {
-        public ComponentView compView;
+        public ListView listView;
         public object obj;
         public Label label;
         public CheckBox checkbox;
-        public Button btnRemove;
+        public Button btnRemove, btnEdit;
         public Panel textPanel;
         //public ContextMenu contextMenu;
         //public MenuItem removeComponentMenuItem;
@@ -432,12 +464,10 @@ namespace OrbItProcs
             {
                 if (value)
                 {
-                    if (obj != null)
-                    {
-                        if (textPanel != null) textPanel.Color = compView.selectedBackColor;
-                        if (label != null) label.TextColor = compView.selectedTextColor;
-                    }
-                    foreach (var item in compView.compItems)
+                    if (textPanel != null) textPanel.Color = listView.selectedBackColor;
+                    if (label != null) label.TextColor = listView.selectedTextColor;
+
+                    foreach (var item in listView.viewItems)
                     {
                         if (item == this) continue;
                         if (item.isSelected) item.isSelected = false;
@@ -445,17 +475,19 @@ namespace OrbItProcs
                     if (obj != null)
                     {
                         //compView.selectedItem = this;
-                        compView.SetComponent(obj);
-                        compView.insArea.SetOverrideString(label.Text);
-                        
+                        listView.SetComponent(obj);
+                        listView.insArea.SetOverrideString(label.Text);
                     }
                 }
                 else
                 {
-                    if (textPanel != null) textPanel.Color = compView.backColor;
-                    if (label != null) label.TextColor = compView.textColor;
-                    compView.insArea.ClearInspectorBox();
-                    compView.insArea.SetOverrideString("");
+                    if (textPanel != null) textPanel.Color = listView.backColor;
+                    if (label != null) label.TextColor = listView.textColor;
+                    if (listView.insArea != null)
+                    {
+                        listView.insArea.ClearInspectorBox();
+                        listView.insArea.SetOverrideString("");
+                    }
                     //compView.selectedItem = null;
                 }
                 _isSelected = value;
@@ -470,52 +502,37 @@ namespace OrbItProcs
             {
                 if (!isSelected) 
                 { 
-                    compView.SetVisible(true); 
-                    compView.selectedItem = this; 
+                    listView.SetVisible(true); 
+                    listView.selectedItem = this; 
                 }
                 isSelected = !isSelected;
             }
-            //else if (me.Button == MouseButton.Right)
-            //{
-            //    if (!isSelected) isSelected = true;
-            //}
             if (!isSelected) 
             {
-                compView.SetVisible(isSelected); 
-                compView.selectedItem = null;
+                listView.SetVisible(isSelected); 
+                listView.selectedItem = null;
             }
         }
 
         void removeComponent_Click(object sender, EventArgs e)
         {
-            if (!(obj is Component) || compView == null || compView.activeGroup == null) return;
+            if (!(obj is Component) || listView == null || listView.activeGroup == null) return;
             Component component = (Component)obj;
-            //if (component is Collision || component is Movement) { PopUp.Toast("Unable to remove component. Try disabling."); return; }
 
-            //foreach(ComponentItem item in compView.compItems.ToList())
-            //{
-            //    if (item.obj is Component && (item.obj as Component).com == component.com)
-            //    {
-            //        compView.compItems.Remove(item);
-            //        break;
-            //    }
-            //}
-
-            compView.activeGroup.defaultNode.RemoveComponent(component.com);
-            foreach(Node n in compView.activeGroup.fullSet)
+            listView.activeGroup.defaultNode.RemoveComponent(component.com);
+            foreach(Node n in listView.activeGroup.fullSet)
             {
                 if (n.HasComponent(component.com))
                 {
                     n.RemoveComponent(component.com);
                 }
             }
-            compView.SwitchGroup(compView.activeGroup);
+            listView.SwitchGroup(listView.activeGroup);
         }
 
-        public ComponentItem(Manager manager, ComponentView compView, object obj, Control parent, int Top, int Left, int Width)
+        public ViewItem(Manager manager, ListView compView, object obj, Control parent, int Top, int Left, int Width)
         {
-            this.compView = compView;
-            
+            this.listView = compView;
             this.obj = obj;
 
             textPanel = new Panel(manager);
@@ -544,22 +561,26 @@ namespace OrbItProcs
                 {
                     label.Text = "Root";
                 }
-                else
+                else if (obj is Body || obj is Component)
                 {
                     label.Text = obj.GetType().ToString().LastWord('.');
+                }
+                else if (obj is Group)
+                {
+                    label.Text = (obj as Group).Name;
                 }
 
                 //no checkboxes for root or body
                 if (obj is Component)
                 {
+                    Component comp = (Component)obj;
+
                     checkbox = new CheckBox(manager);
                     checkbox.Init();
                     checkbox.Parent = textPanel;
-                    checkbox.Left = parent.Width - 60;
+                    checkbox.Left = parent.Width - 45;
                     checkbox.Text = "";
                     checkbox.ToolTip.Text = "Toggle";
-
-                    Component comp = (Component)obj;
                     checkbox.Checked = comp.active;
                     checkbox.CheckedChanged += (s, e) =>
                     {
@@ -567,34 +588,47 @@ namespace OrbItProcs
                         compView.ToggleGroupComponent(comp.com, comp.active);
                     };
 
-                    //contextMenu = new ContextMenu(manager);
-                    //removeComponentMenuItem = new MenuItem("Remove Component");
-                    //removeComponentMenuItem.Click += removeComponentMenuItem_Click;
-                    //contextMenu.Items.Add(removeComponentMenuItem);
-                    //textPanel.ContextMenu = contextMenu;
-
                     if (!(comp is Movement) && !(comp is Collision) && !(comp is BasicDraw))
                     {
                         btnRemove = new Button(manager);
                         btnRemove.Init();
                         btnRemove.Parent = textPanel;
-                        btnRemove.Left = checkbox.Left + 15;
+                        btnRemove.Left = checkbox.Left - 20;
                         btnRemove.Height = checkbox.Height - 3;
-                        btnRemove.Top = 0;
                         btnRemove.Width = 15;
                         btnRemove.Text = "-";
                         btnRemove.Click += removeComponent_Click;
                         btnRemove.ToolTip.Text = "Remove";
                     }
                 }
+                else if (obj is Group)
+                {
+                    Group g = (Group)obj;
+                    btnEdit = new Button(manager);
+                    btnEdit.Init();
+                    btnEdit.Parent = textPanel;
+                    btnEdit.Left = parent.Width - 5;
+                    btnEdit.Width = 15;
+                    btnEdit.Text = "e";
+                    btnEdit.ToolTip.Text = "Edit";
+
+                    btnRemove = new Button(manager);
+                    btnRemove.Init();
+                    btnRemove.Parent = parent;
+                    btnRemove.Left = btnEdit.Left - 20;
+                    btnRemove.Width = 15;
+                    btnRemove.Text = "-";
+                    btnRemove.ToolTip.Text = "Remove";
+                    //todo: add handlers
+
+                }
+
             }
             else
             {
                 label.Text = "";
             }
-
             isSelected = false;
-
         }
     }
 
