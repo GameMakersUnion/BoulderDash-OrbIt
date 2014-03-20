@@ -44,13 +44,13 @@ namespace OrbItProcs {
     {
         public DataStore() : base() { }
 
-        public DataStore (params Tuple<string, dynamic>[] items) : base(items.Length)
-        {
-            foreach(var item in items)
-            {
-                this[item.Item1] = item.Item2;
-            }
-        }
+        //public DataStore (params Tuple<string, dynamic>[] items) : base(items.Length)
+        //{
+        //    foreach(var item in items)
+        //    {
+        //        this[item.Item1] = item.Item2;
+        //    }
+        //}
     }
 
     public class Node {
@@ -76,7 +76,7 @@ namespace OrbItProcs {
         {
             return comps.ContainsKey(component) && comps[component].active;
         }
-        [DoNotInspect]
+        [Info(UserLevel.Never)]
         public dynamic this[comp component]
         {
             get
@@ -243,7 +243,7 @@ namespace OrbItProcs {
         public ObservableHashSet<Group> Groups { get; set; }
 
         [Polenter.Serialization.ExcludeFromSerialization]
-        [DoNotInspect]
+        [Info(UserLevel.Never)]
         public Delegator delegator
         {
             get
@@ -260,8 +260,8 @@ namespace OrbItProcs {
             }
         }
         [Polenter.Serialization.ExcludeFromSerialization]
-        [DoNotInspect]
-        public Delegator scheduler
+        [Info(UserLevel.Never)]
+        public Scheduler scheduler
         {
             get
             {
@@ -529,7 +529,7 @@ namespace OrbItProcs {
                 {
                     if (numOfSupers > 0) break;
                     comps[c].Draw(spritebatch);
-                    if (!comps[c].methods.HasFlag(mtypes.minordraw))
+                    if (!comps[c].compType.HasFlag(mtypes.minordraw))
                         break; //only executes the most significant draw component
                 }
             }
@@ -748,7 +748,7 @@ namespace OrbItProcs {
             foreach (comp c in clist)
             {
                 if (c == comp.movement || c == comp.collision) continue;
-                if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.affectother) == mtypes.affectother))
+                if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].compType & mtypes.affectother) == mtypes.affectother))
                 {
                     aOtherProps.Add(c);
                 }
@@ -756,7 +756,7 @@ namespace OrbItProcs {
             foreach (comp c in clist)
             {
                 if (c == comp.movement) continue;
-                if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.affectself) == mtypes.affectself))
+                if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].compType & mtypes.affectself) == mtypes.affectself))
                 {
                     aSelfProps.Add(c);
                 }
@@ -772,7 +772,7 @@ namespace OrbItProcs {
 
             foreach (comp c in clist)
             {
-                if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].methods & mtypes.draw) == mtypes.draw))
+                if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].compType & mtypes.draw) == mtypes.draw))
                 {
                     drawProps.Add(c);
                 }

@@ -307,12 +307,12 @@ namespace OrbItProcs {
                 foreach (PropertyInfo pinfo in propertyInfos)
                 {
                     object[] attributes = pinfo.GetCustomAttributes(false);
-                    if (pinfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
+                    //if (pinfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
 
-                    var abstractions = pinfo.GetCustomAttributes(typeof(AbstractionLevel), false);
+                    var abstractions = pinfo.GetCustomAttributes(typeof(Info), false);
                     if (abstractions.Length > 0)
                     {
-                        if ((int)(abstractions[0] as AbstractionLevel).userLevel > (int)Sidebar.userLevel) continue;
+                        if ((int)(abstractions[0] as Info).userLevel > (int)Sidebar.userLevel) continue;
                     }
                     else if (Sidebar.userLevel != UserLevel.Debug)
                     {
@@ -339,11 +339,11 @@ namespace OrbItProcs {
 
                     foreach (FieldInfo finfo in fieldInfos)
                     {
-                        if (finfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
-                        var abstractions = finfo.GetCustomAttributes(typeof(AbstractionLevel), false);
+                        //if (finfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
+                        var abstractions = finfo.GetCustomAttributes(typeof(Info), false);
                         if (abstractions.Length > 0)
                         {
-                            if ((int)(abstractions[0] as AbstractionLevel).userLevel > (int)Sidebar.userLevel) continue;
+                            if ((int)(abstractions[0] as Info).userLevel > (int)Sidebar.userLevel) continue;
                         }
                         else if (Sidebar.userLevel != UserLevel.Debug)
                         {

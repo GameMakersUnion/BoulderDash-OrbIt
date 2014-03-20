@@ -7,17 +7,41 @@ using Microsoft.Xna.Framework;
 
 namespace OrbItProcs.Components
 {
+    /// <summary>
+    /// Modifies the color of affected nodes by using a distance equation. This can be based on their spacial position or an "Imaginary color position"
+    /// </summary>
+    [Info(UserLevel.User, "Modifies the color of affected nodes by using a distance equation. This can be based on their spacial position or an 'Imaginary color position'",CompType)]
     public class ColorGravity : Component, ILinkable
     {
-        private Link _link = null;
-        public Link link { get { return _link; } set { _link = value; } }
+        public const mtypes CompType = mtypes.affectself | mtypes.affectother;
+        public override mtypes compType { get { return CompType; } set { } }
+        [Info(UserLevel.Developer)]
+        public Link link { get; set; }
 
         public enum DistanceMod
         {
             color,
             spatial,
         }
+        /// <summary>
+        /// Chooses what to base gravity calcutations on. Spatial: color gravity increases the closer nodes are to each other. Color: Color gravity increases when the nodes have similar colors.
+        /// </summary>
+        [Info(UserLevel.User, "Chooses what to base gravity calcutations on. Spatial: color gravity increases the closer nodes are to each other. Color: Color gravity increases when the nodes have similar colors.")]
+        public DistanceMod distancemod { get; set; }
+        
+        
+        public enum Mode
+        {
+            hue,
+            rgb
+        }
+        /// <summary>
+        /// Changes what data the color gravity is based on
+        /// </summary>
+        [Info(UserLevel.User, "Changes what data the color gravity is based on")]
+        public Mode mode { get; set; }
 
+        [Info(UserLevel.Developer)]
         public override bool active
         {
             get
@@ -35,29 +59,50 @@ namespace OrbItProcs.Components
                 base.active = value;
             }
         }
-
+        /// <summary>
+        /// The rate of change of each of the components of node's color.
+        /// </summary>
+        [Info(UserLevel.Advanced, "The rate of change of each of the components of node's color.")]
         public Vector3 colvelocity;
+        /// <summary>
+        /// The strength of the color gravity;
+        /// </summary>
+        [Info(UserLevel.Advanced, "The strength of the color gravity;")]
         public float multiplier { get; set; }
-        public float r { get; set; }
-        public float g { get; set; }
-        public float b { get; set; }
-        public DistanceMod distancemod { get; set; }
-        public bool hueOnly { get; set; }
-        public float hue { get; set; }
+
+        private float r;
+        private float g;
+        private float b;
+        private float hue;
+        /// <summary>
+        /// The rate of change of each of the components of node's color.
+        /// </summary>
+        [Info(UserLevel.Advanced, "The rate of change of each of the components of node's color.")]
         public float huevelocity { get; set; }
+        /// <summary>
+        /// Linear Dampening of color velocity
+        /// </summary>
+        [Info(UserLevel.Advanced, "Linear Dampening of color velocity")]
         public float friction { get; set; }
+        /// <summary>
+        /// The rate of change of each of the components of node's color.
+        /// </summary>
+        [Info(UserLevel.Advanced, "The rate of change of each of the components of node's color.")]
         public float divisor { get; set; }
+        /// <summary>
+        /// Maximum Color velocity
+        /// </summary>
+        [Info(UserLevel.Advanced, "Maximum Color velocity")]
         public float maxhuevel { get; set; }
         public ColorGravity() : this(null){ }
         public ColorGravity(Node parent = null)
         {
             if (parent != null) this.parent = parent;
             com = comp.colorgravity;
-            methods = mtypes.affectself | mtypes.affectother;
             colvelocity = new Vector3(0f, 0f, 0f);
             multiplier = 1f;
             distancemod = DistanceMod.spatial;
-            hueOnly = true;
+            mode = Mode.hue;
             huevelocity = 0f;
             hue = 0f;
             divisor = 1000f;
@@ -68,14 +113,14 @@ namespace OrbItProcs.Components
         public override void OnSpawn()
         {
             r = parent.body.color.R / 255f;
-            g = parent.body.color.R / 255f;
-            b = parent.body.color.R / 255f;
+            g = parent.body.color.G / 255f;
+            b = parent.body.color.B / 255f;
             hue = HueFromColor(parent.body.color);
         }
 
         public override void AffectOther(Node other)
         {
-            if (hueOnly)
+            if (mode == Mode.hue)
             {
                 if (!other.HasActiveComponent(comp.colorgravity)) return;
 
@@ -107,7 +152,6 @@ namespace OrbItProcs.Components
 
                     other[comp.colorgravity].huevelocity += force;
                     huevelocity -= force;
-                    //todo: make graphing function to represent dataover time for variables
 
                     
                 }
@@ -136,10 +180,9 @@ namespace OrbItProcs.Components
                 colvelocity -= impulse;
             }
         }
-
         public override void AffectSelf()
         {
-            if (hueOnly)
+            if (mode == Mode.hue)
             {
                 if (huevelocity > maxhuevel) huevelocity = maxhuevel;
                 else if (huevelocity < -maxhuevel) huevelocity = -maxhuevel;

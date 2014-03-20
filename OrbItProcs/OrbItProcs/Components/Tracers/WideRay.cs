@@ -8,16 +8,36 @@ using System.Reflection;
 
 namespace OrbItProcs
 {
+    /// <summary>
+    /// Replaces the basic draw with a set of lines that trail behind the node, perpendicular to its direction. is said to look like a caterpillar.
+    /// </summary>
+    [Info(UserLevel.User, "Replaces the basic draw with a set of lines that trail behind the node, perpendicular to its direction. is said to look like a caterpillar.", CompType)]
     public class WideRay : Component
     {
-        //public Queue<Vector2> positions;
-        //public Queue<float> angles;
-        //public Queue<float> scales;
-        [Polenter.Serialization.ExcludeFromSerialization]
-        public int queuecount { get { if (parent != null && parent.HasComponent(comp.queuer)) return parent[comp.queuer].queuecount; else return 10; } set { if (parent != null && parent.HasComponent(comp.queuer)) parent[comp.queuer].queuecount = value; } }
+        public const mtypes CompType = mtypes.affectself | mtypes.draw;
+        public override mtypes compType { get { return CompType; } set { } }
 
-        private int timer = 0, _timerMax = 1;
-        public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
+        public int _rayLength = 10;
+        /// <summary>
+        /// Sets the length of the ray.
+        /// </summary>
+        [Info(UserLevel.User, "Sets the length of the ray. ")]
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public int rayLength
+        {
+            get
+            {
+                return _rayLength;
+            }
+            set
+            {
+                if (parent != null && parent.HasComponent(comp.queuer) && parent[comp.queuer].queuecount < value)
+                {
+                    parent[comp.queuer].queuecount = value;
+                }
+                _rayLength = value;
+            }
+        }
 
         private double angle = 0;
         private float rayscale = 20;
@@ -28,7 +48,6 @@ namespace OrbItProcs
         {
             if (parent != null) this.parent = parent;
             com = comp.wideray;
-            methods = mtypes.affectself | mtypes.draw;
             InitializeLists();  
         }
 

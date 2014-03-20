@@ -7,8 +7,14 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs
 {
+    /// <summary>
+    /// Constantly changes the color of nodes depending on a variety of modes
+    /// </summary>
+    [Info(UserLevel.User, "Constantly changes the color of nodes depending on a variety of modes", CompType)]
     public class ColorChanger : Component
     {
+        public const mtypes CompType = mtypes.affectself;
+        public override mtypes compType { get { return CompType; } set { } }
         public enum ColorMode
         {
             none,
@@ -16,57 +22,120 @@ namespace OrbItProcs
             position,
             velocity,
             scale,
-
+            hueShifter,
+            RandomInitial,
         }
+        /// <summary>
+        /// Determines how to change to the node's color:
+        /// Angle: Hue changes acording to angle of travel. 
+        /// Position: Hue changes according to position. 
+        /// Velocity: Node darkens as it slows. 
+        /// Scale: Hue Changes according to its Scale. 
+        /// HueShifter: Hue constantly shifts;
+        /// </summary>
+        [Info(UserLevel.User, "Determines how to change to the node's color: \nAngle: Hue changes acording to angle of travel. \nPosition: Hue changes according to position. \nVelocity: Nodes darken as they slow. \nScale: Hue Changes according to their Scale. \nHueShifter: Hue constantly shifts;")]
+        public ColorMode colormode { get; set; }
 
-        private int timer = 0, _timerMax = 2;
-        public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
+        private Toggle<int> _msInterval = new Toggle<int>(20, false);
+        /// <summary>
+        /// If enabled, the color changes only this many milliseconds, otherwise, it changes every frame.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, the color changes only this many milliseconds, otherwise, it changes every frame.")]
+        public Toggle<int> msInterval {
+            get { return _msInterval; } 
+            set 
+            {
 
-        private int[] rgb = new int[3];
-        private int _inc = 5;
-        public int inc { get { return _inc; } set { _inc = value; } }
+                if (!_msInterval.enabled && value.enabled) parent.scheduler.AddAppointment(appt);
+                if (_msInterval.enabled && !value.enabled) parent.scheduler.RemoveAppointment(appt);
+
+                appt.interval = value.value;
+                _msInterval = value;
+
+            } }
+        /// <summary>
+        /// Changes the degree by which the node shifts hue. Used by HueShifter ColorMode
+        /// </summary>
+        [Info(UserLevel.Advanced, "Changes the degree by which the node shifts hue. Used by HueShifter ColorMode")]
+        public int inc { get; set; }
 
         private float _value = 1f;
+        /// <summary>
+        /// The Brightness of the colors
+        /// </summary>
+        [Info(UserLevel.Advanced, "The Brightness of the colors")]
         public float value { get { return _value; } set { _value = value; } }
 
         private float _saturation = 1f;
+        /// <summary>
+        /// The intensity of the colors
+        /// </summary>
+        [Info(UserLevel.Advanced, "The intensity of the colors")]
         public float saturation { get { return _saturation; } set { _saturation = value; } }
 
         private int pos = 1, sign = 1;
         private int angle = 0;
-
-        public bool smartshifting { get; set; }
-
-        public ColorMode colormode { get; set; }
+        private bool schedulerModerated;
+        private Appointment appt;
+        //public bool smartshifting { get; set; }
 
         public ColorChanger() : this(null) { }
         public ColorChanger(Node parent = null)
         {
-            smartshifting = true;
+            appt = new Appointment(managedUpdate, msInterval.value);
+            //smartshifting = true;
             if (parent != null) this.parent = parent;
             com = comp.colorchanger;
-            methods = mtypes.affectself;
             colormode = ColorMode.velocity;
+            inc = 5;
         }
 
+        public override void OnSpawn()
+        {
+            if (!active) return;
+            if (colormode == ColorMode.RandomInitial)
+            {
+                //parent.body.color = Utils.IntToColor(Utils.CurrentMilliseconds());
+                float num = (float)Utils.random.Next(100000) / (float)100000;
+                int n = (int)(num * 16000000);
+                parent.body.color = Utils.IntToColor(n);
+                parent.body.permaColor = parent.body.color;
+
+            }
+        }
         public override void AffectSelf()
         {
-            if (colormode == ColorMode.angle)
+            if (!msInterval.enabled & !schedulerModerated)
             {
-                float angle = (float)((Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + Math.PI) * (180 / Math.PI));
-                parent.body.color = getColorFromHSV(angle, saturation, value);
-            }
-            else if(colormode == ColorMode.position)
-            {
-                float r = parent.body.pos.X / (float)parent.room.worldWidth;
-                float g = parent.body.pos.Y / (float)parent.room.worldHeight;
-                float b = (parent.body.pos.X / parent.body.pos.Y) / ((float)parent.room.worldWidth / (float)parent.room.worldHeight);
-                parent.body.color = new Color(r, g, b);
-            }
-            else if (colormode == ColorMode.velocity)
-            {
-                float len = Vector2.Distance(parent.body.velocity, Vector2.Zero);
-                parent.body.color = getColorFromHSV((float)Math.Min(1.0, len / 20) * 360f, (float)Math.Min(1.0, len / 20), (float)Math.Min(1.0, len / 20));
+                if (colormode == ColorMode.angle)
+                {
+                    float angle = (float)((Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + Math.PI) * (180 / Math.PI));
+                    parent.body.color = getColorFromHSV(angle, saturation, value);
+                }
+                else if (colormode == ColorMode.position)
+                {
+                    float r = parent.body.pos.X / (float)parent.room.worldWidth;
+                    float g = parent.body.pos.Y / (float)parent.room.worldHeight;
+                    float b = (parent.body.pos.X / parent.body.pos.Y) / ((float)parent.room.worldWidth / (float)parent.room.worldHeight);
+                    parent.body.color = new Color(r, g, b);
+                }
+                else if (colormode == ColorMode.velocity)
+                {
+                    float len = Vector2.Distance(parent.body.velocity, Vector2.Zero);
+                    parent.body.color = getColorFromHSV((float)Math.Min(1.0, len / 20) * 360f, (float)Math.Min(1.0, len / 20), (float)Math.Min(1.0, len / 20));
+                }
+                else if (colormode == ColorMode.hueShifter)
+                {
+                        int range = 20;
+                        int tempinc = inc;
+                        if (angle % 120 > 60 - range && angle % 120 < 60 + range)
+                        {
+                            tempinc = inc * 2;
+                            //Console.WriteLine(angle);
+                        }
+                        parent.body.color = getColorFromHSV(angle, saturation, value);
+                        angle = (angle + tempinc) % 360;
+                }
             }
         }
 
@@ -98,12 +167,6 @@ namespace OrbItProcs
             return ret;
         }
 
-        //public static Color getColorFromHSV(float angle, float saturation = 1f, float value = 1f)
-        //{
-        //    int[] col = getColorsFromAngle(angle, saturation, value);
-        //    return new Color(col[0], col[1], col[2]);
-        //}
-
         public static Color getColorFromHSV(float hue, float saturation = 1f, float value = 1f, int alpha = 255)
         {
             int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
@@ -128,55 +191,16 @@ namespace OrbItProcs
             else
                 return new Color(v, p, q, alpha);
         }
-        /*
-        public static int[] getColorsFromAngle(float angle, float saturation = 1f, float value = 1f)
-        {
-            int[] cols = new int[3];
-            int bottom = (int)(255 * value * (1 - saturation)); //0
-            int top = (int)(255 * value);
-            cols[0] = bottom;
-            cols[1] = bottom;
-            cols[2] = bottom;
-
-            float range = top - bottom;
-            double perdegree = range / 60.0;//255.0 / 60.0;
-
-            if (angle < 60)
-            {
-                cols[0] = top;
-                cols[1] = (int)(perdegree * angle);
-            }
-            else if (angle < 120)
-            {
-                cols[1] = top;
-                cols[0] = top - ((int)(perdegree * (angle - 60)));
-            }
-            else if (angle < 180)
-            {
-                cols[1] = top;
-                cols[2] = (int)(perdegree * (angle - 120));
-            }
-            else if (angle < 240)
-            {
-                cols[2] = top;
-                cols[1] = top - ((int)(perdegree * (angle - 180)));
-            }
-            else if (angle < 300)
-            {
-                cols[2] = top;
-                cols[0] = (int)(perdegree * (angle - 240));
-            }
-            else if (angle < 360)
-            {
-                cols[0] = top;
-                cols[2] = top - ((int)(perdegree * (angle - 300)));
-            }
-
-            return cols;
-        }*/
 
         public override void Draw(SpriteBatch spritebatch)
         {
+        }
+
+        private void managedUpdate(Node n, DataStore d){
+
+            schedulerModerated = true;
+            AffectSelf();
+            schedulerModerated = false;
         }
 
     }

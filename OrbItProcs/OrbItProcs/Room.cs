@@ -80,7 +80,7 @@ namespace OrbItProcs {
         [Polenter.Serialization.ExcludeFromSerialization]
         //public Player player1 { get; set; }
         public HashSet<Player> players { get; set; }
-        [DoNotInspect]
+        [Info(UserLevel.Never)]
         public IEnumerable<Node> playerNodes { get { return players.Select<Player, Node>(p => p.node); } }
 
         [Polenter.Serialization.ExcludeFromSerialization]
@@ -531,7 +531,7 @@ namespace OrbItProcs {
         public void tether()
         {
             Group g1 = masterGroup.FindGroup(game.ui.sidebar.cbListPicker.SelectedItem());
-            g1.defaultNode.comps[comp.tether].methods = mtypes.affectother | mtypes.draw;
+            g1.defaultNode.comps[comp.tether].compType = mtypes.affectother | mtypes.draw;
         }
 
         public void hide()

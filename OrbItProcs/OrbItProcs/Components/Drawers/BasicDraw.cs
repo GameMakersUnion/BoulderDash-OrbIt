@@ -7,21 +7,26 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.Serialization;
 namespace OrbItProcs
 {
+    /// <summary>
+    /// Basic Draw Component, ensures that you can see the node.
+    /// </summary>
+    [Info(UserLevel.User, "Basic Draw Component, ensures that you can see the node.")]
     public class BasicDraw : Component
     {
+        public const mtypes CompType = mtypes.essential | mtypes.draw;
+        public override mtypes compType { get { return CompType; } set { } }
+        /// <summary>
+        /// WARNING: THIS FLAG IS ONLY OBSERVED BY POLYGONS: Determines when to draw the center of mass as a circle
+        /// </summary>
+        [Info(UserLevel.Advanced, "WARNING: THIS FLAG IS ONLY OBSERVED BY POLYGONS: Determines when to draw the center of mass as a circle")]
         public bool DrawCircle { get; set; }
-        public bool DrawMirror { get; set; }
-
-
 
         public BasicDraw() : this(null) { }
         public BasicDraw(Node parent = null) 
         {
             if (parent != null) this.parent = parent;
             com = comp.basicdraw; 
-            methods = mtypes.draw;
             DrawCircle = true;
-            DrawMirror = true;
         }
         
         public override void AffectSelf()

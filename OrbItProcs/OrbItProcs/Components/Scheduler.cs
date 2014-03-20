@@ -16,9 +16,14 @@ namespace OrbItProcs
         Accumulate,
         Postpone,
     }
-
+    /// <summary>
+    /// Component that keeps track of events occurring related to this node. Mostly for internal use.
+    /// </summary>
+    [Info(UserLevel.Advanced, "Component that keeps track of events occurring related to this node. Mostly for internal use.")]
     public class Scheduler : Component
     {
+        public const mtypes CompType = mtypes.affectself |  mtypes.essential;
+        public override mtypes compType { get { return CompType; } set { } }
         public static SoundEffect start;
         public static SoundEffect end;
         public static SoundEffect fanfare;
@@ -49,7 +54,6 @@ namespace OrbItProcs
             fanfare = Program.getGame().Content.Load<SoundEffect>("fanfare");
             if (parent != null) this.parent = parent;
             com = comp.scheduler;
-            methods = mtypes.affectself;
         }
 
         public override void OnSpawn()
@@ -96,7 +100,7 @@ namespace OrbItProcs
         public void doAfterXMilliseconds(Action<Node> action, int X, bool playSound = false)
         {
             if (playSound) start.Play();
-            AppointmentDelegate a = delegate(Node n, Dictionary<string, dynamic> d) { action(n); };
+            AppointmentDelegate a = delegate(Node n, DataStore d) { action(n); };
             Appointment appt = new Appointment(a, X, playSound: playSound);
             appt.SetTimer();
             AddAppointment(appt);
@@ -105,7 +109,7 @@ namespace OrbItProcs
         public void doEveryXMilliseconds(Action<Node> action, int X, bool playSound = false)
         {
             if (playSound) start.Play();
-            AppointmentDelegate a = delegate(Node n, Dictionary<string, dynamic> d) { action(n); };
+            AppointmentDelegate a = delegate(Node n, DataStore d) { action(n); };
             Appointment appt = new Appointment(a, X, infinite: true, playSound: playSound);
             appt.SetTimer();
             AddAppointment(appt);
@@ -142,7 +146,7 @@ namespace OrbItProcs
 
     }
 
-    public delegate void AppointmentDelegate(Node n, Dictionary<string, dynamic> d);
+    public delegate void AppointmentDelegate(Node n, DataStore d);
 
     public class Appointment /*: IComparer<Appointment>*/
     {
@@ -151,10 +155,10 @@ namespace OrbItProcs
         public bool playSound { get; set; }
         public int repetitions { get; set; }
         public int interval { get; set; }
-        public Dictionary<string, dynamic> dataStore { get; set; }
+        public DataStore dataStore { get; set; }
         public long scheduledTime { get; set; }
 
-        public Appointment(AppointmentDelegate action, int interval, int repetitions = 1, bool infinite = false, Dictionary<string, dynamic> dataStore = null, bool playSound = false)
+        public Appointment(AppointmentDelegate action, int interval, int repetitions = 1, bool infinite = false, DataStore dataStore = null, bool playSound = false)
         {
             actions = new List<AppointmentDelegate>();
             if (action != null) actions.Add(action);

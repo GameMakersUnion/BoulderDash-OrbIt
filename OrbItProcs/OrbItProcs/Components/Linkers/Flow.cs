@@ -9,10 +9,15 @@ using System.Reflection;
 
 namespace OrbItProcs
 {
+    /// <summary>
+    /// Use logic (circuit) gates to affect the flow of component affection control
+    /// </summary>
+    [Info(UserLevel.Advanced, "Use logic (circuit) gates to affect the flow of component affection control", CompType)]
     public class Flow : Component, ILinkable
     {
-        private Link _link = null;
-        public Link link { get { return _link; } set { _link = value; } }
+        public const mtypes CompType = mtypes.exclusiveLinker | mtypes.minordraw;
+        public override mtypes compType { get { return CompType; } set { } }
+        public Link link { get; set; }
         public enum gate
         {
             None,
@@ -20,8 +25,8 @@ namespace OrbItProcs
             OR,
             NOT,
         }
-
-        public bool active
+        [Info(UserLevel.Developer)]
+        public override bool active
         {
             get { return _active; }
             set
@@ -51,8 +56,16 @@ namespace OrbItProcs
         public HashSet<Node> incoming { get { return _incoming; } set { _incoming = value; } }
 
         private bool _activated = false;
+        /// <summary>
+        /// Determines the state of the node. this is also the state that it will broadcast to other nodes.
+        /// </summary>
+        [Info(UserLevel.Advanced, "Determines the state of the node. this is also the state that it will broadcast to other nodes.")]
         public bool activated { get { return _activated; } set { _activated = value; } }
 
+        /// <summary>
+        /// This setting determines the output signal depending on the input signals of this node.
+        /// </summary>
+        [Info(UserLevel.Advanced, "This setting determines the output signal depending on the input signals of this node.")]
         private gate _gatetype = gate.AND;
         public gate gatetype { get { return _gatetype; } set { _gatetype = value; } }
 
@@ -66,7 +79,7 @@ namespace OrbItProcs
 
             }
             com = comp.flow;
-            methods = mtypes.affectself | mtypes.draw | mtypes.minordraw;
+
             //InitializeLists();
 
         }

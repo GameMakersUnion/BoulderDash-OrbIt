@@ -9,11 +9,17 @@ using System.Reflection;
 
 namespace OrbItProcs
 {
+    /// <summary>
+    /// The position of linked nodes is controlled to stay at a particular distance from the source node.
+    /// </summary>
+    [Info(UserLevel.User, "The position of linked nodes is controlled to stay at a particular distance from the source node.", CompType)]
     public class Tether : Component, ILinkable
     {
-        private Link _link = null;
-        public Link link { get { return _link; } set { _link = value; } }
-        new public bool active
+        public const mtypes CompType = mtypes.exclusiveLinker | mtypes.minordraw;
+        public override mtypes compType { get { return CompType; } set { } }
+        [Info(UserLevel.Developer)]
+        public Link link { get; set ; }
+        public override bool active
         {
             get { return _active; }
             set
@@ -43,21 +49,36 @@ namespace OrbItProcs
         [Polenter.Serialization.ExcludeFromSerialization]
         public HashSet<Node> incoming { get { return _incoming; } set { _incoming = value; } }
 
-        private bool _activated = false;
-        public bool activated { get { return _activated; } set { _activated = value; } }
+        private bool _lockedAngle = false;
 
-        private bool _confining = false;
-        public bool confining { get { return _confining; } set { if (!_confining && value) Confine(); _confining = value; } }
+        /// <summary>
+        /// If set, tethered nodes will not change their angle relative to the source node.
+        /// </summary>
+        [Info(UserLevel.User, "If set, tethered nodes will not change their angle relative to the source node.")]
+        public bool lockedAngle { get { return _lockedAngle; } set { if (!_lockedAngle && value) Confine(); _lockedAngle = value; } }
         private Dictionary<Node, Vector2> confiningVects;
 
-        private bool _locked = false;
-        public bool locked { get { return _locked; } set { if (!_locked && value) Lock(); _locked = value; } }
+        private bool _lockedDistance = false;
+        
+        /// <summary>
+        /// If set, tethered nodes will not change their distance relative to the source node.
+        /// </summary>
+        [Info(UserLevel.User, "If set, tethered nodes will not change their distance relative to the source node.")]
+        public bool lockedDistance { get { return _lockedDistance; } set { if (!_lockedDistance && value) Lock(); _lockedDistance = value; } }
 
         private Dictionary<Node, int> lockedVals;
 
         public int _maxdist = 300;
+        /// <summary>
+        /// Keeps tethered nodes within this distance from the source node.
+        /// </summary>
+        [Info(UserLevel.User, "Keeps tethered nodes within this distance from the source node.")]
         public int maxdist { get { return _maxdist; } set { _maxdist = value; if (_maxdist < _mindist) _maxdist = _mindist; } }
         public int _mindist = 100;
+        /// <summary>
+        /// Keeps tethered nodes at least this distance away from the source node.
+        /// </summary>
+        [Info(UserLevel.User, "Keeps tethered nodes at least this distance away from the source node.")]
         public int mindist { get { return _mindist; } set { _mindist = value; if (_mindist > _maxdist) _mindist = _maxdist; } }
 
         public Tether() : this(null) { }
@@ -69,19 +90,6 @@ namespace OrbItProcs
                 this.parent = parent;
             }
             com = comp.tether;
-            methods = mtypes.affectself | mtypes.draw | mtypes.minordraw;
-            //methods = mtypes.affectother | mtypes.draw | mtypes.minordraw;
-            //InitializeLists();
-        }
-
-        public override void AfterCloning()
-        {
-            //if (!parent.comps.ContainsKey(comp.queuer)) parent.addComponent(comp.queuer, true);
-            //if (!parent.comps.ContainsKey(comp.lifetime))
-            //    parent.addComponent(comp.lifetime, true);
-
-            //parent.comps[comp.lifetime].immortal = true;
-
         }
 
         public override void InitializeLists()
@@ -93,11 +101,9 @@ namespace OrbItProcs
         public override void AffectOther(Node other) // called when used as a link
         {
             if (!active) { return; }
-            if (activated)
-            {
                 Vector2 diff = other.body.pos - parent.body.pos;
                 float len;
-                if (locked)
+                if (lockedDistance)
                 {
                     len = lockedVals[other];
                 }
@@ -108,7 +114,7 @@ namespace OrbItProcs
 
                 if (len > maxdist)
                 {
-                    if (confining)
+                    if (lockedAngle)
                     {
                         other.body.pos = parent.body.pos + confiningVects[other] * maxdist;
                     }
@@ -121,7 +127,7 @@ namespace OrbItProcs
                 }
                 else if (len < mindist)
                 {
-                    if (confining)
+                    if (lockedAngle)
                     {
                         other.body.pos = parent.body.pos + confiningVects[other] * mindist;
                     }
@@ -134,7 +140,7 @@ namespace OrbItProcs
                 }
                 else
                 {
-                    if (confining)
+                    if (lockedAngle)
                     {
                         other.body.pos = parent.body.pos + confiningVects[other] * len;
                         //Console.WriteLine("{0}, {1}, {2}", confiningVects[other], other.transform.position, len);
@@ -143,17 +149,17 @@ namespace OrbItProcs
                 //diff = other.transform.position - parent.transform.position;
                 //Console.WriteLine(diff.Length());
                 
-            }
+            
         }
         public override void AffectSelf()
         {
-            if (activated)
+            if (active)
             {
                 foreach (Node other in outgoing)
                 {
                     Vector2 diff = other.body.pos - parent.body.pos;
                     float len;
-                    if (locked)
+                    if (lockedDistance)
                     {
                         len = lockedVals[other];
                     }
@@ -164,14 +170,14 @@ namespace OrbItProcs
 
                     if (len > maxdist)
                     {
-                        if (confining)
+                        if (lockedAngle)
                         {
                             other.body.pos = parent.body.pos + confiningVects[other] * maxdist;
                         }
                         else
                         {
                             float percent;
-                            if (locked) percent = len / diff.Length();
+                            if (lockedDistance) percent = len / diff.Length();
                             else percent = maxdist / len;
                             diff *= percent;
                             other.body.pos = parent.body.pos + diff;
@@ -179,14 +185,14 @@ namespace OrbItProcs
                     }
                     else if (len < mindist)
                     {
-                        if (confining)
+                        if (lockedAngle)
                         {
                             other.body.pos = parent.body.pos + confiningVects[other] * mindist;
                         }
                         else
                         {
                             float percent;
-                            if (locked) percent = len / diff.Length();
+                            if (lockedDistance) percent = len / diff.Length();
                             else percent = mindist / len;
                             diff *= percent;
                             other.body.pos = parent.body.pos + diff;
@@ -194,12 +200,12 @@ namespace OrbItProcs
                     }
                     else
                     {
-                        if (confining)
+                        if (lockedAngle)
                         {
                             other.body.pos = parent.body.pos + confiningVects[other] * len;
                             //Console.WriteLine("{0}, {1}, {2}", confiningVects[other], other.transform.position, len);
                         }
-                        if (locked)
+                        if (lockedDistance)
                         {
                             float percent = len / diff.Length();
                             //else percent = mindist / len;
@@ -247,19 +253,19 @@ namespace OrbItProcs
                 {
                     outgoing.Remove(node);
                     node.comps[comp.tether].incoming.Remove(parent);
-                    if (confining && confiningVects.ContainsKey(node)) confiningVects.Remove(node);
-                    if (locked && lockedVals.ContainsKey(node)) lockedVals.Remove(node);
+                    if (lockedAngle && confiningVects.ContainsKey(node)) confiningVects.Remove(node);
+                    if (lockedDistance && lockedVals.ContainsKey(node)) lockedVals.Remove(node);
                 }
                 else
                 {
                     outgoing.Add(node);
                     node.comps[comp.tether].incoming.Add(parent);
-                    if (confining && !confiningVects.ContainsKey(node))
+                    if (lockedAngle && !confiningVects.ContainsKey(node))
                     {
                         Vector2 v = (node.body.pos - parent.body.pos); v.Normalize();
                         confiningVects.Add(node, v);
                     }
-                    if (locked && !lockedVals.ContainsKey(node)) lockedVals.Add(node, (int)(node.body.pos - parent.body.pos).Length());
+                    if (lockedDistance && !lockedVals.ContainsKey(node)) lockedVals.Add(node, (int)(node.body.pos - parent.body.pos).Length());
                 }
             }
 
@@ -274,7 +280,7 @@ namespace OrbItProcs
             //Queue<float> scales = parent.comps[comp.queuer].scales;
             //Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
             Color col;
-            if (activated)
+            if (active)
                 col = parent.body.color;
             else
                 col = Color.White;

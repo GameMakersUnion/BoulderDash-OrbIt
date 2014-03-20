@@ -7,36 +7,69 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.Serialization;
 namespace OrbItProcs
 {
+    /// <summary>
+    /// This node will now move in circles or spirals.
+    /// </summary>
+    [Info(UserLevel.User, "This node will now move in circles or spirals.", mtypes.affectself)]
     public class Circler : Component {
 
-        
-        private float _delta = 0.01f;
-        public float delta { get { return _delta; } set { _delta = value; } }
-        private float _deltaPrime = 0.001f;
-        public float deltaPrime { get { return _deltaPrime; } set { _deltaPrime = value; } }
+        public const mtypes CompType = mtypes.affectself;
+        public override mtypes compType { get { return CompType; } set { } }
 
-        private float _maxDelta = 1f;
-        public float maxDelta { get { return _maxDelta; } set { _maxDelta = value; } }
-        private float _minDelta = 0.05f;
-        public float minDelta { get { return _minDelta; } set { _minDelta = value; } }
-
-        private float _angle = 0f;
-        public float angle { get { return _angle; } set { _angle = value; } }
-        private float _maxAngle = 3.14f;
-        public float maxAngle { get { return _maxAngle; } set { _maxAngle = value; } }
-        private float _minAngle = -3.14f;
-        public float minAngle { get { return _minAngle; } set { _minAngle = value; } }
-
-
-        private bool _loop = true;
-        public bool loop { get { return _loop; } set { _loop = value; } }
+        /// <summary>
+        /// The change in angle every frame, if set to non-zero, the node will spiral.
+        /// </summary>
+        [Info(UserLevel.User, "The change in angle every frame, if set to non-zero, the node will spiral.")]
+        public float angleVelocity { get; set; }
+        /// <summary>
+        /// The rate of change of the rate of change of spiralization 
+        /// </summary>
+        [Info(UserLevel.Advanced, "The rate of change of the rate of change of spiralization ")]
+        public float angleAcceleration { get; set; }
+        /// <summary>
+        /// Tied to angleVelocity, if it surpasses this value, the angleAcceleration is inverted
+        /// </summary>
+        [Info(UserLevel.Advanced, "Tied to angleVelocity, if it surpasses this value, the angleAcceleration is inverted")]
+        public float maxVel { get; set; }
+        /// <summary>
+        ///  Tied to angleVelocity, if it goes below this value, the angleAcceleration is inverted
+        /// </summary>
+        [Info(UserLevel.Advanced, " Tied to angleVelocity, if it goes below this value, the angleAcceleration is inverted")]
+        public float minVel { get; set; }
+        /// <summary>
+        /// The angle at which the node is travelling. In essence: The change of direction applied to the node every frame.
+        /// </summary>
+        [Info(UserLevel.User, "The angle at which the node is travelling. In essence: The change of direction applied to the node every frame.")]
+        public float angle { get; set; }
+        /// <summary>
+        /// If the angle surpasses this value, the angleVelocity will invert, giving the illusion of unraveling.
+        /// </summary>
+        [Info(UserLevel.User, "If the angle surpasses this value, the angleVelocity will invert, giving the illusion of unraveling.")]
+        public float maxAngle { get; set; }
+        /// <summary>
+        /// If the angle goes below this value, the angleVelocity will invert, giving the illusion of ravelling.
+        /// </summary>
+        [Info(UserLevel.User, "If the angle goes below this value, the angleVelocity will invert, giving the illusion of ravelling.")]
+        public float minAngle { get; set; }
+        /// <summary>
+        /// if enabled, minAngle and maxAngle will no longer invert the angleChange, but will now reset the angle to produce a trippy effect.
+        /// </summary>
+        [Info(UserLevel.User, "if enabled, minAngle and maxAngle will no longer invert the angleChange, but will now reset the angle to produce a trippy effect.")]
+        public bool loop { get ; set ; }
 
         public Circler() : this(null) { }
         public Circler(Node parent = null)
         {
             if (parent != null) this.parent = parent;
             com = comp.circler;
-            methods = mtypes.affectself; 
+            angleVelocity = 0.01f;
+            angleAcceleration = 0.001f;
+            maxVel = 1f;
+            minVel = 0.05f;
+            angle = 0f;
+            maxAngle = 3.14f;
+            minAngle = -3.14f;
+            loop = true;
         }
 
         public override void OnSpawn()
@@ -52,10 +85,10 @@ namespace OrbItProcs
 
         public override void AffectSelf()
         {
-            angle += delta;
+            angle += angleVelocity;
             if (angle < minAngle)
             {
-                delta *= -1;
+                angleVelocity *= -1;
                 angle = minAngle;
             }
             else if (angle > maxAngle)
@@ -66,20 +99,20 @@ namespace OrbItProcs
                 }
                 else
                 {
-                    delta *= -1;
+                    angleVelocity *= -1;
                     angle = maxAngle;
                 }
             }
-            delta += deltaPrime;
-            if (delta < minDelta)
+            angleVelocity += angleAcceleration;
+            if (angleVelocity < minVel)
             {
-                deltaPrime *= -1;
-                delta = minDelta;
+                angleAcceleration *= -1;
+                angleVelocity = minVel;
             }
-            else if (delta > maxDelta)
+            else if (angleVelocity > maxVel)
             {
-                deltaPrime *= -1;
-                delta = maxDelta;
+                angleAcceleration *= -1;
+                angleVelocity = maxVel;
             }
 
             float length = parent.body.velocity.Length();

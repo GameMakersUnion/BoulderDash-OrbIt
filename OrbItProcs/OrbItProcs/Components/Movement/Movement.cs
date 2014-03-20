@@ -18,18 +18,46 @@ namespace OrbItProcs
         falloff,
         halt,
     };
-
+    /// <summary>
+    /// Basic Movement Component
+    /// </summary>
+    [Info(UserLevel.User, "Basic Movement Component", CompType)]
     public class Movement : Component {
 
-        private bool _pushable = true;
-        public bool pushable { get { return _pushable; } set { _pushable = value; } }
+        public const mtypes CompType = mtypes.affectself | mtypes.essential;
+        public override mtypes compType { get { return CompType; } set { } }
+        public bool pushable { get; set; }
 
-        private float _VelocityModifier = 1f;
-        public float VelocityModifier { get { return _VelocityModifier; } set { _VelocityModifier = value; } }
+        private Toggle<float> _maxVel = new Toggle<float>(30f, false);
+        private Toggle<float> _minVel =  new Toggle<float> (0f, false);
+        /// <summary>
+        /// If enabled, this limits the node's speed to stay below the specified velocity.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, this limits the node's velocity to stay below the specified velocity.")]
+        public Toggle<float> maxVel { get { return _maxVel; } set { _maxVel = value; if (maxVel < _minVel) _maxVel = _minVel; }}
+        /// <summary>
+        /// If enabled, this limits the node's velocity to stay above the specified velocity.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, this limits the node's velocity to stay above the specified velocity.")]
+        public Toggle<float> minVel { get { return _minVel; } set { _minVel = value; if (_minVel > _maxVel) _minVel = _maxVel; } }
+        /// <summary>
+        /// Gives the node this velocity in a random direction when spawned.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, gives the node this velocity in a random direction when spawned.")]
+        public Toggle<float> randInitialVel { get; set; }
 
-        public Vector2 tempPosition = new Vector2(0, 0);
+        private Vector2 tempPosition = new Vector2(0, 0);
 
         private movemode _mode = movemode.wallbounce;
+        /// <summary>
+        /// How the screen's Limits affect this wall:
+        /// Free: the restraints won't affect the wall.
+        /// Wallbounce: the node's velocity is inverted when they hit the wall,
+        /// Screenwrap: the node appears at the opposite wall,
+        /// Falloff: the node is deleted when it exits the screen,
+        /// Halt the node stops upon exiting the screen,
+        /// </summary>
+        [Info(UserLevel.User, "How the screen's Limits affect this wall: \n Free: the restraints won't affect the wall. \n Wallbounce: the node's velocity is inverted when they hit the wall, \n Screenwrap: the node appears at the opposite wall, \n Falloff: the node is deleted when it exits the screen, \n Halt the node stops upon exiting the screen,")]
         public movemode mode { get { return _mode; } set { _mode = value; } }
 
         public Movement() : this(null) { }
@@ -37,10 +65,14 @@ namespace OrbItProcs
         {
             if (parent != null) this.parent = parent;
             com = comp.movement;
-            methods = mtypes.affectself;
-            active = false;
+            randInitialVel = new Toggle<float>(8f);
+            pushable = true;
         }
-
+        public override void OnSpawn()
+        {
+            if (randInitialVel) RandomizeVelocity();
+            moderateVelocity();
+        }
         private void IntegrateForces()
         {
             if (Game1.Debugging && parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
@@ -68,6 +100,41 @@ namespace OrbItProcs
             b.orient += b.angularVelocity;
             b.SetOrient(b.orient);
             IntegrateForces(); //calls the private integrate forces method
+        }
+
+        [Clickable]
+        public void moderateVelocity()
+        {
+            double velSquared = parent.body.velocity.X * parent.body.velocity.X + parent.body.velocity.Y * parent.body.velocity.Y;
+
+            if (maxVel.enabled && velSquared > maxVel * maxVel)
+            {
+                parent.body.velocity.Normalize();
+                parent.body.velocity *= maxVel;
+            }
+            if (minVel.enabled && velSquared < minVel * minVel)
+            {
+                parent.body.velocity.Normalize();
+                parent.body.velocity *= minVel;
+            }
+        }
+        public void RandomizeVelocity()
+        {
+            float x = ((float)Utils.random.NextDouble() * 100) - 50;
+            float y = ((float)Utils.random.NextDouble() * 100) - 50;
+            Vector2 vel = new Vector2(x, y);
+            vel.Normalize();
+            vel = vel * randInitialVel;
+            parent.body.velocity = vel;
+        }
+        [Clickable]
+        public void scaleVelocity()
+        {
+            if (parent.body.velocity.X != 0 && parent.body.velocity.Y != 0)
+            {
+                parent.body.velocity.Normalize();
+                parent.body.velocity *= randInitialVel;
+            }
         }
 
         public override void AffectSelf()

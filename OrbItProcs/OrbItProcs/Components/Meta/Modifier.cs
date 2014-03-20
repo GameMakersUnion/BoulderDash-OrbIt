@@ -11,10 +11,14 @@ using System.Reflection;
 
 namespace OrbItProcs
 {
+    /// <summary>
+    /// Modifies the values of component fields by using arbitrary functions.
+    /// </summary>
+    [Info(UserLevel.Developer, "Modifies the values of component fields by using arbitrary functions.")]
     public class Modifier : Component
     {
-        //public Node parent { get { return _parent; } set { _parent = value;//UpdateReferences(); } }
-
+        public const mtypes CompType = mtypes.affectself;
+        public override mtypes compType { get { return CompType; } set { } }
         private Dictionary<string, ModifierInfo> _modifierInfos = new Dictionary<string, ModifierInfo>();
         public Dictionary<string, ModifierInfo> modifierInfos { get { return _modifierInfos; } set { _modifierInfos = value; } }
 
@@ -22,11 +26,10 @@ namespace OrbItProcs
         //public ModifierInfo modifierInfo { get { return _modifierInfo; } set { _modifierInfo = value;  } }
 
         public Modifier() : this(null) { }
-        public Modifier(Node parent = null)
+        public Modifier(Node parent)
         {
             if (parent != null) this.parent = parent;
             com = comp.modifier;
-            methods = mtypes.affectself;
         }
 
         public void UpdateReferences()

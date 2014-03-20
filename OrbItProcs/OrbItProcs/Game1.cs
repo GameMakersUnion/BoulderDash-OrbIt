@@ -29,19 +29,14 @@ namespace OrbItProcs
     public enum comp
     {
         queuer,
-        linearpull,
-        maxvel,
         
         collision,
         gravity,
         fixedforce,
-        fieldgravity,
         displace,
         orbiter,
 
-        randcolor,
         randvelchange,
-        randinitialvel,
         relativemotion,
         transfer,
         circler,
@@ -50,7 +45,6 @@ namespace OrbItProcs
 
         movement,
         
-        hueshifter,
         colorchanger,
         colorgravity,
         lifetime,
@@ -225,8 +219,6 @@ namespace OrbItProcs
                     { comp.movement, true },
                     //{ comp.maxvel, true },
                     //{ comp.randvelchange, true },
-                    { comp.randinitialvel, true },
-                    { comp.maxvel, true },
                     //{ comp.gravity, true },
                     //{ comp.linearpull, true },
                     //{ comp.laser, true },
@@ -561,8 +553,8 @@ namespace OrbItProcs
                 {
                     newNode.addComponent(comp.lifetime, true);
                 }
-                newNode.comps[comp.lifetime].maxmseconds = lifetime;
-                newNode.comps[comp.lifetime].immortal = false;
+                newNode.GetComponent<Lifetime>().timeOfDeath.value = lifetime;
+                newNode.comps[comp.lifetime].timeOfDeath.enabled = true;
             }
 
 

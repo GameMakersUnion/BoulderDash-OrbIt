@@ -6,41 +6,65 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs {
+    /// <summary>
+    /// Attracts or repels nodes that it affects.
+    /// </summary>
+    [Info(UserLevel.User, "Attracts or repels nodes that it affects.", mtypes.affectother)]
     public class Gravity : Component, ILinkable
     {
-        private Link _link = null;
-        public Link link { get { return _link; } set { _link = value; } }
-        private float _multiplier = 100f;
-        public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
-
-        private float _radius = 800f;
-        public float radius { get { return _radius; } set { _radius = value; } }
-
-        private int _lowerbound = 20;
-        public int lowerbound { get { return _lowerbound; } set { _lowerbound = value; } }
-
-        private bool _constant = false;
-        public bool constant { get { return _constant; } set { _constant = value; } }
-
-        private bool _AffectsOnlyGravity = false;
-        public bool AffectsOnlyGravity { get { return _AffectsOnlyGravity; } set { _AffectsOnlyGravity = value; } }
-
-        private bool _AffectBoth = false;
-        public bool AffectBoth { get { return _AffectBoth; } set { _AffectBoth = value; } }
-
-        private bool _StrongGravity = false;
-        public bool StrongGravity { get { return _StrongGravity; } set { _StrongGravity = value; } }
-
-        private int _angledelta = 0;
-        public int angledelta { get { return _angledelta; } set { _angledelta = value; } }
+        public const mtypes CompType = mtypes.affectother;
+        public override mtypes compType { get { return CompType; } set { } }
+        [Info(UserLevel.Developer)]
+        public Link link { get; set; }
+        /// <summary>
+        /// Strength of gravity, use negative to repel.
+        /// </summary>
+        [Info(UserLevel.User, "Strength of gravity, use negative to repel.")]
+        public float multiplier { get; set; }
+        /// <summary>
+        /// Distance at which other nodes are attracted/repelled from this node
+        /// </summary>
+        [Info(UserLevel.Advanced, "Distance at which other nodes are attracted/repelled from this node")]
+        public float radius { get ; set ; }
+        /// <summary>
+        /// Represents minimum distance taken into account when calculating grav force strength.
+        /// </summary>
+        [Info(UserLevel.Advanced, "Represents minimum distance taken into account when calculating grav force strength.")]
+        public int lowerbound { get; set; }
+        /// <summary>
+        /// If enabled, gravity strength is constant regardless of other nodes' distance;
+        /// </summary>
+        [Info(UserLevel.Advanced, "If enabled, gravity strength is constant regardless of other nodes' distance;")]
+        public bool isConstant { get; set; }
+        /// <summary>
+        /// If enabled, this node only affects other nodes with a gravity component
+        /// </summary>
+        [Info(UserLevel.Advanced, "If enabled, this node only affects other nodes with a gravity component")]
+        public bool AffectsOnlyGravity { get; set; }
+        /// <summary>
+        /// If enabled, this node not only pulls or pushes other nodes; It itself is pushed and pulled by the nodes it's affecting.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, this node not only pulls or pushes other nodes; It itself is pushed and pulled by the nodes it's affecting.")]
+        public bool AffectBoth { get; set; }
+        /// <summary>
+        /// Turns the gravity up to 11.
+        /// </summary>
+        [Info(UserLevel.Advanced, "Turns the gravity up to 11.")]
+        public bool StrongGravity { get; set; }
+        /// <summary>
+        /// Adds an angle to the gravitational pull
+        /// </summary>
+        [Info(UserLevel.Advanced, "Adds an angle to the gravitational pull")]
+        public int angle { get; set; }
 
         public Gravity() : this(null) { }
-        public Gravity(Node parent = null)
+        public Gravity(Node parent)
         {
             if (parent != null) this.parent = parent;
-            com = comp.gravity; 
-            methods = mtypes.affectother;
-            
+            com = comp.gravity;
+            multiplier = 100f;
+            radius = 800f;
+            lowerbound = 20;
         }
         //public bool TestBool = false;
 
@@ -69,8 +93,8 @@ namespace OrbItProcs {
 
                 if (!StrongGravity) gravForce /= distVects;
 
-                if (angledelta != 0)
-                    angle = (angle + Math.PI + (Math.PI * (float)(angledelta / 180.0f)) % (Math.PI * 2)) - Math.PI;
+                if (angle != 0)
+                    angle = (angle + Math.PI + (Math.PI * (float)(angle / 180.0f)) % (Math.PI * 2)) - Math.PI;
 
                 //float gravForce = gnode1.GravMultiplier;
                 double velX = Math.Cos(angle) * gravForce;
@@ -87,7 +111,7 @@ namespace OrbItProcs {
                 {
                     delta /= 2;
 
-                    if (constant)
+                    if (isConstant)
                     {
                         other.body.velocity = delta * other.body.invmass;
                         parent.body.velocity = -delta * parent.body.invmass;
@@ -106,7 +130,7 @@ namespace OrbItProcs {
                 else
                 {
                     //delta /= 2;
-                    if (constant)
+                    if (isConstant)
                     {
                         other.body.velocity = delta * parent.body.invmass;
                         if (parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();

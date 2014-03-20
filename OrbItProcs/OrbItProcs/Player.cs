@@ -15,7 +15,6 @@ namespace OrbItProcs
             {nodeE.texture, textures.blueorb},
             {comp.movement, true },
             {comp.basicdraw, true },
-            {comp.maxvel, true },
             { comp.collision, true },
         };
 
@@ -68,9 +67,7 @@ namespace OrbItProcs
                 { comp.movement, true },
                 { comp.collision, true },
                 { comp.basicdraw, true },
-                { comp.maxvel, true },
                 { comp.phaseorb, true },
-                { comp.randinitialvel, true },
                 //{ comp.laser, true },
                 //{ comp.gravity, true },
             };
@@ -210,9 +207,7 @@ namespace OrbItProcs
                 { comp.movement, true },
                 { comp.collision, true },
                 { comp.basicdraw, true },
-                { comp.maxvel, true },
                 { comp.phaseorb, true },
-                { comp.randinitialvel, true },
                 //{ comp.laser, true },
                 //{ comp.gravity, true },
             };
@@ -244,15 +239,14 @@ namespace OrbItProcs
                 { comp.movement, true },
                 //{ comp.collision, true },
                 { comp.basicdraw, true },
-                { comp.maxvel, true },
                 { comp.laser, true },
                 { comp.gravity, true },
             };
 
             launchNode = new Node(bulletProps);
-            //launchNode.comps[comp.laser].lineXScale = 0.5f;
+            //launchNode.comps[comp.laser].brightness = 0.5f;
             launchNode.comps[comp.laser].lineYScale = 3f;
-            launchNode.GetComponent<MaxVel>().maxvel = 15;
+            launchNode.GetComponent<Movement>().maxVel.value = 15;
             bulletlife = 1500;
             firefreq = 1;
 
@@ -274,7 +268,7 @@ namespace OrbItProcs
             //    { comp.collision, true },
             //};
             //nodeCollision = new Node(userPP);
-            //nodeCollision.collision.ResolveCollision = false;
+            //nodeCollision.collision.isSolid = false;
             //nodeCollision.body.OnCollisionStay += onCollisionStay;
             //nodeCollision.body.OnCollisionEnter += onCollisionEnter;
             //nodeCollision.body.OnCollisionExit += onCollisionExit;
@@ -529,12 +523,6 @@ namespace OrbItProcs
             newNode.body.velocity = pos - body.pos;
             newNode.body.pos = body.pos + body.velocity * 5;
 
-            if (UserInterface.keybState.IsKeyDown(Keys.LeftControl))
-            {
-                if (newNode.comps.ContainsKey(comp.maxvel))
-                    newNode.comps[comp.maxvel].active = false;
-
-            }
             room.game.spawnNode(newNode, lifetime: bulletlife);
         }
 

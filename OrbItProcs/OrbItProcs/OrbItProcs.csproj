@@ -138,32 +138,27 @@
     <Compile Include="Framework\Controller.cs" />
     <Compile Include="Framework\IndexArray.cs" />
     <Compile Include="Framework\Level.cs" />
+    <Compile Include="Interface\Toggle.cs" />
     <Compile Include="Physics\Collider.cs" />
     <Compile Include="Processes\CameraControl.cs" />
     <Compile Include="Processes\GraphData.cs" />
     <Compile Include="Physics\Body.cs" />
     <Compile Include="Components\Drawers\BasicDraw.cs" />
-    <Compile Include="Components\FieldGravity.cs" />
     <Compile Include="Components\ILinkable.cs" />
     <Compile Include="Components\Linkers\Flow.cs" />
     <Compile Include="Components\AffectOthers\Collision.cs" />
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\AffectOthers\Gravity.cs" />
-    <Compile Include="Components\Drawers\HueShifter.cs" />
     <Compile Include="Components\Movement\Circler.cs" />
-    <Compile Include="Components\Redirector.cs" />
+    <Compile Include="Framework\Redirector.cs" />
     <Compile Include="Components\Linkers\Tether.cs" />
     <Compile Include="Components\RelativeMotion.cs" />
     <Compile Include="Components\Tracers\Laser.cs" />
     <Compile Include="Components\Meta\Lifetime.cs" />
-    <Compile Include="Components\AffectOthers\LinearPull.cs" />
-    <Compile Include="Components\Movement\MaxVel.cs" />
     <Compile Include="Components\Meta\Modifier.cs" />
     <Compile Include="Components\Movement\Movement.cs" />
     <Compile Include="Components\Tracers\PhaseOrb.cs" />
     <Compile Include="Components\Queuer.cs" />
-    <Compile Include="Components\Drawers\RandColor.cs" />
-    <Compile Include="Components\Movement\RandInitialVel.cs" />
     <Compile Include="Components\Movement\RandVelChange.cs" />
     <Compile Include="Components\AffectOthers\Transfer.cs" />
     <Compile Include="Components\Meta\Tree.cs" />
@@ -226,6 +221,10 @@
     <Content Include="GameThumbnail.png" />
     <Content Include="Issues.txt" />
     <Content Include="Includes\TomShane.Neoforce.Controls.dll" />
+    <None Include="snippets\ctyp.snippet" />
+    <None Include="snippets\usrd.snippet" />
+    <None Include="snippets\usra.snippet" />
+    <None Include="snippets\usru.snippet" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OrbItProcsContent\OrbItProcsContent.contentproj">
@@ -255,9 +254,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Components\Depreciated\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
   <!--
