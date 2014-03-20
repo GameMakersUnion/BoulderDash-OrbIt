@@ -56,6 +56,15 @@ namespace OrbItProcs {
         /// </summary>
         [Info(UserLevel.Advanced, "Adds an angle to the gravitational pull")]
         public int angle { get; set; }
+        /// <summary>
+        /// The mode that gravity will operate under.
+        /// Normal: The normal gravity strength.
+        /// Strong: The gravity strength is much stronger; it is squared.
+        /// ConstantForce: Applies the same gravity force, regardless of the target's distance from this node. 
+        /// </summary>
+        [Info(UserLevel.User, "The mode that gravity will operate under.")]
+        public Mode mode { get; set; }
+
 
         public enum Mode
         {

@@ -178,7 +178,7 @@ namespace OrbItProcs
         {
             ComboBox cb = (ComboBox) sender;
             //activeInspectorItem.SetValue(cb.ItemIndex);
-            insArea.SetItemValue(activeInspectorItem, cb.ItemIndex);
+            //insArea.SetItemValue(activeInspectorItem, cb.ItemIndex);
         }
 
         void trkMain_MouseUp(object sender, TomShane.Neoforce.Controls.MouseEventArgs e)
@@ -187,47 +187,47 @@ namespace OrbItProcs
             Slider trkbar = (Slider)panelControls["trkMain"];
             //if (trkbar.Value == trkbar.Range) trkbar.Range *= 2;
 
-            if (activeInspectorItem.obj is int)
-            {
-                insArea.SetItemValue(activeInspectorItem, trkbar.Value);
-            }
-            else if (activeInspectorItem.obj is Single)
-            {
-                insArea.SetItemValue(activeInspectorItem, (Single)trkbar.Value);
-            }
-            else if (activeInspectorItem.obj is byte)
-            {
-                insArea.SetItemValue(activeInspectorItem, (byte)trkbar.Value);
-            }
-        }
-
-        void trkMain_ValueChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
-        {
-            Slider trkbar = (Slider)sender;
-            //GroupPanel gp = (GroupPanel)(trkbar.Parent.Parent);
-
-            if (activeInspectorItem.obj is int)
-            {
-                activeInspectorItem.SetValue(trkbar.Value);
-                panelControls["txtbox"].Text = "" + trkbar.Value;
-            }
-            else if (activeInspectorItem.obj is Single)
-            {
-                activeInspectorItem.SetValue((Single)trkbar.Value);
-                panelControls["txtbox"].Text = "" + trkbar.Value;
-            }
-            else if (activeInspectorItem.obj is byte)
-            {
-                activeInspectorItem.SetValue((byte)trkbar.Value);
-                panelControls["txtbox"].Text = "" + trkbar.Value;
-            }
-
-            //if (trkbar.Value == trkbar.Range)
+            //if (activeInspectorItem.obj is int)
             //{
-            //    trkbar.Range *= 2;
+            //    insArea.SetItemValue(activeInspectorItem, trkbar.Value);
             //}
-            
+            //else if (activeInspectorItem.obj is Single)
+            //{
+            //    insArea.SetItemValue(activeInspectorItem, (Single)trkbar.Value);
+            //}
+            //else if (activeInspectorItem.obj is byte)
+            //{
+            //    insArea.SetItemValue(activeInspectorItem, (byte)trkbar.Value);
+            //}
         }
+
+       void trkMain_ValueChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
+       {
+           Slider trkbar = (Slider)sender;
+           //GroupPanel gp = (GroupPanel)(trkbar.Parent.Parent);
+       
+           if (activeInspectorItem.obj is int)
+           {
+               activeInspectorItem.SetValue(trkbar.Value);
+               panelControls["txtbox"].Text = "" + trkbar.Value;
+           }
+           else if (activeInspectorItem.obj is Single)
+           {
+               activeInspectorItem.SetValue((Single)trkbar.Value);
+               panelControls["txtbox"].Text = "" + trkbar.Value;
+           }
+           else if (activeInspectorItem.obj is byte)
+           {
+               activeInspectorItem.SetValue((byte)trkbar.Value);
+               panelControls["txtbox"].Text = "" + trkbar.Value;
+           }
+       
+           //if (trkbar.Value == trkbar.Range)
+           //{
+           //    trkbar.Range *= 2;
+           //}
+           
+       }
 
         void chkbox_CheckedChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
@@ -242,7 +242,7 @@ namespace OrbItProcs
             */
 
             //activeInspectorItem.SetValue(checkbox.Checked);
-            insArea.SetItemValue(activeInspectorItem, checkbox.Checked);
+            //insArea.SetItemValue(activeInspectorItem, checkbox.Checked);
             checkbox.Text = activeInspectorItem.Name() + " (" + activeInspectorItem.GetValue() + ")";
 
         }
@@ -259,8 +259,8 @@ namespace OrbItProcs
                 if (str.Length < 1) return;
                 if (Int32.TryParse(str, out integer))
                 {
-                    insArea.SetItemValue(activeInspectorItem, integer);
-                    //activeInspectorItem.SetValue(integer);
+                    //insArea.SetItemValue(activeInspectorItem, integer);
+                    activeInspectorItem.SetValue(integer);
                 }
             }
             else if (t == typeof(Single))
@@ -270,16 +270,16 @@ namespace OrbItProcs
                 if (str.Length < 1) return;
                 if (float.TryParse(str, out f))
                 {
-                    insArea.SetItemValue(activeInspectorItem, f);
-                    //activeInspectorItem.SetValue(f);
+                    //insArea.SetItemValue(activeInspectorItem, f);
+                    activeInspectorItem.SetValue(f);
                 }
             }
             else if (t == typeof(string))
             {
                 str = panelControls["txtbox"].Text;
                 if (str.Length < 1) return;
-                insArea.SetItemValue(activeInspectorItem, str);
-                //activeInspectorItem.SetValue(str);
+                //insArea.SetItemValue(activeInspectorItem, str);
+                activeInspectorItem.SetValue(str);
             }
 
         }

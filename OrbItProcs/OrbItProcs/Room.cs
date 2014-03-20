@@ -284,14 +284,14 @@ namespace OrbItProcs {
                     {
                         var bucketBag = gridsystemCollision.retrieveBucketBags(c);
                         if (bucketBag != null)
-                    {
-                            if (c is Body)
                         {
+                            if (c is Body)
+                            {
                                 Body b = (Body)c;
                                 for (int i = 0; i < bucketBag.index; i++)
-                            {
-                                    for (int j = 0; j < bucketBag.array[i].index; j++)
                                 {
+                                    for (int j = 0; j < bucketBag.array[i].index; j++)
+                                    {
                                         Collider cc = bucketBag.array[i].array[j];
                                         if (cc.parent == b.parent) continue;
                                         if (gridsystemCollision.alreadyVisited.Contains(cc))
@@ -300,16 +300,16 @@ namespace OrbItProcs {
                                         {
                                             Body bb = (Body)cc;
                                             b.CheckCollisionBody(bb);
-                    }
+                                        }
                                         else
-                                {
+                                        {
                                             b.CheckCollisionCollider(cc);
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
                             else
-                        {
+                            {
                             for (int i = 0; i < bucketBag.index; i++)
                             {
                                 for (int j = 0; j < bucketBag.array[i].index; j++)
@@ -330,7 +330,6 @@ namespace OrbItProcs {
                                     }
                                 }
                             }
-                            
                         }
                     }
                 }
@@ -406,8 +405,8 @@ namespace OrbItProcs {
             {
                 //float scale = 1 / mapzoom;
                 Rectangle maprect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
-                spritebatch.DrawLine((new Vector2(maprect.X, maprect.Y) - camera.pos) * zoom, (new Vector2(maprect.Width, maprect.Height) - camera.pos) * zoom, Color.Green, 2);
-
+                //spritebatch.DrawLine((new Vector2(maprect.X, maprect.Y) - camera.pos) * zoom, (new Vector2(maprect.Width, maprect.Height) - camera.pos) * zoom, Color.Green, 2);
+                Utils.DrawLine(this, new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), 2, Color.Green);
                 linecount++;
             }
 

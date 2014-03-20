@@ -147,7 +147,16 @@ namespace OrbItProcs
                 userLevel = (UserLevel)cbUserLevel.ItemIndex;
                 
             };
-            cbUserLevel.ItemIndex = 3;
+            int count = 0;
+            foreach(object s in cbUserLevel.Items)
+            {
+                if (s.ToString().Equals(userLevel.ToString()))
+                {
+                    cbUserLevel.ItemIndex = count;
+                }
+                count++;
+            }
+            
 
             #endregion
             

@@ -220,18 +220,21 @@ namespace OrbItProcs
             return "nameless";
         }
         */
-        public Type FPType()
+        public Type FPType
         {
-            if (propertyInfo != null)
+            get
             {
-
-                return propertyInfo.PropertyType;
+                if (propertyInfo != null)
+                {
+                    return propertyInfo.PropertyType;
+                }
+                else if (fieldInfo != null)
+                {
+                    return fieldInfo.FieldType;
+                }
+                return null;
             }
-            else if (fieldInfo != null)
-            {
-                return fieldInfo.FieldType;
-            }
-            return null;
+            set { }
         }
 
         public static void SetValue(string name, object obj, object value)

@@ -289,7 +289,7 @@ namespace OrbItProcs {
             }
         }
 
-        [DoNotInspect]
+        [Info(UserLevel.Never)]
         public DataStore Kawasaki = new DataStore();
 
         public event EventHandler OnAffectOthers;

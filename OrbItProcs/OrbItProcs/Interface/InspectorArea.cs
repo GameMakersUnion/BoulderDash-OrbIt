@@ -392,14 +392,14 @@ namespace OrbItProcs
             }
         }
 
-        public void SetItemValue(InspectorItem item, object value)
-        {
-            item.SetValue(value);
-            if (compView != null)
-            {
-                compView.ApplyToGroup(item.fpinfo, value);
-            }
-        }
+        //public void SetItemValue(InspectorItem item, object value)
+        //{
+        //    item.SetValue(value);
+        //    if (compView != null)
+        //    {
+        //        compView.ApplyToGroup(item.fpinfo, value);
+        //    }
+        //}
 
         void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
         {
@@ -535,7 +535,7 @@ namespace OrbItProcs
             }
 
             //item.SetValue(!(bool)item.GetValue());
-            SetItemValue(item, !(bool)item.GetValue());
+            //SetItemValue(item, !(bool)item.GetValue());
         }
 
 

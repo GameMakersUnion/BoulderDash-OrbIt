@@ -206,7 +206,7 @@ namespace OrbItProcs
             font = Content.Load<SpriteFont>("Courier New");
             DelegatorMethods.InitializeDelegateMethods();
 
-            room = new Room(this, 1580, 1175);
+            room = new Room(this, 1880, 1175);
 
             processManager = new ProcessManager(room);
             #region ///Default User props///

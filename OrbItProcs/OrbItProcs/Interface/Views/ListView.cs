@@ -21,12 +21,12 @@ namespace OrbItProcs
         public Sidebar sidebar;
         public InspectorItem ActiveInspectorParent;
         public Node rootNode;
-        public Group activeGroup;
 
         public int Left;
         public int Top;
         public int Width;
-        public int Height;
+        private int _Height = 150;
+        public int Height { get { return _Height; } set { _Height = value; if (backPanel != null) backPanel.Height = value; } }
         //public int Height { get { return (propertyEditPanel.grouppanel.Top + propertyEditPanel.grouppanel.Height); } }
         public int HeightCounter;
         public int LeftPadding = 5;
@@ -209,7 +209,14 @@ namespace OrbItProcs
 
             if (obj != null)
             {
-                label.Text = obj.ToString();
+                if (obj is Node)
+                {
+                    label.Text = "Root";
+                }
+                else
+                {
+                    label.Text = obj.ToString().LastWord('.');
+                }
             }
             else
             {

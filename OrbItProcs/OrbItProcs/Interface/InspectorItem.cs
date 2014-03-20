@@ -91,6 +91,7 @@ namespace OrbItProcs {
         public String prefix;
         public String whitespace = "";
 
+        public string ToolTip = "";
 
         public object obj;
         public object parentobj;
@@ -301,25 +302,27 @@ namespace OrbItProcs {
                     propertyInfos = parent.GetType().GetProperties().ToList();
                 }
 
-                UserLevel userlevel = UserLevel.User;
-                if (parentItem != null) userlevel = parentItem.sidebar.userLevel;
+                UserLevel userlevel = Program.getGame().ui.sidebar.userLevel;
 
                 foreach (PropertyInfo pinfo in propertyInfos)
                 {
+                    string tooltip = "";
                     object[] attributes = pinfo.GetCustomAttributes(false);
-                    //if (pinfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
-
                     var abstractions = pinfo.GetCustomAttributes(typeof(Info), false);
                     if (abstractions.Length > 0)
                     {
-                        if ((int)(abstractions[0] as Info).userLevel > (int)Sidebar.userLevel) continue;
+                        Info info = (Info)abstractions[0];
+                        if ((int)info.userLevel > (int)userlevel) continue;
+                        tooltip = info.summary;
+
                     }
                     else if (userlevel != UserLevel.Debug)
                     {
                         continue;
                     }
-                    if (pinfo.Name.Equals("Item")) continue;
+                    //if (pinfo.Name.Equals("Item")) continue;
                     InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, pinfo.GetValue(parent, null), pinfo);
+                    if (tooltip.Length > 0) iitem.ToolTip = tooltip;
                     if (iitem.CheckForChildren()) iitem.prefix = "+";
                     InsertItemSorted(list, iitem);
                 }
@@ -341,9 +344,9 @@ namespace OrbItProcs {
                         var abstractions = finfo.GetCustomAttributes(typeof(Info), false);
                         if (abstractions.Length > 0)
                         {
-                            if ((int)(abstractions[0] as Info).userLevel > (int)Sidebar.userLevel) continue;
+                            if ((int)(abstractions[0] as Info).userLevel > (int)userlevel) continue;
                         }
-                        else if (Sidebar.userLevel != UserLevel.Debug)
+                        else if (userlevel != UserLevel.Debug)
                         {
                             continue;
                         }
@@ -515,6 +518,13 @@ namespace OrbItProcs {
                     if (showValueToString) result += " : " + component.active;
                     return result;
                 }
+                if (datatype == data_type.obj || datatype == data_type.none)
+                {
+                    string ts = obj.GetType().ToString().LastWord('.');
+                    result += fpinfo.Name;
+                    if (showValueToString) result += "[" + ts + "]";
+                    return result;
+                }
                 result += fpinfo.Name;
                 if (showValueToString) result += " : " + fpinfo.GetValue(parentItem.obj);
                 return result;
@@ -525,14 +535,8 @@ namespace OrbItProcs {
             }
 
             //return result + obj + " (" + obj.GetType() + ")";
-            if (datatype == data_type.obj || datatype == data_type.none)
-            {
-                string ts = obj.GetType().ToString().LastWord('.');
-                result += fpinfo.Name;
-                if (showValueToString) result += "[" + ts + "]";
-                return result;
-            }
-            return result + key + ":" + obj;
+            
+            return result + obj;
             
             
             //return result + obj.ToString();
@@ -798,8 +802,6 @@ namespace OrbItProcs {
 
         public void SetValue(object value)
         {
-            //if (HasPanelElements()) //must be primitive or enum
-
             if (membertype == member_type.dictentry)
             {
                 //holy shit that's dynamic.
@@ -809,19 +811,6 @@ namespace OrbItProcs {
 
                 if (!dict.GetType().IsGenericType || dict.GetType().GetGenericTypeDefinition() != typeof(Dictionary<,>))
                 {
-                    System.Console.WriteLine("Error: The parentItem wasn't a dictionary.");
-                    return;
-                }
-                Type keytype = dict.GetType().GetGenericArguments()[0];
-                Type valuetype = dict.GetType().GetGenericArguments()[1];
-                if ((KEY.GetType() != keytype && !KEY.GetType().IsSubclassOf(keytype)) && keytype != typeof(object))
-                {
-                    System.Console.WriteLine("Error: The key type didn't match the parent dictionary. ({0} != {1})", KEY.GetType(), keytype);
-                    return;
-                }
-                if ((VALUE.GetType() != valuetype && !VALUE.GetType().IsSubclassOf(valuetype)) && valuetype != typeof(object))
-                {
-                    System.Console.WriteLine("Error: The value type didn't match the parent dictionary. ({0} != {1})", VALUE.GetType(), valuetype);
                     return;
                 }
                 dict[KEY] = VALUE;
@@ -836,10 +825,148 @@ namespace OrbItProcs {
             {
                 System.Console.WriteLine("Error while SetValue() in InspectorItem.");
             }
-
+        }
+        public void SetValueSafe(object value)
+        {
+            object san = TrySanitize(value);
+            if (san != null)
+                SetValue(value);
+            //todo: fix for dictionaries / lists
         }
 
-        
+        public object TrySanitize(object value)
+        {
+            if (value is string && fpinfo.FPType != typeof(string))
+            {
+                string s = value.ToString().Trim();
+
+                if (fpinfo.FPType == typeof(int))
+                {
+                    int v;
+                    if (Int32.TryParse(s, out v))
+                    {
+                        fpinfo.SetValue(v, parentItem.obj);
+                        return v;
+                    }
+                    else return null;
+                }
+                else if (fpinfo.FPType == typeof(float))
+                {
+                    float v;
+                    if (float.TryParse(s, out v))
+                    {
+                        fpinfo.SetValue(v, parentItem.obj);
+                        return v;
+                    }
+                    else return null;
+                }
+                else if (fpinfo.FPType == typeof(double))
+                {
+                    double v;
+                    if (double.TryParse(s, out v))
+                    {
+                        fpinfo.SetValue(v, parentItem.obj);
+                        return v;
+                    }
+                    else return null;
+                }
+                else if (fpinfo.FPType == typeof(byte))
+                {
+                    byte v;
+                    if (byte.TryParse(s, out v))
+                    {
+                        fpinfo.SetValue(v, parentItem.obj);
+                        return v;
+                    }
+                    else return null;
+                }
+            }
+            else if (value is string)
+            {
+                value = value.ToString().Trim();
+            }
+            return value;
+        }
+
+        public void BuildItemsPath(InspectorItem item, List<InspectorItem> itemspath)
+        {
+            InspectorItem temp = item;
+            itemspath.Insert(0, temp);
+            while (temp.parentItem != null)
+            {
+                temp = temp.parentItem;
+                itemspath.Insert(0, temp);
+            }
+        }
+
+        public void ApplyToAllNodes(Group group)
+        {
+            if (group == null) return;
+            List<InspectorItem> itemspath = new List<InspectorItem>();
+            InspectorItem item = this;
+            object value = item.GetValue();
+
+            BuildItemsPath(item, itemspath);
+
+            group.ForEachAllSets(delegate(Node n)
+            {
+                if (n == itemspath.ElementAt(0).obj) return;
+                InspectorItem temp = new InspectorItem(null, n, sidebar);
+                int count = 0;
+                foreach (InspectorItem pathitem in itemspath)
+                {
+                    if (temp.obj.GetType() != pathitem.obj.GetType())
+                    {
+                        Console.WriteLine("The paths did not match while applying to all. {0} != {1}", temp.obj.GetType(), pathitem.obj.GetType());
+                        break;
+                    }
+                    if (count == itemspath.Count - 1) //last item
+                    {
+                        if (pathitem.membertype == member_type.dictentry)
+                        {
+                            dynamic dict = temp.parentItem.obj;
+                            dynamic key = pathitem.key;
+                            if (!dict.ContainsKey(key)) break;
+                            if (dict[key] is Component)
+                            {
+                                dict[key].active = ((Component)value).active;
+                            }
+                            else if (temp.IsPanelType())
+                            {
+                                dict[key] = value;
+                            }
+                        }
+                        else
+                        {
+                            if (value is Component)
+                            {
+                                ((Component)temp.obj).active = ((Component)value).active;
+                            }
+                            else if (temp.IsPanelType())
+                            {
+                                temp.fpinfo.SetValue(value, temp.parentItem.obj);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        InspectorItem next = itemspath.ElementAt(count + 1);
+                        if (next.membertype == member_type.dictentry)
+                        {
+                            dynamic dict = temp.obj;
+                            dynamic key = next.key;
+                            if (!dict.ContainsKey(key)) break;
+                            temp = new InspectorItem(null, temp, dict[key], key);
+                        }
+                        else
+                        {
+                            temp = new InspectorItem(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.propertyInfo);
+                        }
+                    }
+                    count++;
+                }
+            });
+        }
 
         public bool HasPanelElements()
         {

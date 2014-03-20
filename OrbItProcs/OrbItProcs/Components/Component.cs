@@ -28,8 +28,6 @@ namespace OrbItProcs
     public abstract class Component {
         public virtual mtypes compType { get; set; }
 
-        public abstract mtypes compType{get; set;}
-
         protected bool _active = false;
         [Info(UserLevel.Developer)]
         public virtual bool active
@@ -53,7 +51,7 @@ namespace OrbItProcs
 
         //*/
         //flag as not editable in InspectorBox
-        protected comp _com;
+        private comp _com;
         public comp com { get { return _com; } set { } }
         //flag as not editable in InspectorBox
         private bool _CallDraw = true;
@@ -61,9 +59,14 @@ namespace OrbItProcs
 
         public HashSet<Node> exclusions = new HashSet<Node>();
 
+        public bool isEssential()
+        {
+            return (compType & mtypes.essential) == mtypes.essential;
+        }
+
         protected virtual void GetCompEnum()
         {
-            string s = this.GetType().ToString().ToLower();
+            string s = this.GetType().ToString().ToLower().LastWord('.');
             foreach(string name in Enum.GetNames(typeof(comp)))
             {
                 if (name.Equals(s))

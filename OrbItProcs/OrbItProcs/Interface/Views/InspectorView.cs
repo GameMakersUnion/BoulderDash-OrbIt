@@ -15,32 +15,42 @@ namespace OrbItProcs
     public class InspectorView : DetailedView
     {
         public InspectorItem rootItem;
+        public Group activeGroup;
+        private bool _GroupSync = false;
+        public bool GroupSync { get { return _GroupSync && activeGroup != null; } set { _GroupSync = value; } }
 
-        public InspectorView(Sidebar sidebar, Control parent, int Left, int Top)
-            : base(sidebar, parent, Left, Top)
+        public InspectorView(Sidebar sidebar, Control parent, int Left, int Top, bool Init = true)
+            : base(sidebar, parent, Left, Top, Init)
         {
-            //ItemCreator = ItemCreatorDelegate;
+            //backPanel.Height = 120;
             Setup(ItemCreatorDelegate, OnEvent);
-            //SetRootItem(sidebar.ActiveDefaultNode);
         }
 
         public void SetRootItem(object item)
         {
             if (item == null) return;
-            foreach(DetailedItem di in viewItems.ToList())
+            ClearView();
+            if (item is InspectorItem)
             {
-                viewItems.Remove(di);
+                InspectorItem insItem = (InspectorItem)item;
+                insItem.GenerateChildren();
+                foreach (InspectorItem i in insItem.children)
+                {
+                    CreateNewItem(i);
+                }
             }
-
-            InspectorItem insItem = new InspectorItem(null, item, sidebar);
-            if (item is Body)
+            else
             {
-                //todo: fix item path here
-            }
-            insItem.GenerateChildren();
-            foreach(InspectorItem i in insItem.children)
-            {
-                CreateNewItem(i);
+                //InspectorItem insItem = new InspectorItem(null, item, sidebar);
+                //if (item is Body)
+                //{
+                //    //todo: fix item path here
+                //}
+                //insItem.GenerateChildren();
+                //foreach (InspectorItem i in insItem.children)
+                //{
+                //    CreateNewItem(i);
+                //}
             }
         }
         public void CreateNewItem(InspectorItem item)
@@ -51,20 +61,9 @@ namespace OrbItProcs
                 top = (viewItems[0].itemHeight - 4) * viewItems.Count;
             }
             DetailedItem detailedItem = new DetailedItem(manager, this, item, backPanel, top, LeftPadding, backPanel.Width - 4);
+            if (item.ToolTip.Length > 0) detailedItem.textPanel.ToolTip.Text = item.ToolTip;
             viewItems.Add(detailedItem);
             SetupScroll(detailedItem);
-        }
-
-        public void Refresh()
-        {
-            if (viewItems != null)
-            {
-                foreach(DetailedItem item in viewItems)
-                {
-                    if (item.obj == null) continue;
-                    item.label.Text = item.obj.ToString();
-                }
-            }
         }
 
         public void OnEvent(Control control, DetailedItem item, EventArgs e)
@@ -76,53 +75,14 @@ namespace OrbItProcs
             {
                 KeyEventArgs ke = (KeyEventArgs)e;
                 TextBox textbox = (TextBox)control;
-
-                if (ins.obj is int)
+                object san = ins.TrySanitize(textbox.Text);
+                if (san != null)
                 {
-                    string str = textbox.Text.Trim();
-                    int integer;
-                    if (str.Length < 1) return;
-                    if (Int32.TryParse(str, out integer))
+                    ins.SetValue(san);
+                    if (GroupSync)
                     {
-                        ins.SetValue(integer);
+                        ins.ApplyToAllNodes(activeGroup);
                     }
-                }
-                else if (ins.obj is float)
-                {
-                    string str = textbox.Text.Trim();
-                    float f;
-                    if (str.Length < 1) return;
-                    if (float.TryParse(str, out f))
-                    {
-                        ins.SetValue(f);
-                    }
-                }
-                else if (ins.obj is double)
-                {
-                    string str = textbox.Text.Trim();
-                    double d;
-                    if (str.Length < 1) return;
-                    if (double.TryParse(str, out d))
-                    {
-                        ins.SetValue(d);
-                    }
-                }
-                else if (ins.obj is byte)
-                {
-                    string str = textbox.Text.Trim();
-                    byte b;
-                    if (str.Length < 1) return;
-                    if (byte.TryParse(str, out b))
-                    {
-                        ins.SetValue(b);
-                    }
-                }
-                else if (ins.obj is string)
-                {
-                    if (ke.Key != Microsoft.Xna.Framework.Input.Keys.Enter) return;
-                    string str = textbox.Text.Trim();
-                    if (str.Length < 1) return;
-                    ins.SetValue(str);
                 }
             }
             else if (control is CheckBox)
@@ -131,11 +91,36 @@ namespace OrbItProcs
                 if (ins.obj is bool)
                 {
                     ins.SetValue(checkbox.Checked);
+                    if (GroupSync)
+                    {
+                        ins.ApplyToAllNodes(activeGroup);
+                    }
                 }
                 else if (ins.obj is Component)
                 {
                     Component component = (Component)ins.obj;
                     component.active = checkbox.Checked;
+                    //ins.SetValue(checkbox.Checked);
+                    if (GroupSync)
+                    {
+                        foreach(Node n in activeGroup.fullSet)
+                        {
+                            if (n.HasComponent(component.com))
+                                n.comps[component.com].active = checkbox.Checked;
+                        }
+                    }
+                }
+            }
+            else if (control is Button)
+            {
+                if (ins.obj is Component)
+                {
+                    Component component = (Component)ins.obj;
+                    component.parent.RemoveComponent(component.com);
+                    foreach (Node n in activeGroup.fullSet)
+                    {
+                        n.RemoveComponent(component.com);
+                    }
                 }
             }
 
@@ -150,6 +135,14 @@ namespace OrbItProcs
                 object o = inspectorItem.obj;
                 if (o != null)
                 {
+                    if (o is Node)
+                    {
+                        item.label.Text = "Root";
+                    }
+                    else if (o is Body || o is Component)
+                    {
+                        item.label.Text = o.GetType().ToString().LastWord('.');
+                    }
                     if (o is Component)
                     {
                         Component comp = (Component)o;
@@ -165,7 +158,7 @@ namespace OrbItProcs
                         item.AddControl(checkbox);
 
                         //check for essential
-                        if (!(comp is Movement) && !(comp is Collision) && !(comp is BasicDraw))
+                        if (!comp.isEssential())
                         {
                             Button btnRemove = new Button(manager);
                             btnRemove.Init();

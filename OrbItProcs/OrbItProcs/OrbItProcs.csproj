@@ -165,7 +165,7 @@
     <Compile Include="Components\Meta\Modifier.cs" />
     <Compile Include="Components\Movement\Movement.cs" />
     <Compile Include="Components\Tracers\PhaseOrb.cs" />
-    <Compile Include="Components\Queuer.cs" />
+    <Compile Include="Components\Tracers\Queuer.cs" />
     <Compile Include="Components\Movement\RandVelChange.cs" />
     <Compile Include="Components\AffectOthers\Transfer.cs" />
     <Compile Include="Components\Meta\Tree.cs" />

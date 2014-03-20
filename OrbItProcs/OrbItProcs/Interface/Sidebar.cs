@@ -30,7 +30,7 @@ namespace OrbItProcs
         public Game1 game;
         public Room room;
         public UserInterface ui;
-        private UserLevel _userLevel = UserLevel.Debug;
+        private UserLevel _userLevel = UserLevel.User;
         public UserLevel userLevel
         {
             get { return _userLevel; }
@@ -94,7 +94,19 @@ namespace OrbItProcs
         }
         //public InspectorItem ActiveInspectorParent;
         
-        public int Width = 250;
+        private int _Width = 250;
+        public int Width
+        {
+            get { return _Width; }
+            set
+            {
+                _Width = value;
+                if (ui.SidebarActive)
+                {
+                    Camera.CameraOffset = value;
+                }
+            }
+        }
         #region /// Neoforce Fields///
         public Manager manager;
         public SideBar master;
@@ -129,7 +141,7 @@ namespace OrbItProcs
             this.game = ui.game;
             this.room = ui.game.room;
             this.ui = ui;
-            NotImplemented = delegate { 
+            NotImplemented = delegate {
                 PopUp.Toast("Not Implemented. Take a hike.");
                 //throw new NotImplementedException();
             };
@@ -160,7 +172,6 @@ namespace OrbItProcs
             master.Anchor = Anchors.Top | Anchors.Right | Anchors.Bottom;
             //master.BorderVisible = false;
             master.Alpha = 255; //TODO : check necesity
-            master.SetPosition(game.Width - Width, 2);
             manager.Add(master);
             #endregion
 

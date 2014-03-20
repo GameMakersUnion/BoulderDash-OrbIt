@@ -64,7 +64,21 @@ namespace OrbItProcs {
 
         public Dictionary<dynamic, dynamic> UserProps;
 
-        public bool SidebarActive { get; set; }
+        private bool _SidebarActive = false;
+        public bool SidebarActive { get { return _SidebarActive; } 
+            set 
+            { 
+                _SidebarActive = value;
+                if (value)
+                {
+                    Camera.CameraOffset = sidebar.Width;
+                }
+                else
+                {
+                    Camera.CameraOffset = 0;
+                }
+            } 
+        }
 
         public Node spawnerNode;
         public Sidebar sidebar;
@@ -72,8 +86,8 @@ namespace OrbItProcs {
         public UserInterface(Game1 game)
         {
             this.game = game;
+            game.ui = this;
             this.room = game.room;
-            SidebarActive = true;
             
             sidebar = new Sidebar(this);
             sidebar.Initialize();
@@ -83,6 +97,8 @@ namespace OrbItProcs {
             this.keyManager = new KeyManager(this);
             
             groupSelectSet = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet; //syncs group select set to process set
+
+            SidebarActive = true;
         }
 
         public void SetSidebarActive(bool active)
@@ -120,15 +136,20 @@ namespace OrbItProcs {
             SidebarActive = !SidebarActive;
         }
 
+        public List<DetailedView> detailedViews = new List<DetailedView>();
+
         public void Update(GameTime gameTime)
         {
             ProcessKeyboard();
             ProcessMouse();
             ProcessController();
 
-            if (sidebar != null && sidebar.inspectorView != null)
+            if (sidebar != null)
             {
-                sidebar.inspectorView.Refresh();
+                foreach (var view in detailedViews)
+                {
+                    view.Refresh();
+                }
             }
 
             //game.testing.KeyManagerTest(() => Keybindset.Update());
@@ -228,7 +249,7 @@ namespace OrbItProcs {
             //if (mouseState.XButton2 == ButtonState.Pressed)
             //    System.Console.WriteLine("X2");
 
-            MousePos = new Vector2(mouseState.X, mouseState.Y);
+            MousePos = new Vector2(mouseState.X, mouseState.Y) - Camera.CameraOffsetVect;
             WorldMousePos = (MousePos / room.zoom) + room.camera.pos;
             //ignore mouse clicks outside window
             if (!Game1.isFullScreen)

@@ -17,10 +17,11 @@ namespace OrbItProcs
         public Action<DetailedItem, object> ItemCreator;
         public Action<Control, DetailedItem, EventArgs> OnItemEvent;
 
-        public DetailedView(Sidebar sidebar, Control parent, int Left, int Top)
-            : base(sidebar, parent, Left, Top)
+        public DetailedView(Sidebar sidebar, Control parent, int Left, int Top, bool Init = true)
+            : base(sidebar, parent, Left, Top, Init)
         {
             viewItems = new List<DetailedItem>();
+            sidebar.ui.detailedViews.Add(this);
         }
         public void Setup(Action<DetailedItem, object> ItemCreator, Action<Control, DetailedItem, EventArgs> OnItemEvent)
         {
@@ -36,6 +37,34 @@ namespace OrbItProcs
             }
         }
         
+        public void ClearView()
+        {
+            selectedItem = null;
+            foreach(DetailedItem i in viewItems.ToList())
+            {
+                backPanel.Remove(i.textPanel);
+                viewItems.Remove(i);
+            }
+        }
+        public void Refresh()
+        {
+            if (viewItems != null)
+            {
+                foreach (DetailedItem item in viewItems)
+                {
+                    if (item.obj == null) continue;
+                    if (item.obj is InspectorItem)
+                    {
+                        object o = (item.obj as InspectorItem).obj;
+                        if (o != null && o is Component || o is Node || o is Body)
+                        {
+                            continue;
+                        }
+                    }
+                    item.label.Text = item.obj.ToString().LastWord('.');
+                }
+            }
+        }
     }
 
     public class DetailedItem : ViewItem
