@@ -63,13 +63,13 @@ namespace OrbItProcs
         public static void VectorSine(Dictionary<string, dynamic> args, ModifierInfo mi)
         {
             Vector2 vector = ((Vector2)mi.fpInfos["v1"].GetValue());
-            float amp = (Defaultered("amp", args, (Game1.sHeight / 5)));
-            float period = (Defaultered("period", args, (Game1.sWidth / 4)));
+            float amp = (Defaultered("amp", args, (Game1.smallHeight / 5)));
+            float period = (Defaultered("period", args, (Game1.smallWidth / 4)));
             //float min = (Defaultered("min", args, 0.1f));
             //float highest = (Defaultered("highest", args, 20f));
             //float o1 = velocity.Length() / highest;
             //o1 = o1 * (max - min) + min;
-            vector.Y = (float)Math.Sin(vector.X / (period / (Math.PI * 2))) * amp + Game1.sHeight / 2;
+            vector.Y = (float)Math.Sin(vector.X / (period / (Math.PI * 2))) * amp + Game1.smallHeight / 2;
             
             mi.fpInfos["v1"].SetValue(vector);
 
@@ -78,9 +78,9 @@ namespace OrbItProcs
         {
             Vector2 vector = ((Vector2)mi.fpInfos["v1"].GetValue());
             float timer = (Defaultered("m1", mi, -9999));
-            float amp = (Defaultered("amp", args, (Game1.sHeight / 5)));
-            float period = (Defaultered("period", args, (Game1.sWidth / 4)));
-            float vshift = (Defaultered("vshift", args, (Game1.sHeight / 2)));
+            float amp = (Defaultered("amp", args, (Game1.smallHeight / 5)));
+            float period = (Defaultered("period", args, (Game1.smallWidth / 4)));
+            float vshift = (Defaultered("vshift", args, (Game1.smallHeight / 2)));
             int times = (int)(Defaultered("composite", args, 2));
             //float min = (Defaultered("min", args, 0.1f));
             //float highest = (Defaultered("highest", args, 20f));

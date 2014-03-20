@@ -1,0 +1,247 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using TomShane.Neoforce.Controls;
+using Component = OrbItProcs.Component;
+using Console = System.Console;
+using EventHandler = TomShane.Neoforce.Controls.EventHandler;
+using EventArgs = TomShane.Neoforce.Controls.EventArgs;
+using Microsoft.Xna.Framework;
+using System.Collections.ObjectModel;
+
+namespace OrbItProcs
+{
+    public class ListView<T> where T : ViewItem
+    {
+
+        public Game1 game;
+        public Room room;
+        public UserInterface ui;
+        public Sidebar sidebar;
+        public InspectorItem ActiveInspectorParent;
+        public Node rootNode;
+        public Group activeGroup;
+
+        public int Left;
+        public int Top;
+        public int Width;
+        public int Height;
+        //public int Height { get { return (propertyEditPanel.grouppanel.Top + propertyEditPanel.grouppanel.Height); } }
+        public int HeightCounter;
+        public int LeftPadding = 5;
+        public int VertPadding = 7;
+        public int ScrollPosition = 0;
+
+        public Manager manager;
+        public Control parent;
+
+        public Panel backPanel;
+
+
+
+        public List<T> viewItems { get; protected set; }
+        public T selectedItem { get; set; }
+        
+
+        public Color backColor, textColor;
+
+        protected bool isVisible = false;
+
+        
+
+        public ListView(Sidebar sidebar, Control parent, int Left, int Top, bool Init = true, int? Height = null)
+        {
+            this.game = sidebar.game;
+            this.room = sidebar.room;
+            this.ui = sidebar.ui;
+            this.sidebar = sidebar;
+            this.manager = sidebar.manager;
+            this.parent = parent;
+
+            this.Left = Left;
+            this.Top = Top;
+            this.Height = Height ?? sidebar.game.Height / 3;
+
+            HeightCounter = Top;
+            Width = parent.Width - LeftPadding * 2;
+            backColor = new Color(80, 80, 80);//new Color(92, 92, 92);
+            textColor = Color.Black;
+
+            if (Init)
+            {
+                Initialize();
+            }
+        }
+
+        public void Initialize()
+        {
+            
+            #region /// Components List (back panel) ///
+            backPanel = new Panel(manager);
+            backPanel.Init();
+            backPanel.Left = Left + LeftPadding;
+            backPanel.Top = HeightCounter;
+            backPanel.Width = Width;
+            backPanel.Parent = parent;
+            backPanel.Height = Height;
+            backPanel.Text = "";
+            backPanel.AutoScroll = true;
+            backPanel.Color = backColor;//new Color(0, 0, 0, 50);
+            backPanel.BevelBorder = BevelBorder.All;
+            backPanel.BevelStyle = BevelStyle.Etched;
+            backPanel.ClientArea.Height = 200;
+            parent.Add(backPanel);
+            HeightCounter += backPanel.Height + VertPadding;
+            #endregion
+        }
+
+        public virtual void SelectItem(T item)
+        {
+            if (selectedItem != null)
+            {
+                selectedItem.isSelected = false;
+            }
+            selectedItem = item;
+            item.isSelected = true;
+        }
+
+        public void SetupScroll(T item)
+        {
+            sidebar.ui.SetScrollableControl(item.textPanel, List_ChangeScrollPosition);
+        }
+
+        public void List_ChangeScrollPosition(int change)
+        {
+            backPanel.ScrollTo(backPanel.ScrollBarValue.Horizontal, ScrollPosition + change * 8);
+            ScrollPosition = backPanel.ScrollBarValue.Vertical;
+        }
+
+        public void SetScrollPosition(int value)
+        {
+            //int previous = compsBackPanel.ScrollBarValue.Vertical;
+            backPanel.ScrollTo(backPanel.ScrollBarValue.Horizontal, value);
+            ScrollPosition = backPanel.ScrollBarValue.Vertical;
+        }
+
+        
+    }
+
+
+    public class ViewItem
+    {
+        private bool _isSelected = false;
+        public virtual bool isSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                //if (value)
+                //{
+                //    foreach (var item in listView.viewItems)
+                //    {
+                //        if (item == this) continue;
+                //        if (item.isSelected) item.isSelected = false;
+                //    }
+                //}
+                _isSelected = value;
+                RefreshColor();
+
+            }
+        }
+
+        public void RefreshColor()
+        {
+            if (isSelected)
+            {
+                if (textPanel != null) textPanel.Color = textColor;
+                if (label != null) label.TextColor = backColor;
+            }
+            else
+            {
+                if (textPanel != null) textPanel.Color = backColor;
+                if (label != null) label.TextColor = textColor;
+            }
+        }
+
+        //public ListView listView;
+        public object obj;
+        public Label label;
+        public Panel textPanel;
+
+        public int itemHeight = 23;
+        public int buttonHeight = 13;
+        public int buttonWidth = 15;
+
+        public Color textColor;
+        public Color backColor;
+
+        public Action OnSelect;
+
+
+        public ViewItem(Manager manager, object obj, Control parent, int Top, int Left, int Width)
+        {
+            //this.listView = listView;
+            this.obj = obj;
+
+
+            textPanel = new Panel(manager);
+            textPanel.Init();
+            textPanel.Parent = parent;
+            textPanel.Top = Top;
+            textPanel.Height = itemHeight;
+            textPanel.Click += textPanel_Click;
+            //textPanel.BackColor = Color.Transparent;
+            //textPanel.Color = new Color(0,0,0,120);
+            textPanel.BevelColor = new Color(0, 0, 0);
+            textPanel.BevelBorder = BevelBorder.All;
+            textPanel.BevelStyle = BevelStyle.Raised;
+            
+
+            //listView.sidebar.ui.SetScrollableControl(textPanel, listView.ComponentsList_ChangeScrollPosition);
+
+            label = new Label(manager);
+            label.Init();
+            label.Parent = textPanel;
+            label.Left = Left;
+            textPanel.Width = Width;
+            label.Width = Width - 10;
+
+            if (obj != null)
+            {
+                label.Text = obj.ToString();
+            }
+            else
+            {
+                label.Text = "";
+            }
+            //isSelected = false;
+            RefreshColor();
+        }
+
+        public void textPanel_Click(object sender, EventArgs e)
+        {
+            MouseEventArgs me = (MouseEventArgs)e;
+            if (me.Button == MouseButton.Left)
+            {
+                if (!isSelected) 
+                {
+                    if (OnSelect != null)
+                    {
+                        OnSelect();
+                    }
+                    //if (listView != null)
+                    //{
+                    //    listView.SelectItem(this);
+                    //}
+                }
+            }
+        }
+
+        
+
+        
+    }
+
+    
+}

@@ -104,8 +104,8 @@ namespace OrbItProcs
         public SharpSerializer serializer = new SharpSerializer();
 
         public ProcessManager processManager { get; set; }
-        public static int sWidth = 1000;
-        public static int sHeight = 600;
+        public static int smallWidth = 1280;
+        public static int smallHeight = 650;
         public static bool soundEnabled = false;
         //public static int fullWidth = 1680;
         //public static int fullHeight = 1050;
@@ -115,6 +115,9 @@ namespace OrbItProcs
         public static string filepath = "Presets//Nodes/";
         public static bool isFullScreen = false;
         public static bool TakeScreenshot = false;
+
+        public int Width { get { return Graphics.PreferredBackBufferWidth; } set { Graphics.PreferredBackBufferWidth = value; } }
+        public int Height { get { return Graphics.PreferredBackBufferHeight; } set { Graphics.PreferredBackBufferHeight = value; } }
 
         public static bool Debugging = false;
 
@@ -139,8 +142,10 @@ namespace OrbItProcs
             IsFixedTimeStep = false;
             //TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 5);
 
-            Graphics.PreferredBackBufferWidth = sWidth;
-            Graphics.PreferredBackBufferHeight = sHeight;
+            Width = smallWidth;
+            Height = smallHeight;
+            //Width = fullWidth;
+            //Height = fullHeight;
             ////
 
             Utils.PopulateComponentTypesDictionary();
@@ -167,24 +172,19 @@ namespace OrbItProcs
         public void ToggleFullScreen(bool on)
         {
             Game1.isFullScreen = on;
+            Manager.Graphics.IsFullScreen = on;
             if (on)
             {
-                //SystemBorder = false;
-                //FullScreenBorder = false;
-                Manager.Graphics.PreferredBackBufferWidth = fullWidth;
-                Manager.Graphics.PreferredBackBufferHeight = fullHeight;
-                Graphics.IsFullScreen = true;
-                Graphics.ApplyChanges();
+                Width = fullWidth;
+                Height = fullHeight;
+                
             }
             else
             {
-                //SystemBorder = true;
-                //FullScreenBorder = true;
-                Manager.Graphics.PreferredBackBufferWidth = sWidth;
-                Manager.Graphics.PreferredBackBufferHeight = sHeight;
-                Graphics.IsFullScreen = false;
-                Graphics.ApplyChanges();
+                Width = smallWidth;
+                Height = smallHeight;
             }
+            Manager.Graphics.ApplyChanges();
         }
 
         protected override void Initialize()

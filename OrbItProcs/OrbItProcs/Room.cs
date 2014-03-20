@@ -355,10 +355,8 @@ namespace OrbItProcs {
             Testing.OldStopTimer("Manifold apply impulse");
             foreach (Node n in masterGroup.fullSet)
             {
-                if (n.movement.active)
-                {
-                    n.movement.IntegrateVelocity();
-                }
+                n.movement.IntegrateVelocity();
+
                 VMath.Set(ref n.body.force, 0, 0);
                 n.body.torque = 0;
             }

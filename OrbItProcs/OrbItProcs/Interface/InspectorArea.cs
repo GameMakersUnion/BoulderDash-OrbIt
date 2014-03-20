@@ -51,7 +51,7 @@ namespace OrbItProcs
 
         public Tuple<bool, string> OverrideString = new Tuple<bool, string>(false, "");
 
-        public ListView compView;
+        public ComponentView compView;
         //public Group activeGroup = null;
 
         public InspectorArea(Sidebar sidebar, Control parent, int Left, int Top)
@@ -256,7 +256,7 @@ namespace OrbItProcs
                 return;
             }
             InsBox.ItemIndex = 0;
-            InspectorItem rootitem = new InspectorItem(InsBox.Items, rootobj, this);
+            InspectorItem rootitem = new InspectorItem(InsBox.Items, rootobj, sidebar);
             InsBox.rootitem = rootitem;
             rootitem.GenerateChildren(GenerateFields);
             ActiveInspectorParent = rootitem;
@@ -415,11 +415,10 @@ namespace OrbItProcs
 
             BuildItemsPath(item, itemspath);
 
-            group.ForEachAllSets(delegate(Node o)
+            group.ForEachAllSets(delegate(Node n)
             {
-                Node n = o;
                 if (n == itemspath.ElementAt(0).obj) return;
-                InspectorItem temp = new InspectorItem(null, n, this);
+                InspectorItem temp = new InspectorItem(null, n, sidebar);
                 int count = 0;
                 foreach (InspectorItem pathitem in itemspath)
                 {

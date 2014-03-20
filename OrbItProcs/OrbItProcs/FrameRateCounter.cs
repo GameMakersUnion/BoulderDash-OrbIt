@@ -74,16 +74,16 @@ namespace OrbItProcs {
                 process = room.game.ui.keyManager.TemporaryProcess.GetType().ToString().LastWord('.');
             }
 
-            spriteBatch.DrawString(spriteFont, fps, new Vector2(2, Game1.sHeight - yOffset), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-            spriteBatch.DrawString(spriteFont, fps, new Vector2(1, Game1.sHeight - yOffset-1), Color.Black, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            spriteBatch.DrawString(spriteFont, fps, new Vector2(2, Game1.smallHeight - yOffset), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            spriteBatch.DrawString(spriteFont, fps, new Vector2(1, Game1.smallHeight - yOffset-1), Color.Black, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
             yOffset -= 30;
-            spriteBatch.DrawString(spriteFont, ups, new Vector2(2, Game1.sHeight - yOffset), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-            spriteBatch.DrawString(spriteFont, ups, new Vector2(1, Game1.sHeight - yOffset-1), Color.Black, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            spriteBatch.DrawString(spriteFont, ups, new Vector2(2, Game1.smallHeight - yOffset), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            spriteBatch.DrawString(spriteFont, ups, new Vector2(1, Game1.smallHeight - yOffset-1), Color.Black, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
             if (hasProcess)
             {
                 yOffset -= 30;
-                spriteBatch.DrawString(spriteFont, process, new Vector2(2, Game1.sHeight - yOffset), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-                spriteBatch.DrawString(spriteFont, process, new Vector2(1, Game1.sHeight - yOffset - 1), Color.Black, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+                spriteBatch.DrawString(spriteFont, process, new Vector2(2, Game1.smallHeight - yOffset), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+                spriteBatch.DrawString(spriteFont, process, new Vector2(1, Game1.smallHeight - yOffset - 1), Color.Black, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
                 //todo:make dynamic string handling
             }
 

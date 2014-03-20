@@ -72,7 +72,8 @@ namespace OrbItProcs {
             typeof(Enum),
             typeof(byte),
         };
-        public InspectorArea inspectorArea;
+        //public InspectorArea inspectorArea;
+        public Sidebar sidebar;
         //public treeitem itemtype;
         public int depth = 1;
         //public FieldInfo fieldInfo;
@@ -81,33 +82,37 @@ namespace OrbItProcs {
         //public comp component;
 
         public bool extended = false;
+        public bool showValueToString = false;
         
-        public List<object> children;
+        public List<InspectorItem> children;
         
         //public int childCount = 0;
         public object key;
         public String prefix;
         public String whitespace = "";
 
+
         public object obj;
         public object parentobj;
-        //public object parentdictionary;
-        public InspectorItem parentItem;
+        private InspectorItem _parentItem;
+        public InspectorItem parentItem { get { return _parentItem; } set { _parentItem = value; if (value != null) showValueToString = parentItem.showValueToString; } }
         public member_type membertype;
         public data_type datatype;
 
         public IList<object> masterList;
 
         //root item
-        public InspectorItem(IList<object> masterList, object obj, InspectorArea insArea)
+        public InspectorItem(IList<object> masterList, object obj, Sidebar sidebar, bool showValueToString = false)
         {
+            this.showValueToString = showValueToString;
             this.whitespace = "|";
             this.obj = obj;
             this.masterList = masterList; 
             //this.fpinfo = new FPInfo(propertyInfo);
             this.membertype = member_type.none;
-            this.children = new List<object>();
-            this.inspectorArea = insArea;
+            this.children = new List<InspectorItem>();
+            //this.inspectorArea = insArea;
+            this.sidebar = sidebar;
             CheckItemType();
             prefix = "" + ((char)164);
             //System.Console.WriteLine(obj);
@@ -135,10 +140,11 @@ namespace OrbItProcs {
             this.obj = obj;
             this.parentItem = parentItem;
             this.masterList = masterList;
-            this.children = new List<object>();
+            this.children = new List<InspectorItem>();
             CheckItemType();
             prefix = "" + ((char)164);
-            this.inspectorArea = parentItem.inspectorArea;
+            //this.inspectorArea = parentItem.inspectorArea;
+            this.sidebar = parentItem.sidebar;
         }
 
         //a dictionary entry
@@ -150,8 +156,9 @@ namespace OrbItProcs {
             this.obj = obj;
             this.masterList = masterList;
             this.fpinfo = null;
-            this.children = new List<object>();
-            this.inspectorArea = parentItem.inspectorArea;
+            this.children = new List<InspectorItem>();
+            //this.inspectorArea = parentItem.inspectorArea;
+            this.sidebar = parentItem.sidebar;
 
             Type t = parentItem.obj.GetType();
             if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
@@ -178,8 +185,9 @@ namespace OrbItProcs {
             this.obj = obj;
             this.masterList = masterList;
             this.fpinfo = null;
-            this.children = new List<object>();
-            this.inspectorArea = parentItem.inspectorArea;
+            this.children = new List<InspectorItem>();
+            //this.inspectorArea = parentItem.inspectorArea;
+            this.sidebar = parentItem.sidebar;
 
             Type t = parentItem.obj.GetType();
 
@@ -197,20 +205,6 @@ namespace OrbItProcs {
                 membertype = member_type.unimplemented;
             }
         }
-
-        
-
-        /*
-        public InspectorItem(object parent, FieldInfo fieldInfo, InspectorItem parentItem)
-        {
-            this.parentobj = parent;
-            //this.fieldInfo = fieldInfo;
-            this.fpinfo = new FPInfo(fieldInfo);
-            this.membertype = member_type.field;
-            prefix = "=";
-            //CheckItemType();
-        }
-        */
 
         public bool ReferenceExists(InspectorItem parent, object reference)
         {
@@ -237,7 +231,7 @@ namespace OrbItProcs {
             foreach (object child in children.ToList())
             {
                 InspectorItem item = (InspectorItem)child;
-                masterList.Add(child);
+                if (masterList != null) masterList.Add(child);
                 if (item.children.Count > 0 && item.extended)
                 {
                     item.AddChildrenToMasterDeep();
@@ -246,9 +240,9 @@ namespace OrbItProcs {
 
         }
 
-        public static List<object> GenerateList(object parent, InspectorItem parentItem = null, bool GenerateFields = false)
+        public static List<InspectorItem> GenerateList(object parent, InspectorItem parentItem = null, bool GenerateFields = false)
         {
-            List<object> list = new List<object>();
+            List<InspectorItem> list = new List<InspectorItem>();
             //char a = (char)164;
             //System.Console.WriteLine(a);
             //string space = "|";
@@ -308,7 +302,7 @@ namespace OrbItProcs {
                 }
 
                 UserLevel userlevel = UserLevel.User;
-                if (parentItem != null) userlevel = parentItem.inspectorArea.sidebar.userLevel;
+                if (parentItem != null) userlevel = parentItem.sidebar.userLevel;
 
                 foreach (PropertyInfo pinfo in propertyInfos)
                 {
@@ -330,35 +324,32 @@ namespace OrbItProcs {
                     InsertItemSorted(list, iitem);
                 }
                 ////// FIELDS
-                if (parentItem.inspectorArea != null && parentItem.inspectorArea.GenerateFields)
+                List<FieldInfo> fieldInfos;
+                //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
+                if (!(parent is Component || parent is Player || parent is Process))
                 {
-                    List<FieldInfo> fieldInfos;
-                    //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                    if (!(parent is Component || parent is Player || parent is Process))
-                    {
-                        fieldInfos = parent.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
-                    }
-                    else
-                    {
-                        fieldInfos = parent.GetType().GetFields().ToList();
-                    }
+                    fieldInfos = parent.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
+                }
+                else
+                {
+                    fieldInfos = parent.GetType().GetFields().ToList();
+                }
 
-                    foreach (FieldInfo finfo in fieldInfos)
-                    {
-                        if (finfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
-                        //var abstractions = finfo.GetCustomAttributes(typeof(AbstractionLevel), false);
-                        //if (abstractions.Length > 0)
-                        //{
-                        //    if ((int)(abstractions[0] as AbstractionLevel).userLevel > (int)userlevel) continue;
-                        //}
-                        //else if (userlevel != UserLevel.Debug)
-                        //{
-                        //    continue;
-                        //}
-                        InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, finfo.GetValue(parent), finfo);
-                        if (iitem.CheckForChildren()) iitem.prefix = "+";
-                        InsertItemSorted(list, iitem);
-                    }
+                foreach (FieldInfo finfo in fieldInfos)
+                {
+                    if (finfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
+                    //var abstractions = finfo.GetCustomAttributes(typeof(AbstractionLevel), false);
+                    //if (abstractions.Length > 0)
+                    //{
+                    //    if ((int)(abstractions[0] as AbstractionLevel).userLevel > (int)userlevel) continue;
+                    //}
+                    //else if (userlevel != UserLevel.Debug)
+                    //{
+                    //    continue;
+                    //}
+                    InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, finfo.GetValue(parent), finfo);
+                    if (iitem.CheckForChildren()) iitem.prefix = "+";
+                    InsertItemSorted(list, iitem);
                 }
                 
             }
@@ -407,7 +398,7 @@ namespace OrbItProcs {
             return false;
         }
 
-        public static void InsertItemSorted(List<object> itemList, InspectorItem item)
+        public static void InsertItemSorted(List<InspectorItem> itemList, InspectorItem item)
         {
             int length = itemList.Count;
             int weight = (int)item.datatype;
@@ -432,31 +423,35 @@ namespace OrbItProcs {
 
         public override string ToString()
         {
-            string result = whitespace + prefix;
+            //string result = whitespace + prefix;
+            string result = "";
 
             if (obj is Vector2)
             {
                 dynamic vect = obj;
-                string s = result + fpinfo.Name + " : ";
-                s += string.Format("X: {0:0} | Y: {1:0}", vect.X, vect.Y);
-                return s;
+                result += fpinfo.Name;
+                if (showValueToString) result += string.Format(" : X: {0:0} | Y: {1:0}", vect.X, vect.Y);
+                return result;
 
             }
-
 
             if (membertype == member_type.dictentry)
             {
                 if (obj.GetType().IsSubclassOf(typeof(Component)))
                 {
                     Component component = (Component) obj;
-                    return result + key.ToString().ToUpper() + " : " + component.active;
+                    result += component.GetType();
+                    if (showValueToString) result += " : " + component.active;
+                    return result;
                 }
                 if (datatype == data_type.obj || datatype == data_type.none)
                 {
-                    string ts = obj.GetType().ToString().Split('.').ToList().ElementAt(obj.GetType().ToString().Split('.').ToList().Count - 1);
+                    string ts = obj.GetType().ToString().LastWord('.');
                     return result + key + "[" + ts + "]";
                 }
-                return result + key + ":" + obj;
+                result += key;
+                if (showValueToString) result += ":" + obj;
+                return result;
             }
             if (membertype == member_type.collectionentry)
             {
@@ -469,7 +464,7 @@ namespace OrbItProcs {
 
                     if (obj is Group) return result + (obj as Group).Name;
 
-                    string ts = obj.GetType().ToString().Split('.').ToList().ElementAt(obj.GetType().ToString().Split('.').ToList().Count - 1);
+                    string ts = obj.GetType().ToString().LastWord('.');
                     return result + key + "[" + ts + "]";
                 }
                 return result + key + ":" + obj;
@@ -482,48 +477,60 @@ namespace OrbItProcs {
 
                     Type k = obj.GetType().GetGenericArguments()[0];
                     Type v = obj.GetType().GetGenericArguments()[1];
-                    string ks = k.ToString().Split('.').ToList().ElementAt(k.ToString().Split('.').ToList().Count-1);
-                    string vs = v.ToString().Split('.').ToList().ElementAt(v.ToString().Split('.').ToList().Count-1);
+                    string ks = k.ToString().LastWord('.');
+                    string vs = v.ToString().LastWord('.');
                     //System.Console.WriteLine(obj.GetType());
                     //System.Console.WriteLine(result + fpinfo.Name + " <" + ks + "," + vs + ">");
-                    return result + fpinfo.Name + " <" + ks + "," + vs + ">";
+                    result += fpinfo.Name;
+                    if (showValueToString) result += " <" + ks + "," + vs + ">";
+                    return result;
                 }
                 if (datatype == data_type.array)
                 {
                     //Type[] gen = obj.GetType().GetGenericArguments();
                     //obj.GetType()
-                    Type k = obj.GetType().GetElementType();
-                    return result + fpinfo.Name + " <" + k + ">";
+                    string k = obj.GetType().GetElementType().ToString().LastWord('.');
+                    result += fpinfo.Name;
+                    if (showValueToString) result += " <" + k + ">";
+                    return result;
                 }
                 if (datatype == data_type.collection)
                 {
                     if (obj.GetType().GetGenericArguments().Length == 0) return result + fpinfo.Name;
-                    Type k = obj.GetType().GetGenericArguments()[0];
+                    string k = obj.GetType().GetGenericArguments()[0].ToString().LastWord('.');
                     //Type v = obj.GetType().GetGenericArguments()[1];
-                    string ks = k.ToString().Split('.').ToList().ElementAt(k.ToString().Split('.').ToList().Count - 1);
+                    //string ks = k;
                     //string vs = v.ToString().Split('.').ToList().ElementAt(v.ToString().Split('.').ToList().Count - 1);
                     //System.Console.WriteLine(obj.GetType());
                     //System.Console.WriteLine(result + fpinfo.Name + " <" + ks + "," + vs + ">");
-                    return result + fpinfo.Name + " <" + ks + ">";
+                    //return result + fpinfo.Name + " <" + ks + ">";
+                    result += fpinfo.Name;
+                    if (showValueToString) result += " <" + k + ">";
+                    return result;
                 }
                 if (obj != null && obj.GetType().IsSubclassOf(typeof(Component)))
                 {
                     Component component = (Component)obj;
-                    return result + component.GetType().ToString().ToUpper().LastWord('.') + " : " + component.active;
+                    result += component.GetType().ToString().ToUpper().LastWord('.');
+                    if (showValueToString) result += " : " + component.active;
+                    return result;
                 }
-                return result + fpinfo.Name + " : " + fpinfo.GetValue(parentItem.obj);
+                result += fpinfo.Name;
+                if (showValueToString) result += " : " + fpinfo.GetValue(parentItem.obj);
+                return result;
             }
             if (obj == null)
             {
-                return result + ": obj is null";
+                return result + ": -null";
             }
 
             //return result + obj + " (" + obj.GetType() + ")";
             if (datatype == data_type.obj || datatype == data_type.none)
             {
-                
-                string ts = obj.GetType().ToString().Split('.').ToList().ElementAt(obj.GetType().ToString().Split('.').ToList().Count - 1);
-                return result + "[" + ts + "]";
+                string ts = obj.GetType().ToString().LastWord('.');
+                result += fpinfo.Name;
+                if (showValueToString) result += "[" + ts + "]";
+                return result;
             }
             return result + key + ":" + obj;
             
@@ -600,7 +607,7 @@ namespace OrbItProcs {
                         }
                         if (parentItem != null)
                         {
-                            InspectorItem uplevel = new InspectorItem(masterList, "...", parentItem.inspectorArea);
+                            InspectorItem uplevel = new InspectorItem(masterList, "...", sidebar);
                             uplevel.parentItem = this;
                             uplevel.membertype = member_type.previouslevel;
                             masterList.Add(uplevel);
@@ -623,10 +630,13 @@ namespace OrbItProcs {
             }
             else if (!haschildren)
             {
-                foreach (InspectorItem subitem in children)
+                if (masterList != null)
                 {
-                    //masterList.Insert(position + i++, subitem);
-                    masterList.Remove(subitem);
+                    foreach (InspectorItem subitem in children)
+                    {
+                        //masterList.Insert(position + i++, subitem);
+                        masterList.Remove(subitem);
+                    }
                 }
             }
 

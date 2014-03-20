@@ -43,9 +43,6 @@ namespace OrbItProcs
 
         private void IntegrateForces()
         {
-            if (Game1.Debugging && parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
-            if (Game1.Debugging && parent.body.force.IsFucked()) System.Diagnostics.Debugger.Break();
-
             if (!active) return;
             if (parent.body.invmass == 0)
                 return;
@@ -57,9 +54,6 @@ namespace OrbItProcs
         }
         public void IntegrateVelocity()
         {
-            if (Game1.Debugging && parent.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
-            if (Game1.Debugging && parent.body.force.IsFucked()) System.Diagnostics.Debugger.Break();
-
             if (!active) return;
             if (parent.body.invmass == 0)
                 return;

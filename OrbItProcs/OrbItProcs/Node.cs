@@ -179,23 +179,23 @@ namespace OrbItProcs {
         private HashSet<string> _tags = new HashSet<string>();
         public HashSet<string> tags { get { return _tags; } set { _tags = value; } }
 
-        public Body body;
-        public Body BODY
+        private Body _body;
+        public Body body
         {
-            get { return body; }
+            get { return _body; }
             set
             {
-                body = value;
+                _body = value;
             } 
         }
 
-        public Movement movement;
-        public Movement MOVEMENT
+        private Movement _movement;
+        public Movement movement
         {
-            get { return movement; }
+            get { return _movement; }
             set
             {
-                movement = value;
+                _movement = value;
                 if (comps != null && value != null)
                 {
                     if (comps.ContainsKey(comp.movement))
@@ -207,13 +207,13 @@ namespace OrbItProcs {
             }
         }
 
-        public Collision collision;
-        public Collision COLLISION
+        private Collision _collision;
+        public Collision collision
         {
-            get { return collision; }
+            get { return _collision; }
             set
             {
-                collision = value;
+                _collision = value;
                 if (comps != null && value != null)
                 {
                     if (comps.ContainsKey(comp.collision))
@@ -339,8 +339,8 @@ namespace OrbItProcs {
             }
             Groups = new ObservableHashSet<Group>();
             nodeCounter++;
-            MOVEMENT = new Movement(this);
-            COLLISION = new Collision(this);
+            movement = new Movement(this);
+            collision = new Collision(this);
             Shape shape;
             if (shapetype == ShapeType.eCircle)
             {
@@ -355,7 +355,7 @@ namespace OrbItProcs {
                 shape = new Circle(25); //in case there are more shapes
             }
 
-            BODY = new Body(shape: shape, parent: this);
+            body = new Body(shape: shape, parent: this);
             name = "blankname";
 
             //comps.Add(comp.body, body);

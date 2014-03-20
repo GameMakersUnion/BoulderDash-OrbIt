@@ -94,10 +94,10 @@ namespace OrbItProcs
         }
         //public InspectorItem ActiveInspectorParent;
         
-        public int Width = 200;
+        public int Width = 250;
         #region /// Neoforce Fields///
         public Manager manager;
-        public Window master;
+        public SideBar master;
         public TabControl tbcMain;
         public Label title1;
         TextBox consoletextbox;
@@ -135,7 +135,7 @@ namespace OrbItProcs
             };
             manager = game.Manager;
 
-
+            manager.SetSkin("Green");
         }
 
         public void Initialize()
@@ -143,12 +143,14 @@ namespace OrbItProcs
             manager.Initialize();
 
             #region /// Master ///
-            master = new Window(manager);
+            master = new SideBar(manager);
             master.Init();
             master.Name = "Sidebar";
             master.Width = Width;
-            master.Height = Game1.sHeight;
+            master.Height = game.Height;
             master.Visible = true;
+            //SkinControl sc = new SkinControl(manager.Skin.Controls["SideBar"]);
+            //master.Skin = sc;
             master.Resizable = false; // If true, uncomment below
             //master.MaximumHeight = Game1.sHeight; 
             //master.MinimumHeight = Game1.sHeight;
@@ -156,20 +158,22 @@ namespace OrbItProcs
             //master.MinimumWidth = 200;
             master.Movable = false;
             master.Anchor = Anchors.Top | Anchors.Right | Anchors.Bottom;
-            master.BorderVisible = false;
+            //master.BorderVisible = false;
             master.Alpha = 255; //TODO : check necesity
-            master.SetPosition(Game1.sWidth - Width, 2);
+            master.SetPosition(game.Width - Width, 2);
             manager.Add(master);
             #endregion
 
             #region  /// tabcontrol ///
             tbcMain = new TabControl(manager);
             tbcMain.Init();
+            //tbcMain.BackColor = Color.Transparent;
+            //tbcMain.Color = Color.Transparent;
             tbcMain.Parent = master;
             tbcMain.Left = 0;
             tbcMain.Top = 0;
             tbcMain.Width = master.Width - 5;
-            tbcMain.Height = Game1.sWidth - 40;
+            tbcMain.Height = master.Height - 40;
             tbcMain.Anchor = Anchors.All;
             #endregion
 
@@ -371,7 +375,7 @@ namespace OrbItProcs
             InitializeSecondPage();
             InitializeThirdPage();
             InitializeFourthPage();
-
+            InitializeFifthPage();
         }
 
         void btnDeleteGroup_Click(object sender, EventArgs e)
@@ -484,7 +488,7 @@ namespace OrbItProcs
             UpdateGroupComboBox(cbGroupS);
             UpdateGroupComboBox(cbGroupT);
 
-            componentView.UpdateGroupComboBox();
+            //componentView.UpdateGroupComboBox();
         }
 
         public void UpdateGroupComboBox(ComboBox cb, params string[] additionalItems)
@@ -594,7 +598,7 @@ namespace OrbItProcs
             {
                 Node n = (Node)o;
                 if (n == itemspath.ElementAt(0).obj) return;
-                InspectorItem temp = new InspectorItem(null, n, inspectorArea);
+                InspectorItem temp = new InspectorItem(null, n, this);
                 int count = 0;
                 foreach (InspectorItem pathitem in itemspath)
                 {

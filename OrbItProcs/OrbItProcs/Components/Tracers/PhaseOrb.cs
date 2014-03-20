@@ -17,21 +17,32 @@ namespace OrbItProcs
             {
                 return CompType;
             }
+            set { }
         }
 
 
         [Polenter.Serialization.ExcludeFromSerialization]
-        public int queuecount { get { if (parent != null && parent.HasComponent(comp.queuer)) return parent[comp.queuer].queuecount; else return 10; } set { if (parent != null && parent.HasComponent(comp.queuer)) parent[comp.queuer].queuecount = value; } }
+        public int queuecount
+        {
+            get
+            {
+                if (parent != null && parent.HasComponent(comp.queuer))
+                    return parent[comp.queuer].queuecount;
+                else return 10;
+            }
+            set
+            {
+                if (parent != null && parent.HasComponent(comp.queuer))
+                    parent[comp.queuer].queuecount = value;
+            }
+        }
 
-        private int r1;// = Utils.random.Next(255) / 255f;
-        private int g1;// = Utils.random.Next(255) / 255f;
-        private int b1;// = Utils.random.Next(255) / 255f;
+        private int r1;
+        private int g1;
+        private int b1;
         private int timer = 0;
         private int _timerMax = 1;
         public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
-
-        //public Queue<Vector2> positions;
-        //public Queue<float> scales;
 
         public PhaseOrb() : this(null) { }
         public PhaseOrb(Node parent = null)

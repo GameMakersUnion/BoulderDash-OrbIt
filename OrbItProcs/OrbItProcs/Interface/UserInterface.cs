@@ -19,6 +19,8 @@ using System.IO;
 namespace OrbItProcs {
     public class UserInterface {
 
+        public static Color TomShanePuke = new Color(75, 187, 0);
+
         public enum selection
         {
             placeNode,
@@ -123,6 +125,11 @@ namespace OrbItProcs {
             ProcessKeyboard();
             ProcessMouse();
             ProcessController();
+
+            if (sidebar != null && sidebar.inspectorView != null)
+            {
+                sidebar.inspectorView.Refresh();
+            }
 
             //game.testing.KeyManagerTest(() => Keybindset.Update());
             keyManager.Update();

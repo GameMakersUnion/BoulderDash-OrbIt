@@ -208,21 +208,21 @@ namespace OrbItProcs
             }
             catch (Exception e)
             {
-                if (e.InnerException != null)
-                {
-                    if (e.InnerException.InnerException != null)
-                    {
-                        throw e.InnerException.InnerException;
-                    }
-                    else
-                    {
-                        throw e.InnerException;
-                    }
-                }
-                else
-                {
-                    throw e;
-                }
+                //if (e.InnerException != null)
+                //{
+                //    if (e.InnerException.InnerException != null)
+                //    {
+                //        throw e.InnerException.InnerException;
+                //    }
+                //    else
+                //    {
+                //        throw e.InnerException;
+                //    }
+                //}
+                //else
+                //{
+                //    throw e;
+                //}
             }
         }
         public void Serialize_Room()//F7

@@ -54,6 +54,8 @@ namespace OrbItProcs
         {
             if (depth == -1)
             {
+                positions.Enqueue(parent.body.pos);
+                scales.Enqueue(parent.body.scale);
                 //parent.nodeState = state.drawOnly;
                 return;
             }
@@ -63,6 +65,7 @@ namespace OrbItProcs
                 parent.body.velocity = new Vector2(0, 0);
                 depth = -1;
                 //return;
+                
             }
 
             //angle = Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2);
@@ -78,10 +81,16 @@ namespace OrbItProcs
                 }
                 else
                 {
-                    positions.Dequeue();
-                    positions.Enqueue(parent.body.pos);
-                    scales.Dequeue();
-                    scales.Enqueue(parent.body.scale);
+                    if (positions.Count > 0)
+                    {
+                        positions.Dequeue();
+                        positions.Enqueue(parent.body.pos);
+                    }
+                    if (scales.Count > 0)
+                    {
+                        scales.Dequeue();
+                        scales.Enqueue(parent.body.scale);
+                    }
                 }
             }
 
@@ -128,9 +137,10 @@ namespace OrbItProcs
                     newNode.comps[comp.tree].maxchilds = Math.Max(1,maxchilds - (depth % 2));
                     //parent.room.nodesToAdd.Enqueue(newNode);
                     //parent.room.masterGroup.childGroups.Values.ElementAt(1).IncludeEntity(newNode);
-                    TomShane.Neoforce.Controls.ComboBox cmb = parent.room.game.ui.sidebar.cbListPicker;
-                    Group g = parent.room.masterGroup.FindGroup(cmb.Items.ElementAt(cmb.ItemIndex).ToString());
-                    g.IncludeEntity(newNode);
+                    Group g = parent.room.game.ui.sidebar.ActiveGroupFirst;
+                    if (g != null)
+                        g.IncludeEntity(newNode);
+                    
                 }
                 //parent.nodeState = state.drawOnly;
 

@@ -42,6 +42,8 @@ namespace OrbItProcs
             float mapzoom = room.zoom;
 
             Texture2D tex = parent.getTexture();
+            room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale);
+
             /*Rectangle? sourceRect = null;
             int minx = 0, miny = 0, maxx = tex.Width, maxy = tex.Height;
             bool needsModifying = false;
@@ -156,7 +158,7 @@ namespace OrbItProcs
 
 
             //spritebatch.Draw(tex, parent.body.pos * mapzoom, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
-            room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale);
+            
         }
 
         //public static void CameraDraw(this SpriteBatch batch, Texture2D tex, Vector2 position, )

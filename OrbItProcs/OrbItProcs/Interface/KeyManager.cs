@@ -961,12 +961,12 @@ namespace OrbItProcs
             {
                 if (Game1.isFullScreen)
                 {
-                    MouseInGameBox = newMouseState.X < Game1.fullWidth - (float)Game1.fullWidth * ((float)ui.sidebar.master.Width / (float)Game1.sWidth);
+                    MouseInGameBox = newMouseState.X < Game1.fullWidth - (float)Game1.fullWidth * ((float)ui.sidebar.master.Width / (float)Game1.smallWidth);
                     //Console.WriteLine("{0} < {1} : {2}", newMouseState.X, Game1.fullWidth - (float)Game1.fullWidth * ((float)ui.sidebar.master.Width / (float)Game1.sWidth), MouseInGameBox);
                 }
                 else
                 {
-                    MouseInGameBox = newMouseState.X < Game1.sWidth - ui.sidebar.master.Width;
+                    MouseInGameBox = newMouseState.X < Game1.smallWidth - ui.sidebar.master.Width;
                 }
             }
             

@@ -96,7 +96,7 @@ namespace OrbItProcs
                 btnModify.Top = 10;
                 btnModify.Width = 80;
                 btnModify.Text = "Modify";
-                btnModify.Click += new TomShane.Neoforce.Controls.EventHandler(btnModify_Click);
+                btnModify.Click += btnModify_Click;
 
 
                 panelControls.Add("txtbox", txtbox);
@@ -249,7 +249,7 @@ namespace OrbItProcs
 
         void btnModify_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            String str;
+            string str;
             Type t = activeInspectorItem.obj.GetType();
 
             if (t == typeof(int))
@@ -262,8 +262,6 @@ namespace OrbItProcs
                     insArea.SetItemValue(activeInspectorItem, integer);
                     //activeInspectorItem.SetValue(integer);
                 }
-                else
-                    return;
             }
             else if (t == typeof(Single))
             {
@@ -275,8 +273,6 @@ namespace OrbItProcs
                     insArea.SetItemValue(activeInspectorItem, f);
                     //activeInspectorItem.SetValue(f);
                 }
-                else
-                    return;
             }
             else if (t == typeof(string))
             {

@@ -25,7 +25,6 @@ namespace OrbItProcs
     };
 
     public abstract class Component {
-
         public virtual mtypes compType { get; set; }
 
         protected bool _active = false;
@@ -63,8 +62,8 @@ namespace OrbItProcs
 
         //*/
         //flag as not editable in InspectorBox
-        private comp _com;
-        public comp com { get { return _com; } protected set { _com = value; } }
+        protected comp _com;
+        public comp com { get { return _com; } set { } }
         private mtypes _methods;
         //flag as not editable in InspectorBox
         private bool _CallDraw = true;
@@ -72,6 +71,24 @@ namespace OrbItProcs
         public mtypes methods { get { return _methods; } protected set { _methods = value; } }
 
         public HashSet<Node> exclusions = new HashSet<Node>();
+
+        protected virtual void GetCompEnum()
+        {
+            string s = this.GetType().ToString().ToLower();
+            foreach(string name in Enum.GetNames(typeof(comp)))
+            {
+                if (name.Equals(s))
+                {
+                    _com = (comp)Enum.Parse(typeof(comp), name);
+                    break;
+                }
+            }
+        }
+
+        public Component()
+        {
+            GetCompEnum();
+        }
 
         public virtual void Initialize(Node parent) { this.parent = parent; }
         public virtual void AfterCloning() { }
