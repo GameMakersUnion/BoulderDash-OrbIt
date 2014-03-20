@@ -7,19 +7,27 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.Serialization;
 namespace OrbItProcs
 {
+    /// <summary>
+    /// When another node enters the radius of this node, it gets teleported to the opposite side of this node, relative to this node's origin. 
+    /// </summary>
+    [Info(UserLevel.User, "When another node enters the radius of this node, it gets teleported to the opposite side of this node, relative to this node's origin. ", CompType)]
     public class Transfer : Component, ILinkable
     {
-        private Link _link = null;
-        public Link link { get { return _link; } set { _link = value; } }
-        private float _radius = 25f;
-        public float radius { get { return _radius; } set { _radius = value; } }
+        public const mtypes CompType = mtypes.affectother;
+        public override mtypes compType { get { return CompType; } set { } }
+        public Link link { get; set; }
+        /// <summary>
+        /// Distance at which the node is teleported
+        /// </summary>
+        [Info(UserLevel.User, "Distance at which the node is teleported")]
+        public float radius { get; set; }
 
         public Transfer() : this(null) { }
         public Transfer(Node parent = null)
         {
             if (parent != null) this.parent = parent;
             com = comp.transfer; 
-            methods = mtypes.affectother; 
+            radius = 25f;
         }
 
         public override void AffectOther(Node other)

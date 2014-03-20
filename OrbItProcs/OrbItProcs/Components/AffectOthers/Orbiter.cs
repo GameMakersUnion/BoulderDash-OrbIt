@@ -7,52 +7,60 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs
 {
-    public struct OrbiterData
-    {
-        public float angle;
-        public float angledelta;
-        public float speed;
-        public float radius;
-        
-        public OrbiterData(int randSpeed, int randRadius)
-        {
-            angle = Utils.random.Next(360) * (float)(Math.PI / 180);
-            speed = Utils.random.Next(randSpeed) *0.1f;
-            radius = Utils.random.Next(randRadius);
-            angledelta = speed / radius;
-
-        }
-
-
-    }
-
+    /// <summary>
+    /// Linked nodes will orbit around the source node at a cosntant random distance and speed
+    /// </summary>
+    [Info(UserLevel.User, "Linked nodes will orbit around the source node at a cosntant random distance and speed", CompType)]
     public class Orbiter : Component, ILinkable
     {
-        private Link _link = null;
-        public Link link { get { return _link; } set { _link = value; } }
 
-        public Dictionary<Node, OrbiterData> _orbiterDatas = new Dictionary<Node,OrbiterData>();
-        public Dictionary<Node, OrbiterData> orbiterDatas { get { return _orbiterDatas; } set { _orbiterDatas = value; } }
+        public const mtypes CompType = mtypes.exclusiveLinker;
+        public override mtypes compType { get { return CompType; } set { } }
+        public struct OrbiterData
+        {
+            public float angle;
+            public float angledelta;
+            public float speed;
+            public float radius;
 
-        private int _randRadius = 500;
-        public int randRadius { get { return _randRadius; } set { _randRadius = value; } }
-        private int _randSpeed = 50;
-        public int randSpeed { get { return _randSpeed; } set { _randSpeed = value; } }
+            public OrbiterData(int randSpeed, int randRadius)
+            {
+                angle = Utils.random.Next(360) * (float)(Math.PI / 180);
+                speed = Utils.random.Next(randSpeed) * 0.1f;
+                radius = Utils.random.Next(randRadius);
+                angledelta = speed / radius;
 
-        private float _speedMult = 1f;
-        public float speedMult { get { return _speedMult; } set { _speedMult = value; } }
+            }
+        }
 
-        //private int _lowerbound = 20;
-        //public int lowerbound { get { return _lowerbound; } set { _lowerbound = value; } }
-        //private bool _IsLinear = false;
-        //public bool IsLinear { get { return _IsLinear; } set { _IsLinear = value; } }
+        [Info(UserLevel.Developer)]
+        public Link link { get; set; }
+        public Dictionary<Node, OrbiterData> orbiterDatas { get; set; }
+        /// <summary>
+        /// Maximum distance for orbiting nodes
+        /// </summary>
+        [Info(UserLevel.User, "Maximum distance for orbiting nodes")]
+        public int maxRadius { get; set; }
+        /// <summary>
+        /// Maximum speed for orbiting nodes
+        /// </summary>
+        [Info(UserLevel.User, "Maximum speed for orbiting nodes")]
+        public int maxSpeed { get; set; }
+        /// <summary>
+        /// Multiplies the speed by the given factor
+        /// </summary>
+        [Info(UserLevel.User, "Multiplies the speed by the given factor")]
+        public float speedMult { get; set; }
 
         public Orbiter() : this(null) { }
         public Orbiter(Node parent = null)
         {
+            orbiterDatas = new Dictionary<Node, OrbiterData>();
             if (parent != null) this.parent = parent;
             com = comp.orbiter;
-            methods = mtypes.affectother;
+            maxRadius = 500;
+            maxSpeed = 50;
+            speedMult = 1f;
 
         }
 
@@ -74,7 +82,7 @@ namespace OrbItProcs
                         else if (od.angle < -Math.PI)
                             od.angle = od.angle + 2 * (float)Math.PI;
 
-                        //Console.WriteLine(od.angle + " : " + od.angledelta);
+                        //Console.WriteLine(od.angle + " : " + od.angle);
 
                         float x = od.radius * (float)Math.Cos(od.angle);
                         float y = od.radius * (float)Math.Sin(od.angle);
@@ -86,43 +94,10 @@ namespace OrbItProcs
                     }
                     else
                     {
-                        orbiterDatas[n] = new OrbiterData(randSpeed, randRadius);
+                        orbiterDatas[n] = new OrbiterData(maxSpeed, maxRadius);
                     }
                 }
             }
-
-            /*
-            float distVects = Vector2.Distance(other.transform.position, parent.transform.position);
-
-            if (distVects < radius)
-            {
-                if (distVects < lowerbound) distVects = lowerbound;
-                double angle = Math.Atan2((parent.transform.position.Y - other.transform.position.Y), (parent.transform.position.X - other.transform.position.X));
-                //float counterforce = 100 / distVects;
-                //float gravForce = multiplier / (distVects * distVects * counterforce);
-                //Console.WriteLine(angle);
-
-
-
-                //float gravForce = (multiplier * parent.transform.mass * other.transform.mass) / (distVects * distVects * counterforce);
-                float gravForce;
-                if (IsLinear) gravForce = pushfactor;// * 10;
-                else gravForce = (pushfactor * parent.transform.mass * other.transform.mass) / (distVects);
-
-                if (angledelta != 0)
-                    angle = (angle + Math.PI + (Math.PI * (float)(angledelta / 180.0f)) % (Math.PI * 2)) - Math.PI;
-
-                //float gravForce = gnode1.GravMultiplier;
-                float velX = (float)Math.Cos(angle) * gravForce;
-                float velY = (float)Math.Sin(angle) * gravForce;
-                Vector2 delta = new Vector2(velX, velY);
-
-                if (IsLinear) delta /= other.transform.mass;
-
-                other.transform.position -= delta;
-
-            }
-            */
         }
         public override void AffectSelf()
         {

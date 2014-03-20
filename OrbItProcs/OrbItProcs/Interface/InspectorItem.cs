@@ -307,12 +307,12 @@ namespace OrbItProcs {
                 foreach (PropertyInfo pinfo in propertyInfos)
                 {
                     object[] attributes = pinfo.GetCustomAttributes(false);
-                    if (pinfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
+                    //if (pinfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
 
-                    var abstractions = pinfo.GetCustomAttributes(typeof(AbstractionLevel), false);
+                    var abstractions = pinfo.GetCustomAttributes(typeof(Info), false);
                     if (abstractions.Length > 0)
                     {
-                        if ((int)(abstractions[0] as AbstractionLevel).userLevel > (int)userlevel) continue;
+                        if ((int)(abstractions[0] as Info).userLevel > (int)Sidebar.userLevel) continue;
                     }
                     else if (userlevel != UserLevel.Debug)
                     {
@@ -324,33 +324,33 @@ namespace OrbItProcs {
                     InsertItemSorted(list, iitem);
                 }
                 ////// FIELDS
-                List<FieldInfo> fieldInfos;
-                //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                if (!(parent is Component || parent is Player || parent is Process))
-                {
-                    fieldInfos = parent.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
-                }
-                else
-                {
-                    fieldInfos = parent.GetType().GetFields().ToList();
-                }
+                    List<FieldInfo> fieldInfos;
+                    //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
+                    if (!(parent is Component || parent is Player || parent is Process))
+                    {
+                        fieldInfos = parent.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
+                    }
+                    else
+                    {
+                        fieldInfos = parent.GetType().GetFields().ToList();
+                    }
 
-                foreach (FieldInfo finfo in fieldInfos)
-                {
-                    if (finfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
-                    //var abstractions = finfo.GetCustomAttributes(typeof(AbstractionLevel), false);
-                    //if (abstractions.Length > 0)
-                    //{
-                    //    if ((int)(abstractions[0] as AbstractionLevel).userLevel > (int)userlevel) continue;
-                    //}
-                    //else if (userlevel != UserLevel.Debug)
-                    //{
-                    //    continue;
-                    //}
-                    InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, finfo.GetValue(parent), finfo);
-                    if (iitem.CheckForChildren()) iitem.prefix = "+";
-                    InsertItemSorted(list, iitem);
-                }
+                    foreach (FieldInfo finfo in fieldInfos)
+                    {
+                        //if (finfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
+                        var abstractions = finfo.GetCustomAttributes(typeof(Info), false);
+                        if (abstractions.Length > 0)
+                        {
+                            if ((int)(abstractions[0] as Info).userLevel > (int)Sidebar.userLevel) continue;
+                        }
+                        else if (Sidebar.userLevel != UserLevel.Debug)
+                        {
+                            continue;
+                        }
+                        InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, finfo.GetValue(parent), finfo);
+                        if (iitem.CheckForChildren()) iitem.prefix = "+";
+                        InsertItemSorted(list, iitem);
+                    }
                 
             }
             //if it's just a normal primitive, it will return an empty list
@@ -632,12 +632,12 @@ namespace OrbItProcs {
             {
                 if (masterList != null)
                 {
-                    foreach (InspectorItem subitem in children)
-                    {
-                        //masterList.Insert(position + i++, subitem);
-                        masterList.Remove(subitem);
-                    }
+                foreach (InspectorItem subitem in children)
+                {
+                    //masterList.Insert(position + i++, subitem);
+                    masterList.Remove(subitem);
                 }
+            }
             }
 
         }

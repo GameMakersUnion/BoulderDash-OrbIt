@@ -721,8 +721,7 @@ namespace OrbItProcs
                 {
                     anglestep += AngleInc;
                     
-                    int[] cs = HueShifter.getColorsFromAngle(anglestep % 360);
-                    Color color1 = new Color(cs[0], cs[1], cs[2]);
+                    Color color1 = ColorChanger.getColorFromHSV(anglestep % 360);
 
                     Vector2 diff = target.body.pos - source.body.pos;
                     Vector2 perp = new Vector2(diff.Y, -diff.X);

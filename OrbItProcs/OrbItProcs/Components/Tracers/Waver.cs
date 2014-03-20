@@ -9,42 +9,61 @@ using System.Reflection;
 
 namespace OrbItProcs
 {
+    /// <summary>
+    /// Replaces the node's basic draw with one or two waves which have their origin at the nodes position and trail behind it.
+    /// </summary>
+    [Info(UserLevel.User, "Replaces the node's basic draw with one or two waves which have their origin at the nodes position and trail behind it.", CompType)]
     public class Waver : Component
     {
-        private bool _reflective = false;
-        public bool reflective { get { return _reflective; } set { _reflective = value; } }
+        public const mtypes CompType = mtypes.affectself | mtypes.draw;
+        public override mtypes compType { get { return CompType; } set { } }
+        [Info(UserLevel.Developer)]
         public Queue<Vector2> metapositions = new Queue<Vector2>();
-        public Queue<Vector2> reflectpositions = new Queue<Vector2>();
-        [Polenter.Serialization.ExcludeFromSerialization]
-        public int queuecount { get { if (parent != null && parent.HasComponent(comp.queuer)) return parent[comp.queuer].queuecount; else return 10; } set { if (parent != null && parent.HasComponent(comp.queuer)) parent[comp.queuer].queuecount = value; } }
+        private Queue<Vector2> reflectpositions = new Queue<Vector2>();
 
-        private float _amp = 100;
-        public float amp
-        {
-            get { return _amp; }
+        public int _waveLength = 10;
+        /// <summary>
+        /// Sets the length of the wave.
+        /// </summary>
+        [Info(UserLevel.User, "Sets the length of the wave. ")]
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public int waveLength 
+        { 
+            get 
+            {
+                return _waveLength; 
+            } 
             set 
             {
-                _amp = value;
+                if (parent != null && parent.HasComponent(comp.queuer) && parent[comp.queuer].queuecount < value)
+                {
+                    parent[comp.queuer].queuecount = value;
+                }
+                _waveLength = value;
             } 
         }
-        private float _period = 30;
-        public float period
-        {
-            get { return _period; }
-            set
-            {
-                _period = value;
-            }
-        }
-        private int _composite = 1;
-        public int composite
-        {
-            get { return _composite; }
-            set
-            {
-                _composite = value;
-            }
-        }
+        /// <summary>
+        /// How wide the wave will be at its maximum point.
+        /// </summary>
+        [Info(UserLevel.User, "How wide the wave will be at its maximum point.")]
+        public float amp { get; set; }
+
+        /// <summary>
+        /// The frequency of the hills and valleys of the wave.
+        /// </summary>
+        [Info(UserLevel.User, "The frequency of the hills and valleys of the wave.")]
+        public float period { get; set; }
+        /// <summary>
+        /// If set, two waves will appear instead of one, each a reflection of the other across the axis that is the node's path.
+        /// </summary>
+        [Info(UserLevel.User, "If set, two waves will appear instead of one, each a reflection of the other across the axis that is the node's path.")]
+        public bool reflective { get; set; }
+        /// <summary>
+        /// The composite level of the sine wave. Google "Composite Sine Wave"  to understand this.
+        /// </summary>
+        [Info(UserLevel.Advanced, "The composite level of the sine wave. Google 'Composite Sine Wave'  to understand this.")]
+        public int composite{get; set;}
+
         private float vshift = 0f;
         private float yval = 0f;
 
@@ -57,8 +76,9 @@ namespace OrbItProcs
                 this.parent = parent;
             }
             com = comp.waver;
-            methods = mtypes.affectself | mtypes.draw;
-            //InitializeLists();
+            amp = 100;
+            period = 30;
+            composite = 1;
         }
 
         public override void AfterCloning()
@@ -115,7 +135,7 @@ namespace OrbItProcs
             float time = 0;
             if (parent.comps.ContainsKey(comp.lifetime))
             {
-                time = parent.comps[comp.lifetime].mseconds;
+                time = parent.comps[comp.lifetime].lifetime;
             }
 
             yval = DelegateManager.SineComposite(time, amp, period, vshift, composite);
@@ -125,7 +145,7 @@ namespace OrbItProcs
             metapos *= yval;
             Vector2 metaposfinal = parent.body.pos + metapos;
 
-            if (metapositions.Count > queuecount)
+            if (metapositions.Count > waveLength)
             {
                 metapositions.Dequeue();
             }
@@ -134,7 +154,7 @@ namespace OrbItProcs
             if (reflective)
             {
                 Vector2 reflectfinal = parent.body.pos - metapos;
-                if (reflectpositions.Count > queuecount)
+                if (reflectpositions.Count > waveLength)
                 {
                     reflectpositions.Dequeue();
                 }

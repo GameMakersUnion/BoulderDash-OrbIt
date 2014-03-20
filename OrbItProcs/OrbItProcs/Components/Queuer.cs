@@ -20,8 +20,12 @@ namespace OrbItProcs
         customs = 0x08,
     }
 
+    [Info(UserLevel.Developer, "Internal component for managing Tracer Components", CompType )]
     public class Queuer : Component
     {
+
+        public const mtypes CompType = mtypes.affectself;
+        public override mtypes compType { get { return CompType; } set { } }
         private queues _qs = queues.none;
         public queues qs { get { return _qs; } set { _qs = value; } }
 
@@ -52,7 +56,6 @@ namespace OrbItProcs
         {
             if (parent != null) this.parent = parent;
             com = comp.queuer;
-            methods = mtypes.affectself;
             InitializeLists();
             
             qcounts[queues.position] = queuecount;
@@ -64,7 +67,7 @@ namespace OrbItProcs
         {
             if (parent.comps.ContainsKey(comp.waver))
             {
-                positions = parent.comps[comp.waver].metapositions;
+                positions = parent.GetComponent<Waver>().metapositions;
             }
         }
 

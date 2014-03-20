@@ -7,46 +7,55 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs
 {
+    /// <summary>
+    /// When another node enters this radius, it is displaced without affecting its velocity.
+    /// </summary>
+    [Info(UserLevel.User, "When another node enters this radius, it is displaced without affecting its velocity.", CompType)]
     public class Displace : Component, ILinkable
     {
-        private Link _link = null;
-        public Link link { get { return _link; } set { _link = value; } }
-        //private float _multiplier = 100f;
-        //public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
+        public const mtypes CompType = mtypes.affectother;
+        public override mtypes compType { get { return CompType; } set { } }
 
-        private float _radius = 800f;
-        public float radius { get { return _radius; } set { _radius = value; } }
+        [Info(UserLevel.Developer)]
+        public Link link { get; set; }
+        /// <summary>
+        /// Radius at which other nodes are affected.
+        /// </summary>
+        [Info(UserLevel.User, "Radius at which other nodes are affected.")]
+        public float radius { get; set; }
+        /// <summary>
+        /// Represents minimum distance taken into account when calculating push away.
+        /// </summary>
+        [Info(UserLevel.Advanced, "Represents minimum distance taken into account when calculating push away.")]
+        public int lowerbound { get; set; }
 
-        private int _lowerbound = 20;
-        public int lowerbound { get { return _lowerbound; } set { _lowerbound = value; } }
+        /// <summary>
+        /// The strength with which the other node will be displaced
+        /// </summary>
+        [Info(UserLevel.Advanced, "The strength with which the other node will be displaced")]
+        public float pushfactor { get; set; }
 
-        private float _pushfactor = 10f;
-        public float pushfactor { get { return _pushfactor; } set { _pushfactor = value; } }
+        /// <summary>
+        /// Changes the angle at which the node displaces the incoming node:
+        /// 0 pushes away and 180 pulls toward. 90 pushes rightwards and 270 pushes leftwards.
+        /// </summary>
+        [Info(UserLevel.User, "Changes the angle at which the node displaces the incoming node: 0 pushes away and 180 pulls toward. 90 pushes rightwards and 270 pushes leftwards.")]
+        public int angle { get; set; }
 
-        private int _angledelta = 0;
-        public int angledelta { get { return _angledelta; } set { _angledelta = value; } }
-
-        private bool _IsLinear = false;
-        public bool IsLinear { get { return _IsLinear; } set { _IsLinear = value; } }
-
-        //private bool _constant = false;
-        //public bool constant { get { return _constant; } set { _constant = value; } }
-        //
-        //private bool _AffectsOnlyGravity = false;
-        //public bool AffectsOnlyGravity { get { return _AffectsOnlyGravity; } set { _AffectsOnlyGravity = value; } }
-        //
-        //private bool _AffectBoth = false;
-        //public bool AffectBoth { get { return _AffectBoth; } set { _AffectBoth = value; } }
-        //
-        //private bool _StrongGravity = false;
-        //public bool StrongGravity { get { return _StrongGravity; } set { _StrongGravity = value; } }
+        /// <summary>
+        /// If disabled, the intencity of displacement will vary depending on the distance from the node.
+        /// </summary>
+        [Info(UserLevel.Advanced, "If disabled, the intensity of displacement will vary depending on the distance from the node.")]
+        public bool ConstantPush { get; set; }
 
         public Displace() : this(null) { }
-        public Displace(Node parent = null)
+        public Displace(Node parent)
         {
             if (parent != null) this.parent = parent;
             com = comp.displace;
-            methods = mtypes.affectother;
+            pushfactor = 10f;
+            lowerbound = 20;
+            radius = 800f;
 
         }
 
@@ -70,18 +79,18 @@ namespace OrbItProcs
 
                 //float gravForce = (multiplier * parent.transform.mass * other.transform.mass) / (distVects * distVects * counterforce);
                 float gravForce;
-                if (IsLinear) gravForce = pushfactor;// * 10;
+                if (!ConstantPush) gravForce = pushfactor;// * 10;
                 else gravForce = (pushfactor * parent.body.mass * other.body.mass) / (distVects);
 
-                if (angledelta != 0)
-                    angle = (angle + Math.PI + (Math.PI * (float)(angledelta / 180.0f)) % (Math.PI * 2)) - Math.PI;
+                if (angle != 0)
+                    angle = (angle + Math.PI + (Math.PI * (float)(angle / 180.0f)) % (Math.PI * 2)) - Math.PI;
 
                 //float gravForce = gnode1.GravMultiplier;
                 float velX = (float)Math.Cos(angle) * gravForce;
                 float velY = (float)Math.Sin(angle) * gravForce;
                 Vector2 delta = new Vector2(velX, velY);
 
-                if (IsLinear) delta *= other.body.invmass;;
+                if (!ConstantPush) delta *= other.body.invmass;;
 
                 other.body.pos -= delta;
 
@@ -90,10 +99,8 @@ namespace OrbItProcs
         public override void AffectSelf()
         {
         }
-
         public override void Draw(SpriteBatch spritebatch)
         {
-
         }
     }
 }

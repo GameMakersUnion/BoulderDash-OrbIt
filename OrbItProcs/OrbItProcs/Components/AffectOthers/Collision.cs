@@ -7,14 +7,22 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs
 {
+    /// <summary>
+    /// Nodes with this component bounce away from each other upon contact
+    /// </summary>
+    [Info(UserLevel.User, "Nodes with this component bounce away from each other upon contact", mtypes.minordraw | mtypes.affectself | mtypes.essential)]
     public class Collision : Component, ILinkable
     {
+        public const mtypes CompType = mtypes.minordraw | mtypes.affectself | mtypes.essential;
+        public override mtypes compType { get { return CompType; } set { } }
+
+        public Link link { get; set; }
+
         public static Func<Manifold, Collider, Collider, bool>[,] Dispatch = new Func<Manifold, Collider, Collider, bool>[2, 2]
         {
             {CircletoCircle, CircletoPolygon},
             {PolygontoCircle, PolygontoPolygon},
         };
-
         public static Func<Collider, Collider, bool>[,] CheckDispatch = new Func<Collider, Collider, bool>[2, 2]
         {
             {CircletoCircleCheck, CircletoPolygonCheck},
@@ -26,9 +34,9 @@ namespace OrbItProcs
             return Collision.CheckDispatch[(int)aa.shape.GetShapeType(), (int)bb.shape.GetShapeType()](aa, bb);
         }
 
-        private Link _link = null;
-        public Link link { get { return _link; } set { _link = value; } }
 
+
+        [Info(UserLevel.Developer)]
         public Dictionary<string, Collider> colliders = new Dictionary<string, Collider>();
 
         public void AddCollider(string key, Collider col)
@@ -82,8 +90,10 @@ namespace OrbItProcs
             }
         }
 
-        public bool ResolveCollision { get { return parent != null && parent.body.ResolveCollision; } set { if (parent != null) parent.body.ResolveCollision = value; } }
+        public bool isSolid { get { return parent != null && parent.body.isSolid; } set { if (parent != null) parent.body.isSolid = value; } }
+        
         private bool _AllHandlersEnabled = true;
+        [Info(UserLevel.Developer)]
         public bool AllHandlersEnabled
         {
             get { return _AllHandlersEnabled; }
@@ -101,7 +111,7 @@ namespace OrbItProcs
                     }
                     if (_AllHandlersEnabled && !value)
                     {
-                        if (!parent.body.ResolveCollision) parent.room.CollisionSet.Remove(parent.body);
+                        if (!parent.body.isSolid) parent.room.CollisionSet.Remove(parent.body);
                         foreach (Collider col in colliders.Values)
                         {
                             parent.room.CollisionSet.Remove(col);
@@ -112,6 +122,7 @@ namespace OrbItProcs
                 _AllHandlersEnabled = value;
             }
         }
+        [Info(UserLevel.Developer)]
         public override bool active
         {
             get { return _active; }
@@ -121,7 +132,7 @@ namespace OrbItProcs
                 {
                     if (!_active && value)
                     {
-                        if (parent.body.ResolveCollision || parent.body.HandlersEnabled) parent.room.CollisionSet.Add(parent.body);
+                        if (parent.body.isSolid || parent.body.HandlersEnabled) parent.room.CollisionSet.Add(parent.body);
                         foreach (Collider col in colliders.Values)
                         {
                             if (col.HandlersEnabled) parent.room.CollisionSet.Add(col);
@@ -146,7 +157,7 @@ namespace OrbItProcs
             {
                 if (active)
                 {
-                    if (parent.body.ResolveCollision || parent.body.HandlersEnabled) parent.room.CollisionSet.Add(parent.body);
+                    if (parent.body.isSolid || parent.body.HandlersEnabled) parent.room.CollisionSet.Add(parent.body);
                     foreach (Collider col in colliders.Values)
                     {
                         if (col.HandlersEnabled) parent.room.CollisionSet.Add(col);
@@ -173,8 +184,6 @@ namespace OrbItProcs
         {
             if (parent != null) this.parent = parent;
             com = comp.collision; 
-            methods = mtypes.affectself | mtypes.minordraw;//mtypes.affectother;
-            //ResolveCollision = true;
             _AllHandlersEnabled = true;
         }
 
@@ -286,7 +295,7 @@ namespace OrbItProcs
 
                     
 
-                    if (ResolveCollision && other.collision.ResolveCollision)
+                    if (isSolid && other.collision.isSolid)
                         parent.room.AddManifold(m);
                 }
             }

@@ -326,7 +326,9 @@ namespace OrbItProcs
             
             foreach (PropertyInfo info in propertyinfos)
             {
-                if (info.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
+                Info[] infoAttributes = (Info[])info.GetCustomAttributes(typeof(Info), false);
+                if (infoAttributes.Any(x => x.userLevel == UserLevel.Never)) continue;
+
                 Type[] types = new Type[] { type, info.PropertyType };
                 if (!getters[type].ContainsKey(info.Name))
                 {

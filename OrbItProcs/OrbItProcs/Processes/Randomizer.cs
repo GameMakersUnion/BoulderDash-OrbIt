@@ -73,7 +73,7 @@ namespace OrbItProcs
             Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
                                 { nodeE.position, pos },
             };
-            HashSet<comp> comps = new HashSet<comp>() { comp.basicdraw, comp.randcolor, comp.movement, comp.lifetime };
+            HashSet<comp> comps = new HashSet<comp>() { comp.basicdraw, comp.movement, comp.lifetime };
             HashSet<comp> allComps = new HashSet<comp>();
             foreach (comp c in Enum.GetValues(typeof(comp)))
             {

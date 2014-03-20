@@ -11,6 +11,7 @@ namespace OrbItProcs
     public class MethodEntry
     {
         public Delegator delegator;
+
         public string name { get; set; }
         private bool _enabled = false;
         public bool enabled
@@ -60,7 +61,7 @@ namespace OrbItProcs
             Type type = typeof(DelegatorMethods);
             foreach(var meth in type.GetMethods())
             {
-                //if (meth.Name.Equals("InitializeDelegateMethods")) continue; //add more non-delegate methods here
+                //if (meth.Name.Equals("InitializeDelegateMethods")) continue; //add more non-delegate compType here
                 //delegates[meth.Name] = Delegate.CreateDelegate(meth.typ)
                 Type methType = null;
                 if (meth.ReturnType != typeof(void)) continue;
@@ -159,9 +160,15 @@ namespace OrbItProcs
         //DRAW DATASTORE
 
     }
-
+    /// <summary>
+    /// Special component that tests out a variety of Component prototypes and mini Components.
+    /// </summary>
+    [Info(UserLevel.Developer, "Special component that tests out a variety of Component prototypes and mini Components.", mtypes.none)]
     public class Delegator : Component
     {
+        private mtypes CompType = mtypes.none;
+        public override mtypes compType { get { return CompType; } set { CompType = value; } }
+
         private Dictionary<string, Action<Node, Node>> aOtherDelegates;
         private Dictionary<string, Action<Node>> aSelfDelegates;
         private Dictionary<string, Action<Node, SpriteBatch>> drawDelegates;
@@ -173,15 +180,12 @@ namespace OrbItProcs
 
         public Dictionary<string, DataStore> datastores { get; set; }
 
-        
-        
         public Delegator() :this(null) { }
 
         public Delegator(Node parent)
         {
             this.parent = parent;
             com = comp.delegator;
-            methods = mtypes.none;
             datastores = new Dictionary<string, DataStore>();
             delegates = new Dictionary<string, MethodEntry>();
             foreach(string key in DelegatorMethods.delegates.Keys)
@@ -252,34 +256,34 @@ namespace OrbItProcs
             if (type == typeof(Action<Node>))
             {
                 if (aSelfDelegates != null && aSelfDelegates.ContainsKey(n)) aSelfDelegates.Remove(n);
-                if ((aSelfDelegates != null || aSelfDelegates.Count == 0) && (aSelfDelegatesDS == null || aSelfDelegatesDS.Count == 0)) methods &= ~mtypes.affectself;
+                if ((aSelfDelegates != null || aSelfDelegates.Count == 0) && (aSelfDelegatesDS == null || aSelfDelegatesDS.Count == 0)) compType &= ~mtypes.affectself;
             }
             else if (type == typeof(Action<Node, Node>))
             {
                 if (aOtherDelegates != null && aOtherDelegates.ContainsKey(n)) aOtherDelegates.Remove(n);
-                if ((aOtherDelegates == null || aOtherDelegates.Count == 0) && (aOtherDelegatesDS == null || aOtherDelegatesDS.Count == 0)) methods &= ~mtypes.affectother;
+                if ((aOtherDelegates == null || aOtherDelegates.Count == 0) && (aOtherDelegatesDS == null || aOtherDelegatesDS.Count == 0)) compType &= ~mtypes.affectother;
             }
             else if (type == typeof(Action<Node, SpriteBatch>))
             {
                 if (drawDelegates != null && drawDelegates.ContainsKey(n)) drawDelegates.Remove(n);
-                if ((drawDelegates == null || drawDelegates.Count == 0) && (drawDelegatesDS == null || drawDelegatesDS.Count == 0)) methods &= ~(mtypes.draw | mtypes.minordraw);
+                if ((drawDelegates == null || drawDelegates.Count == 0) && (drawDelegatesDS == null || drawDelegatesDS.Count == 0)) compType &= ~(mtypes.draw | mtypes.minordraw);
             }
             else
             {
                 if (type == typeof(Action<Node, DataStore>))
                 {
                     if (aSelfDelegatesDS != null && aSelfDelegatesDS.ContainsKey(n)) aSelfDelegatesDS.Remove(n);
-                    if ((aSelfDelegatesDS == null || aSelfDelegatesDS.Count == 0) && (aSelfDelegates == null || aSelfDelegates.Count == 0)) methods &= ~mtypes.affectself;
+                    if ((aSelfDelegatesDS == null || aSelfDelegatesDS.Count == 0) && (aSelfDelegates == null || aSelfDelegates.Count == 0)) compType &= ~mtypes.affectself;
                 }
                 else if (type == typeof(Action<Node, Node, DataStore>))
                 {
                     if (aOtherDelegatesDS != null && aOtherDelegatesDS.ContainsKey(n)) aOtherDelegatesDS.Remove(n);
-                    if ((aOtherDelegatesDS == null || aOtherDelegatesDS.Count == 0) && (aOtherDelegates == null || aOtherDelegates.Count == 0)) methods &= ~mtypes.affectother;
+                    if ((aOtherDelegatesDS == null || aOtherDelegatesDS.Count == 0) && (aOtherDelegates == null || aOtherDelegates.Count == 0)) compType &= ~mtypes.affectother;
                 }
                 else if (type == typeof(Action<Node, SpriteBatch, DataStore>))
                 {
                     if (drawDelegatesDS != null && drawDelegatesDS.ContainsKey(n)) drawDelegatesDS.Remove(n);
-                    if ((drawDelegatesDS == null || drawDelegatesDS.Count == 0) && (drawDelegates == null || drawDelegates.Count == 0)) methods &= ~(mtypes.draw | mtypes.minordraw);
+                    if ((drawDelegatesDS == null || drawDelegatesDS.Count == 0) && (drawDelegates == null || drawDelegates.Count == 0)) compType &= ~(mtypes.draw | mtypes.minordraw);
                 }
             }
             if (datastores.ContainsKey(n)) datastores.Remove(n);
@@ -295,9 +299,9 @@ namespace OrbItProcs
             ds["active"] = true;
             //overwrites previous if existed
             datastores[name] = ds;
-            if ((methods & mtypes.affectother) != mtypes.affectother)
+            if ((compType & mtypes.affectother) != mtypes.affectother)
             {
-                methods = methods | mtypes.affectother;
+                compType = compType | mtypes.affectother;
             }
             if (parent != null) parent.SortComponentListsUpdate();
         }
@@ -320,9 +324,9 @@ namespace OrbItProcs
             }
             //overwrites previous if existed
             datastores[name] = ds;
-            if ((methods & mtypes.affectother) != mtypes.affectother)
+            if ((compType & mtypes.affectother) != mtypes.affectother)
             {
-                methods = methods | mtypes.affectother;
+                compType = compType | mtypes.affectother;
             }
             if (parent != null) parent.SortComponentListsUpdate();
         }
@@ -336,9 +340,9 @@ namespace OrbItProcs
             ds["active"] = true;
             //overwrites previous if existed
             datastores[name] = ds;
-            if ((methods & mtypes.affectself) != mtypes.affectself)
+            if ((compType & mtypes.affectself) != mtypes.affectself)
             {
-                methods = methods | mtypes.affectself;
+                compType = compType | mtypes.affectself;
             }
             if (parent != null) parent.SortComponentListsUpdate();
 
@@ -362,9 +366,9 @@ namespace OrbItProcs
             }
             //overwrites previous if existed
             datastores[name] = ds;
-            if ((methods & mtypes.affectself) != mtypes.affectself)
+            if ((compType & mtypes.affectself) != mtypes.affectself)
             {
-                methods = methods | mtypes.affectself;
+                compType = compType | mtypes.affectself;
             }
             if (parent != null) parent.SortComponentListsUpdate();
         }
@@ -378,9 +382,9 @@ namespace OrbItProcs
             ds["active"] = true;
             //overwrites previous if existed
             datastores[name] = ds;
-            if ((methods & mtypes.affectself) != mtypes.affectself)
+            if ((compType & mtypes.affectself) != mtypes.affectself)
             {
-                methods = methods | mtypes.affectself;
+                compType = compType | mtypes.affectself;
             }
             if (parent != null) parent.SortComponentListsUpdate();
         }
@@ -403,9 +407,9 @@ namespace OrbItProcs
             }
             //overwrites previous if existed
             datastores[name] = ds;
-            if ((methods & mtypes.draw) != mtypes.draw)
+            if ((compType & mtypes.draw) != mtypes.draw)
             {
-                methods = methods | mtypes.minordraw;
+                compType = compType | mtypes.minordraw;
             }
             if (parent != null) parent.SortComponentListsDraw();
         }

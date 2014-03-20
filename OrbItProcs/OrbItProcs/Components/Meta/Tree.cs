@@ -8,39 +8,65 @@ using System.Reflection;
 
 namespace OrbItProcs
 {
+    /// <summary>
+    /// After a short interval, this node spawns smaller nodes that share it's characteristics.
+    /// </summary>
+    [Info(UserLevel.User, "After a short interval, this node spawns smaller nodes that share it's characteristics.",CompType)]
     public class Tree : Component
     {
-        private int _queuecount = 100;
-        public int queuecount { get { return _queuecount; } set { _queuecount = value; } }
 
+        public const mtypes CompType = mtypes.affectself | mtypes.draw;
+        public override mtypes compType { get { return CompType; } set { } }
+
+        
+        public int queuecount { get; set; }
         private float r1, g1, b1;
-
         private Queue<Vector2> positions;
         private Queue<float> scales;
 
-        private int _depth = 0;
-        public int depth { get { return _depth; } set { _depth = value; } }
-        private int _maxdepth = 4;
-        public int maxdepth { get { return _maxdepth; } set { _maxdepth = value; } }
-        private float _anglerange = 45;
-        public float anglerange { get { return _anglerange; } set { _anglerange = value; } }
-        private int _randlife = 20;
-        public int randlife { get { return _randlife; } set { _randlife = value; } }
-        private int _lifeleft = 0;
-        public int lifeleft { get { return _lifeleft; } set { _lifeleft = value; } }
-        private int _maxchilds = 3;
-        public int maxchilds { get { return _maxchilds; } set { _maxchilds = value; } }
+        [Info(UserLevel.Developer)]
+        public int depth;
+        /// <summary>
+        /// The amount of times that branches divide into smaller branches
+        /// </summary>
+        [Info(UserLevel.User, "The amount of times that branches divide into smaller branches")]
+        public int branchStages { get; set; }
+        /// <summary>
+        /// When a branch divides, the velocity of the resulting nodes will be within this range of the causing node;
+        /// </summary>
+        [Info(UserLevel.User, "When a branch divides, the velocity of the resulting nodes will be within this range of the causing node;")]
+        public float angleRange { get; set; }
 
+        /// <summary>
+        /// The relative length of each branch;
+        /// </summary>
+        [Info(UserLevel.Advanced, "The relative length of each branch;")]
+        public int randlife { get; set; }
+
+        private int lifeleft;
+
+        /// <summary>
+        /// The maximum number of children made at every division.
+        /// </summary>
+        [Info(UserLevel.Advanced, "The maximum number of children made at every division.")]
+        public int maxchilds { get; set ; }
+
+        public Toggle<int> fade { get; set; }
         public Tree() : this(null) { }
         public Tree(Node parent = null)
         {
             if (parent != null) this.parent = parent;
             com = comp.tree;
-            methods = mtypes.affectself | mtypes.draw;
             InitializeLists();
             r1 = Utils.random.Next(255) / 255f;
             g1 = Utils.random.Next(255) / 255f;
             b1 = Utils.random.Next(255) / 255f;
+            queuecount = 100;
+            fade = new Toggle<int>(queuecount);
+            branchStages = 4;
+            angleRange = 45;
+            randlife = 20;
+            maxchilds = 3;
         }
 
         public override void InitializeLists()
@@ -59,7 +85,7 @@ namespace OrbItProcs
                 //parent.nodeState = state.drawOnly;
                 return;
             }
-            if (depth > maxdepth)
+            if (depth > branchStages)
             {
                 lifeleft = -1;
                 parent.body.velocity = new Vector2(0, 0);
@@ -113,7 +139,7 @@ namespace OrbItProcs
                 {
                     float childscale = parent.body.scale * scaledown;
                     Vector2 childpos = parent.body.pos;
-                    float anglechange = Utils.random.Next((int)anglerange) - (anglerange / 2);
+                    float anglechange = Utils.random.Next((int)angleRange) - (angleRange / 2);
                     //
                     anglechange = anglechange * (float)(Math.PI / 180);
                     angle += anglechange; //we might need to do a Math.Max(360,Math.Min(0,x));
@@ -171,18 +197,18 @@ namespace OrbItProcs
             foreach (Vector2 pos in positions)
             {
                 //color = new Color(color.R, color.G, color.B, 255/queuecount * count);
-                a += r1 / 10;
-                b += g1 / 10;
-                c += b1 / 10;
+                a += r1 / fade;
+                b += g1 / fade;
+                c += b1 / fade;
                 col = new Color(a, b, c, 0.8f);
-                if (parent.comps.ContainsKey(comp.hueshifter) && parent.comps[comp.hueshifter].active) col = parent.body.color;
+                if (!fade) col = parent.body.color;
 
                 spritebatch.Draw(parent.getTexture(), pos * mapzoom, null, col, 0, parent.TextureCenter(), scales.ElementAt(count) * mapzoom, SpriteEffects.None, 0);
                 count++;
             }
 
             //float testangle = (float)(Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2));
-            if (parent.comps.ContainsKey(comp.hueshifter)) col = parent.body.color;
+            if (!fade) col = parent.body.color;
             spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
 
         }

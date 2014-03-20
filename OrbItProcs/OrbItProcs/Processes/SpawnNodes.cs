@@ -115,10 +115,8 @@ namespace OrbItProcs
                                 
                             //{ node.texture, textures.whitecircle },
                             //{ node.radius, 12 },
-                            { comp.randcolor, true },
                             { comp.movement, true },
                             //{ comp.randvelchange, true },
-                            { comp.randinitialvel, true },
                             //{ comp.gravity, false },
                             { comp.lifetime, true },
                             //{ comp.transfer, true },

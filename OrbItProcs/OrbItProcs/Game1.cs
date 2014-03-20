@@ -29,8 +29,6 @@ namespace OrbItProcs
     public enum comp
     {
         queuer,
-        linearpull,
-        maxvel,
         
         collision,
         gravity,
@@ -38,9 +36,7 @@ namespace OrbItProcs
         displace,
         orbiter,
 
-        randcolor,
         randvelchange,
-        randinitialvel,
         relativemotion,
         transfer,
         circler,
@@ -49,7 +45,6 @@ namespace OrbItProcs
 
         movement,
         
-        hueshifter,
         colorchanger,
         colorgravity,
         lifetime,
@@ -224,8 +219,6 @@ namespace OrbItProcs
                     { comp.movement, true },
                     //{ comp.maxvel, true },
                     //{ comp.randvelchange, true },
-                    { comp.randinitialvel, true },
-                    { comp.maxvel, true },
                     //{ comp.gravity, true },
                     //{ comp.linearpull, true },
                     //{ comp.laser, true },
@@ -304,10 +297,10 @@ namespace OrbItProcs
 
             if (bigTonyOn)
             {
-                for (int i = 1; i < 5; i++)
-                {
-                    room.players.Add(new Player(i)); //#bigtony
-                }
+            for (int i = 1; i < 5; i++)
+            {
+                room.players.Add(new Player(i)); //#bigtony
+            }
             }
 
             processManager.SetProcessKeybinds(ui.keyManager);
@@ -561,8 +554,8 @@ namespace OrbItProcs
                 {
                     newNode.addComponent(comp.lifetime, true);
                 }
-                newNode.comps[comp.lifetime].maxmseconds = lifetime;
-                newNode.comps[comp.lifetime].immortal = false;
+                newNode.GetComponent<Lifetime>().timeOfDeath.value = lifetime;
+                newNode.comps[comp.lifetime].timeOfDeath.enabled = true;
             }
 
 

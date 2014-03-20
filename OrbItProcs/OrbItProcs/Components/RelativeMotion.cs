@@ -9,10 +9,15 @@ using System.Reflection;
 
 namespace OrbItProcs
 {
+    /// <summary>
+    /// Affected nodes are not only driven by their own velocity, but are also subject to this nodes' velocity.
+    /// </summary>
+    [Info(UserLevel.Advanced, "Affected nodes are not only driven by their own velocity, but are also subject to this nodes' velocity.", CompType)]
     public class RelativeMotion : Component, ILinkable
     {
-        private Link _link = null;
-        public Link link { get { return _link; } set { _link = value; } }
+        public const mtypes CompType = mtypes.affectself;
+        public override mtypes compType { get { return CompType; } set { } }
+        public Link link { get; set; }
         //public int _maxdist = 300;
         //public int maxdist { get { return _maxdist; } set { _maxdist = value; if (_maxdist < _mindist) _maxdist = _mindist; } }
         //public int _mindist = 100;
@@ -27,9 +32,6 @@ namespace OrbItProcs
                 this.parent = parent;
             }
             com = comp.relativemotion;
-            methods = mtypes.affectself;// | mtypes.draw | mtypes.minordraw;
-            //methods = mtypes.affectother | mtypes.draw | mtypes.minordraw;
-            //InitializeLists();
         }
 
         public override void AfterCloning()

@@ -34,7 +34,7 @@ namespace OrbItProcs
         }
 
         private bool _ResolveCollision = true;
-        public bool ResolveCollision
+        public bool isSolid
         {
             get { return _ResolveCollision; }
             set 
@@ -108,22 +108,22 @@ namespace OrbItProcs
         public Color permaColor = new Color(255, 255, 255);
         private textures _texture = textures.whitecircle;
 
-        [DoNotInspect]
+        [Info(UserLevel.Never)]
         public Shape shapeP { get { return shape; }
             set { 
                 shape = value.Clone();
             }
         }
 
-        [DoNotInspect]
+        [Info(UserLevel.Never)]
         public float[] positionP { get { return pos.toFloatArray(); }
             set { pos = new Vector2(value[0], value[1]); } }
-        [DoNotInspect]
+        [Info(UserLevel.Never)]
         public float[] velocityP { get { return velocity.toFloatArray(); }
             set { velocity = new Vector2(value[0], value[1]); } }
-        [DoNotInspect]
+        [Info(UserLevel.Never)]
         public Vector2 effvelocity = new Vector2(0, 0);
-        [DoNotInspect]
+        [Info(UserLevel.Never)]
         public float[] effvelocityP
         {
             get { return effvelocity.toFloatArray(); }
@@ -155,7 +155,7 @@ namespace OrbItProcs
                 if (shape != null) shape.SetOrient(value);
             }
         }
-        [DoNotInspect]
+        [Info(UserLevel.Never)]
         public Color colorP
         {
             get { return color; }
@@ -182,7 +182,7 @@ namespace OrbItProcs
             get { return _texture; }
             set { _texture = value; }
         }
-        [DoNotInspect]
+        [Info(UserLevel.Never)]
         public bool PolenterHack
         {
             get { return true; }
@@ -258,7 +258,7 @@ namespace OrbItProcs
                         }
                     }
                 }
-                if (ResolveCollision && other.ResolveCollision)
+                if (isSolid && other.isSolid)
                     parent.room.AddManifold(m);
             }
         }

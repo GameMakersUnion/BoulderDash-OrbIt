@@ -23,7 +23,7 @@ namespace OrbItProcs
         public static int count = 0;
         public static int modcount = 10;
         public static bool usingMod = false;
-        //[DoNotInspect]
+        [DoNotInspect]
         //public static Stopwatch this[string name]
         //{
         //    get
@@ -118,7 +118,6 @@ namespace OrbItProcs
                 Room room = Program.getRoom();
                 Dictionary<dynamic, dynamic> standardDictionary = new Dictionary<dynamic, dynamic>(){
                     { nodeE.position, new Vector2(room.worldWidth / 2, room.worldHeight / 2) },
-                    { comp.randinitialvel, true },
                     //{ comp.gravity, true },
                 };
                 for (int i = 0; i < 10; i++)
@@ -138,7 +137,6 @@ namespace OrbItProcs
                 Room room = Program.getRoom();
                 Dictionary<dynamic, dynamic> standardDictionary = new Dictionary<dynamic, dynamic>(){
                     { nodeE.position, new Vector2(room.worldWidth / 2, room.worldHeight / 2) },
-                    { comp.randinitialvel, true },
                     //{ comp.gravity, true },
                 };
 

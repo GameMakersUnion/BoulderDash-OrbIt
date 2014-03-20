@@ -9,63 +9,60 @@ using System.Reflection;
 
 namespace OrbItProcs
 {
+    /// <summary>
+    /// Pushes away nodes that are within the radius, can also pull in nodes that beyond the radius. 
+    /// </summary>
+    [Info(UserLevel.User, "Pushes away nodes that are within the radius, can also pull in nodes that beyond the radius. ", CompType)]
     public class Spring : Component, ILinkable
     {
-        private Link _link = null;
-        public Link link { get { return _link; } set { _link = value; } }
-        new public bool active
-        {
-            get { return _active; }
-            set
-            {
-                _active = value;
-            }
-        }
-
-        private float _multiplier = 100f;
-        public float multiplier { get { return _multiplier; } set { _multiplier = value; } }
-
-        private bool _activated = false;
-        public bool activated { get { return _activated; } set { _activated = value; } }
-
-        private bool _hook = false;
-        public bool hook { get { return _hook; } set { _hook = value; } }
-        private bool _limit = false;
-        public bool limit { get { return _limit; } set { _limit = value; } }
+        public const mtypes CompType = mtypes.affectself | mtypes.affectother;
+        public override mtypes compType { get { return CompType; } set { } }
+        [Info(UserLevel.Developer)]
+        public Link link { get; set; }
+        /// <summary>
+        /// The strength of the spring's force
+        /// </summary>
+        [Info(UserLevel.User, "The strength of the spring's force")]
+        public float multiplier { get; set; }
+        /// <summary>
+        /// If enabled, the spring will not only repel nodes, but also attract those outside the boundry.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, the spring will not only repel nodes, but also attract those outside the boundry.")]
+        public bool hook { get; set; }
 
         public int _restdist = 300;
-        public int restdist { get { return _restdist; } set { _restdist = value; if (_restdist < _elasticlimit) _restdist = _elasticlimit; } }
-        public int _elasticlimit = 100;
-        public int elasticlimit { get { return _elasticlimit; } set { _elasticlimit = value; if (_elasticlimit > _restdist) _elasticlimit = _restdist; } }
+        /// <summary>
+        /// The distance at which no force is applied.
+        /// </summary>
+        [Info(UserLevel.User, "The distance at which no force is applied.")]
+        public int restdist { get { return _restdist; } set { _restdist = value; if (_restdist < _lowerBound.value) _restdist = _lowerBound.value; } }
+
+        private Toggle<int> _lowerBound = new Toggle<int>(100, true);
+        /// <summary>
+        /// Represents minimum distance taken into account when calculating push away.
+        /// </summary>
+        [Info(UserLevel.Advanced, "Represents minimum distance taken into account when calculating push away.")]
+        public Toggle<int> lowerBound { get { return _lowerBound; } set { _lowerBound = value; if (_lowerBound.value > _restdist) _lowerBound.value = _restdist; } }
 
         public Spring() : this(null) { }
         public Spring(Node parent = null)
         {
+            multiplier = 100f;
 
             if (parent != null)
             {
                 this.parent = parent;
             }
             com = comp.spring;
-            methods = mtypes.affectself | mtypes.affectother;// | mtypes.draw | mtypes.minordraw;
         }
 
-        public override void AfterCloning()
-        {
-        }
-
-        public override void InitializeLists()
-        {
-        }
 
         public override void AffectOther(Node other) // called when used as a link
         {
             if (!active) { return; }
-            if (activated)
-            {
                 float dist = Vector2.Distance(parent.body.pos, other.body.pos);
                 if (!hook && dist > restdist) return;
-                if (limit && dist < elasticlimit) dist = elasticlimit;
+                if (lowerBound.enabled && dist < lowerBound.value) dist = lowerBound.value;
 
                 float stretch = dist - restdist;
                 float strength = -stretch * multiplier;
@@ -73,23 +70,13 @@ namespace OrbItProcs
                 VMath.NormalizeSafe(ref force);
                 force *= strength;
                 other.body.ApplyForce(force);
-
-
-            }
         }
         public override void AffectSelf() // called when making individual links (clicking for each link)
         {
-            if (activated)
-            {
 
-            }
         }
 
         public override void Draw(SpriteBatch spritebatch)
-        {
-        }
-
-        public void onCollision(Dictionary<dynamic, dynamic> args)
         {
         }
 

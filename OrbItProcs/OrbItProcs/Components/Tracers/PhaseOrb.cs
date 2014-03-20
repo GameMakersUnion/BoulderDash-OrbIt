@@ -8,41 +8,42 @@ using System.Reflection;
 
 namespace OrbItProcs
 {
+    /// <summary>
+    /// Nodes will leave behind a trail consisting of fading images of themselves.
+    /// </summary>
+    [Info(UserLevel.User, "Nodes will leave behind a trail consisting of fading images of themselves.", CompType)]
     public class PhaseOrb : Component
     {
-        public static mtypes CompType = mtypes.minordraw;
-        public override mtypes compType
-        {
-            get
-            {
-                return CompType;
-            }
-            set { }
-        }
+        public const mtypes CompType = mtypes.minordraw;
+        public override mtypes compType { get { return CompType; } set { } }
 
-
+        public int _phaserLength = 10;
+        /// <summary>
+        /// Sets the length of the phaser.
+        /// </summary>
+        [Info(UserLevel.User, "Sets the length of the phaser. ")]
         [Polenter.Serialization.ExcludeFromSerialization]
-        public int queuecount
+        public int phaserLength
         {
             get
             {
-                if (parent != null && parent.HasComponent(comp.queuer))
-                    return parent[comp.queuer].queuecount;
-                else return 10;
+                return _phaserLength;
             }
             set
             {
-                if (parent != null && parent.HasComponent(comp.queuer))
+                if (parent != null && parent.HasComponent(comp.queuer) && parent[comp.queuer].queuecount < value)
+                {
                     parent[comp.queuer].queuecount = value;
+                }
+                _phaserLength = value;
             }
         }
 
+        public Toggle<int> fade { get; set; }
         private int r1;
         private int g1;
         private int b1;
         private int timer = 0;
-        private int _timerMax = 1;
-        public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
 
         public PhaseOrb() : this(null) { }
         public PhaseOrb(Node parent = null)
@@ -50,12 +51,10 @@ namespace OrbItProcs
             if (parent != null)
             {
                 this.parent = parent;
-                
-
             }
             com = comp.phaseorb; 
-            methods = mtypes.affectself | mtypes.draw; 
             InitializeLists(); 
+            fade = new Toggle<int>(phaserLength);
             
         }
 
@@ -135,13 +134,17 @@ namespace OrbItProcs
             //float t = parent.comps[comp.queuer].scales.ElementAt(2);
             //Console.WriteLine(scales.Count + " :: " + positions.Count);
             int min = Math.Min(positions.Count, scales.Count);
+            
             for (int i = 0; i < min; i++)
             {
+                    if (fade.enabled)
+                    {
                 //color = new Color(color.R, color.G, color.B, 255/queuecount * count);
-                a += r1 / min;
-                b += g1 / min;
-                c += b1 / min;
+                        a += r1 / fade;
+                        b += g1 / fade;
+                        c += b1 / fade;
                 col = new Color(a, b, c, 200);
+                    }
                 //if (parent.comps.ContainsKey(comp.hueshifter) && parent.comps[comp.hueshifter].active) col = parent.body.color;
 
                 //float scale = scales.ElementAt(count) / mapzoom;
@@ -167,7 +170,7 @@ namespace OrbItProcs
 
             //float testangle = (float)(Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2));
             
-            if (parent.comps.ContainsKey(comp.hueshifter)) col = parent.body.color;
+            if (!fade) col = parent.body.color;
             if (!IsPolygon || (IsPolygon && parent.body.DrawCircle))
             {
                 spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);

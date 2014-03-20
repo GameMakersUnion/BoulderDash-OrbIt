@@ -20,14 +20,18 @@ namespace OrbItProcs
         affectother = 2,
         affectself = 4,
         draw = 8,
-        changereference = 16,
-        minordraw = 32,
+        minordraw = 16,
+        exclusiveLinker = 32,
+        essential = 64,
     };
 
     public abstract class Component {
         public virtual mtypes compType { get; set; }
 
+        public abstract mtypes compType{get; set;}
+
         protected bool _active = false;
+        [Info(UserLevel.Developer)]
         public virtual bool active
         {
             get
@@ -43,32 +47,17 @@ namespace OrbItProcs
                 }
             }
         }
-
-        public int sentinel = -10;
-        protected Node _parent;
         //*
         [Polenter.Serialization.ExcludeFromSerialization]
-        public Node parent
-        {
-            get
-            {
-                return _parent;
-            }
-            set
-            {
-                _parent = value;
-            }
-        }
+        public Node parent { get; set; }
 
         //*/
         //flag as not editable in InspectorBox
         protected comp _com;
         public comp com { get { return _com; } set { } }
-        private mtypes _methods;
         //flag as not editable in InspectorBox
         private bool _CallDraw = true;
         public bool CallDraw { get { return _CallDraw; } set { _CallDraw = value; } }
-        public mtypes methods { get { return _methods; } protected set { _methods = value; } }
 
         public HashSet<Node> exclusions = new HashSet<Node>();
 

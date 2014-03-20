@@ -6,16 +6,20 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.Serialization;
 namespace OrbItProcs
-{
+{        
+    /// <summary>
+    /// Node will move in a seemingly random pattern.
+    /// </summary>
+    [Info(UserLevel.User, "Node will move in a seemingly random pattern.")]
     public class RandVelChange : Component {
 
-
+        public const mtypes CompType = mtypes.affectself;
+        public override mtypes compType { get { return CompType; } set { } }
         public RandVelChange() : this(null) { }
         public RandVelChange(Node parent = null)
         {
             if (parent != null) this.parent = parent;
             com = comp.randvelchange; 
-            methods = mtypes.affectself; 
         }
 
         public override void AffectSelf()
