@@ -65,6 +65,32 @@ namespace OrbItProcs
                 }
             }
         }
+        public void SetButtonBool(Button button, bool b)
+        {
+            if (b)
+            {
+                button.Text = "On";
+                button.TextColor = UserInterface.TomShanePuke;
+            }
+            else
+            {
+                button.Text = "Off";
+                button.TextColor = Color.Red;
+            }
+        }
+        public bool GetButtonBool(Button button, bool toggle = true)
+        {
+            if (button.Text.Equals("On"))
+            {
+                if (toggle) { SetButtonBool(button, false); return false; }
+                return true;
+            }
+            else
+            {
+                if (toggle) { SetButtonBool(button, true); return true; }
+                return false;
+            }
+        }
     }
 
     public class DetailedItem : ViewItem

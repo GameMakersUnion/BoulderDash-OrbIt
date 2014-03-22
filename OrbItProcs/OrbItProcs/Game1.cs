@@ -22,6 +22,7 @@ using sc = System.Console;
 using System.IO;
 using System.Collections.ObjectModel;
 using Polenter.Serialization;
+using System.Threading;
 
 namespace OrbItProcs
 {
@@ -386,10 +387,13 @@ namespace OrbItProcs
             }
 
             if (IsActive) ui.Update(gameTime);
+            if (t != null) t.Join();
         }
         public float backgroundHue = 180;
         public double x = 0;
         public Color backgroundColor = Color.Black;
+        public static readonly object locker = new object();
+        public Thread t;
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -398,6 +402,8 @@ namespace OrbItProcs
         protected override void Draw(GameTime gameTime)
         {
             //if (!IsActive) return;
+            
+            //Console.WriteLine("1");
             Manager.BeginDraw(gameTime);
             base.Draw(gameTime);
             if (!ui.IsPaused)
@@ -413,21 +419,29 @@ namespace OrbItProcs
 
             room.Draw(spriteBatch);
             frameRateCounter.Draw(spriteBatch, font);
+            //lock (locker) {
+            //    t = new Thread(() =>
+            //   {
+            //
+                   spriteBatch.End();
 
-            spriteBatch.End();
+                   Manager.EndDraw();
 
-            Manager.EndDraw();
 
-            if (TakeScreenshot)
-            {
-                Screenshot(Manager.Graphics.GraphicsDevice);
-                TakeScreenshot = false;
-            }
+                   if (TakeScreenshot)
+                   {
+                       Screenshot(Manager.Graphics.GraphicsDevice);
+                       TakeScreenshot = false;
+                   }
+                   //Console.WriteLine("2");
+            //   });
+            //    t.Start();
+            //}
         }
 
         public Node spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)
         {
-            Group spawngroup = ui.sidebar.ActiveGroupFirst;
+            Group spawngroup = ui.sidebar.ActiveGroup;
             if (g == null && !spawngroup.Spawnable) return null;
             if (g != null)
             {
@@ -439,19 +453,21 @@ namespace OrbItProcs
         }
         public Node spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null, bool blank = false, int lifetime = -1)
         {
-            Group activegroup = ui.sidebar.ActiveGroupFirst;
-            if (!activegroup.Spawnable) return null;
+            Group activegroup = ui.sidebar.ActiveGroup;
+            if (activegroup == null || !activegroup.Spawnable) return null;
+            if (room == mainRoom && ui.sidebar.activeTabControl == ui.sidebar.tbcViews && ui.sidebar.tbcViews.SelectedIndex != 0) return null;
+
             Node newNode = new Node();
             if (!blank)
             {
-                if (ui.spawnerNode != null)
-                {
-                    Node.cloneNode(ui.spawnerNode, newNode);
-                }
-                else
-                {
+                //if (ui.spawnerNode != null)
+                //{
+                //    Node.cloneNode(ui.spawnerNode, newNode);
+                //}
+                //else
+                //{
                     Node.cloneNode(ui.sidebar.ActiveDefaultNode, newNode);
-                }
+                //}
             }
             newNode.name = activegroup.Name + Node.nodeCounter;
             newNode.acceptUserProps(userProperties);

@@ -95,40 +95,26 @@ namespace OrbItProcs
                     }
                 }
             }
-            else if (control is CheckBox)
-            {
-                CheckBox checkbox = (CheckBox)control;
-                if (ins.obj is bool)
-                {
-                    ins.SetValue(checkbox.Checked);
-                    if (GroupSync)
-                    {
-                        ins.ApplyToAllNodes(activeGroup);
-                    }
-                }
-                else if (ins.obj is Component)
-                {
-                    Component component = (Component)ins.obj;
-                    component.active = checkbox.Checked;
-                    //ins.SetValue(checkbox.Checked);
-                    if (GroupSync)
-                    {
-                        foreach(Node n in activeGroup.fullSet)
-                        {
-                            if (n.HasComponent(component.com))
-                                n.comps[component.com].active = checkbox.Checked;
-                        }
-                    }
-                }
-                else if (checkbox.Name.Equals("toggle_checkbox"))
-                {
-                    ins.SetValue(checkbox.Checked);
-                    if (GroupSync)
-                    {
-                        ins.ApplyToAllNodes(activeGroup);
-                    }
-                }
-            }
+            //else if (control is CheckBox)
+            //{
+            //    CheckBox checkbox = (CheckBox)control;
+            //    if (ins.obj is bool)
+            //    {
+            //        ins.SetValue(checkbox.Checked);
+            //        if (GroupSync)
+            //        {
+            //            ins.ApplyToAllNodes(activeGroup);
+            //        }
+            //    }
+            //    else if (checkbox.Name.Equals("toggle_checkbox"))
+            //    {
+            //        ins.SetValue(checkbox.Checked);
+            //        if (GroupSync)
+            //        {
+            //            ins.ApplyToAllNodes(activeGroup);
+            //        }
+            //    }
+            //}
             else if (control is ComboBox)
             {
                 ins.SetValue(control.Text);
@@ -139,15 +125,51 @@ namespace OrbItProcs
             }
             else if (control is Button)
             {
-                if (ins.obj is Component)
+                if (control.Name.Equals("bool_button_enabled"))
+                {
+                    ins.SetValue(GetButtonBool((Button)control));
+                    if (GroupSync)
+                    {
+                        ins.ApplyToAllNodes(activeGroup);
+                    }
+                }
+                else if (control.Name.Equals("toggle_button_enabled"))
+                {
+                    ins.SetValue(GetButtonBool((Button)control));
+                    if (GroupSync)
+                    {
+                        ins.ApplyToAllNodes(activeGroup);
+                    }
+                }
+                else if (control.Name.Equals("component_button_enabled"))
                 {
                     Component component = (Component)ins.obj;
-                    component.parent.RemoveComponent(component.com);
-                    foreach (Node n in activeGroup.fullSet)
+                    component.active = GetButtonBool((Button)control);
+                    if (this.GetType() == typeof(ComponentView))
                     {
-                        n.RemoveComponent(component.com);
+                        (this as ComponentView).lblCurrentComp.TextColor = control.TextColor;
                     }
-                    
+                    //ins.SetValue(checkbox.Checked);
+                    if (GroupSync)
+                    {
+                        foreach (Node n in activeGroup.fullSet)
+                        {
+                            if (n.HasComponent(component.com))
+                                n.comps[component.com].active = component.active;
+                        }
+                    }
+                }
+                else if (control.Name.Equals("component_button_remove"))
+                {
+                    if (ins.obj is Component)
+                    {
+                        Component component = (Component)ins.obj;
+                        component.parent.RemoveComponent(component.com);
+                        foreach (Node n in activeGroup.fullSet)
+                        {
+                            n.RemoveComponent(component.com);
+                        }
+                    }
                 }
             }
 
@@ -174,16 +196,29 @@ namespace OrbItProcs
                     if (o is Component)
                     {
                         Component comp = (Component)o;
-                        CheckBox checkbox = new CheckBox(manager);
-                        checkbox.Init();
-                        checkbox.Parent = item.textPanel;
-                        checkbox.Left = backPanel.Width - 45;
-                        checkbox.Top = 2;
-                        checkbox.Text = "";
-                        checkbox.ToolTip.Text = "Toggle";
-                        checkbox.Checked = comp.active;
-                        checkbox.Name = "component_checkbox_active";
-                        item.AddControl(checkbox);
+                        //CheckBox checkbox = new CheckBox(manager);
+                        //checkbox.Init();
+                        //checkbox.Parent = item.textPanel;
+                        //checkbox.Left = backPanel.Width - 45;
+                        //checkbox.Top = 2;
+                        //checkbox.Text = "";
+                        //checkbox.ToolTip.Text = "Toggle";
+                        //checkbox.Checked = comp.active;
+                        //checkbox.Name = "component_checkbox_active";
+                        //item.AddControl(checkbox);
+
+                        Button btnEnabled = new Button(manager);
+                        btnEnabled.Init();
+                        btnEnabled.Parent = item.textPanel;
+                        btnEnabled.TextColor = Color.Red;
+                        btnEnabled.Width = 40;
+                        btnEnabled.Left = item.textPanel.Width - btnEnabled.Width - 20;
+                        btnEnabled.Top = 3;
+                        btnEnabled.Height = item.buttonHeight;
+                        btnEnabled.ToolTip.Text = "Toggle Active";
+                        btnEnabled.Name = "component_button_enabled";
+                        SetButtonBool(btnEnabled, comp.active);
+                        item.AddControl(btnEnabled);
 
                         //check for essential
                         if (!comp.isEssential())
@@ -192,12 +227,11 @@ namespace OrbItProcs
                             btnRemove.Init();
                             btnRemove.Parent = item.textPanel;
                             btnRemove.TextColor = Color.Red;
-                            btnRemove.Left = checkbox.Left - 20;
+                            btnRemove.Left = btnEnabled.Left - 20;
                             btnRemove.Top = 3;
                             btnRemove.Height = item.buttonHeight;
                             btnRemove.Width = item.buttonWidth;
                             btnRemove.Text = "-";
-                            //btnRemove.Click += removeComponent_Click;
                             btnRemove.ToolTip.Text = "Remove";
                             btnRemove.Name = "component_button_remove";
                             item.AddControl(btnRemove);
@@ -218,21 +252,34 @@ namespace OrbItProcs
                         if (isToggle)
                         {
                             textbox.Name = "toggle_textbox";
-                            CheckBox checkbox = new CheckBox(manager);
-                            checkbox.Init();
-                            checkbox.Width = 20;
-                            checkbox.Parent = item.textPanel;
-                            checkbox.Left = textbox.Left - 30;
-                            checkbox.Top = 2;
-                            checkbox.Text = "";
-                            checkbox.ToolTip.Text = "Toggle";
-                            //checkbox.Checked = (bool)o;
-                            checkbox.Name = "toggle_checkbox";
-                            dynamic toggle = o;
-                            checkbox.Checked = toggle.enabled;
-                            textbox.Text = toggle.value.ToString();
+                            //CheckBox checkbox = new CheckBox(manager);
+                            //checkbox.Init();
+                            //checkbox.Width = 20;
+                            //checkbox.Parent = item.textPanel;
+                            //checkbox.Left = textbox.Left - 30;
+                            //checkbox.Top = 2;
+                            //checkbox.Text = "";
+                            //checkbox.ToolTip.Text = "Toggle";
+                            ////checkbox.Checked = (bool)o;
+                            //checkbox.Name = "toggle_checkbox";
+                            //dynamic toggle = o;
+                            //checkbox.Checked = toggle.enabled;
+                            //textbox.Text = toggle.value.ToString();
 
-                            item.AddControl(checkbox);
+                            Button btnEnabled = new Button(manager);
+                            btnEnabled.Init();
+                            btnEnabled.Parent = item.textPanel;
+                            btnEnabled.TextColor = Color.Red;
+                            btnEnabled.Width = 40;
+                            btnEnabled.Left = textbox.Left - btnEnabled.Width;
+                            //btnEnabled.Top = 3;
+                            btnEnabled.Height = item.buttonHeight;
+                            btnEnabled.ToolTip.Text = "Toggle Active";
+                            btnEnabled.Name = "toggle_button_enabled";
+                            SetButtonBool(btnEnabled, (o as dynamic).enabled);
+                            item.AddControl(btnEnabled);
+
+                            //item.AddControl(checkbox);
                             
                         }
                         item.AddControl(textbox);
@@ -271,16 +318,28 @@ namespace OrbItProcs
                     }
                     else if (o is bool)
                     {
-                        CheckBox checkbox = new CheckBox(manager);
-                        checkbox.Init();
-                        checkbox.Parent = item.textPanel;
-                        checkbox.Left = backPanel.Width - 45;
-                        checkbox.Top = 2;
-                        checkbox.Text = "";
-                        checkbox.ToolTip.Text = "Toggle";
-                        checkbox.Checked = (bool)o;
-                        checkbox.Name = "bool_checkbox";
-                        item.AddControl(checkbox);
+                        //CheckBox checkbox = new CheckBox(manager);
+                        //checkbox.Init();
+                        //checkbox.Parent = item.textPanel;
+                        //checkbox.Left = backPanel.Width - 45;
+                        //checkbox.Top = 2;
+                        //checkbox.Text = "";
+                        //checkbox.ToolTip.Text = "Toggle";
+                        //checkbox.Checked = (bool)o;
+                        //checkbox.Name = "bool_checkbox";
+                        //item.AddControl(checkbox);
+                        Button btnEnabled = new Button(manager);
+                        btnEnabled.Init();
+                        btnEnabled.Parent = item.textPanel;
+                        btnEnabled.TextColor = Color.Red;
+                        btnEnabled.Width = 40;
+                        btnEnabled.Left = item.textPanel.Width - btnEnabled.Width - 20;
+                        //btnEnabled.Top = 3;
+                        btnEnabled.Height = item.buttonHeight;
+                        btnEnabled.ToolTip.Text = "Toggle Enabled";
+                        btnEnabled.Name = "bool_button_enabled";
+                        SetButtonBool(btnEnabled, (bool)o);
+                        item.AddControl(btnEnabled);
                     }
                     else if (o.GetType().IsEnum)
                     {

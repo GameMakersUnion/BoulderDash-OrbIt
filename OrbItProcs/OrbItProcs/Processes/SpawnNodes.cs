@@ -160,7 +160,7 @@ namespace OrbItProcs
             room.game.serializer = new Polenter.Serialization.SharpSerializer();
             ObservableHashSet<Node> ents = (ObservableHashSet<Node>)room.game.serializer.Deserialize(filename);
 
-            Group g = room.game.ui.sidebar.ActiveGroupFirst;
+            Group g = room.game.ui.sidebar.ActiveGroup;
             //g.EmptyGroup();
 
             foreach (Node n in ents)

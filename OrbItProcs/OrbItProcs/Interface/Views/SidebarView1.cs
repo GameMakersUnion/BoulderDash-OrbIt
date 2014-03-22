@@ -29,7 +29,7 @@ namespace OrbItProcs
                     }
                     else
                     {
-                        componentView.SwitchGroup(ActiveGroupFirst);
+                        componentView.SwitchGroup(ActiveGroup);
                     }
                 }
                 _EditSelectedNode = value;

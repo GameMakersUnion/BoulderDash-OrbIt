@@ -13,7 +13,7 @@ namespace OrbItProcs
 
     public class Group
     {
-        public static int GroupNumber = 0;
+        public static int GroupNumber = 2;
         public static Dictionary<int, Color> IntToColor = new Dictionary<int, Color>()
         {
             { 0, Color.White },
@@ -44,6 +44,7 @@ namespace OrbItProcs
                 room.groupHashes.Add(value);
             }
         }
+        
         public int GroupId { get; set; }
         [Polenter.Serialization.ExcludeFromSerialization]
         public Group parentGroup { get; set; }
@@ -122,6 +123,44 @@ namespace OrbItProcs
         public bool Spawnable { get; set; }
         public GroupState groupState { get; set; }
 
+        private bool _Disabled = false;
+        public bool Disabled
+        {
+            get { return _Disabled; }
+            set
+            {
+                _Disabled = value;
+                if (value)
+                {
+                    if (parentGroup != null)
+                    {
+                        foreach (Node n in entities)
+                        {
+                            if (parentGroup.inherited.Contains(n)) parentGroup.inherited.Remove(n);
+                        }
+                        foreach (Node n in inherited)
+                        {
+                            if (parentGroup.inherited.Contains(n)) parentGroup.inherited.Remove(n);
+                        }
+                    }
+                }
+                else
+                {
+                    if (parentGroup != null)
+                    {
+                        foreach (Node n in entities)
+                        {
+                            parentGroup.inherited.Add(n);
+                        }
+                        foreach (Node n in inherited)
+                        {
+                            parentGroup.inherited.Add(n);
+                        }
+                    }
+                }
+            }
+        }
+
         private ObservableHashSet<Link> _SourceLinks = new ObservableHashSet<Link>();
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> SourceLinks { get { return _SourceLinks; } set { _SourceLinks = value; } }
@@ -156,9 +195,11 @@ namespace OrbItProcs
         public Group() : this(null)
         {
         }
-        public Group(Node defaultNode = null, ObservableHashSet<Node> entities = null, Group parentGroup = null, GroupState groupState = GroupState.on, string Name = "", bool Spawnable = true)
+        public Group(Node defaultNode = null, Group parentGroup = null, GroupState groupState = GroupState.on, string Name = "", bool Spawnable = true, ObservableHashSet<Node> entities = null)
         {
-            room = Program.getRoom();
+            if (parentGroup != null) room = parentGroup.room;
+            else  room = Program.getRoom();
+
             GroupId = -1;
             groupHash = Utils.uniqueString(room.groupHashes);
             this.defaultNode = defaultNode ?? room.defaultNode;
@@ -182,7 +223,7 @@ namespace OrbItProcs
             if (Name.Equals("")) 
             {
                 this.GroupId = GroupNumber;
-                Name = "[G" + GroupNumber + "]"; //maybe a check that the name is unique
+                Name = "Group" + GroupNumber; //maybe a check that the name is unique
                 GroupNumber++; 
             }
             this.Name = Name;
@@ -198,8 +239,12 @@ namespace OrbItProcs
             //threads[4] = new Thread(new ThreadStart(ThreadStartAction));
             //threads[5] = new Thread(new ThreadStart(ThreadStartAction));
 
-            
+            if (parentGroup != null)
+            {
+                parentGroup.AddGroup(this.Name, this);
+            }
         }
+
 
         void entities_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
@@ -215,7 +260,7 @@ namespace OrbItProcs
                             room.game.ui.sidebar.lstMain.Items.Add(n);
                         }
                     }
-                    if (parentGroup != null && !parentGroup.entities.Contains(n))
+                    if (parentGroup != null && !parentGroup.entities.Contains(n) && !Disabled)
                     {
                         parentGroup.inherited.Add(n);
                     }
@@ -237,6 +282,10 @@ namespace OrbItProcs
                     }
                     if (!entities.Contains(n) && !inherited.Contains(n))
                         fullSet.Remove(n);
+                    if (parentGroup != null && parentGroup.inherited.Contains(n))
+                    {
+                        parentGroup.inherited.Remove(n);
+                    }
                     if (n.group == this) n.group = null;
                 }
             }

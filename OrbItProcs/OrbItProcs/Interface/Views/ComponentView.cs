@@ -14,7 +14,7 @@ namespace OrbItProcs
 {
     public class ComponentView : InspectorView
     {
-        public Label lblComponents, lblGroup;
+        public Label lblComponents, lblGroup, lblCurrentComp;
         public Button btnAddComponent;
 
         public InspectorView insView;
@@ -79,6 +79,16 @@ namespace OrbItProcs
             btnAddComponent.Click += btnAddComponent_Click;
             HeightCounter += btnAddComponent.Height + VertPadding;
 
+            lblCurrentComp = new Label(manager);
+            lblCurrentComp.Init();
+            lblCurrentComp.Parent = parent;
+            lblCurrentComp.Width = 150;
+            lblCurrentComp.Top = HeightCounter + VertPadding;
+            lblCurrentComp.Left = LeftPadding;
+            lblCurrentComp.Text = "";
+            lblCurrentComp.TextColor = Color.Black;
+            HeightCounter += lblCurrentComp.Height + VertPadding;
+
             insView = new InspectorView(sidebar, parent, Left, HeightCounter);
             insView.GroupSync = true;
             insView.Height = 120;
@@ -92,8 +102,8 @@ namespace OrbItProcs
         {
             if (control == null || item == null) return;
             if (!(item.obj is InspectorItem)) return;
-            InspectorItem ins = (InspectorItem)item.obj;
-            if (control is Button && ins.obj is Component)
+            //InspectorItem ins = (InspectorItem)item.obj;
+            if (control.Text.Equals("component_button_remove"))
             {
                 RefreshComponents();
             }
@@ -129,6 +139,15 @@ namespace OrbItProcs
             if (item.obj == null) return;
 
             SetComponent(item.obj);
+            lblCurrentComp.Text = item.label.Text;
+            if (item.obj is InspectorItem)
+            {
+                InspectorItem i = (InspectorItem)item.obj;
+                if (i.obj is Component)
+                {
+                    lblCurrentComp.TextColor = item.itemControls["component_button_enabled"].TextColor;
+                }
+            }
         }
 
         public void SetComponent(object obj)
@@ -147,6 +166,7 @@ namespace OrbItProcs
         {
             base.ClearView();
             insView.ClearView();
+            lblCurrentComp.Text = "";
         }
 
         public void RefreshComponents()

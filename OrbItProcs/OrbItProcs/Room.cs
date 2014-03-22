@@ -149,7 +149,7 @@ namespace OrbItProcs {
                 { comp.collision, true },
                 { comp.movement, true },
                 { comp.waver, false },
-                { comp.scheduler, true },
+                //{ comp.scheduler, true },
             };
             #endregion
 
@@ -172,17 +172,17 @@ namespace OrbItProcs {
 
             if (Groups)
             {
-                Group generalGroup = new Group(defaultNode, parentGroup: masterGroup, Name: "General Groups", Spawnable: false);
-                masterGroup.AddGroup(generalGroup.Name, generalGroup);
+                Group generalGroup = new Group(defaultNode, masterGroup, Name: "General Groups", Spawnable: false);
+                //masterGroup.AddGroup(generalGroup.Name, generalGroup);
 
-                Group linkGroup = new Group(defaultNode, parentGroup: masterGroup, Name: "Link Groups", Spawnable: false);
-                masterGroup.AddGroup(linkGroup.Name, linkGroup);
+                Group linkGroup = new Group(defaultNode, masterGroup, Name: "Link Groups", Spawnable: false);
+                //masterGroup.AddGroup(linkGroup.Name, linkGroup);
 
-                Group wallGroup = new Group(defaultNode, parentGroup: masterGroup, Name: "Walls", Spawnable: false);
-                masterGroup.AddGroup(wallGroup.Name, wallGroup);
+                Group wallGroup = new Group(defaultNode, masterGroup, Name: "Walls", Spawnable: false);
+                //masterGroup.AddGroup(wallGroup.Name, wallGroup);
 
-                Group firstGroup = new Group(firstdefault, parentGroup: generalGroup);
-                generalGroup.AddGroup(firstGroup.Name, firstGroup);
+                Group firstGroup = new Group(firstdefault, generalGroup, Name: "Group1");
+                //generalGroup.AddGroup(firstGroup.Name, firstGroup);
             }
 
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {

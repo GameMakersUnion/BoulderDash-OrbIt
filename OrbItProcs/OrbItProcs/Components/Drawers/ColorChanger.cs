@@ -154,7 +154,10 @@ namespace OrbItProcs
                 rate *= -1;
             }
         }
-
+        public static Color randomColorHue()
+        {
+            return getColorFromHSV(Utils.random.Next(360));
+        }
         public static Color getColorFromHSV(float hue, float saturation = 1f, float value = 1f, int alpha = 255)
         {
             int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;

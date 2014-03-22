@@ -50,8 +50,8 @@ namespace OrbItProcs
         public void UpdateGroups()
         {
             ClearView();
-            showRemoveButton = room.generalGroups.childGroups.Count > 1;
-            foreach(Group g in room.generalGroups.childGroups.Values)
+            showRemoveButton = sidebar.game.mainRoom.generalGroups.childGroups.Count > 1;
+            foreach (Group g in sidebar.game.mainRoom.generalGroups.childGroups.Values)
             {
                 CreateNewItem(g);
             }
@@ -78,12 +78,13 @@ namespace OrbItProcs
                 Button btnEdit = new Button(manager);
                 btnEdit.Init();
                 btnEdit.Parent = item.textPanel;
-                btnEdit.Left = item.textPanel.Width - 50;
+                btnEdit.Width = 90;
+                btnEdit.Left = item.textPanel.Width - btnEdit.Width - 10;
                 btnEdit.Top = 2;
                 btnEdit.Height = item.buttonHeight;
-                btnEdit.Width = 30;
-                btnEdit.Text = "Edit";
-                btnEdit.ToolTip.Text = "Edit";
+                
+                btnEdit.Text = "Select Group";
+                btnEdit.ToolTip.Text = "Select Group";
                 btnEdit.TextColor = UserInterface.TomShanePuke;
                 btnEdit.Click += (s, e) =>
                 {
@@ -91,14 +92,34 @@ namespace OrbItProcs
                     sidebar.componentView.SwitchGroup(g);
                 };
 
+                Button btnEnabled = new Button(manager);
+                btnEnabled.Init();
+                btnEnabled.Parent = item.textPanel;
+                btnEnabled.Width = 30;
+                btnEnabled.Left = btnEdit.Left - btnEnabled.Width - 5;
+                btnEnabled.Top = 2;
+                btnEnabled.Height = item.buttonHeight;
+
+                //btnEnabled.Text = "On";
+                SetButtonBool(btnEnabled, !g.Disabled);
+                btnEnabled.ToolTip.Text = "Group Enabled";
+                btnEnabled.TextColor = UserInterface.TomShanePuke;
+                btnEnabled.Click += (s, e) =>
+                {
+                    g.Disabled = !GetButtonBool(btnEnabled);
+                    SetButtonBool(btnEnabled, !g.Disabled);
+                };
+
                 if (!showRemoveButton) return;
 
                 Button btnRemove = new Button(manager);
                 btnRemove.Init();
                 btnRemove.Parent = item.textPanel;
-                btnRemove.Left = btnEdit.Left - 20;
-                btnRemove.Height = item.buttonHeight;
                 btnRemove.Width = item.buttonWidth;
+                btnRemove.Top = 2;
+                btnRemove.Left = btnEnabled.Left - btnRemove.Width - 5;
+                btnRemove.Height = item.buttonHeight;
+                
                 btnRemove.TextColor = Color.Red;
                 btnRemove.Text = "-";
                 btnRemove.ToolTip.Text = "Remove";

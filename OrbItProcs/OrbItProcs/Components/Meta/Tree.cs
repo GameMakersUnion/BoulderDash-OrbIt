@@ -163,7 +163,7 @@ namespace OrbItProcs
                     newNode.comps[comp.tree].maxchilds = Math.Max(1,maxchilds - (depth % 2));
                     //parent.room.nodesToAdd.Enqueue(newNode);
                     //parent.room.masterGroup.childGroups.Values.ElementAt(1).IncludeEntity(newNode);
-                    Group g = parent.room.game.ui.sidebar.ActiveGroupFirst;
+                    Group g = parent.room.game.ui.sidebar.ActiveGroup;
                     if (g != null)
                         g.IncludeEntity(newNode);
                     

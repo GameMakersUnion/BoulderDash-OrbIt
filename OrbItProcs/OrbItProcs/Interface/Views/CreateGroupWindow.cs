@@ -27,10 +27,11 @@ namespace OrbItProcs
         {
             this.sidebar = sidebar;
             this.manager = sidebar.manager;
+            sidebar.CreatingGroup = true;
             sidebar.ui.game.SwitchToTempRoom();
             temproom = sidebar.ui.game.tempRoom;
-            tempgroup = temproom.generalGroups.childGroups.ElementAt(0).Value;
-            sidebar.CreatingGroup = true;
+            tempgroup = sidebar.ActiveGroup;//temproom.generalGroups.childGroups.ElementAt(0).Value;
+            
             window = new Window(manager);
             window.Init();
             window.Left = sidebar.master.Left;
@@ -38,7 +39,7 @@ namespace OrbItProcs
             window.Top = 0;
             window.Height = sidebar.game.Height;
             window.Text = "Create Group";
-            window.Closed += delegate { sidebar.ui.GameInputDisabled = false; sidebar.ui.game.SwitchToMainRoom(); sidebar.CreatingGroup = false; };
+            window.Closed += delegate { sidebar.ui.GameInputDisabled = false; sidebar.CreatingGroup = false; sidebar.ui.game.SwitchToMainRoom(); };
             //window.ShowModal();
             manager.Add(window);
 
@@ -163,6 +164,14 @@ namespace OrbItProcs
 
             btnOk.Click += (s, e) =>
             {
+                //ask to fix name
+                Node newNode = tempgroup.defaultNode.CreateClone();
+                newNode.room = sidebar.game.mainRoom;
+                newNode.body.color = ColorChanger.randomColorHue();
+                newNode.basicdraw.UpdateColor();
+                Group newGroup = new Group(newNode, sidebar.game.mainRoom.generalGroups, Name: txtName.Text.Trim());
+                sidebar.groupsView.UpdateGroups();
+
                 window.Close();
             };
         }

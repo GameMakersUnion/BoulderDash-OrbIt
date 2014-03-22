@@ -220,6 +220,23 @@ namespace OrbItProcs {
                 }
             }
         }
+        private BasicDraw _basicdraw;
+        public BasicDraw basicdraw
+        {
+            get { return _basicdraw; }
+            set
+            {
+                _basicdraw = value;
+                if (comps != null && value != null)
+                {
+                    if (comps.ContainsKey(comp.basicdraw))
+                    {
+                        comps.Remove(comp.basicdraw);
+                    }
+                    comps.Add(comp.basicdraw, value);
+                }
+            }
+        }
 
         public textures texture
         {
@@ -349,6 +366,7 @@ namespace OrbItProcs {
             }
 
             body = new Body(shape: shape, parent: this);
+            basicdraw = new BasicDraw(this);
             //name = "blankname";
 
             //comps.Add(comp.body, body);
@@ -604,6 +622,11 @@ namespace OrbItProcs {
             else if (c == comp.collision)
             {
                 collision.active = active;
+                return false;
+            }
+            else if (c == comp.basicdraw)
+            {
+                basicdraw.active = active;
                 return false;
             }
             

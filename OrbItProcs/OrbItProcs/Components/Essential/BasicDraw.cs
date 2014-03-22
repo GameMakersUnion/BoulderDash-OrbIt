@@ -54,9 +54,16 @@ namespace OrbItProcs
             if (parent != null) this.parent = parent;
             com = comp.basicdraw; 
             DrawCircle = true;
-            Red = 255;
-            Green = 255;
-            Blue = 255;
+            UpdateColor();
+        }
+
+        public void UpdateColor()
+        {
+            if (parent == null) return;
+            Color c = parent.body.color;
+            Red = c.R;
+            Green = c.G;
+            Blue = c.B;
         }
 
         public override void OnSpawn()

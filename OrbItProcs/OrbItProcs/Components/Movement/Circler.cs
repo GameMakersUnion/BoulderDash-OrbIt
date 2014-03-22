@@ -64,8 +64,8 @@ namespace OrbItProcs
             com = comp.circler;
             angleVelocity = 0.01f;
             angleAcceleration = 0.001f;
-            maxVel = 1f;
-            minVel = 0.05f;
+            maxVel = 0.3f;
+            minVel = 0f;
             angle = 0f;
             maxAngle = 3.14f;
             minAngle = -3.14f;
