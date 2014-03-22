@@ -104,7 +104,7 @@ namespace OrbItProcs {
                 if (distVects < lowerbound) distVects = lowerbound;
                 double angle = Math.Atan2((parent.body.pos.Y - other.body.pos.Y), (parent.body.pos.X - other.body.pos.X));
 
-                double gravForce = (multiplier * parent.body.mass * other.body.mass);
+                float gravForce = (multiplier * parent.body.mass * other.body.mass);
 
                 switch (mode)
                 {
@@ -115,7 +115,7 @@ namespace OrbItProcs {
                         gravForce /= distVects;
                         break;
                     case Mode.ConstantForce:
-                        gravForce /= 20; //#magicnumber
+                        gravForce /= 100; //#magicnumber
                         break;
                 }
 
@@ -123,9 +123,9 @@ namespace OrbItProcs {
                     angle = (angle + Math.PI + (Math.PI * (float)(angle / 180.0f)) % (Math.PI * 2)) - Math.PI;
 
                 //float gravForce = gnode1.GravMultiplier;
-                double velX = Math.Cos(angle) * gravForce;
-                double velY = Math.Sin(angle) * gravForce;
-                Vector2 delta = new Vector2((float)velX, (float)velY);
+                float velX = (float)Math.Cos(angle) * gravForce;
+                float velY = (float)Math.Sin(angle) * gravForce;
+                Vector2 delta = new Vector2(velX, velY);
                 
                 /*
                 delta /= other.transform.mass;
@@ -143,12 +143,8 @@ namespace OrbItProcs {
                     {
                         other.body.ApplyForce(delta);
                 }
-                
-                
-                //*/
-                //other.transform.velocity.X += velX;
-                //other.transform.velocity.Y += velY;
-                //other.transform.velocity /=  other.transform.mass; //creates snakelike effect when put below increments
+                //other.body.velocity += delta;
+                //other.body.velocity /= other.body.mass; //creates snakelike effect when put below increments
             }
         }
         public override void AffectSelf()

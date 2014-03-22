@@ -447,7 +447,7 @@ namespace OrbItProcs
 
                 // Calculate normal with 2D cross product between vector and scalar
                 normals[i1] = new Vector2(face.Y, -face.X);
-                normals[i1].Normalize();
+                VMath.NormalizeSafe(ref normals[i1]);
             }
         }
         // The extreme point along a direction within a polygon

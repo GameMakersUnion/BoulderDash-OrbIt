@@ -225,6 +225,12 @@ namespace OrbItProcs {
             }
         }
 
+        public textures texture
+        {
+            get { return body.texture; }
+            set { body.texture = value; }
+        }
+
         private ObservableHashSet<Link> _SourceLinks = new ObservableHashSet<Link>();
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> SourceLinks { get { return _SourceLinks; } set { _SourceLinks = value; } }
@@ -307,24 +313,6 @@ namespace OrbItProcs {
             if (val == nodeE.lifetime)           lifetime                    = dict[val];
             if (val == nodeE.color)              body.color             = dict[val];
         }
-        //these comes will allow eachother's draws to be called (all 4 could draw at once)
-        public static List<comp> drawPropsSuper = new List<comp>()
-        {
-            comp.waver,
-            comp.wideray,
-            comp.laser,
-            comp.phaseorb
-        };
-
-        //todo:never again
-        /*~Node()
-        {
-            Console.WriteLine("It was nice knowning you. -{0}", name);
-            while(true)
-            {
-
-            }
-        }*/
 
         public Node() : this(ShapeType.eCircle) { }
 
@@ -431,7 +419,7 @@ namespace OrbItProcs {
                 else
                 {
                     //reach = (int)(body.radius * 5) / room.gridsystem.cellWidth;
-                    reach = 20;
+                    reach = 10;
                 }
 
                 ///*
@@ -453,6 +441,7 @@ namespace OrbItProcs {
                     {
                         foreach (comp c in aOtherProps)
                         {
+                            if (!comps[c].active) continue;
                             comps[c].AffectOther(other.parent);
                         }
                     }
@@ -508,23 +497,13 @@ namespace OrbItProcs {
         {
             if (nodeState == state.off || nodeState == state.updateOnly) return;
 
-            int numOfSupers = 0;
             foreach (comp c in drawProps)
             {
                 if (!comps[c].CallDraw) continue;
                 if (!comps[c].active) continue;
-                if (drawPropsSuper.Contains(c))
-                {
-                    numOfSupers++;
-                    comps[c].Draw(spritebatch);
-                }
-                else
-                {
-                    if (numOfSupers > 0) break;
-                    comps[c].Draw(spritebatch);
-                    if (!comps[c].compType.HasFlag(mtypes.minordraw))
-                        break; //only executes the most significant draw component
-                }
+                comps[c].Draw(spritebatch);
+                //if (!comps[c].compType.HasFlag(mtypes.minordraw))
+                //    break; //only executes the most significant draw component
             }
 
             if (triggerSortComponentsDraw)
@@ -592,8 +571,8 @@ namespace OrbItProcs {
 
         public void addComponent(comp c, bool active, bool overwrite = false)
         {
-            fetchComponent(c, active, overwrite);
-            SortComponentLists();
+            bool fetch = fetchComponent(c, active, overwrite);
+            if (fetch) SortComponentLists();
         }
 
         public void addComponentSafe(comp c)
@@ -621,19 +600,17 @@ namespace OrbItProcs {
             if (c == comp.movement)
             {
                 movement.active = active;
-                return true;
+                return false;
             }
             else if (c == comp.collision)
             {
                 collision.active = active;
-                return true;
+                return false;
             }
-
-            Component component = MakeComponent(c, active, this);
-
             
             if (overwrite)
             {
+                Component component = MakeComponent(c, active, this);
                 if (comps.ContainsKey(c))
                 {
                     comps.Remove(c);
@@ -644,7 +621,12 @@ namespace OrbItProcs {
             {
                 if (!comps.ContainsKey(c))
                 {
+                    Component component = MakeComponent(c, active, this);
                     comps.Add(c, component);
+                }
+                else
+                {
+                    return false;
                 }
             }
             return true;
@@ -826,8 +808,8 @@ namespace OrbItProcs {
             room.nodeHashes.Remove(nodeHash);
 
             active = false;
-            if (this == room.game.targetNode) room.game.targetNode = null;
-            if (this == room.game.ui.sidebar.inspectorArea.editNode) room.game.ui.sidebar.inspectorArea.editNode = null;
+            if (this == room.targetNode) room.targetNode = null;
+            if (this == room.game.ui.sidebar.inspectorArea.editNode) room.game.ui.sidebar.inspectorArea.editNode = null; //todo: social design pattern
             if (this == room.game.ui.spawnerNode) room.game.ui.spawnerNode = null;
             if (room.masterGroup != null && room.masterGroup.fullSet.Contains(this))
             {

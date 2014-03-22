@@ -15,7 +15,16 @@ namespace OrbItProcs
     public class InspectorView : DetailedView
     {
         public InspectorItem rootItem;
-        public Group activeGroup;
+        private Group _activeGroup;
+        public Group activeGroup
+        {
+            get { return _activeGroup; }
+            set
+            {
+                _GroupSync = value != null;
+                _activeGroup = value;
+            }
+        }
         private bool _GroupSync = false;
         public bool GroupSync { get { return _GroupSync && activeGroup != null; } set { _GroupSync = value; } }
 
@@ -71,9 +80,10 @@ namespace OrbItProcs
             if (item == null || control == null || item.obj == null) return;
             if (!(item.obj is InspectorItem)) return;
             InspectorItem ins = (InspectorItem)item.obj;
-            if (e is KeyEventArgs && control is TextBox)
+            if (e is KeyEventArgs && control.GetType() == typeof(TextBox))
             {
                 KeyEventArgs ke = (KeyEventArgs)e;
+                if (ke.Key != Microsoft.Xna.Framework.Input.Keys.Enter) return;
                 TextBox textbox = (TextBox)control;
                 object san = ins.TrySanitize(textbox.Text);
                 if (san != null)
@@ -110,6 +120,22 @@ namespace OrbItProcs
                         }
                     }
                 }
+                else if (checkbox.Name.Equals("toggle_checkbox"))
+                {
+                    ins.SetValue(checkbox.Checked);
+                    if (GroupSync)
+                    {
+                        ins.ApplyToAllNodes(activeGroup);
+                    }
+                }
+            }
+            else if (control is ComboBox)
+            {
+                ins.SetValue(control.Text);
+                if (GroupSync)
+                {
+                    ins.ApplyToAllNodes(activeGroup);
+                }
             }
             else if (control is Button)
             {
@@ -121,6 +147,7 @@ namespace OrbItProcs
                     {
                         n.RemoveComponent(component.com);
                     }
+                    
                 }
             }
 
@@ -133,6 +160,7 @@ namespace OrbItProcs
             {
                 InspectorItem inspectorItem = (InspectorItem)obj;
                 object o = inspectorItem.obj;
+                bool isToggle = o.GetType().IsGenericType && o.GetType().GetGenericTypeDefinition() == typeof(Toggle<>);
                 if (o != null)
                 {
                     if (o is Node)
@@ -175,7 +203,7 @@ namespace OrbItProcs
                             item.AddControl(btnRemove);
                         }
                     }
-                    else if (o is int || o is Single || o is byte)
+                    else if (o is int || o is Single || o is byte || isToggle)
                     {
                         int w = 60;
                         TextBox textbox = new TextBox(manager);
@@ -187,7 +215,27 @@ namespace OrbItProcs
                         textbox.Height = textbox.Height - 4;
                         textbox.Text = o.ToString();
                         textbox.Name = "number_textbox";
+                        if (isToggle)
+                        {
+                            textbox.Name = "toggle_textbox";
+                            CheckBox checkbox = new CheckBox(manager);
+                            checkbox.Init();
+                            checkbox.Width = 20;
+                            checkbox.Parent = item.textPanel;
+                            checkbox.Left = textbox.Left - 30;
+                            checkbox.Top = 2;
+                            checkbox.Text = "";
+                            checkbox.ToolTip.Text = "Toggle";
+                            //checkbox.Checked = (bool)o;
+                            checkbox.Name = "toggle_checkbox";
+                            checkbox.Checked = Toggle<Game1>.GetEnabled(o);
+                            textbox.Text = Toggle<Game1>.GetValue(o).ToString();
+
+                            item.AddControl(checkbox);
+                            
+                        }
                         item.AddControl(textbox);
+
                         //todo: make tiny + and - buttons
                     }
                     else if (o is string)
@@ -230,7 +278,7 @@ namespace OrbItProcs
                         checkbox.Text = "";
                         checkbox.ToolTip.Text = "Toggle";
                         checkbox.Checked = (bool)o;
-                        checkbox.Name = "component_checkbox_active";
+                        checkbox.Name = "bool_checkbox";
                         item.AddControl(checkbox);
                     }
                     else if (o.GetType().IsEnum)
@@ -249,6 +297,7 @@ namespace OrbItProcs
                         {
                             combobox.Items.Add(s);
                             if (s.Equals(o.ToString())) combobox.ItemIndex = i;
+                            i++;
                         }
                         combobox.Name = "enum_combobox";
                         item.AddControl(combobox);
@@ -263,6 +312,33 @@ namespace OrbItProcs
                                 combobox.ClientArea.Left += 2;
                             }
                         };
+                    }
+                    
+                }
+            }
+        }
+
+        public override void Refresh()
+        {
+            if (viewItems != null)
+            {
+                foreach (DetailedItem item in viewItems)
+                {
+                    if (item.obj == null) continue;
+                    if (item.obj is InspectorItem)
+                    {
+                        InspectorItem insItem = (InspectorItem)item.obj;
+                        if (insItem.obj != null && (insItem.obj is Component || insItem.obj is Node || insItem.obj is Body))
+                        {
+                            continue;
+                        }
+                        item.label.Text = insItem.ToString().LastWord('.');
+                        if (item.itemControls == null) continue;
+                        foreach(string name in item.itemControls.Keys)
+                        {
+                            Control control = item.itemControls[name];
+                            //todo:implement refresh controls
+                        }
                     }
                     
                 }

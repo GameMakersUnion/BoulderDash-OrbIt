@@ -485,9 +485,9 @@ namespace OrbItProcs
                 }
                 else if (rdNodeS.Checked)
                 {
-                    if (game.targetNode != null)
+                    if (room.targetNode != null)
                     {
-                        source = game.targetNode;
+                        source = room.targetNode;
                     }
                 }
 
@@ -526,9 +526,9 @@ namespace OrbItProcs
                 }
                 else if (rdNodeT.Checked)
                 {
-                    if (game.targetNode != null)
+                    if (room.targetNode != null)
                     {
-                        target = game.targetNode;
+                        target = room.targetNode;
                     }
                 }
             }

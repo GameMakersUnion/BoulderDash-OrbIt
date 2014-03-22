@@ -37,7 +37,7 @@ namespace OrbItProcs
             }
         }
         
-        public void ClearView()
+        public virtual void ClearView()
         {
             selectedItem = null;
             foreach(DetailedItem i in viewItems.ToList())
@@ -46,7 +46,7 @@ namespace OrbItProcs
                 viewItems.Remove(i);
             }
         }
-        public void Refresh()
+        public virtual void Refresh()
         {
             if (viewItems != null)
             {
@@ -117,6 +117,14 @@ namespace OrbItProcs
                 RemoveControl(control.Name);
             }
             itemControls[control.Name] = control;
+            if (control is ComboBox)
+            {
+                (control as ComboBox).ItemIndexChanged += (s, e) =>
+                {
+                    detailedView.InvokeOnItemEvent(control, this, e);
+                };
+                return;
+            }
             control.Click += (s, e) =>
             {
                 detailedView.InvokeOnItemEvent(control, this, e);
@@ -125,6 +133,7 @@ namespace OrbItProcs
             {
                 detailedView.InvokeOnItemEvent(control, this, e);
             };
+            
             //todo: add more handlers as necessary
         }
         public void RemoveControl(string name)

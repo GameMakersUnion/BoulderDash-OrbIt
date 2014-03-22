@@ -47,12 +47,12 @@ namespace OrbItProcs {
         public selection currentSelection = selection.placeNode;
         int oldMouseScrollValue = 0;//
         bool hovertargetting = false;//
-        int rightClickCount = 0;//
-        int rightClickMax = 1;//
+        //int rightClickCount = 0;//
+        //int rightClickMax = 1;//
         public int sWidth = 1000;////
         public int sHeight = 600;////
         bool isShiftDown = false;
-        bool isTargeting = false;
+        //bool isTargeting = false;
         public Vector2 spawnPos;
         Vector2 groupSelectionBoxOrigin = new Vector2(0, 0);
         public HashSet<Node> groupSelectSet;
@@ -137,18 +137,22 @@ namespace OrbItProcs {
         }
 
         public List<DetailedView> detailedViews = new List<DetailedView>();
+        private int refreshCount = 0;
 
         public void Update(GameTime gameTime)
         {
             ProcessKeyboard();
             ProcessMouse();
             ProcessController();
-
-            if (sidebar != null)
+            //only update once per second to save performance (heavy reflection)
+            if (refreshCount++ % 60 == 0)
             {
-                foreach (var view in detailedViews)
+                if (sidebar != null)
                 {
-                    view.Refresh();
+                    foreach (var view in detailedViews)
+                    {
+                        view.Refresh();
+                    }
                 }
             }
 
@@ -286,7 +290,7 @@ namespace OrbItProcs {
             
             if (hovertargetting)
             {
-                if (true || mouseState.LeftButton == ButtonState.Pressed)
+                if (true)// || mouseState.LeftButton == ButtonState.Pressed)
                 {
                     bool found = false;
                     for (int i = room.masterGroup.fullSet.Count - 1; i >= 0; i--)
@@ -295,18 +299,13 @@ namespace OrbItProcs {
                         // find node that has been clicked, starting from the most recently placed nodes
                         if (Vector2.DistanceSquared(n.body.pos, new Vector2(worldMouseX, worldMouseY)) < n.body.radius * n.body.radius)
                         {
-                            game.targetNode = n;
+                            room.targetNode = n;
                             found = true;
                             break;
                         }
                     }
-                    if (!found) game.targetNode = null;
+                    if (!found) room.targetNode = null;
                 }
-            }
-
-            if (mouseState.RightButton == ButtonState.Released && oldMouseState.RightButton == ButtonState.Pressed)
-            {
-                rightClickCount = 0;
             }
 
             if (mouseState.ScrollWheelValue < oldMouseScrollValue)

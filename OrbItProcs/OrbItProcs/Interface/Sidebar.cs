@@ -407,8 +407,8 @@ namespace OrbItProcs
                     lstMain.Items.Remove(o);
                 }
 
-                
-                if (g.fullSet.Contains(game.targetNode)) game.targetNode = null;
+
+                if (g.fullSet.Contains(room.targetNode)) room.targetNode = null;
                 if (g.fullSet.Contains(inspectorArea.editNode) && inspectorArea.editNode != g.defaultNode)
                 {
                     inspectorArea.InsBox.Items.Clear();
@@ -466,9 +466,9 @@ namespace OrbItProcs
         void ConvertIntoList_Click(object sender, EventArgs e)
         {
             Node n = (Node)lstMain.Items.ElementAt(lstMain.ItemIndex);
-            if (n == game.targetNode)
+            if (n == room.targetNode)
             {
-                game.targetNode = null;
+                room.targetNode = null;
             }
 
             Node newdefault = new Node();
@@ -822,20 +822,17 @@ namespace OrbItProcs
 
         public void SetTargetNode(Node target)
         {
-            //if (game.targetNode == target) return;
-            game.targetNode = target;
+            room.targetNode = target;
             
             if (inspectorArea.editNode != target)
             {
-                //ResetInspectorBox(inspectorArea.InsBox, game.targetNode);
-                inspectorArea.ResetInspectorBox(game.targetNode);
+                inspectorArea.ResetInspectorBox(room.targetNode);
             }
-                
-            //ui.editNode = target;
-
-            //lblEditNodeName.Text = ui.editNode.name;
-            //lblInspectorAddress.Text = "/" + ui.editNode.ToString();
             
+            if (EditSelectedNode)
+            {
+                componentView.SwitchNode(room.targetNode, false);
+            }
         }
 
         void lstPresets_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
@@ -987,7 +984,7 @@ namespace OrbItProcs
                 (sender as Button).Focused = false;
 
             Group g = ActiveGroupFirst;
-            if (g.fullSet.Contains(game.targetNode)) game.targetNode = null;
+            if (g.fullSet.Contains(room.targetNode)) room.targetNode = null;
             if (g.fullSet.Contains(inspectorArea.editNode) && inspectorArea.editNode != g.defaultNode)
             {
                 inspectorArea.InsBox.Items.Clear();
@@ -1004,13 +1001,13 @@ namespace OrbItProcs
         void btnRemoveNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             Group g = ActiveGroupFirst;
-            if (g != null && g.fullSet.Contains(game.targetNode))
-                g.DeleteEntity(game.targetNode);
-            if (game.targetNode != null)
+            if (g != null && g.fullSet.Contains(room.targetNode))
+                g.DeleteEntity(room.targetNode);
+            if (room.targetNode != null)
             {
-                //game.targetNode.active = false;
-                game.targetNode.IsDeleted = true;
-                game.targetNode = null;
+                //room.targetNode.active = false;
+                room.targetNode.IsDeleted = true;
+                room.targetNode = null;
             }
             if (inspectorArea.editNode != ActiveDefaultNode && !lstPresets.Items.Contains(inspectorArea.editNode))
             {

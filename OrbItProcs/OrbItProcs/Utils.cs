@@ -32,6 +32,23 @@ namespace OrbItProcs {
             return compEnums[t];
         }
 
+        public static bool isGenericType(Type genericType, Type type)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == genericType)
+            {
+                return true;
+            }
+            return false;
+        }
+        public static bool isToggle(object o)
+        {
+            return isGenericType(typeof(Toggle<>), o.GetType());
+        }
+        public static bool isToggle(Type t)
+        {
+            return isGenericType(typeof(Toggle<>), t);
+        }
+
         public static void PopulateComponentTypesDictionary()
         {
             compTypes = new Dictionary<comp, Type>();

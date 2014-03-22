@@ -34,7 +34,7 @@ namespace OrbItProcs
             lblGroup.Init();
             lblGroup.Parent = parent;
             lblGroup.Text = "Group:";
-            lblGroup.Width = 60;
+            lblGroup.Width = 180;
             lblGroup.Left = LeftPadding;
             lblGroup.TextColor = Color.Black;
             lblGroup.Top = HeightCounter;
@@ -68,21 +68,22 @@ namespace OrbItProcs
             insView.Height = 120;
             SwitchGroup(room.masterGroup.childGroups["General Groups"].childGroups.ElementAt(0).Value);
 
+            OnItemEvent += OnEvent2;
+
             //UpdateGroupComboBox();
             //cbActiveGroup.ItemIndex = 0;
         }
-        //public void UpdateGroupComboBox()
-        //{
-        //    ComboBox cb = cbActiveGroup;
-        //    string tempName = "";
-        //    if (cb.ItemIndex >= 0) tempName = cb.Items.ElementAt(cb.ItemIndex).ToString();
-        //    cb.ItemIndex = 0;
-        //    List<object> list = cb.Items;
-        //    list.ToList().ForEach((o) => list.Remove(o));
-        //    room.masterGroup.childGroups["General Groups"].GroupNamesToList(list, false);
-        //
-        //    if (!tempName.Equals("")) cb.ItemIndex = cb.Items.IndexOf(tempName);
-        //}
+
+        public void OnEvent2(Control control, DetailedItem item, EventArgs e)
+        {
+            if (control == null || item == null) return;
+            if (!(item.obj is InspectorItem)) return;
+            InspectorItem ins = (InspectorItem)item.obj;
+            if (control is Button && ins.obj is Component)
+            {
+                RefreshComponents();
+            }
+        }
 
         public void SetVisible(bool visible)
         {
@@ -107,37 +108,6 @@ namespace OrbItProcs
             //insArea.propertyEditPanel.grouppanel.Refresh();
         }
 
-        //optimized applytoall for only node, body, and components
-        //public void ApplyToGroup(FPInfo fpinfo, object value)
-        //{
-        //    if (activeGroup == null || selectedItem == null) return;
-        //    if (fpinfo == null) Console.WriteLine("FPInfo was null when applying to group in ComponentView");
-        //
-        //    if (selectedItem.obj is Component)
-        //    {
-        //        Component c = (Component)selectedItem.obj;
-        //        foreach (Node n in activeGroup.fullSet)
-        //        {
-        //            comp cc = c.com;
-        //            if (!n.HasComponent(cc)) n.addComponent(cc, c.active);
-        //            fpinfo.SetValue(value, n[cc]);
-        //        }
-        //    }
-        //    else if (selectedItem.obj is Body)
-        //    {
-        //        foreach (Node n in activeGroup.fullSet)
-        //        {
-        //            fpinfo.SetValue(value, n.body);
-        //        }
-        //    }
-        //    else if (selectedItem.obj is Node)
-        //    {
-        //        foreach (Node n in activeGroup.fullSet)
-        //        {
-        //            fpinfo.SetValue(value, n);
-        //        }
-        //    }
-        //}
 
         public override void SelectItem(DetailedItem item)
         {
@@ -157,11 +127,12 @@ namespace OrbItProcs
                 insView.backPanel.Refresh();
                 insView.SetRootItem(obj);
             }
-            //if (insArea == null) return;
-            //insArea.InsBox.Visible = true;
-            //insArea.InsBox.Refresh();
-            //insArea.ResetInspectorBox(obj);
-            //insArea.propertyEditPanel.DisableControls();
+        }
+
+        public override void ClearView()
+        {
+            base.ClearView();
+            insView.ClearView();
         }
 
         public void RefreshComponents()
@@ -171,15 +142,27 @@ namespace OrbItProcs
                 SwitchGroup(activeGroup);
             }
         }
-
         public void SwitchGroup(Group g)
         {
             if (g == null) return;
             activeGroup = g;
-            rootNode = g.defaultNode;
-            if (rootNode == null) return;
+            if (insView != null) insView.activeGroup = g;
+            lblGroup.Text = "Group: " + activeGroup.Name;
+            SwitchNode(g.defaultNode, true);
+        }
+        public void SwitchNode(Node node, bool group)
+        {
+            ClearView();
+            if (node == null) return;
 
-
+            this.rootNode = node;
+            if (!group)
+            {
+                lblGroup.Text = "Node: " + node.name;
+                //activeGroup = null;
+                GroupSync = false;
+                insView.GroupSync = false;
+            }
             int selected = sidebar.tbcMain.SelectedIndex;
             if (selected != 3) sidebar.tbcMain.SelectedIndex = 3;
 
@@ -193,21 +176,21 @@ namespace OrbItProcs
             }
 
             viewItems = new List<DetailedItem>();
-            int itemCount = rootNode.comps.Count + 2;
+            int itemCount = node.comps.Count + 2;
             int width = backPanel.Width - 4; //#magic number
             if (itemCount >= 10)
                 width -= 18;
-            InspectorItem rootItem = new InspectorItem(null, rootNode, sidebar);
+            InspectorItem rootItem = new InspectorItem(null, node, sidebar);
             CreateItem(new DetailedItem(manager, this, rootItem, backPanel, heightCount, LeftPadding, width));
             //compItems[0].textPanel.Color = Color.Blue;
             int height = (viewItems[0].itemHeight - 2);
             heightCount += height;
-            InspectorItem bodyItem = new InspectorItem(null, rootItem, rootNode.body, rootNode.GetType().GetProperty("body"));
+            InspectorItem bodyItem = new InspectorItem(null, rootItem, node.body, node.GetType().GetProperty("body"));
             CreateItem(new DetailedItem(manager, this, bodyItem, backPanel, heightCount, LeftPadding, width));
-            InspectorItem dictItem = new InspectorItem(null, rootItem, rootNode.comps, rootNode.GetType().GetProperty("comps"));
-            foreach (comp c in rootNode.comps.Keys)
+            InspectorItem dictItem = new InspectorItem(null, rootItem, node.comps, node.GetType().GetProperty("comps"));
+            foreach (comp c in node.comps.Keys)
             {
-                Component co = (Component)rootNode.comps[c];
+                Component co = (Component)node.comps[c];
                 var infos = co.GetType().GetCustomAttributes(typeof(Info), false);
                 string tooltip = "";
                 if (infos != null && infos.Length > 0)
@@ -217,7 +200,7 @@ namespace OrbItProcs
                     tooltip = info.summary;
                 }
                 heightCount += height;
-                InspectorItem cItem = new InspectorItem(null, dictItem, rootNode.comps[c], c);
+                InspectorItem cItem = new InspectorItem(null, dictItem, node.comps[c], c);
                 DetailedItem di = new DetailedItem(manager, this, cItem, backPanel, heightCount, LeftPadding, width);
                 di.textPanel.ToolTip.Text = tooltip;
                 CreateItem(di);
@@ -250,51 +233,6 @@ namespace OrbItProcs
             };
         }
 
-        //public void OnItemCreate(DetailedItem item, object obj)
-        //{
-        //    if (obj == null) return;
-        //    if (obj is Node)
-        //    {
-        //        item.label.Text = "Root";
-        //    }
-        //    else if (obj is Body || obj is Component)
-        //    {
-        //        item.label.Text = obj.GetType().ToString().LastWord('.');
-        //    }
-        //    //no checkboxes for root or body
-        //    if (obj is Component)
-        //    {
-        //        Component comp = (Component)obj;
-        //
-        //        CheckBox checkbox = new CheckBox(manager);
-        //        checkbox.Init();
-        //        checkbox.Parent = item.textPanel;
-        //        checkbox.Left = item.textPanel.Width - 45;
-        //        checkbox.Text = "";
-        //        checkbox.ToolTip.Text = "Toggle";
-        //        checkbox.Checked = comp.active;
-        //        checkbox.CheckedChanged += (s, e) =>
-        //        {
-        //            comp.active = checkbox.Checked;
-        //            //this.componentView.ToggleGroupComponent(comp.com, comp.active);
-        //        };
-        //
-        //        if (!comp.isEssential())
-        //        {
-        //            Button btnRemove = new Button(manager);
-        //            btnRemove.Init();
-        //            btnRemove.Parent = item.textPanel;
-        //            btnRemove.TextColor = Color.Red;
-        //            btnRemove.Left = checkbox.Left - 20;
-        //            btnRemove.Height = item.buttonHeight;
-        //            btnRemove.Width = item.buttonWidth;
-        //            btnRemove.Text = "-";
-        //            //btnRemove.Click += removeComponent_Click;
-        //            btnRemove.ToolTip.Text = "Remove";
-        //        }
-        //    }
-        //}
-
         public void ToggleGroupComponent(comp c, bool value)
         {
             if (activeGroup != null)
@@ -314,6 +252,7 @@ namespace OrbItProcs
             {
                 if (item.label.Text.Equals(name))
                 {
+                    item.OnSelect();
                     item.isSelected = true;
                     return count;
                 }
@@ -379,12 +318,6 @@ namespace OrbItProcs
             }
             return true;
         }
-
-        //public override void SelectItem(ComponentViewItem item)
-        //{
-        //    base.SelectItem(item);
-        //}
-
     }
 
 

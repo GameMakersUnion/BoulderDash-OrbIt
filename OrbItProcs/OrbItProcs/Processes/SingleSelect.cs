@@ -48,24 +48,8 @@ namespace OrbItProcs
         {
             //if (buttonState == ButtonState.Released) return;
             Node found = SelectNode(UserInterface.WorldMousePos);
-            if (found != null)
-            {
-                room.game.ui.sidebar.SetTargetNode(found);
-                /*
-                TripSpawnOnCollide ts = new TripSpawnOnCollide(game.targetNode);
-                ProcessMethod pm = (d) => {
-                    System.Console.WriteLine(ts.triggerNode.name + ts.colCount);
-                            
-                };
-                ts.Collision += pm;
-                game.processManager.Add(ts);
-                */
-            }
-            else
-            {
-                //targetnode is deselected if you click on nothing
-                room.game.targetNode = null;
-            }
+            room.game.ui.sidebar.SetTargetNode(found);
+
         }
         public void MakeLink()
         {
@@ -73,13 +57,13 @@ namespace OrbItProcs
             Node found = SelectNode(UserInterface.WorldMousePos);
             if (found != null)
             {
-                if (room.game.targetNode != null && room.game.targetNode.comps.ContainsKey(comp.flow))
+                if (room.targetNode != null && room.targetNode.comps.ContainsKey(comp.flow))
                 {
-                    room.game.targetNode.comps[comp.flow].AddToOutgoing(found);
+                    room.targetNode.comps[comp.flow].AddToOutgoing(found);
                 }
-                if (room.game.targetNode != null && room.game.targetNode.comps.ContainsKey(comp.tether))
+                if (room.targetNode != null && room.targetNode.comps.ContainsKey(comp.tether))
                 {
-                    room.game.targetNode.comps[comp.tether].AddToOutgoing(found);
+                    room.targetNode.comps[comp.tether].AddToOutgoing(found);
                 }
             }
             else

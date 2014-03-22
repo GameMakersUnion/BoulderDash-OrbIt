@@ -23,7 +23,7 @@ namespace OrbItProcs
         public event ProcessMethod Create;
         public event ProcessMethod Destroy;
         public event Action<Node,Node> Collision;
-        public event ProcessMethod OutOfBounds;
+        //public event ProcessMethod OutOfBounds;
 
         public Dictionary<KeyAction, KeyBundle> processKeyActions = new Dictionary<KeyAction,KeyBundle>();
 

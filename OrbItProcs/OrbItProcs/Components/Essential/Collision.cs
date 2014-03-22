@@ -448,7 +448,7 @@ namespace OrbItProcs
                 m.contact_count = 1;
                 Vector2 n = v1 - center;
                 n = B.u * n;
-                n.Normalize();
+                VMath.NormalizeSafe(ref n);
                 m.normal = n;
                 v1 = B.u * v1 + b.pos;
                 m.contacts[0] = v1;
@@ -466,7 +466,7 @@ namespace OrbItProcs
                 v2 = B.u * v2 + b.pos;
                 m.contacts[0] = v2;
                 n = B.u * n;
-                n.Normalize();
+                VMath.NormalizeSafe(ref n);
                 m.normal = n;
             }
             // Closest to face
@@ -666,7 +666,7 @@ namespace OrbItProcs
 
             // Calculate reference face side normal in world space
             Vector2 sidePlaneNormal = (v2 - v1);
-            sidePlaneNormal.Normalize();
+            VMath.NormalizeSafe(ref sidePlaneNormal);
 
             // Orthogonalize
             Vector2 refFaceNormal = new Vector2(sidePlaneNormal.Y, -sidePlaneNormal.X);
@@ -884,7 +884,7 @@ namespace OrbItProcs
 
             // Calculate reference face side normal in world space
             Vector2 sidePlaneNormal = (v2 - v1);
-            sidePlaneNormal.Normalize();
+            VMath.NormalizeSafe(ref sidePlaneNormal);
 
             // Orthogonalize
             Vector2 refFaceNormal = new Vector2(sidePlaneNormal.Y, -sidePlaneNormal.X);

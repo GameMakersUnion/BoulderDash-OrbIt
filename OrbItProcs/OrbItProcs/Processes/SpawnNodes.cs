@@ -206,6 +206,7 @@ namespace OrbItProcs
             }
             catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 //if (e.InnerException != null)
                 //{
                 //    if (e.InnerException.InnerException != null)

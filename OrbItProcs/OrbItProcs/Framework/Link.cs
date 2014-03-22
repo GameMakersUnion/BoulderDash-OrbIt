@@ -725,7 +725,7 @@ namespace OrbItProcs
 
                     Vector2 diff = target.body.pos - source.body.pos;
                     Vector2 perp = new Vector2(diff.Y, -diff.X);
-                    perp.Normalize();
+                    VMath.NormalizeSafe(ref perp);
                     perp *= 2;
 
                     Utils.DrawLine(room, source.body.pos, target.body.pos, 2f, color1);

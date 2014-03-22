@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs {
     public class FrameRateCounter {
-        ContentManager content;
+        //ContentManager content;
         //SpriteBatch spriteBatch;
         //SpriteFont spriteFont;
         Game1 game;
@@ -60,7 +60,7 @@ namespace OrbItProcs {
         public void Draw(SpriteBatch spriteBatch, SpriteFont spriteFont)
         {
             frameCounter++;
-            int yOffset = 70;
+            int y1 = 70;
 
             string fps = string.Format("fps: {0}", frameRate);
             string ups = string.Format("ups: {0}", updateRate);
@@ -70,38 +70,34 @@ namespace OrbItProcs {
             bool hasProcess = room != null && room.game.ui.keyManager.TemporaryProcess != null;
             if (hasProcess)
             {
-                yOffset += 30;
+                y1 += 30;
                 process = room.game.ui.keyManager.TemporaryProcess.GetType().ToString().LastWord('.');
             }
 
-            spriteBatch.DrawString(spriteFont, fps, new Vector2(2, Game1.smallHeight - yOffset), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-            spriteBatch.DrawString(spriteFont, fps, new Vector2(1, Game1.smallHeight - yOffset-1), Color.Black, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-            yOffset -= 30;
-            spriteBatch.DrawString(spriteFont, ups, new Vector2(2, Game1.smallHeight - yOffset), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-            spriteBatch.DrawString(spriteFont, ups, new Vector2(1, Game1.smallHeight - yOffset-1), Color.Black, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-            if (hasProcess)
+            room.camera.DrawStringScreen(fps, new Vector2(0, room.game.Height - y1), Color.Black);
+            y1 -= 30;
+            room.camera.DrawStringScreen(ups, new Vector2(0, room.game.Height - y1), Color.Black);
+            y1 -= 30;
+            if (hasProcess) room.camera.DrawStringScreen(process, new Vector2(0, room.game.Height - y1), Color.Black);
+
+            if (room.masterGroup != null)
             {
-                yOffset -= 30;
-                spriteBatch.DrawString(spriteFont, process, new Vector2(2, Game1.smallHeight - yOffset), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-                spriteBatch.DrawString(spriteFont, process, new Vector2(1, Game1.smallHeight - yOffset - 1), Color.Black, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-                //todo:make dynamic string handling
+                string count = room.generalGroups.fullSet.Count.ToString();
+                int x = room.game.Width - (count.Length * 7) - 20;
+                room.camera.DrawStringScreen(count, new Vector2(x, room.game.Height - y1), Color.Black, offset: false);
             }
 
-
             //draw player scores
-            Vector2 pos = new Vector2(2, 2);
+            Vector2 pos = new Vector2(1, 2);
             foreach(var p in room.players)
             {
                 string score = (p.score / 100f).ToString();
-                spriteBatch.DrawString(spriteFont, score, pos, p.pColor, 0f, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
-                spriteBatch.DrawString(spriteFont, score, new Vector2(pos.X - 1, pos.Y - 1), p.pColor, 0f, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
+                room.camera.DrawStringScreen(score, pos, p.pColor, scale: 1f);
+                //spriteBatch.DrawString(spriteFont, score, pos, p.pColor, 0f, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
+                //spriteBatch.DrawString(spriteFont, score, new Vector2(pos.X - 1, pos.Y - 1), p.pColor, 0f, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
                 pos.X += 100;
 
             }
-
-
-            //spriteBatch.DrawString(spriteFont, fpsups, new Vector2(Game1.sWidth - 100, Game1.sHeight - 70), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-
         }
     }
 }

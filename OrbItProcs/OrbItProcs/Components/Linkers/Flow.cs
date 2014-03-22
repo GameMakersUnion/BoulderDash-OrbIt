@@ -87,12 +87,7 @@ namespace OrbItProcs
         public override void AfterCloning()
         {
             //if (!parent.comps.ContainsKey(comp.queuer)) parent.addComponent(comp.queuer, true);
-            if (!parent.comps.ContainsKey(comp.lifetime))
-                parent.addComponent(comp.lifetime, true);
-
-            //parent.comps[comp.lifetime].immortal = true;
-
-
+            parent.addComponent(comp.lifetime, true);
         }
 
         public override void InitializeLists()
@@ -209,7 +204,8 @@ namespace OrbItProcs
                 col = Color.Red;
 
 
-            spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), (parent.body.scale * mapzoom) * 1.2f, SpriteEffects.None, 0);
+            //spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), (parent.body.scale * mapzoom) * 1.2f, SpriteEffects.None, 0);
+            room.camera.Draw(parent.texture, parent.body.pos, parent.body.color, parent.body.scale * 1.2f);
 
             foreach (Node receiver in outgoing)
             {
@@ -224,7 +220,7 @@ namespace OrbItProcs
                 Utils.DrawLine(room, parent.body.pos, receiver.body.pos, 2f, col);
                 Vector2 center = (receiver.body.pos + parent.body.pos) / 2;
                 Vector2 perp = new Vector2(center.Y, -center.X);
-                perp.Normalize();
+                VMath.NormalizeSafe(ref perp);
                 perp *= 10;
                 //center += perp;
                 Utils.DrawLine(room, center + perp, receiver.body.pos, 2f, col);
@@ -239,16 +235,8 @@ namespace OrbItProcs
 
             //spriteBatch.Begin();
 
-            spritebatch.DrawString(room.game.font, gatestring, parent.body.pos * mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-            //spriteBatch.DrawString(spriteFont, fps, new Vector2(1, 1), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-            //spritebatch.DrawString(room.game.font, gatestring, new Vector2(2, Game1.sHeight - 40), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-
-            //spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, parent.transform.color, 0, parent.TextureCenter(), parent.transform.scale / mapzoom, SpriteEffects.None, 0);
-
-        }
-
-        public void onCollision(Dictionary<dynamic, dynamic> args)
-        {
+            //spritebatch.DrawString(room.game.font, gatestring, parent.body.pos * mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            room.camera.DrawStringWorld(gatestring, parent.body.pos, parent.body.color, scale: 0.5f);
         }
 
     }

@@ -25,6 +25,7 @@ namespace OrbItProcs
             hueShifter,
             RandomInitial,
         }
+
         /// <summary>
         /// Determines how to change to the node's color:
         /// Angle: Hue changes acording to angle of travel. 
@@ -73,7 +74,7 @@ namespace OrbItProcs
         [Info(UserLevel.Advanced, "The intensity of the colors")]
         public float saturation { get { return _saturation; } set { _saturation = value; } }
 
-        private int pos = 1, sign = 1;
+        //private int pos = 1, sign = 1;
         private int angle = 0;
         private bool schedulerModerated;
         private Appointment appt;
@@ -152,19 +153,6 @@ namespace OrbItProcs
                 f = max;
                 rate *= -1;
             }
-        }
-
-        public static float Sawtooth(int num, int mod)
-        {
-            int ret = num % mod;
-            if (ret < 0) ret = mod + ret;
-            return ret;
-        }
-        public static float SawtoothFloat(float num, float mod)
-        {
-            float ret = num % mod;
-            if (ret < 0) ret = mod + ret;
-            return ret;
         }
 
         public static Color getColorFromHSV(float hue, float saturation = 1f, float value = 1f, int alpha = 255)

@@ -22,9 +22,9 @@ namespace OrbItProcs
         public Toggle<int> timeOfDeath { get; set; }
 
         /// <summary>
-        /// How many seconds this node has been alive
+        /// How many milliseconds this node has been alive
         /// </summary>
-        [Info(UserLevel.User, "How many seconds have passed since this node was spawned")]
+        [Info(UserLevel.User, "How many milliseconds have passed since this node was spawned")]
         public int lifetime { get; set; }
 
 
@@ -33,7 +33,8 @@ namespace OrbItProcs
         {
             if (parent != null) this.parent = parent;
             com = comp.lifetime; 
-            timeOfDeath = new Toggle<int>(5000);
+            timeOfDeath = new Toggle<int>(5000, false);
+
         }
 
         public override void OnSpawn()
@@ -50,7 +51,6 @@ namespace OrbItProcs
             {
                 Die();
             }
-
         }
 
         public void Die()
@@ -58,10 +58,5 @@ namespace OrbItProcs
             parent.active = false;
             parent.IsDeleted = true;
         }
-
-        public override void Draw(SpriteBatch spritebatch)
-        {
-        }
-
     }
 }

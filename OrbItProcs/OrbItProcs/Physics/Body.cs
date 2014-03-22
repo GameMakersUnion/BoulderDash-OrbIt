@@ -109,13 +109,6 @@ namespace OrbItProcs
         private textures _texture = textures.whitecircle;
 
         [Info(UserLevel.Never)]
-        public Shape shapeP { get { return shape; }
-            set { 
-                shape = value.Clone();
-            }
-        }
-
-        [Info(UserLevel.Never)]
         public float[] positionP { get { return pos.toFloatArray(); }
             set { pos = new Vector2(value[0], value[1]); } }
         [Info(UserLevel.Never)]

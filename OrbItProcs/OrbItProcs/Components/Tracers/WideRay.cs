@@ -39,7 +39,7 @@ namespace OrbItProcs
             }
         }
 
-        private double angle = 0;
+        //private double angle = 0;
         private float rayscale = 20;
         private int width = 3;
 
@@ -118,13 +118,15 @@ namespace OrbItProcs
             for (int i = 0; i < min; i++)
             {
                 scalevect.X = scales.ElementAt(i) * 50;
-                spritebatch.Draw(parent.getTexture(textures.whitepixel), positions.ElementAt(i) * mapzoom, null, parent.body.color, angles.ElementAt(i), centerTexture, scalevect, SpriteEffects.None, 0);
+                //spritebatch.Draw(parent.getTexture(textures.whitepixel), positions.ElementAt(i) * mapzoom, null, parent.body.color, angles.ElementAt(i), centerTexture, scalevect, SpriteEffects.None, 0);
+                room.camera.Draw(parent.getTexture(textures.whitepixel), positions.ElementAt(i), null, parent.body.color, angles.ElementAt(i), centerTexture, scalevect, SpriteEffects.None, 0);
                 count++;
             }
 
             float testangle = (float)(Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + (Math.PI / 2));
             scalevect.X = parent.body.scale * 50;
-            spritebatch.Draw(parent.getTexture(textures.whitepixel), parent.body.pos * mapzoom, null, parent.body.color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+            //spritebatch.Draw(parent.getTexture(textures.whitepixel), parent.body.pos * mapzoom, null, parent.body.color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+            room.camera.Draw(parent.getTexture(textures.whitepixel), parent.body.pos, null, parent.body.color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
             
         }
 

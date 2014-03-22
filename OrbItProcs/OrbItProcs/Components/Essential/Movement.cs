@@ -24,7 +24,7 @@ namespace OrbItProcs
     [Info(UserLevel.User, "Basic Movement Component", CompType)]
     public class Movement : Component {
 
-        public const mtypes CompType = mtypes.affectself | mtypes.essential;
+        public const mtypes CompType = mtypes.essential;// | mtypes.affectself;
         public override mtypes compType { get { return CompType; } set { } }
         public bool pushable { get; set; }
 
@@ -89,11 +89,15 @@ namespace OrbItProcs
             if (!active) return;
             if (parent.body.invmass == 0)
                 return;
+
+            moderateVelocity();
             Body b = parent.body;
             b.pos += b.velocity;
             b.orient += b.angularVelocity;
             b.SetOrient(b.orient);
-            IntegrateForces(); //calls the private integrate forces method
+            IntegrateForces(); //calls the integrateforces method
+
+            AffectSelf();
         }
 
         [Clickable]
@@ -101,15 +105,15 @@ namespace OrbItProcs
         {
             double velSquared = parent.body.velocity.X * parent.body.velocity.X + parent.body.velocity.Y * parent.body.velocity.Y;
 
-            if (maxVel.enabled && velSquared > maxVel * maxVel)
-            {
-                parent.body.velocity.Normalize();
-                parent.body.velocity *= maxVel;
-            }
             if (minVel.enabled && velSquared < minVel * minVel)
             {
-                parent.body.velocity.Normalize();
+                VMath.NormalizeSafe(ref parent.body.velocity);
                 parent.body.velocity *= minVel;
+            }
+            if (maxVel.enabled && velSquared > maxVel * maxVel)
+            {
+                VMath.NormalizeSafe(ref parent.body.velocity);
+                parent.body.velocity *= maxVel;
             }
         }
         public void RandomizeVelocity()
@@ -117,7 +121,8 @@ namespace OrbItProcs
             float x = ((float)Utils.random.NextDouble() * 100) - 50;
             float y = ((float)Utils.random.NextDouble() * 100) - 50;
             Vector2 vel = new Vector2(x, y);
-            vel.Normalize();
+            VMath.NormalizeSafe(ref vel);
+            //vel.Normalize();
             vel = vel * randInitialVel;
             parent.body.velocity = vel;
         }
@@ -126,7 +131,7 @@ namespace OrbItProcs
         {
             if (parent.body.velocity.X != 0 && parent.body.velocity.Y != 0)
             {
-                parent.body.velocity.Normalize();
+                VMath.NormalizeSafe(ref parent.body.velocity);
                 parent.body.velocity *= randInitialVel;
             }
         }

@@ -245,7 +245,7 @@ namespace OrbItProcs
 
             launchNode = new Node(bulletProps);
             //launchNode.comps[comp.laser].brightness = 0.5f;
-            launchNode.comps[comp.laser].lineYScale = 3f;
+            launchNode.comps[comp.laser].thickness.value = 3f;
             launchNode.GetComponent<Movement>().maxVel.value = 15;
             bulletlife = 1500;
             firefreq = 1;
@@ -277,7 +277,7 @@ namespace OrbItProcs
 
         }
         bool switchAvailable = true;
-        float massChange = 10f;
+        //float massChange = 10f;
         
         public void SwitchPlayerNode(Node n, bool addToSavedNodes = true, bool requireKeypress = false, Player other = null)
         {
@@ -471,7 +471,7 @@ namespace OrbItProcs
                 if (accel.X == 0 && accel.Y == 0 && (body.velocity.X != 0 || body.velocity.Y != 0))
                 {
                     accel = body.velocity;
-                    accel.Normalize();
+                    VMath.NormalizeSafe(ref accel);
                     accel *= -friction;
                 }
             }
@@ -533,7 +533,7 @@ namespace OrbItProcs
             
             if ((Math.Pow(body.velocity.X, 2) + Math.Pow(body.velocity.Y, 2)) > Math.Pow(maxvel, 2))
             {
-                body.velocity.Normalize();
+                VMath.NormalizeSafe(ref body.velocity);
                 body.velocity *= maxvel;
 
             }

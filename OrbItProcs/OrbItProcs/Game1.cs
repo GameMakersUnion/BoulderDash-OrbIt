@@ -118,7 +118,6 @@ namespace OrbItProcs
 
         public Dictionary<textures, Texture2D> textureDict;
         public Dictionary<textures, Vector2> textureCenters;
-        public Node targetNode = null;
 
         public static bool bigTonyOn = false;
 
@@ -550,10 +549,7 @@ namespace OrbItProcs
             if (afterSpawnAction != null) afterSpawnAction(newNode);
             if (lifetime != -1)
             {
-                if (!newNode.comps.ContainsKey(comp.lifetime))
-                {
-                    newNode.addComponent(comp.lifetime, true);
-                }
+                newNode.addComponent(comp.lifetime, true);
                 newNode.GetComponent<Lifetime>().timeOfDeath.value = lifetime;
                 newNode.comps[comp.lifetime].timeOfDeath.enabled = true;
             }

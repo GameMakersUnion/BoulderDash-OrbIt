@@ -229,7 +229,7 @@ namespace OrbItProcs
             foreach (Node other in outgoing.ToList())
             {
                 Vector2 len = other.body.pos - parent.body.pos;
-                len.Normalize();
+                VMath.NormalizeSafe(ref len);
                 confiningVects[other] = len;
             }
         }
@@ -262,7 +262,8 @@ namespace OrbItProcs
                     node.comps[comp.tether].incoming.Add(parent);
                     if (lockedAngle && !confiningVects.ContainsKey(node))
                     {
-                        Vector2 v = (node.body.pos - parent.body.pos); v.Normalize();
+                        Vector2 v = (node.body.pos - parent.body.pos);
+                        VMath.NormalizeSafe(ref v);
                         confiningVects.Add(node, v);
                     }
                     if (lockedDistance && !lockedVals.ContainsKey(node)) lockedVals.Add(node, (int)(node.body.pos - parent.body.pos).Length());
@@ -284,14 +285,13 @@ namespace OrbItProcs
                 col = parent.body.color;
             else
                 col = Color.White;
-
-            spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), (parent.body.scale * mapzoom) * 1.2f, SpriteEffects.None, 0);
+            room.camera.Draw(parent.body.texture, parent.body.pos, col, parent.body.scale * 1.2f);
 
             foreach (Node receiver in outgoing)
             {
                 Vector2 diff = receiver.body.pos - parent.body.pos;
                 Vector2 perp = new Vector2(diff.Y, -diff.X);
-                perp.Normalize();
+                VMath.NormalizeSafe(ref perp);
                 perp *= 2;
 
                 Utils.DrawLine(room, parent.body.pos, receiver.body.pos, 2f, col);

@@ -133,6 +133,7 @@
     <Compile Include="Components\Drawers\ColorChanger.cs" />
     <Compile Include="Components\Drawers\ColorGravity.cs" />
     <Compile Include="Components\Scheduler.cs" />
+    <Compile Include="Interface\Views\OptionsWindow.cs" />
     <Compile Include="Interface\Views\ComponentView.cs" />
     <Compile Include="Interface\Views\DetailedView.cs" />
     <Compile Include="Interface\Views\GroupsView.cs" />
@@ -150,10 +151,10 @@
     <Compile Include="Processes\CameraControl.cs" />
     <Compile Include="Processes\GraphData.cs" />
     <Compile Include="Physics\Body.cs" />
-    <Compile Include="Components\Drawers\BasicDraw.cs" />
+    <Compile Include="Components\Essential\BasicDraw.cs" />
     <Compile Include="Components\ILinkable.cs" />
     <Compile Include="Components\Linkers\Flow.cs" />
-    <Compile Include="Components\AffectOthers\Collision.cs" />
+    <Compile Include="Components\Essential\Collision.cs" />
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\AffectOthers\Gravity.cs" />
     <Compile Include="Components\Movement\Circler.cs" />
@@ -163,7 +164,7 @@
     <Compile Include="Components\Tracers\Laser.cs" />
     <Compile Include="Components\Meta\Lifetime.cs" />
     <Compile Include="Components\Meta\Modifier.cs" />
-    <Compile Include="Components\Movement\Movement.cs" />
+    <Compile Include="Components\Essential\Movement.cs" />
     <Compile Include="Components\Tracers\PhaseOrb.cs" />
     <Compile Include="Components\Tracers\Queuer.cs" />
     <Compile Include="Components\Movement\RandVelChange.cs" />
@@ -194,7 +195,6 @@
     <Compile Include="Framework\FPInfo.cs" />
     <Compile Include="Interface\PopUp.cs" />
     <Compile Include="Interface\InspectorItem.cs" />
-    <Compile Include="Interface\TreeListItem.cs" />
     <Compile Include="Interface\UserInterface.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Framework\ModifierInfo.cs" />

@@ -819,6 +819,38 @@ namespace OrbItProcs {
             }
             else if (fpinfo != null)
             {
+                if (Utils.isToggle(fpinfo.FPType))
+                {
+                    dynamic toggle;
+                    if (Utils.isToggle(value))
+                    {
+                        toggle = GetValue();
+                        dynamic tog2 = value;
+                        toggle.GetType().GetProperty("enabled").SetValue(toggle, tog2.enabled, null);
+                        toggle.GetType().GetProperty("value").SetValue(toggle, tog2.value, null);
+                        return;
+                    }
+                    else if (value is bool)
+                    {
+                        toggle = GetValue();
+                        toggle.GetType().GetProperty("enabled").SetValue(toggle, value, null);
+                        return;
+                    }
+                    object san = TrySanitize(value);
+                    if (san != null)
+                    {
+                        toggle = GetValue();
+                        toggle.GetType().GetProperty("value").SetValue(toggle, san, null);
+                    }
+                    return;
+                }
+                else if (fpinfo.FPType.IsEnum && !value.GetType().IsEnum)
+                {
+                    object san = TrySanitize(value);
+                    if (san != null)
+                        fpinfo.SetValue(san, parentItem.obj);
+                    return;
+                }
                 fpinfo.SetValue(value, parentItem.obj);
             }
             else
@@ -836,49 +868,73 @@ namespace OrbItProcs {
 
         public object TrySanitize(object value)
         {
-            if (value is string && fpinfo.FPType != typeof(string))
+            Type primitiveType = fpinfo.FPType;
+            bool isToggle = Utils.isToggle(fpinfo.FPType);
+            if ((value is string && fpinfo.FPType != typeof(string)) || isToggle)
             {
+                if (isToggle)
+                {
+                    if (value is bool) return value;
+                    dynamic tog = fpinfo.GetValue(parentItem.obj);
+                    primitiveType = tog.value.GetType();
+                    if (Utils.isToggle(value.GetType()))
+                    {
+                        dynamic tog2 = value;
+                        value = tog2.value;
+                    }
+
+                }
                 string s = value.ToString().Trim();
 
-                if (fpinfo.FPType == typeof(int))
+                if (primitiveType == typeof(int))
                 {
                     int v;
                     if (Int32.TryParse(s, out v))
                     {
-                        fpinfo.SetValue(v, parentItem.obj);
+                        //fpinfo.SetValue(v, parentItem.obj);
                         return v;
                     }
                     else return null;
                 }
-                else if (fpinfo.FPType == typeof(float))
+                else if (primitiveType == typeof(float))
                 {
                     float v;
                     if (float.TryParse(s, out v))
                     {
-                        fpinfo.SetValue(v, parentItem.obj);
+                        //fpinfo.SetValue(v, parentItem.obj);
                         return v;
                     }
                     else return null;
                 }
-                else if (fpinfo.FPType == typeof(double))
+                else if (primitiveType == typeof(double))
                 {
                     double v;
                     if (double.TryParse(s, out v))
                     {
-                        fpinfo.SetValue(v, parentItem.obj);
+                        //fpinfo.SetValue(v, parentItem.obj);
                         return v;
                     }
                     else return null;
                 }
-                else if (fpinfo.FPType == typeof(byte))
+                else if (primitiveType == typeof(byte))
                 {
                     byte v;
                     if (byte.TryParse(s, out v))
                     {
-                        fpinfo.SetValue(v, parentItem.obj);
+                        //fpinfo.SetValue(v, parentItem.obj);
                         return v;
                     }
                     else return null;
+                }
+                else if (primitiveType.IsEnum)
+                {
+                    foreach(var val in Enum.GetValues(primitiveType))
+                    {
+                        if (val.ToString().ToLower().Equals(s.ToLower()))
+                        {
+                            return val;
+                        }
+                    }
                 }
             }
             else if (value is string)

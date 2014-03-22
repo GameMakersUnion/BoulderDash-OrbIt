@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using TomShane.Neoforce.Controls;
 
+
 namespace OrbItProcs
 {
     public class LinkGeneratorWindow
@@ -15,8 +16,8 @@ namespace OrbItProcs
         public Window window;
         public int HeightCounter3;
         //LinkGenerator
-        ComboBox cbLinkType, cbLinkPresets, cbLinkPalette, cbLinkFormation;
-        Label lblGenerateLink, lblLinkType, lblLinkPresets, lblLinkPalette, lblLinkFormation;
+        ComboBox cbLinkType, cbLinkPresets, cbLinkFormation;
+        Label lblGenerateLink, lblLinkType, lblLinkPresets, lblLinkFormation;
         CheckBox chkEntangled;
         Button btnAddToPalette;
 
@@ -40,7 +41,6 @@ namespace OrbItProcs
 
             //LinkGenerator.ExpandedHeight += 30;
             HeightCounter3 = 0;
-            Window parent2 = window;
             int left = 0;
             int middle = 100;
 
@@ -50,20 +50,20 @@ namespace OrbItProcs
             lblGenerateLink.Top = HeightCounter3; HeightCounter3 += lblGenerateLink.Height;
             lblGenerateLink.Text = "Generate Link";
             lblGenerateLink.Width += 40;
-            lblGenerateLink.Parent = parent2;
+            lblGenerateLink.Parent = window;
 
             lblLinkType = new Label(manager);
             lblLinkType.Init();
             lblLinkType.Left = left;
             lblLinkType.Text = "Link Type";
-            lblLinkType.Parent = parent2;
+            lblLinkType.Parent = window;
             lblLinkType.Top = HeightCounter3; HeightCounter3 += lblLinkType.Height;
 
             cbLinkType = new ComboBox(manager);
             cbLinkType.Init();
             cbLinkType.Left = left;
             cbLinkType.Width += 20;
-            cbLinkType.Parent = parent2;
+            cbLinkType.Parent = window;
             cbLinkType.MaxItems = 15;
             cbLinkType.Top = HeightCounter3; HeightCounter3 += cbLinkType.Height;
             //cbLinkType.Items.AddRange(new List<object>() { });
@@ -93,14 +93,14 @@ namespace OrbItProcs
             lblLinkFormation.Init();
             lblLinkFormation.Left = left;
             lblLinkFormation.Text = "Formation";
-            lblLinkFormation.Parent = parent2;
+            lblLinkFormation.Parent = window;
             lblLinkFormation.Top = HeightCounter3; HeightCounter3 += lblLinkFormation.Height;
 
             cbLinkFormation = new ComboBox(manager);
             cbLinkFormation.Init();
             cbLinkFormation.Left = left;
             cbLinkFormation.Width += 20;
-            cbLinkFormation.Parent = parent2;
+            cbLinkFormation.Parent = window;
             cbLinkFormation.Top = HeightCounter3; HeightCounter3 += cbLinkFormation.Height;
 
             foreach (formationtype f in Enum.GetValues(typeof(formationtype)))
@@ -114,7 +114,7 @@ namespace OrbItProcs
             chkEntangled.Left = left;
             chkEntangled.Width += 20;
             chkEntangled.Text = "Entangled";
-            chkEntangled.Parent = parent2;
+            chkEntangled.Parent = window;
             chkEntangled.Top = HeightCounter3; HeightCounter3 += chkEntangled.Height;
 
             HeightCounter3 = lblGenerateLink.Height;
@@ -123,14 +123,14 @@ namespace OrbItProcs
             lblLinkPresets.Init();
             lblLinkPresets.Left = left + middle;
             lblLinkPresets.Text = "Preset";
-            lblLinkPresets.Parent = parent2;
+            lblLinkPresets.Parent = window;
             lblLinkPresets.Top = HeightCounter3; HeightCounter3 += lblLinkPresets.Height;
 
             cbLinkPresets = new ComboBox(manager);
             cbLinkPresets.Init();
             cbLinkPresets.Left = left + middle;
             //cbLinkPresets.Width += 20;
-            cbLinkPresets.Parent = parent2;
+            cbLinkPresets.Parent = window;
             cbLinkPresets.Top = HeightCounter3; HeightCounter3 += cbLinkPresets.Height;
 
             cbLinkPresets.Items.Add("Default");
@@ -142,7 +142,7 @@ namespace OrbItProcs
             btnAddToPalette.Width = middle - 20;
             btnAddToPalette.Text = "Add to\nPalette";
             btnAddToPalette.Height = btnAddToPalette.Height * 2 - 10;
-            btnAddToPalette.Parent = parent2;
+            btnAddToPalette.Parent = window;
             btnAddToPalette.Top = HeightCounter3 + 10; HeightCounter3 += btnAddToPalette.Height + 10;
             btnAddToPalette.Click += btnAddToPalette_Click;
         }

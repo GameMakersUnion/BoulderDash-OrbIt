@@ -59,8 +59,16 @@ namespace OrbItProcs {
             }
             set
             {
-                //System.Diagnostics.Debugger.Break();
                 _masterGroup = value;
+            }
+        }
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public Group generalGroups
+        {
+            get
+            {
+                if (masterGroup == null) return null;
+                return masterGroup.childGroups["General Groups"];
             }
         }
 
@@ -75,13 +83,14 @@ namespace OrbItProcs {
             }
         }
 
-        public Node targetNodeGraphic { get; set; }
+        public Node targetNodeGraphic = null;
+        public Node targetNode { get; set; }
 
         [Polenter.Serialization.ExcludeFromSerialization]
         //public Player player1 { get; set; }
         public HashSet<Player> players { get; set; }
         [Info(UserLevel.Never)]
-        public IEnumerable<Node> playerNodes { get { return players.Select<Player, Node>(p => p.node); } }
+        public IEnumerable<Node> playerNodes { get { return players.Select(p => p.node); } }
 
         [Polenter.Serialization.ExcludeFromSerialization]
         public Scheduler scheduler { get; set; }
@@ -136,17 +145,15 @@ namespace OrbItProcs {
         {
             //Testing.StandardizedTesting(700);
             //Testing.StandardizedTesting2(200);
-
+            
             //Console.WriteLine(gametime.ElapsedGameTime.Milliseconds + " :: " + gametime.ElapsedGameTime.TotalMilliseconds);
             long elapsed = 0;
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
             totalElapsedMilliseconds += elapsed;
-
-            
             //these make it convienient to check values after pausing the game my mouseing over
-            if (defaultNode == null) defaultNode = null;
+            //if (defaultNode == null) defaultNode = null;
             //if (game.ui.sidebar.lstComp == null) game.ui.sidebar.lstComp = null;
-
+            
             gridsystem.clear();
             gridSystemLines = new List<Rectangle>();
 
@@ -167,6 +174,7 @@ namespace OrbItProcs {
             //
             UpdateCollision();
             if (contacts.Count > 0) contacts = new List<Manifold>();
+            
 
             //if (timertimer % timermax == 0)
             //    Testing.StartTimer();
@@ -179,10 +187,10 @@ namespace OrbItProcs {
             }
             Testing.OldStopTimer("node update");
 
-            //masterGroup.ForEachThreading(gametime);
             
             
             if (AfterIteration != null) AfterIteration(this, null);
+
 
             //addGridSystemLines(gridsystem);
             //addLevelLines(level);
@@ -334,16 +342,16 @@ namespace OrbItProcs {
                     }
                 }
             }
-            Testing.PrintTimer("insertion");
-            Testing.PrintTimer("retrieve");
-            Testing.PrintTimer("manifolds");
+            //Testing.PrintTimer("insertion");
+            //Testing.PrintTimer("retrieve");
+            //Testing.PrintTimer("manifolds");
             //COLLISION
             foreach (Manifold m in contacts)
             {
                 m.Initialize();
             }
-            //if (timertimer % timermax == 0)
-            //    Testing.StartTimer();
+            // \COLLISION
+            //update velocity
             for (int ii = 0; ii < colIterations; ii++)
             {
                 foreach (Manifold m in contacts)
@@ -351,7 +359,6 @@ namespace OrbItProcs {
                     m.ApplyImpulse();
                 }
             }
-            Testing.OldStopTimer("Manifold apply impulse");
             foreach (Node n in masterGroup.fullSet)
             {
                 n.movement.IntegrateVelocity();
@@ -361,15 +368,13 @@ namespace OrbItProcs {
             }
             foreach (Manifold m in contacts)
                 m.PositionalCorrection();
-            // \COLLISION
-            
         }
 
         public void Draw(SpriteBatch spritebatch)
         {
             //spritebatch.Draw(game.textureDict[textures.whitepixel], new Vector2(300, 300), null, Color.Black, 0f, Vector2.Zero, 100f, SpriteEffects.None, 0);
 
-            if (game.targetNode != null)
+            if (targetNode != null)
             {
                 updateTargetNodeGraphic();
                 targetNodeGraphic.Draw(spritebatch);
@@ -461,16 +466,16 @@ namespace OrbItProcs {
 
         public void updateTargetNodeGraphic()
         {
-            if (game.targetNode != null)
+            if (targetNode != null)
             {
                 targetNodeGraphic.body.color = Color.White;
-                targetNodeGraphic.body.pos = game.targetNode.body.pos;
+                targetNodeGraphic.body.pos = targetNode.body.pos;
                 //if (game.targetNode.comps.ContainsKey(comp.gravity))
                 //{
                 //    float rad = game.targetNode.GetComponent<Gravity>().radius;
                 //    targetNodeGraphic.transform.radius = rad;
                 //}
-                targetNodeGraphic.body.scale = game.targetNode.body.scale * 1.5f;
+                targetNodeGraphic.body.scale = targetNode.body.scale * 1.5f;
             }
             
         }

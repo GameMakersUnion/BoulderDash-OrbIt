@@ -43,7 +43,7 @@ namespace OrbItProcs
         private int r1;
         private int g1;
         private int b1;
-        private int timer = 0;
+        //private int timer = 0;
 
         public PhaseOrb() : this(null) { }
         public PhaseOrb(Node parent = null)
@@ -162,7 +162,8 @@ namespace OrbItProcs
                 }
                 if (!IsPolygon || (IsPolygon && parent.body.DrawCircle))
                 {
-                    spritebatch.Draw(parent.getTexture(), positions.ElementAt(i) * mapzoom, null, col, 0, parent.TextureCenter(), scales.ElementAt(i) * mapzoom, SpriteEffects.None, 0);
+                    //spritebatch.Draw(parent.getTexture(), positions.ElementAt(i) * mapzoom, null, col, 0, parent.TextureCenter(), scales.ElementAt(i) * mapzoom, SpriteEffects.None, 0);
+                    room.camera.Draw(parent.texture, positions.ElementAt(i), col, scales.ElementAt(i), 0);
                 }
 
                 count++;
@@ -173,7 +174,8 @@ namespace OrbItProcs
             if (!fade) col = parent.body.color;
             if (!IsPolygon || (IsPolygon && parent.body.DrawCircle))
             {
-                spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
+                //spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
+                room.camera.Draw(parent.texture, parent.body.pos, col, parent.body.scale);
             }
 
         }

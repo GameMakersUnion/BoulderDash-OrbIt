@@ -203,13 +203,15 @@ namespace OrbItProcs
                 col = new Color(a, b, c, 0.8f);
                 if (!fade) col = parent.body.color;
 
-                spritebatch.Draw(parent.getTexture(), pos * mapzoom, null, col, 0, parent.TextureCenter(), scales.ElementAt(count) * mapzoom, SpriteEffects.None, 0);
+                //spritebatch.Draw(parent.getTexture(), pos * mapzoom, null, col, 0, parent.TextureCenter(), scales.ElementAt(count) * mapzoom, SpriteEffects.None, 0);
+                room.camera.Draw(parent.texture, pos, col, scales.ElementAt(count), 0);
                 count++;
             }
 
             //float testangle = (float)(Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2));
             if (!fade) col = parent.body.color;
-            spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
+            //spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
+            room.camera.Draw(parent.texture, parent.body.pos, col, parent.body.scale, 0);
 
         }
 

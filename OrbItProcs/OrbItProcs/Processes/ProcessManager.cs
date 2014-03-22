@@ -47,7 +47,7 @@ namespace OrbItProcs
         public static MouseState mouseState, oldMouseState;
         public KeyboardState keyState, oldKeyState;
 
-        private int ScrollPosition = 0;
+        //private int ScrollPosition = 0;
 
         public ProcessManager(Room room)
         {

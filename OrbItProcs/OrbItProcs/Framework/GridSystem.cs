@@ -497,9 +497,9 @@ namespace OrbItProcs {
         {
             Game1 game = room.game;
             // coloring the nodes
-            if (game.targetNode != null)
+            if (room.targetNode != null)
             {
-                List<Collider> returnObjectsGridSystem = retrieve(game.targetNode.body);
+                List<Collider> returnObjectsGridSystem = retrieve(room.targetNode.body);
 
                 foreach (Node _node in room.masterGroup.fullSet)
                 {
@@ -511,7 +511,7 @@ namespace OrbItProcs {
                             _node.body.color = Color.White;
                     }
                 }
-                game.targetNode.body.color = Color.Red;
+                room.targetNode.body.color = Color.Red;
             }
         }
     }

@@ -58,7 +58,7 @@ namespace OrbItProcs
                 _HandlersEnabled = value;
             }
         }
-
+        [Info(UserLevel.Never)]
         public Shape shapeP { get { return shape; } set { shape = value.Clone(); } }
 
         public virtual float radius { get { return shape.radius; } set { shape.radius = value; } }

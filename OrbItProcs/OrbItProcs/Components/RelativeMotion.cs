@@ -58,14 +58,8 @@ namespace OrbItProcs
 
         public override void Draw(SpriteBatch spritebatch)
         {
-            Room room = parent.room;
-            float mapzoom = room.zoom;
-
             Color col = parent.body.color;
-
-
-            spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), (parent.body.scale * mapzoom) * 1.2f, SpriteEffects.None, 0);
-
+            parent.room.camera.Draw(parent.texture, parent.body.pos, col, parent.body.scale * 1.2f);
 
         }
 

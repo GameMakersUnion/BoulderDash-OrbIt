@@ -55,9 +55,12 @@ namespace OrbItProcs
         /// <summary>
         /// The ratio of the white core to the coloured outer parts of the laser.
         /// </summary>
-        [Info(UserLevel.User, "The ratio of the white core to the coloured outer parts of the laser.")]
+        [Info(UserLevel.Advanced, "The ratio of the white core to the coloured outer parts of the laser.")]
         public float beamRatio { get; set; }
-
+        /// <summary>
+        /// The amount of laser beams to draw beside eachother, resulting in a thicker beam.
+        /// </summary>
+        [Info(UserLevel.User, "The amount of laser beams to draw beside eachother, resulting in a thicker beam.")]
         public int beamCount { get; set; }
 
         public Laser() : this(null) { }
@@ -161,7 +164,7 @@ namespace OrbItProcs
 
                 float testangle = (float)(Math.Atan2(diff.Y, diff.X));
 
-                diff.Normalize();
+                VMath.NormalizeSafe(ref diff);
                 diff = new Vector2(-diff.Y, diff.X);
 
                 //uncommet later when not using direction based color shit

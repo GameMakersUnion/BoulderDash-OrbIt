@@ -18,9 +18,9 @@ namespace OrbItProcs
         private InspectorItem activeInspectorItem;
         public Type editType;
 
-        private int HeightCounter = 0;
+        //private int HeightCounter = 0;
         private int LeftPadding = 5;
-        private bool triggerResizeSlider = true;
+        //private bool triggerResizeSlider = true;
 
         public PropertyEditPanel(InspectorArea insArea, GroupPanel grouppanel)
         {

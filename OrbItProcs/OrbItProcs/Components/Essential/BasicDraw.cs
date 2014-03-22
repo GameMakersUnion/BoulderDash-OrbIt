@@ -13,13 +13,40 @@ namespace OrbItProcs
     [Info(UserLevel.User, "Basic Draw Component, ensures that you can see the node.")]
     public class BasicDraw : Component
     {
+        public enum Initial
+        {
+            Random,
+            Managed,
+        }
         public const mtypes CompType = mtypes.essential | mtypes.draw;
         public override mtypes compType { get { return CompType; } set { } }
         /// <summary>
-        /// WARNING: THIS FLAG IS ONLY OBSERVED BY POLYGONS: Determines when to draw the center of mass as a circle
+        /// (Polygons only) Determines when to draw the center of mass as a circle
         /// </summary>
         [Info(UserLevel.Advanced, "WARNING: THIS FLAG IS ONLY OBSERVED BY POLYGONS: Determines when to draw the center of mass as a circle")]
         public bool DrawCircle { get; set; }
+
+        public Initial _InitialColor = Initial.Random;
+        /// <summary>
+        /// Determines whether the color will be random or set by the Red, Green and Blue properties initially.
+        /// </summary>
+        [Info(UserLevel.User, "Determines whether the color will be random or set by the Red, Green and Blue properties initially.")]
+        public Initial InitialColor { get; set; }
+        /// <summary>
+        /// Red color component
+        /// </summary>
+        [Info(UserLevel.User, "Red color component")]
+        public int Red { get; set; }
+        /// <summary>
+        /// Green color component
+        /// </summary>
+        [Info(UserLevel.User, "Green color component")]
+        public int Green { get; set; }
+        /// <summary>
+        /// Blue color component
+        /// </summary>
+        [Info(UserLevel.User, "Blue color component")]
+        public int Blue { get; set; }
 
         public BasicDraw() : this(null) { }
         public BasicDraw(Node parent = null) 
@@ -27,10 +54,37 @@ namespace OrbItProcs
             if (parent != null) this.parent = parent;
             com = comp.basicdraw; 
             DrawCircle = true;
+            Red = 255;
+            Green = 255;
+            Blue = 255;
+        }
+
+        public override void OnSpawn()
+        {
+            if (InitialColor == Initial.Random)
+            {
+                RandomizeColor();
+            }
+            else if (InitialColor == Initial.Managed)
+            {
+                SetColor();
+            }
+        }
+
+        public void SetColor()
+        {
+            if (parent == null)
+            {
+                parent.body.color = new Color(Red, Green, Blue);
+            }
         }
         
-        public override void AffectSelf()
+        public void RandomizeColor()
         {
+            if (parent != null)
+            {
+                parent.body.color = Utils.randomColor();
+            }
         }
 
         public override void Draw(SpriteBatch spritebatch)

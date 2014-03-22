@@ -21,7 +21,7 @@ namespace OrbItProcs
         public Queue<Vector2> metapositions = new Queue<Vector2>();
         private Queue<Vector2> reflectpositions = new Queue<Vector2>();
 
-        public int _waveLength = 10;
+        public int _waveLength;
         /// <summary>
         /// Sets the length of the wave.
         /// </summary>
@@ -42,6 +42,13 @@ namespace OrbItProcs
                 _waveLength = value;
             } 
         }
+
+        /// <summary>
+        /// Sets the scale of the circles left by the wave trail
+        /// </summary>
+        [Info(UserLevel.User, "Sets the scale of the circles left by the wave trail")]
+        public float waveScale { get; set; }
+
         /// <summary>
         /// How wide the wave will be at its maximum point.
         /// </summary>
@@ -76,15 +83,17 @@ namespace OrbItProcs
                 this.parent = parent;
             }
             com = comp.waver;
-            amp = 100;
-            period = 30;
+            amp = 20;
+            period = 1000;
             composite = 1;
+            waveScale = 0.3f;
+            waveLength = 50;
         }
 
         public override void AfterCloning()
         {
-            if (!parent.comps.ContainsKey(comp.lifetime)) 
-                parent.addComponent(comp.lifetime, true);
+            parent.addComponent(comp.lifetime, true);
+
             //if (!parent.comps.ContainsKey(comp.modifier)) 
             //    parent.addComponent(comp.modifier, true);
 
@@ -133,7 +142,7 @@ namespace OrbItProcs
                 yval = parent.comps[comp.modifier].modifierInfos["waver"].args["yval"];
             }*/
             float time = 0;
-            if (parent.comps.ContainsKey(comp.lifetime))
+            if (parent.HasComponent(comp.lifetime))
             {
                 time = parent.comps[comp.lifetime].lifetime;
             }
@@ -141,7 +150,7 @@ namespace OrbItProcs
             yval = DelegateManager.SineComposite(time, amp, period, vshift, composite);
 
             Vector2 metapos = new Vector2(parent.body.velocity.Y, -parent.body.velocity.X);
-            metapos.Normalize();
+            VMath.NormalizeSafe(ref metapos);
             metapos *= yval;
             Vector2 metaposfinal = parent.body.pos + metapos;
 
@@ -166,7 +175,7 @@ namespace OrbItProcs
         public override void Draw(SpriteBatch spritebatch)
         {
             Room room = parent.room;
-            float mapzoom = room.zoom;
+            //float mapzoom = room.zoom;
 
             int count = 0;
             //Queue<float> scales = parent.comps[comp.queuer].scales;
@@ -174,9 +183,7 @@ namespace OrbItProcs
 
             foreach (Vector2 metapos in metapositions)
             {
-                spritebatch.Draw(parent.getTexture(), metapos * mapzoom, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
-
-                //if (metapos == reflectpositions.ElementAt(count)) Console.WriteLine("YEA");
+                room.camera.Draw(parent.getTexture(), metapos, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale * waveScale, SpriteEffects.None, 0);
                 count++;
                 
             }
@@ -185,12 +192,10 @@ namespace OrbItProcs
                 count = 0;
                 foreach (Vector2 relectpos in reflectpositions)
                 {
-                    spritebatch.Draw(parent.getTexture(), relectpos * mapzoom, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
+                    room.camera.Draw(parent.getTexture(), relectpos, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale * waveScale, SpriteEffects.None, 0);
                     count++;
                 }
             }
-            //spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, parent.transform.color, 0, parent.TextureCenter(), parent.transform.scale / mapzoom, SpriteEffects.None, 0);
-
         }
 
         public void onCollision(Dictionary<dynamic, dynamic> args)

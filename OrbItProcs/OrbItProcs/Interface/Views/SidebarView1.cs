@@ -14,6 +14,28 @@ namespace OrbItProcs
     //first view page of sidebar
     public partial class Sidebar
     {
+        private bool _EditSelectedNode = false;
+        public bool EditSelectedNode
+        {
+            get { return _EditSelectedNode; }
+            set
+            {
+                if (componentView != null)
+                {
+                    if (value)
+                    {
+                        if (room.targetNode != null)
+                            componentView.SwitchNode(room.targetNode, false);
+                    }
+                    else
+                    {
+                        componentView.SwitchGroup(ActiveGroupFirst);
+                    }
+                }
+                _EditSelectedNode = value;
+            }
+        }
+
         public ComponentView componentView { get; set; }
         public DetailedView detailedView { get; set; }
         public InspectorView inspectorView { get; set; }
@@ -21,6 +43,9 @@ namespace OrbItProcs
         public TabControl tbcViews;
 
         private TabControl _activeTabControl;
+
+        public Button btnOptions;
+
         public TabControl activeTabControl
         {
             get { return _activeTabControl; }
@@ -61,6 +86,17 @@ namespace OrbItProcs
             activeTabControl = tbcViews;
 
             componentView = new ComponentView(this, editTab, 0, 0);
+
+            btnOptions = new Button(manager);
+            btnOptions.Init();
+            btnOptions.Parent = editTab;
+            btnOptions.Left = LeftPadding;
+            btnOptions.Top = editTab.Height - btnOptions.Height - LeftPadding;
+            btnOptions.Text = "Options";
+            btnOptions.Click += (s, e) =>
+            {
+                OptionsWindow oWindow = new OptionsWindow(manager, this);
+            };
         }
 
         public void InitializeFifthPage()

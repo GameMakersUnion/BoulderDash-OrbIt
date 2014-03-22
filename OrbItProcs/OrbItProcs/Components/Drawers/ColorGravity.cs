@@ -94,6 +94,10 @@ namespace OrbItProcs.Components
         /// </summary>
         [Info(UserLevel.Advanced, "Maximum Color velocity")]
         public float maxhuevel { get; set; }
+
+
+        //public bool inverse
+
         public ColorGravity() : this(null){ }
         public ColorGravity(Node parent = null)
         {
@@ -118,6 +122,34 @@ namespace OrbItProcs.Components
             hue = HueFromColor(parent.body.color);
         }
 
+        public float GetDist(float x, float v, int t = 360)
+        {
+            int half = t / 2;
+            if (x == v) return 0;
+            if (x > v)
+            {
+                if (v > x - half)
+                {
+                    return x - v;
+                }
+                else
+                {
+                    return t - x + v;
+                }
+            }
+            else
+            {
+                if (v < x + half)
+                {
+                    return v - x;
+                }
+                else
+                {
+                    return x - t + v;
+                }
+            }
+        }
+
         public override void AffectOther(Node other)
         {
             if (mode == Mode.hue)
@@ -127,16 +159,25 @@ namespace OrbItProcs.Components
                 float dist = 1f;
                 if (distancemod == DistanceMod.color)
                 {
-                    dist = hue - other.comps[comp.colorgravity].hue;
-                    if (dist == 0) return;
-                    float force = multiplier * other.body.mass * parent.body.mass / (dist * dist);
-                    if (dist < 0) force *= -1;
-                    float diff = hue - other.comps[comp.colorgravity].hue;
-                    if (Math.Abs(diff) > 180) force *= -1;
-                    if (force > maxhuevel) force = maxhuevel;
-                    else if (force < -maxhuevel) force = -maxhuevel;
-                    other[comp.colorgravity].huevelocity += force;
+                    //dist = hue - other.comps[comp.colorgravity].hue;
+                    //if (dist == 0) return;
+                    //float force = multiplier * other.body.mass * parent.body.mass / (dist * dist);
+                    //if (dist < 0) force *= -1;
+                    //float diff = hue - other.comps[comp.colorgravity].hue;
+                    //if (Math.Abs(diff) > 180) force *= -1;
+                    //if (force > maxhuevel) force = maxhuevel;
+                    //else if (force < -maxhuevel) force = -maxhuevel;
+                    //other[comp.colorgravity].huevelocity += force;
+                    //huevelocity += force;
+
+
+                    float otherhue = other.comps[comp.colorgravity].hue;
+                    dist = GetDist(hue, otherhue);
+                    if (dist < 20) return;
+                    float force = multiplier / (dist * dist) / divisor;
                     huevelocity += force;
+                    //Console.WriteLine(dist);
+
                 }
                 else if (distancemod == DistanceMod.spatial)
                 {
@@ -156,7 +197,7 @@ namespace OrbItProcs.Components
                     
                 }
             }
-            else
+            else if (mode == Mode.rgb)
             {
                 Vector3 parentCol = parent.body.color.ToVector3();
                 Vector3 otherCol = other.body.color.ToVector3();
@@ -191,11 +232,11 @@ namespace OrbItProcs.Components
                 //Console.WriteLine("1) {0} : HUE: {1}   HUEVEL: {2}", parent.name, hue, huevelocity);
                 //if (hue < 0) { hue = 0; huevelocity *= -1; }
                 //if (hue > 360) { hue = 360; huevelocity *= -1; }
-                hue = ColorChanger.SawtoothFloat(hue, 360f);
+                hue = DelegateManager.Triangle(hue, 360f);
                 parent.body.color = ColorChanger.getColorFromHSV(hue);
                 //Console.WriteLine("2) {0} : HUE: {1}   HUEVEL: {2}", parent.name, hue, huevelocity);
             }
-            else
+            else if (mode == Mode.rgb)
             {
                 r += colvelocity.X / friction;
                 g += colvelocity.Y / friction;
