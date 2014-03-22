@@ -9,13 +9,9 @@ namespace OrbItProcs
 {
     public class MapEditor : Process
     {
-        public Level level { get; set; }
         public List<Vector2> verts;
-
-
         public MapEditor(Level level) : base()
         {
-            this.level = level;
             Draw += DrawEditor;
             verts = new List<Vector2>();
             addProcessKeyAction("placevertice", KeyCodes.LeftClick, OnPress: PlaceVertice);
@@ -85,11 +81,11 @@ namespace OrbItProcs
         public void MouseToGrid(ref int x, ref int y)
         {
             Vector2 MousePos = UserInterface.WorldMousePos;
-            double dx = MousePos.X / (double)level.cellWidth;
-            double dy = MousePos.Y / (double)level.cellHeight;
+            double dx = MousePos.X / (double)room.level.cellWidth;
+            double dy = MousePos.Y / (double)room.level.cellHeight;
 
-            x = (int)Math.Floor(dx + 0.5) * level.cellWidth;
-            y = (int)Math.Floor(dy + 0.5) * level.cellHeight;
+            x = (int)Math.Floor(dx + 0.5) * room.level.cellWidth;
+            y = (int)Math.Floor(dy + 0.5) * room.level.cellHeight;
         }
     }
 }

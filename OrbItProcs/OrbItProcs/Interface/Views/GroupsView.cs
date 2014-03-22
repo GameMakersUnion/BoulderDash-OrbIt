@@ -10,51 +10,110 @@ using EventArgs = TomShane.Neoforce.Controls.EventArgs;
 using Microsoft.Xna.Framework;
 using System.Collections.ObjectModel;
 
-namespace OrbItProcs.Interface.Views
+namespace OrbItProcs
 {
-    public class GroupsView : ListView<GroupsViewItem>
+    public class GroupsView : DetailedView
     {
-
+        Label groupLabel;
+        Button btnCreateGroup;
         public GroupsView(Sidebar sidebar, Control parent, int Left, int Top)
-            : base(sidebar, parent, Left, Top)
+            : base(sidebar, parent, Left, Top, false)
         {
+            HeightCounter = Top + 23;
+            groupLabel = new Label(manager);
+            groupLabel.Init();
+            groupLabel.Parent = parent;
+            groupLabel.Left = LeftPadding;
+            groupLabel.Top = HeightCounter;
+            groupLabel.Width = 150;
+            groupLabel.Text = "Groups";
+            groupLabel.TextColor = Color.Black;
+            HeightCounter += groupLabel.Height + LeftPadding;
 
+            ItemCreator += ItemCreatorDelegate;
+
+            Initialize();
+
+            btnCreateGroup = new Button(manager);
+            btnCreateGroup.Init();
+            btnCreateGroup.Parent = parent;
+            btnCreateGroup.Top = HeightCounter;
+            btnCreateGroup.Left = LeftPadding;
+            btnCreateGroup.Text = "Create Group";
+            btnCreateGroup.Width = 120;
+            btnCreateGroup.Click += (s, e) =>
+            {
+                CreateGroupWindow createwindow = new CreateGroupWindow(sidebar);
+            };
         }
 
-    }
-
-    public class GroupsViewItem : ViewItem
-    {
-        public GroupsView groupsView;
-        public Button btnRemove, btnEdit;
-
-        public GroupsViewItem(Manager manager, GroupsView groupsView, object obj, Control parent, int Top, int Left, int Width)
-            : base(manager, obj, parent, Top, Left, Width)
+        public void UpdateGroups()
         {
-            if (obj is Group)
+            ClearView();
+            showRemoveButton = room.generalGroups.childGroups.Count > 1;
+            foreach(Group g in room.generalGroups.childGroups.Values)
             {
-                this.groupsView = groupsView;
-                label.Text = (obj as Group).Name;
+                CreateNewItem(g);
+            }
+        }
+        private bool showRemoveButton = false;
+        public void CreateNewItem(Group g)
+        {
+            int top = 0;
+            if (viewItems.Count > 0)
+            {
+                top = (viewItems[0].itemHeight - 4) * viewItems.Count;
+            }
+            DetailedItem detailedItem = new DetailedItem(manager, this, g, backPanel, top, LeftPadding, backPanel.Width - 4);
+            viewItems.Add(detailedItem);
+            SetupScroll(detailedItem);
+        }
 
-                Group g = (Group)obj;
-                btnEdit = new Button(manager);
+        private void ItemCreatorDelegate(DetailedItem item, object obj)
+        {
+            if (item.obj is Group)
+            {
+                Group g = (Group)item.obj;
+                item.label.Text = g.Name;
+                Button btnEdit = new Button(manager);
                 btnEdit.Init();
-                btnEdit.Parent = textPanel;
-                btnEdit.Left = parent.Width - 5;
-                btnEdit.Height = buttonHeight;
-                btnEdit.Width = buttonWidth;
-                btnEdit.Text = "e";
+                btnEdit.Parent = item.textPanel;
+                btnEdit.Left = item.textPanel.Width - 50;
+                btnEdit.Top = 2;
+                btnEdit.Height = item.buttonHeight;
+                btnEdit.Width = 30;
+                btnEdit.Text = "Edit";
                 btnEdit.ToolTip.Text = "Edit";
+                btnEdit.TextColor = UserInterface.TomShanePuke;
+                btnEdit.Click += (s, e) =>
+                {
+                    sidebar.tbcViews.SelectedIndex = 0;
+                    sidebar.componentView.SwitchGroup(g);
+                };
 
-                btnRemove = new Button(manager);
+                if (!showRemoveButton) return;
+
+                Button btnRemove = new Button(manager);
                 btnRemove.Init();
-                btnRemove.Parent = parent;
+                btnRemove.Parent = item.textPanel;
                 btnRemove.Left = btnEdit.Left - 20;
-                btnRemove.Height = buttonHeight;
-                btnRemove.Width = buttonWidth;
+                btnRemove.Height = item.buttonHeight;
+                btnRemove.Width = item.buttonWidth;
+                btnRemove.TextColor = Color.Red;
                 btnRemove.Text = "-";
                 btnRemove.ToolTip.Text = "Remove";
-                //todo: add handlers
+                btnRemove.Click += (s, e) =>
+                {
+
+                    if (sidebar.componentView.activeGroup == g) 
+                    { 
+                        sidebar.componentView.ClearView();
+                        sidebar.componentView.activeGroup = null;
+                    }
+                    g.EmptyGroup();
+                    g.DeleteGroup();
+                    UpdateGroups();
+                };
             }
         }
     }

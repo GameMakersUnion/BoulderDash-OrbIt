@@ -4,14 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TomShane.Neoforce.Controls;
-//using System.Reflection;
 using EventHandler = TomShane.Neoforce.Controls.EventHandler;
 
 namespace OrbItProcs
 {
     public class OptionsWindow
     {
-        public Game1 game;
         public Manager manager;
         public Sidebar sidebar;
         public Window window;
@@ -22,21 +20,20 @@ namespace OrbItProcs
         public Label lblUserLevel;
         public Button btnOk;
 
-        public OptionsWindow(Manager manager, Sidebar sidebar)
+        public OptionsWindow(Sidebar sidebar)
         {
-            game = Program.getGame();
-            game.ui.GameInputDisabled = true;
-
-            this.manager = manager;
+            sidebar.ui.GameInputDisabled = true;
+            this.manager = sidebar.manager;
             this.sidebar = sidebar;
+            
             window = new Window(manager);
             window.Init();
-            window.Left = game.ui.sidebar.master.Left;
-            window.Width = game.ui.sidebar.master.Width;
+            window.Left = sidebar.master.Left;
+            window.Width = sidebar.master.Width;
             window.Top = 200;
             window.Height = 200;
             window.Text = "Options";
-            window.Closed += delegate { game.ui.GameInputDisabled = false; };
+            window.Closed += delegate { sidebar.ui.GameInputDisabled = false; };
             window.ShowModal();
             manager.Add(window);
 
@@ -83,8 +80,8 @@ namespace OrbItProcs
                 count++;
             }
 
-            CreateCheckBox("FullScreen", Game1.isFullScreen, (o, e) => game.ToggleFullScreen((o as CheckBox).Checked));
-            CreateCheckBox("Hide Links", game.room.DrawLinks, (o, e) => game.room.DrawLinks = !(o as CheckBox).Checked);
+            CreateCheckBox("FullScreen", Game1.isFullScreen, (o, e) => sidebar.ui.game.ToggleFullScreen((o as CheckBox).Checked));
+            CreateCheckBox("Hide Links", sidebar.ui.game.room.DrawLinks, (o, e) => sidebar.ui.game.room.DrawLinks = !(o as CheckBox).Checked);
             CreateCheckBox("Edit Selected Node", sidebar.EditSelectedNode, (o, e) => sidebar.EditSelectedNode = (o as CheckBox).Checked);
         }
 

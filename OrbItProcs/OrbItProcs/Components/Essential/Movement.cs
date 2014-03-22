@@ -28,18 +28,18 @@ namespace OrbItProcs
         public override mtypes compType { get { return CompType; } set { } }
         public bool pushable { get; set; }
 
-        private Toggle<float> _maxVel = new Toggle<float>(30f, false);
-        private Toggle<float> _minVel =  new Toggle<float> (0f, false);
+        private Toggle<float> _maxVelocity = new Toggle<float>(30f, true);
+        private Toggle<float> _minVelocity = new Toggle<float>(0f, false);
         /// <summary>
         /// If enabled, this limits the node's speed to stay below the specified velocity.
         /// </summary>
         [Info(UserLevel.User, "If enabled, this limits the node's velocity to stay below the specified velocity.")]
-        public Toggle<float> maxVel { get { return _maxVel; } set { _maxVel = value; if (maxVel < _minVel) _maxVel = _minVel; }}
+        public Toggle<float> maxVelocity { get { return _maxVelocity; } set { _maxVelocity = value; if (maxVelocity < _minVelocity) _maxVelocity = _minVelocity; } }
         /// <summary>
         /// If enabled, this limits the node's velocity to stay above the specified velocity.
         /// </summary>
         [Info(UserLevel.User, "If enabled, this limits the node's velocity to stay above the specified velocity.")]
-        public Toggle<float> minVel { get { return _minVel; } set { _minVel = value; if (_minVel > _maxVel) _minVel = _maxVel; } }
+        public Toggle<float> minVelocity { get { return _minVelocity; } set { _minVelocity = value; if (_minVelocity > _maxVelocity) _minVelocity = _maxVelocity; } }
         /// <summary>
         /// Gives the node this velocity in a random direction when spawned.
         /// </summary>
@@ -105,15 +105,15 @@ namespace OrbItProcs
         {
             double velSquared = parent.body.velocity.X * parent.body.velocity.X + parent.body.velocity.Y * parent.body.velocity.Y;
 
-            if (minVel.enabled && velSquared < minVel * minVel)
+            if (minVelocity.enabled && velSquared < minVelocity * minVelocity)
             {
                 VMath.NormalizeSafe(ref parent.body.velocity);
-                parent.body.velocity *= minVel;
+                parent.body.velocity *= minVelocity;
             }
-            if (maxVel.enabled && velSquared > maxVel * maxVel)
+            if (maxVelocity.enabled && velSquared > maxVelocity * maxVelocity)
             {
                 VMath.NormalizeSafe(ref parent.body.velocity);
-                parent.body.velocity *= maxVel;
+                parent.body.velocity *= maxVelocity;
             }
         }
         public void RandomizeVelocity()

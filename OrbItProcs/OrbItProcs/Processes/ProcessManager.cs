@@ -71,40 +71,41 @@ namespace OrbItProcs
         public void SetProcessKeybinds(KeyManager Keybindset)
         {
             //
-            Keybindset.Add("spawnnodes", new KeyBundle(KeyCodes.D1), delegate
+            Keybindset.Add("spawnnodes", new KeyBundle(KeyCodes.D1, KeyCodes.LeftShift), delegate
             {
                 Keybindset.AddProcess(processDict[proc.spawnnodes]);//, KeySwitchMethod.Overwrite);
             });
             //
-            Keybindset.Add("randomizer", new KeyBundle(KeyCodes.D2), delegate
+            Keybindset.Add("randomizer", new KeyBundle(KeyCodes.D2, KeyCodes.LeftShift), delegate
             {
                 Keybindset.AddProcess(processDict[proc.randomizer]);//, KeySwitchMethod.Overwrite);
             });
             //
-            Keybindset.Add("groupselect", new KeyBundle(KeyCodes.D3), delegate
+            Keybindset.Add("groupselect", new KeyBundle(KeyCodes.D3, KeyCodes.LeftShift), delegate
             {
                 Keybindset.AddProcess(processDict[proc.groupselect]);//, KeySwitchMethod.Overwrite);
             });
             //
-            Keybindset.Add("singleselect", new KeyBundle(KeyCodes.D4), delegate
+            Keybindset.Add("singleselect", new KeyBundle(KeyCodes.D4, KeyCodes.LeftShift), delegate
             {
                 Keybindset.AddProcess(processDict[proc.singleselect]);//, KeySwitchMethod.Overwrite);
             });
             //
-            Keybindset.Add("polygonspawner", new KeyBundle(KeyCodes.D9), delegate
-            {
-                Keybindset.AddProcess(processDict[proc.polygonspawner]);//, KeySwitchMethod.Overwrite);
-            });
-            //
-            Keybindset.Add("mapeditor", new KeyBundle(KeyCodes.D5), delegate
+            Keybindset.Add("mapeditor", new KeyBundle(KeyCodes.D5, KeyCodes.LeftShift), delegate
             {
                 Keybindset.AddProcess(processDict[proc.mapeditor]);//, KeySwitchMethod.Overwrite);
             });
             //
-            Keybindset.Add("graphdata", new KeyBundle(KeyCodes.D6), delegate
+            Keybindset.Add("graphdata", new KeyBundle(KeyCodes.D6, KeyCodes.LeftShift), delegate
             {
                 Keybindset.AddProcess(processDict[proc.graphdata]);//, KeySwitchMethod.Overwrite);
             });
+            //
+            Keybindset.Add("polygonspawner", new KeyBundle(KeyCodes.D9, KeyCodes.LeftShift), delegate
+            {
+                Keybindset.AddProcess(processDict[proc.polygonspawner]);//, KeySwitchMethod.Overwrite);
+            });
+            
             //
             Keybindset.AddProcess(processDict[proc.cameracontrol], false);
             //

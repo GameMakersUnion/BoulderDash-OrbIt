@@ -48,7 +48,7 @@ namespace OrbItProcs
             }
             colliders.Add(key, col);
             col.parent = parent;
-            if (active && parent != null && parent.Groups.Count > 0)
+            if (active && parent != null && parent.group != null)
             {
                 UpdateCollisionSet();
             }
@@ -99,22 +99,24 @@ namespace OrbItProcs
             get { return _AllHandlersEnabled; }
             set
             {
-                if (_active && parent != null && parent.active)
+                if (_active && parent != null && parent.active && !parent.IsDefault)
                 {
-                    if (!_AllHandlersEnabled && value)
+                    if (value)
                     {
-                        if (parent.body.HandlersEnabled) parent.room.CollisionSet.Add(parent.body);
+                        if (parent.body.HandlersEnabled) 
+                            parent.room.AddCollider(parent.body);
                         foreach (Collider col in colliders.Values)
                         {
-                            if (col.HandlersEnabled) parent.room.CollisionSet.Add(col);
+                            if (col.HandlersEnabled) parent.room.AddCollider(col);
                         }
                     }
-                    if (_AllHandlersEnabled && !value)
+                    else
                     {
-                        if (!parent.body.isSolid) parent.room.CollisionSet.Remove(parent.body);
+                        if (!parent.body.isSolid) 
+                            parent.room.RemoveCollider(parent.body);
                         foreach (Collider col in colliders.Values)
                         {
-                            parent.room.CollisionSet.Remove(col);
+                            parent.room.RemoveCollider(col);
                         }
                     }
                 }
@@ -128,23 +130,20 @@ namespace OrbItProcs
             get { return _active; }
             set
             {
-                if (parent != null && parent.room.game.ui != null && parent != parent.room.game.ui.sidebar.ActiveDefaultNode)
+                if (parent != null && parent.room.game.ui != null && !parent.IsDefault)
                 {
-                    if (!_active && value)
+                    if (value)
                     {
-                        if (parent.body.isSolid || parent.body.HandlersEnabled) parent.room.CollisionSet.Add(parent.body);
+                        if (parent.body.isSolid || parent.body.HandlersEnabled) 
+                            parent.room.AddCollider(parent.body);
                         foreach (Collider col in colliders.Values)
                         {
-                            if (col.HandlersEnabled) parent.room.CollisionSet.Add(col);
+                            if (col.HandlersEnabled) parent.room.AddCollider(col);
                         }
                     }
-                    else if (_active && !value)
+                    else
                     {
-                        parent.room.CollisionSet.Remove(parent.body);
-                        foreach (Collider col in colliders.Values)
-                        {
-                            parent.room.CollisionSet.Remove(col);
-                        }
+                        RemoveCollidersFromSet();
                     }
                 }
                 _active = value;
@@ -153,14 +152,15 @@ namespace OrbItProcs
 
         public void UpdateCollisionSet()
         {
-            if (parent != null && parent.room.game.ui != null && parent != parent.room.game.ui.sidebar.ActiveDefaultNode)
+            if (parent != null && !parent.IsDefault)
             {
                 if (active)
                 {
-                    if (parent.body.isSolid || parent.body.HandlersEnabled) parent.room.CollisionSet.Add(parent.body);
+                    if (parent.body.isSolid || parent.body.HandlersEnabled)
+                        parent.room.AddCollider(parent.body);
                     foreach (Collider col in colliders.Values)
                     {
-                        if (col.HandlersEnabled) parent.room.CollisionSet.Add(col);
+                        if (col.HandlersEnabled) parent.room.AddCollider(col);
                     }
                 }
                 else
@@ -172,10 +172,10 @@ namespace OrbItProcs
 
         public void RemoveCollidersFromSet()
         {
-            parent.room.CollisionSet.Remove(parent.body);
+            parent.room.RemoveCollider(parent.body);
             foreach (Collider col in colliders.Values)
             {
-                parent.room.CollisionSet.Remove(col);
+                parent.room.RemoveCollider(col);
             }
         }
 
@@ -185,6 +185,7 @@ namespace OrbItProcs
             if (parent != null) this.parent = parent;
             com = comp.collision; 
             _AllHandlersEnabled = true;
+            UpdateCollisionSet();
         }
 
         public override void AffectOther(Node other) //only for links (no handlers)

@@ -151,11 +151,7 @@ namespace OrbItProcs {
                 _IsDeleted = value;
             }
         }
-
-
-
-        public bool IsDefault = false;
-
+        //public bool IsDefault = false;
         public int lifetime = -1;
 
         private string _name = "node";
@@ -239,7 +235,7 @@ namespace OrbItProcs {
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> TargetLinks { get { return _TargetLinks; } set { _TargetLinks = value; } }
         [Polenter.Serialization.ExcludeFromSerialization]
-        public ObservableHashSet<Group> Groups { get; set; }
+        public Group group { get; set; }
 
         [Polenter.Serialization.ExcludeFromSerialization]
         [Info(UserLevel.Never)]
@@ -276,6 +272,14 @@ namespace OrbItProcs {
             }
         }
 
+        public bool IsDefault
+        {
+            get
+            {
+                if (group != null && this == group.defaultNode) return true;
+                return false;
+            }
+        }
 
         public bool DebugFlag { get; set; }
 
@@ -320,12 +324,13 @@ namespace OrbItProcs {
 
         public Node(ShapeType shapetype, bool createHash = true)
         {
+            if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0, 5);
+            else name = name + nodeCounter;
             room = Program.getRoom();
             if (createHash)
             {
                 nodeHash = Utils.uniqueString(room.nodeHashes);
             }
-            Groups = new ObservableHashSet<Group>();
             nodeCounter++;
             movement = new Movement(this);
             collision = new Collision(this);
@@ -344,7 +349,7 @@ namespace OrbItProcs {
             }
 
             body = new Body(shape: shape, parent: this);
-            name = "blankname";
+            //name = "blankname";
 
             //comps.Add(comp.body, body);
             //comps.Add(comp.movement, movement);
@@ -368,12 +373,6 @@ namespace OrbItProcs {
                     storeInInstance(p, userProps);
             }
             SortComponentLists();
-            //room = room1;
-            //room = Program.getRoom();
-            //if (room == null) Console.WriteLine("null");
-            //if (Program.getGame() == null) Console.WriteLine("gnull");
-            if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0,5);
-            else name = name + nodeCounter;
         }
 
         public T CheckData<T>(string key)
@@ -826,6 +825,7 @@ namespace OrbItProcs {
 
         public static void cloneNode(Node sourceNode, Node destNode, bool CloneHash = false) //they must be the same type
         {
+            destNode.room = Program.getRoom();
             //dynamic returnval;
             List<FieldInfo> fields = sourceNode.GetType().GetFields().ToList();
             fields.AddRange(sourceNode.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance).ToList());
@@ -911,10 +911,6 @@ namespace OrbItProcs {
                     destNode.body.parent = destNode;
                     destNode.body.shape.body = destNode.body;
                     destNode.body.AfterCloning();
-                }
-                else if (field.FieldType == typeof(Room))
-                {
-                    field.SetValue(destNode, field.GetValue(sourceNode));
                 }
             }
         }

@@ -98,6 +98,9 @@ namespace OrbItProcs
 
         public SharpSerializer serializer = new SharpSerializer();
 
+        public Room mainRoom;
+        public Room tempRoom;
+
         public ProcessManager processManager { get; set; }
         public static int smallWidth = 1280;
         public static int smallHeight = 650;
@@ -120,7 +123,6 @@ namespace OrbItProcs
         public Dictionary<textures, Vector2> textureCenters;
 
         public static bool bigTonyOn = false;
-
 
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
 
@@ -185,15 +187,16 @@ namespace OrbItProcs
         {
             if (!Directory.Exists(filepath)) Directory.CreateDirectory(filepath);
             textureDict = new Dictionary<textures, Texture2D>(){
-            {textures.blueorb, Content.Load<Texture2D>("Textures/bluesphere"            )},
-            {textures.whiteorb, Content.Load<Texture2D>("Textures/whiteorb"             )},
-            {textures.colororb, Content.Load<Texture2D>("Textures/colororb"             )},
-            {textures.whitepixel, Content.Load<Texture2D>("Textures/whitepixel"        )},
-            {textures.whitepixeltrans, Content.Load<Texture2D>("Textures/whitepixeltrans")},
-            {textures.whitecircle, Content.Load<Texture2D>("Textures/whitecircle"   )},
-            {textures.whitesphere, Content.Load<Texture2D>("Textures/whitesphere"   )},
-            {textures.blackorb, Content.Load<Texture2D>("Textures/blackorb"   )},
-            {textures.ring, Content.Load<Texture2D>("Textures/smoothEdge"   )}};
+            { textures.blueorb, Content.Load<Texture2D>("Textures/bluesphere"               )},
+            { textures.whiteorb, Content.Load<Texture2D>("Textures/whiteorb"                )},
+            { textures.colororb, Content.Load<Texture2D>("Textures/colororb"                )},
+            { textures.whitepixel, Content.Load<Texture2D>("Textures/whitepixel"            )},
+            { textures.whitepixeltrans, Content.Load<Texture2D>("Textures/whitepixeltrans"  )},
+            { textures.whitecircle, Content.Load<Texture2D>("Textures/whitecircle"          )},
+            { textures.whitesphere, Content.Load<Texture2D>("Textures/whitesphere"          )},
+            { textures.blackorb, Content.Load<Texture2D>("Textures/blackorb"                )},
+            { textures.ring, Content.Load<Texture2D>("Textures/smoothEdge"                  )}
+            };
 
             textureCenters = new Dictionary<textures, Vector2>();
             foreach(var tex in textureDict.Keys)
@@ -204,76 +207,19 @@ namespace OrbItProcs
 
             font = Content.Load<SpriteFont>("Courier New");
             DelegatorMethods.InitializeDelegateMethods();
+            spriteBatch = new SpriteBatch(Graphics.GraphicsDevice);
+
+            ui = new UserInterface(this);
 
             room = new Room(this, 1880, 1175);
+            mainRoom = room;
+            tempRoom = new Room(this, 1880, 1175);
+            tempRoom.borderColor = Color.Red;
+            Program.room = room;
 
             processManager = new ProcessManager(room);
-            #region ///Default User props///
-            Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {
-                    { nodeE.position, new Vector2(0, 0) },
-                    { nodeE.texture, textures.whitecircle },
-                    //{ node.radius, 50 },
-                    { comp.basicdraw, true },
-                    { comp.collision, true },
-                    { comp.movement, true },
-                    //{ comp.maxvel, true },
-                    //{ comp.randvelchange, true },
-                    //{ comp.gravity, true },
-                    //{ comp.linearpull, true },
-                    //{ comp.laser, true },
-                    //{ comp.wideray, true },
-                    //{ comp.hueshifter, true },
-                    //{ comp.transfer, true },
-                    //{ comp.phaseorb, false },
-                    //{ comp.tree, true },
-                    //{ comp.queuer, true },
-                    //{ comp.flow, true },
-                    { comp.waver, false },
-                    { comp.scheduler, true },
 
-                    //{ comp.tether, false },
-                    
-                };
-            #endregion
-
-
-            room.defaultNode = new Node(userPr);
-            room.defaultNode.name = "master";
-            room.defaultNode.IsDefault = true;
-
-
-            //much faster than foreach keyword apparently. Nice
-            room.defaultNode.comps.Keys.ToList().ForEach(delegate(comp c) 
-            {
-                room.defaultNode.comps[c].AfterCloning();
-            });
-
-            Node firstdefault = new Node();
-            Node.cloneNode(room.defaultNode, firstdefault);
-            firstdefault.name = "[G0]0";
-            firstdefault.IsDefault = true;
-
-            Group masterGroup = new Group(room.defaultNode, Name: room.defaultNode.name, Spawnable: false);
-            room.masterGroup = masterGroup;
-
-            Group generalGroup = new Group(room.defaultNode, parentGroup: masterGroup, Name: "General Groups", Spawnable: false);
-            room.masterGroup.AddGroup(generalGroup.Name, generalGroup);
-
-            Group linkGroup = new Group(room.defaultNode, parentGroup: masterGroup, Name: "Link Groups", Spawnable: false);
-            room.masterGroup.AddGroup(linkGroup.Name, linkGroup);
-
-            Group wallGroup = new Group(room.defaultNode, parentGroup: masterGroup, Name: "Walls", Spawnable: false);
-            room.masterGroup.AddGroup(wallGroup.Name, wallGroup);
-
-            Group firstGroup = new Group(firstdefault, parentGroup: generalGroup);
-            generalGroup.AddGroup(firstGroup.Name, firstGroup);
-
-            
-            Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
-                    { comp.basicdraw, true }, { nodeE.texture, textures.whitecircle } };
-
-            room.targetNodeGraphic = new Node(userPropsTarget);
-            room.targetNodeGraphic.name = "TargetNodeGraphic";
+            ui.Initialize(room);
 
             frameRateCounter = new FrameRateCounter(this);
             base.Initialize();
@@ -281,7 +227,7 @@ namespace OrbItProcs
 
             testing = new Testing();
 
-            ui = new UserInterface(this);
+            
 
             ui.sidebar.UpdateGroupComboBoxes();
             ui.sidebar.cbListPicker.ItemIndex = 0;
@@ -296,10 +242,10 @@ namespace OrbItProcs
 
             if (bigTonyOn)
             {
-            for (int i = 1; i < 5; i++)
-            {
-                room.players.Add(new Player(i)); //#bigtony
-            }
+                for (int i = 1; i < 5; i++)
+                {
+                    room.players.Add(new Player(i)); //#bigtony
+                }
             }
 
             processManager.SetProcessKeybinds(ui.keyManager);
@@ -308,8 +254,20 @@ namespace OrbItProcs
             ui.keyManager.addProcessKeyAction("switchview", KeyCodes.PageDown, OnPress: ui.SwitchView);
             ui.keyManager.addProcessKeyAction("screenshot", KeyCodes.PrintScreen, OnPress: TakeScreenShot);
             ui.keyManager.addProcessKeyAction("removeall", KeyCodes.Delete, OnPress: () => ui.sidebar.btnRemoveAllNodes_Click(null, null));
-
-            room.MakeWalls();
+        }
+        public void SwitchToMainRoom()
+        {
+            //room = mainRoom;
+            ResetRoomReferences(mainRoom);
+        }
+        public void SwitchToTempRoom(bool reset = true)
+        {
+            if (tempRoom == null) return;
+            ResetRoomReferences(tempRoom);
+            if (reset)
+            {
+                room.generalGroups.EmptyGroup();
+            }
         }
 
         public void TakeScreenShot()
@@ -348,11 +306,12 @@ namespace OrbItProcs
             t2d.Dispose();
         } 
 
-        public void ResetRoomReferences(Room newRoom)
+        public void ResetRoomReferences(Room newRoom, bool main = false)
         {
             if (newRoom == null) throw new SystemException("Room was null when reseting room references");
             Program.room = newRoom;
             room = newRoom;
+            if (main) mainRoom = newRoom;
             ui.room = newRoom;
             ui.sidebar.room = newRoom;
             ui.sidebar.inspectorArea.room = newRoom;
@@ -366,10 +325,6 @@ namespace OrbItProcs
             foreach(Process p in processManager.processDict.Values)
             {
                 p.room = newRoom;
-            }
-            if (processManager.processDict.ContainsKey(proc.mapeditor))
-            {
-                (processManager.processDict[proc.mapeditor] as MapEditor).level = newRoom.level;
             }
         }
 
@@ -392,8 +347,7 @@ namespace OrbItProcs
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             //spriteBatch = new SpriteBatch(GraphicsDevice);
-            spriteBatch = new SpriteBatch(Graphics.GraphicsDevice);
-            room.camera.batch = spriteBatch;
+            
             // TODO: use this.Content to load your game content here
         }
 
@@ -422,13 +376,13 @@ namespace OrbItProcs
 
             if (!ui.IsPaused)
             {
-                room.Update(gameTime);
+                if (room != null) room.Update(gameTime);
             }
             else
             {
                 //room.colorEffectedNodes();
                 //room.updateTargetNodeGraphic();
-                room.gridSystemLines = new List<Microsoft.Xna.Framework.Rectangle>();
+                if (room != null) room.gridSystemLines = new List<Microsoft.Xna.Framework.Rectangle>();
             }
 
             if (IsActive) ui.Update(gameTime);
@@ -550,11 +504,9 @@ namespace OrbItProcs
             if (lifetime != -1)
             {
                 newNode.addComponent(comp.lifetime, true);
-                newNode.GetComponent<Lifetime>().timeOfDeath.value = lifetime;
+                newNode.GetComponent<Lifetime>().timeUntilDeath.value = lifetime;
                 newNode.comps[comp.lifetime].timeOfDeath.enabled = true;
             }
-
-
             //Collider col = new Collider(new Circle(Utils.random.Next(200)));
             //col.OnCollisionStay += delegate(Node source, Node target)
             //{

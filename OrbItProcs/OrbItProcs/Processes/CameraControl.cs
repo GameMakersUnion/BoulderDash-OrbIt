@@ -10,11 +10,9 @@ namespace OrbItProcs
 {
     public class CameraControl : Process
     {
-        Camera camera;
         public float velocity = 5f;
         public CameraControl(Camera camera)
         {
-            this.camera = camera;
             Update += update;
         }
 
@@ -49,7 +47,7 @@ namespace OrbItProcs
                 vel *= 0.70710678118f;
             }
 
-            camera.pos += vel;
+            room.camera.pos += vel;
 
 
         }

@@ -137,14 +137,14 @@ namespace OrbItProcs
             
             for (int i = 0; i < min; i++)
             {
-                    if (fade.enabled)
-                    {
-                //color = new Color(color.R, color.G, color.B, 255/queuecount * count);
-                        a += r1 / fade;
-                        b += g1 / fade;
-                        c += b1 / fade;
-                col = new Color(a, b, c, 200);
-                    }
+                if (fade.enabled)
+                {
+                    //color = new Color(color.R, color.G, color.B, 255/queuecount * count);
+                    a += r1 / fade;
+                    b += g1 / fade;
+                    c += b1 / fade;
+                    col = new Color(a, b, c, 200);
+                }
                 //if (parent.comps.ContainsKey(comp.hueshifter) && parent.comps[comp.hueshifter].active) col = parent.body.color;
 
                 //float scale = scales.ElementAt(count) / mapzoom;

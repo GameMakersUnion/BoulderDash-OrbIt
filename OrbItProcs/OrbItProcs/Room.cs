@@ -30,7 +30,9 @@ namespace OrbItProcs {
         #region // Lists // --------------------------------------------\
         [Polenter.Serialization.ExcludeFromSerialization]
         public HashSet<Collider> CollisionSet { get; set; }
+        //[Polenter.Serialization.ExcludeFromSerialization]
         public List<Rectangle> gridSystemLines = new List<Rectangle>(); //dns
+        //[Polenter.Serialization.ExcludeFromSerialization]
         private List<Manifold> contacts = new List<Manifold>(); //dns
         #endregion
         public GridSystem gridsystem { get; set; }
@@ -97,6 +99,8 @@ namespace OrbItProcs {
 
         public float zoom { get { return camera.zoom; } set { camera.zoom = value; } }
 
+        public Color borderColor { get; set; }
+
         #region // Links // ------------------------------------------------------
         public ObservableHashSet<Link> _AllActiveLinks = new ObservableHashSet<Link>();
         public ObservableHashSet<Link> AllActiveLinks { get { return _AllActiveLinks; } set { _AllActiveLinks = value; } }
@@ -115,11 +119,11 @@ namespace OrbItProcs {
             colIterations = 1;
             camera = new Camera(this, 0.5f);
             scheduler = new Scheduler();
-
+            borderColor = Color.Green;
             
         }
 
-        public Room(Game1 game, int worldWidth, int worldHeight) : this()
+        public Room(Game1 game, int worldWidth, int worldHeight, bool Groups = true) : this()
         {
             //this.mapzoom = 2f;
             this.worldWidth = worldWidth;
@@ -137,9 +141,67 @@ namespace OrbItProcs {
 
             players = new HashSet<Player>();
 
+            #region ///Default User props///
+            Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {
+                { nodeE.position, new Vector2(0, 0) },
+                { nodeE.texture, textures.whitecircle },
+                { comp.basicdraw, true },
+                { comp.collision, true },
+                { comp.movement, true },
+                { comp.waver, false },
+                { comp.scheduler, true },
+            };
+            #endregion
+
+
+            defaultNode = new Node(userPr);
+            defaultNode.name = "master";
+            //defaultNode.IsDefault = true;
+
+            defaultNode.comps.Keys.ToList().ForEach(delegate(comp c)
+            {
+                defaultNode.comps[c].AfterCloning();
+            });
+
+            Node firstdefault = new Node();
+            Node.cloneNode(defaultNode, firstdefault);
+            firstdefault.name = "[G0]0";
+            //firstdefault.IsDefault = true;
+
+            masterGroup = new Group(defaultNode, Name: defaultNode.name, Spawnable: false);
+
+            if (Groups)
+            {
+                Group generalGroup = new Group(defaultNode, parentGroup: masterGroup, Name: "General Groups", Spawnable: false);
+                masterGroup.AddGroup(generalGroup.Name, generalGroup);
+
+                Group linkGroup = new Group(defaultNode, parentGroup: masterGroup, Name: "Link Groups", Spawnable: false);
+                masterGroup.AddGroup(linkGroup.Name, linkGroup);
+
+                Group wallGroup = new Group(defaultNode, parentGroup: masterGroup, Name: "Walls", Spawnable: false);
+                masterGroup.AddGroup(wallGroup.Name, wallGroup);
+
+                Group firstGroup = new Group(firstdefault, parentGroup: generalGroup);
+                generalGroup.AddGroup(firstGroup.Name, firstGroup);
+            }
+
+            Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
+                    { comp.basicdraw, true }, { nodeE.texture, textures.whitecircle } };
+
+            targetNodeGraphic = new Node(userPropsTarget);
+            targetNodeGraphic.name = "TargetNodeGraphic";
+
+            MakeWalls();
         }
         
-        
+        public void AddCollider(Collider collider)
+        {
+            CollisionSet.Add(collider);
+        }
+        public void RemoveCollider(Collider collider)
+        {
+            CollisionSet.Remove(collider);
+        }
 
         public void Update(GameTime gametime)
         {
@@ -228,6 +290,7 @@ namespace OrbItProcs {
                 gridsystemCollision.clearBuckets();
                 foreach (var n in CollisionSet) //.ToList()
                 {
+                    //Console.WriteLine(CollisionSet.Count);
                     gridsystemCollision.insertToBuckets(n);
                 }
             }
@@ -252,8 +315,6 @@ namespace OrbItProcs {
                         //reach = 2;
                     }
                     gridsystemCollision.alreadyVisited.Add(c);
-
-
                     //if (algorithm == 1)
                     //{
                     //    ///*
@@ -411,7 +472,7 @@ namespace OrbItProcs {
                 //float scale = 1 / mapzoom;
                 Rectangle maprect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
                 //spritebatch.DrawLine((new Vector2(maprect.X, maprect.Y) - camera.pos) * zoom, (new Vector2(maprect.Width, maprect.Height) - camera.pos) * zoom, Color.Green, 2);
-                Utils.DrawLine(this, new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), 2, Color.Green);
+                Utils.DrawLine(this, new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), 2, borderColor);
                 linecount++;
             }
 

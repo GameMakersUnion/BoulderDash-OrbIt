@@ -173,7 +173,7 @@ namespace OrbItProcs
             #region  /// Component List ///
             InsBox = new InspectorBox(manager);
             InsBox.Init();
-            manager.Add(InsBox);
+            //manager.Add(InsBox);
             InsBox.Parent = backPanel;
 
             InsBox.Top = HeightCounter;

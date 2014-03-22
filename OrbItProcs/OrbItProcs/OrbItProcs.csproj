@@ -133,6 +133,7 @@
     <Compile Include="Components\Drawers\ColorChanger.cs" />
     <Compile Include="Components\Drawers\ColorGravity.cs" />
     <Compile Include="Components\Scheduler.cs" />
+    <Compile Include="Interface\Views\CreateGroupWindow.cs" />
     <Compile Include="Interface\Views\OptionsWindow.cs" />
     <Compile Include="Interface\Views\ComponentView.cs" />
     <Compile Include="Interface\Views\DetailedView.cs" />

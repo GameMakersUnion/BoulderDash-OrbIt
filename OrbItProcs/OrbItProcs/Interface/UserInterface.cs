@@ -87,18 +87,21 @@ namespace OrbItProcs {
         {
             this.game = game;
             game.ui = this;
-            this.room = game.room;
-            
+            //this.room = game.room;
             sidebar = new Sidebar(this);
-            sidebar.Initialize();
+
             zoomfactor = 0.9f;
             GameInputDisabled = false;
             IsPaused = false;
             this.keyManager = new KeyManager(this);
-            
-            groupSelectSet = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet; //syncs group select set to process set
-
             SidebarActive = true;
+        }
+
+        public void Initialize(Room room)
+        {
+            this.room = room;
+            sidebar.Initialize(room);
+            groupSelectSet = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
         }
 
         public void SetSidebarActive(bool active)
@@ -158,6 +161,7 @@ namespace OrbItProcs {
 
             //game.testing.KeyManagerTest(() => Keybindset.Update());
             keyManager.Update();
+            sidebar.Update();
 
             //randomizerProcess = new Randomizer();
             
@@ -258,7 +262,7 @@ namespace OrbItProcs {
             //ignore mouse clicks outside window
             if (!Game1.isFullScreen)
             {
-                if (mouseState.X >= sWidth || mouseState.X < 0 || mouseState.Y >= sHeight || mouseState.Y < 0)
+                if (mouseState.X >= game.Width || mouseState.X < 0 || mouseState.Y >= game.Height || mouseState.Y < 0)
                     return;
             }
 
@@ -275,15 +279,13 @@ namespace OrbItProcs {
                         ScrollAction(-1);
                     }
                 }
-
+                
                 oldMouseState = mouseState;
                 return;
             }
 
             if (GameInputDisabled) return;
             //game.processManager.PollMouse(mouseState, oldMouseState);
-
-
             int worldMouseX = (int)WorldMousePos.X;
             int worldMouseY = (int)WorldMousePos.Y;
 

@@ -19,8 +19,9 @@ namespace OrbItProcs
         /// If enabled, this node will be deleted when it's lifetime has reached or surpassed this number.
         /// </summary>
         [Info(UserLevel.User, "If enabled, this node will be deleted when it's lifetime has reached or surpassed this number.")]
-        public Toggle<int> timeOfDeath { get; set; }
-
+        public Toggle<int> timeUntilDeath { get { return _timeUntilDeath; } set { _timeUntilDeath = value; if (value.enabled) lifeLived = 0; } }
+        private Toggle<int> _timeUntilDeath;
+        private int lifeLived = 0;
         /// <summary>
         /// How many milliseconds this node has been alive
         /// </summary>
@@ -33,7 +34,7 @@ namespace OrbItProcs
         {
             if (parent != null) this.parent = parent;
             com = comp.lifetime; 
-            timeOfDeath = new Toggle<int>(5000, false);
+            timeUntilDeath = new Toggle<int>(5000, false);
 
         }
 
@@ -47,9 +48,11 @@ namespace OrbItProcs
         {
             int mill = Game1.GlobalGameTime.ElapsedGameTime.Milliseconds;
             lifetime += mill;
-            if (timeOfDeath.enabled && lifetime > timeOfDeath)
+            if (timeUntilDeath.enabled && lifetime > timeUntilDeath)
             {
-                Die();
+                lifeLived += mill;
+                if (lifeLived > timeUntilDeath)
+                    Die();
             }
         }
 

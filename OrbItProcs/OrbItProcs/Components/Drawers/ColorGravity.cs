@@ -53,8 +53,8 @@ namespace OrbItProcs.Components
                 if (value)
                 {
                     r = parent.body.color.R / 255f;
-                    g = parent.body.color.R / 255f;
-                    b = parent.body.color.R / 255f;
+                    g = parent.body.color.G / 255f;
+                    b = parent.body.color.B / 255f;
                 }
                 base.active = value;
             }
@@ -173,10 +173,11 @@ namespace OrbItProcs.Components
 
                     float otherhue = other.comps[comp.colorgravity].hue;
                     dist = GetDist(hue, otherhue);
-                    if (dist < 20) return;
+                    if (dist < 1) return;
                     float force = multiplier / (dist * dist) / divisor;
                     huevelocity += force;
-                    //Console.WriteLine(dist);
+
+                    Console.WriteLine("dist: {0} force: {1}", dist, force);
 
                 }
                 else if (distancemod == DistanceMod.spatial)

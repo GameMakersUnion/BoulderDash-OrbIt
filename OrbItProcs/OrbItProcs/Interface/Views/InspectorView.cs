@@ -228,8 +228,9 @@ namespace OrbItProcs
                             checkbox.ToolTip.Text = "Toggle";
                             //checkbox.Checked = (bool)o;
                             checkbox.Name = "toggle_checkbox";
-                            checkbox.Checked = Toggle<Game1>.GetEnabled(o);
-                            textbox.Text = Toggle<Game1>.GetValue(o).ToString();
+                            dynamic toggle = o;
+                            checkbox.Checked = toggle.enabled;
+                            textbox.Text = toggle.value.ToString();
 
                             item.AddControl(checkbox);
                             

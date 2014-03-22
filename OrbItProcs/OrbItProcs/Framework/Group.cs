@@ -104,7 +104,18 @@ namespace OrbItProcs
                 }
             }
         }
-        public Node defaultNode { get; set; }
+        private Node _defaultNode = null;
+        public Node defaultNode { get { return _defaultNode; } 
+            set 
+            { 
+                _defaultNode = value;
+                if (value != null)
+                {
+                    value.group = this;
+                    value.collision.RemoveCollidersFromSet();
+                }
+            } 
+        }
         public Room room;
         private string _Name;
         public string Name { get { return _Name; } set { if (_Name != null && _Name.Equals("master")) return; _Name = value; } } //cannot rename main group
@@ -126,12 +137,11 @@ namespace OrbItProcs
                 foreach(Node n in entities)
                 {
                     fullSet.Add(n);
-                    n.Groups.Add(this);
+                    n.group = this;
                 }
                 foreach(Node n in inherited)
                 {
                     fullSet.Add(n);
-                    n.Groups.Add(this);
                 }
                 foreach(Group g in childGroups.Values)
                 {
@@ -195,34 +205,39 @@ namespace OrbItProcs
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
             {
+                bool ui = room.game.ui != null && room.game.ui.sidebar.cbListPicker != null;
                 foreach (Node n in e.NewItems)
                 {
-                    if (room.game.ui.sidebar.cbListPicker.Text.Equals(Name))
+                    if (ui)
                     {
-                        room.game.ui.sidebar.lstMain.Items.Add(n);
-                        room.game.ui.sidebar.SyncTitleNumber(this);
+                        if (room.game.ui.sidebar.cbListPicker.Text.Equals(Name))
+                        {
+                            room.game.ui.sidebar.lstMain.Items.Add(n);
+                        }
                     }
                     if (parentGroup != null && !parentGroup.entities.Contains(n))
                     {
                         parentGroup.inherited.Add(n);
                     }
                     fullSet.Add(n);
-                    n.Groups.Add(this);
                 }
-                room.game.ui.sidebar.SyncTitleNumber(this);
+                if (ui) room.game.ui.sidebar.SyncTitleNumber(this);
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
             {
                 foreach (Node n in e.OldItems)
                 {
-                    if (room.game.ui.sidebar.cbListPicker.Text.Equals(Name))
+                    if (room.game.ui != null)
                     {
-                        room.game.ui.sidebar.lstMain.Items.Remove(n);
-                        room.game.ui.sidebar.SyncTitleNumber(this);
+                        if (room.game.ui.sidebar.cbListPicker.Text.Equals(Name))
+                        {
+                            room.game.ui.sidebar.lstMain.Items.Remove(n);
+                            room.game.ui.sidebar.SyncTitleNumber(this);
+                        }
                     }
                     if (!entities.Contains(n) && !inherited.Contains(n))
                         fullSet.Remove(n);
-                    n.Groups.Remove(this);
+                    if (n.group == this) n.group = null;
                 }
             }
         }
@@ -251,12 +266,12 @@ namespace OrbItProcs
         public void IncludeEntity(Node entity)
         {
             entities.Add(entity);
+            entity.group = this;
             if (entity.collision.active)
             {
                 //room.CollisionSet.Add(entity);
                 entity.collision.UpdateCollisionSet();
             }
-
             //if (parentGroup != null)
             //    parentGroup.IncludeEntity(entity);
         }
@@ -286,11 +301,7 @@ namespace OrbItProcs
                 root = root.parentGroup;
             }
             root.DiscludeEntity(entity);
-            foreach(Collider c in entity.collision.colliders.Values)
-            {
-                room.CollisionSet.Remove(c);
-            }
-            room.CollisionSet.Remove(entity.body);
+            entity.collision.RemoveCollidersFromSet();
             //room.CollisionSet.Remove(entity);
             entity.OnDelete();
         }
@@ -405,9 +416,8 @@ namespace OrbItProcs
 
             foreach (Node n in entities.ToList())
             {
-                n.Groups.Remove(this);
+                n.group = null;
                 DeleteEntity(n);
-
             }
             if (parentGroup == null) throw new SystemException("Don't delete orphans");
             parentGroup.childGroups.Remove(Name);

@@ -26,12 +26,12 @@ namespace OrbItProcs
         [Info(UserLevel.Advanced, "WARNING: THIS FLAG IS ONLY OBSERVED BY POLYGONS: Determines when to draw the center of mass as a circle")]
         public bool DrawCircle { get; set; }
 
-        public Initial _InitialColor = Initial.Random;
+        public Initial _InitialColor = Initial.Managed;
         /// <summary>
         /// Determines whether the color will be random or set by the Red, Green and Blue properties initially.
         /// </summary>
         [Info(UserLevel.User, "Determines whether the color will be random or set by the Red, Green and Blue properties initially.")]
-        public Initial InitialColor { get; set; }
+        public Initial InitialColor { get { return _InitialColor; } set { _InitialColor = value; Colorize(); } }
         /// <summary>
         /// Red color component
         /// </summary>
@@ -61,6 +61,11 @@ namespace OrbItProcs
 
         public override void OnSpawn()
         {
+            Colorize();
+        }
+
+        public void Colorize()
+        {
             if (InitialColor == Initial.Random)
             {
                 RandomizeColor();
@@ -73,7 +78,7 @@ namespace OrbItProcs
 
         public void SetColor()
         {
-            if (parent == null)
+            if (parent != null)
             {
                 parent.body.color = new Color(Red, Green, Blue);
             }

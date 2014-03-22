@@ -42,8 +42,8 @@ namespace OrbItProcs
 
 
 
-        private Dictionary<queues,int> _qcounts = new Dictionary<queues,int>();
-        public Dictionary<queues, int> qcounts { get { return _qcounts; } set { _qcounts = value; } }
+        //private Dictionary<queues,int> _qcounts = new Dictionary<queues,int>();
+        //public Dictionary<queues, int> qcounts { get { return _qcounts; } set { _qcounts = value; } }
 
         private int timer = 0, _timerMax = 1;
         public int timerMax { get { return _timerMax; } set { _timerMax = value; } }
@@ -58,9 +58,6 @@ namespace OrbItProcs
             com = comp.queuer;
             InitializeLists();
             
-            qcounts[queues.position] = queuecount;
-            qcounts[queues.angle] = queuecount;
-            qcounts[queues.scale] = queuecount;
         }
 
         public override void OnSpawn()
@@ -87,13 +84,10 @@ namespace OrbItProcs
 
         public override void AffectSelf()
         {
-            
-
             if (++timer % timerMax == 0)
             {
                 if ((qs & queues.position) == queues.position)
                 {
-                    //TODO: make all three of these pull from the qcounts dictionary when convienient (dictionary editable in sidebar)
                     if (positions.Count > queuecount)
                     {
                         positions.Dequeue();
@@ -102,7 +96,6 @@ namespace OrbItProcs
                 }
                 if ((qs & queues.scale) == queues.scale)
                 {
-
                     if (scales.Count > queuecount)
                     {
                         scales.Dequeue();
@@ -111,7 +104,6 @@ namespace OrbItProcs
                 }
                 if ((qs & queues.angle) == queues.angle)
                 {
-
                     if (angles.Count > queuecount)
                     {
                         angles.Dequeue();

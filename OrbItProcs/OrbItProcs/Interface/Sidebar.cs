@@ -45,47 +45,41 @@ namespace OrbItProcs
             }
         }
 
+        public bool CreatingGroup = false;
+
 
         //private Group _ActiveGroup;
         public Group ActiveGroupFirst { 
             get 
-            { 
-                if (cbListPicker != null && cbListPicker.ItemIndex != -1 && room != null && room.masterGroup != null)
+            {
+                if (activeTabControl == tbcMain)
                 {
-                    string name = cbListPicker.Text;
-                    
-                    /*
-                    if (room.masterGroup.childGroups.ContainsKey(name))
+                    if (cbListPicker != null && cbListPicker.ItemIndex != -1 && room != null && room.masterGroup != null)
                     {
-                        return room.masterGroup.childGroups[name];
+                        string name = cbListPicker.Text;
+                        return room.masterGroup.FindGroup(name);
                     }
-                    return room.masterGroup;
-                    */
-                    return room.masterGroup.FindGroup(name);
                 }
-                else
+                else if (activeTabControl == tbcViews)
                 {
-                    //Console.WriteLine("Group couldn't be found while getting ActiveGroup property.");
-                    return room.masterGroup;
+                    if (CreatingGroup)
+                    {
+                        if (room.game.tempRoom.generalGroups.childGroups.Count == 0) return null;
+                        return room.game.tempRoom.generalGroups.childGroups.ElementAt(0).Value;
+                    }
+                    else
+                    {
+                        //if (componentView == null) return null;
+                        return componentView.activeGroup;
+                    }
                 }
+                return room.masterGroup;
             }
-            //set { _ActiveGroup = value; }
         }
         public Node ActiveDefaultNode
         {
             get
             {
-                /*
-                if (cmbListPicker != null && cmbListPicker.ItemIndex != -1 && room != null && room.masterGroup != null)
-                {
-                    string name = cmbListPicker.Text;
-                    if (room.masterGroup.childGroups.ContainsKey(name))
-                    {
-                        return room.masterGroup.childGroups[name].defaultNode;
-                    }
-                }
-                return room.masterGroup.defaultNode;
-                */
                 Group g = ActiveGroupFirst;
                 if (g != null && g.defaultNode != null)
                     return ActiveGroupFirst.defaultNode;
@@ -139,7 +133,7 @@ namespace OrbItProcs
         public Sidebar(UserInterface ui)
         {
             this.game = ui.game;
-            this.room = ui.game.room;
+            //this.room = ui.game.room;
             this.ui = ui;
             NotImplemented = delegate {
                 PopUp.Toast("Not Implemented. Take a hike.");
@@ -150,8 +144,9 @@ namespace OrbItProcs
             manager.SetSkin("Green");
         }
 
-        public void Initialize()
+        public void Initialize(Room room)
         {
+            this.room = room;
             manager.Initialize();
 
             #region /// Master ///
@@ -186,6 +181,7 @@ namespace OrbItProcs
             tbcMain.Width = master.Width - 5;
             tbcMain.Height = master.Height - 40;
             tbcMain.Anchor = Anchors.All;
+            activeTabControl = tbcMain;
             #endregion
 
             #region  /// Page1 ///
@@ -530,6 +526,7 @@ namespace OrbItProcs
         void cbListPicker_ItemIndexChanged(object sender, EventArgs e)
         {
             ComboBox cmb = (ComboBox)sender;
+            if (cmb.ItemIndex < 0) return;
             string item = cmb.Items.ElementAt(cmb.ItemIndex).ToString();
             if (item.Equals("Other Objects"))
             {
@@ -1016,6 +1013,12 @@ namespace OrbItProcs
                 inspectorArea.editNode = null;
             }
             inspectorArea.propertyEditPanel.DisableControls();
+        }
+
+        public void Update()
+        {
+            //Console.WriteLine(inspectorArea.InsBox.Text);
+
         }
     }
 }

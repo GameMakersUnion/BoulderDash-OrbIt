@@ -39,6 +39,7 @@ namespace OrbItProcs
         public ComponentView componentView { get; set; }
         public DetailedView detailedView { get; set; }
         public InspectorView inspectorView { get; set; }
+        public GroupsView groupsView { get; set; }
 
         public TabControl tbcViews;
 
@@ -86,6 +87,7 @@ namespace OrbItProcs
             activeTabControl = tbcViews;
 
             componentView = new ComponentView(this, editTab, 0, 0);
+            componentView.SwitchGroup(room.masterGroup.childGroups["General Groups"].childGroups.ElementAt(0).Value);
 
             btnOptions = new Button(manager);
             btnOptions.Init();
@@ -95,26 +97,26 @@ namespace OrbItProcs
             btnOptions.Text = "Options";
             btnOptions.Click += (s, e) =>
             {
-                OptionsWindow oWindow = new OptionsWindow(manager, this);
+                OptionsWindow oWindow = new OptionsWindow(this);
             };
         }
 
         public void InitializeFifthPage()
         {
-            tbcMain.Visible = false;
-
             tbcViews.AddPage();
-            TabPage testTab = tbcViews.TabPages[1];
+            TabPage groupsTab = tbcViews.TabPages[1];
             //tbcViews.Color = Color.Transparent;
-            testTab.Text = "Test";
+            groupsTab.Text = "Groups";
 
             tbcViews.SelectedIndex = 1;
-
             activeTabControl = tbcViews;
-
             //detailedView = new DetailedView(this, testTab, 0, 0);
-            inspectorView = new InspectorView(this, testTab, 0, 0);
+            //inspectorView = new InspectorView(this, groupsTab, 0, 0);
+            groupsView = new GroupsView(this, groupsTab, 0, 0);
+            groupsView.UpdateGroups();
             tbcViews.SelectedIndex = 0;
         }
+
+
     }
 }

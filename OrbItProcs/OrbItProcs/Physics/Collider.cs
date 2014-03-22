@@ -46,13 +46,13 @@ namespace OrbItProcs
             {
                 if (parent != null && parent.room.game.ui != null && parent.collision.active && parent.collision.AllHandlersEnabled)
                 {
-                    if (!_HandlersEnabled && value && parent != parent.room.game.ui.sidebar.ActiveDefaultNode)
+                    if (value && !parent.IsDefault)
                     {
-                        parent.room.CollisionSet.Add(this);
+                        parent.room.AddCollider(this);
                     }
-                    else if (_HandlersEnabled && !value)
+                    else if (!value)
                     {
-                        parent.room.CollisionSet.Remove(this);
+                        parent.room.RemoveCollider(this);
                     }
                 }
                 _HandlersEnabled = value;

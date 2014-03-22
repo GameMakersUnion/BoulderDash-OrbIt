@@ -19,6 +19,22 @@ namespace OrbItProcs
 
         public InspectorView insView;
 
+        public override int Width
+        {
+            get
+            {
+                return base.Width;
+            }
+            set
+            {
+                base.Width = value;
+                RefreshComponents();
+                if (insView == null) return;
+                insView.Width = value;
+                insView.Refresh();
+            }
+        }
+
         //public new List<ComponentViewItem> viewItems;
         //public new ComponentViewItem selectedItem { get; set; }
 
@@ -66,8 +82,6 @@ namespace OrbItProcs
             insView = new InspectorView(sidebar, parent, Left, HeightCounter);
             insView.GroupSync = true;
             insView.Height = 120;
-            SwitchGroup(room.masterGroup.childGroups["General Groups"].childGroups.ElementAt(0).Value);
-
             OnItemEvent += OnEvent2;
 
             //UpdateGroupComboBox();

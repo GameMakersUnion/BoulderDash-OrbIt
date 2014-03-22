@@ -22,7 +22,6 @@ namespace OrbItProcs
         {
             this.room = room;
             this.font = room.game.font;
-            
             this.batch = room.game.spriteBatch;
             this.zoom = zoom;
             this.pos = pos ?? Vector2.Zero;
@@ -56,12 +55,14 @@ namespace OrbItProcs
             batch.DrawString(font, text, pos, c2, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
             batch.DrawString(font, text, pos + new Vector2(1, -1), color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
         }
-        public void DrawStringWorld(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f)
+        public void DrawStringWorld(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true)
         {
             Color c2 = Color.White;
             if (color2 != null) c2 = (Color)color2;
-            batch.DrawString(font, text, position * zoom + CameraOffsetVect, c2, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
-            batch.DrawString(font, text, position * zoom + CameraOffsetVect + new Vector2(1, -1), color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
+            Vector2 pos = position * zoom;
+            if (offset) pos += CameraOffsetVect;
+            batch.DrawString(font, text, pos, c2, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
+            batch.DrawString(font, text, pos + new Vector2(1, -1), color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
         }
         
 

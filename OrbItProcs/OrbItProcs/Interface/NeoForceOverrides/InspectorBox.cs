@@ -42,7 +42,10 @@ namespace TomShane.Neoforce.Controls
             if (Manager != null && Manager.Skin != null && Manager.Skin.Controls != null)
             {
                 SkinControl s = Manager.Skin.Controls[DeriveControlName(new ListBox(manager))];
-                if (s != null) Skin = new SkinControl(s);
+                if (s != null)
+                {
+                    Skin = new SkinControl(s);
+                }
                 else Skin = new SkinControl(Manager.Skin.Controls["Control"]);
             }
             else

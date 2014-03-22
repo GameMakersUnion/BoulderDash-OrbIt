@@ -16,7 +16,7 @@ namespace OrbItProcs
     {
 
         public Game1 game;
-        public Room room;
+        public Room room { get { return sidebar.room; } }
         public UserInterface ui;
         public Sidebar sidebar;
         public InspectorItem ActiveInspectorParent;
@@ -24,7 +24,8 @@ namespace OrbItProcs
 
         public int Left;
         public int Top;
-        public int Width;
+        private int _Width;
+        public virtual int Width { get { return _Width; } set { _Width = value; if (backPanel != null) backPanel.Width = value; } }
         private int _Height = 150;
         public int Height { get { return _Height; } set { _Height = value; if (backPanel != null) backPanel.Height = value; } }
         //public int Height { get { return (propertyEditPanel.grouppanel.Top + propertyEditPanel.grouppanel.Height); } }
@@ -53,7 +54,6 @@ namespace OrbItProcs
         public ListView(Sidebar sidebar, Control parent, int Left, int Top, bool Init = true, int? Height = null)
         {
             this.game = sidebar.game;
-            this.room = sidebar.room;
             this.ui = sidebar.ui;
             this.sidebar = sidebar;
             this.manager = sidebar.manager;

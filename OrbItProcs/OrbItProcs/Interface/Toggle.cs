@@ -7,13 +7,15 @@ namespace OrbItProcs
 {
     public class Toggle<T>
     {
+
         public T value { get; set; }
         public bool enabled { get; set; }
-        //Sup, polentner
+        //Sup, polentcner
         public Toggle() { }
-        public Toggle(T value, bool enabled = true)
+        public Toggle(T Value, bool Enabled = true)
         {
-            this.value = value; this.enabled = enabled;
+            value = Value; 
+            enabled = Enabled;
         }
 
         public override string ToString()
@@ -21,6 +23,7 @@ namespace OrbItProcs
             if (value == null) return "";
             return value.ToString();
         }
+
 
         public override bool Equals(object obj)
         {
@@ -48,48 +51,6 @@ namespace OrbItProcs
             hash = (hash * 7) + value.GetHashCode();
             hash = (hash * 7) + enabled.GetHashCode();
             return hash;
-        }
-
-        public static bool GetEnabled(object toggle)
-        {
-            if (toggle is Toggle<int>)
-            {
-                return (toggle as Toggle<int>).enabled;
-            }
-            else if (toggle is Toggle<float>)
-            {
-                return (toggle as Toggle<float>).enabled;
-            }
-            else if (toggle is Toggle<double>)
-            {
-                return (toggle as Toggle<double>).enabled;
-            }
-            else if (toggle is Toggle<byte>)
-            {
-                return (toggle as Toggle<byte>).enabled;
-            }
-            return false;
-        }
-
-        public static object GetValue(object toggle)
-        {
-            if (toggle is Toggle<int>)
-            {
-                return (toggle as Toggle<int>).value;
-            }
-            else if (toggle is Toggle<float>)
-            {
-                return (toggle as Toggle<float>).value;
-            }
-            else if (toggle is Toggle<double>)
-            {
-                return (toggle as Toggle<double>).value;
-            }
-            else if (toggle is Toggle<byte>)
-            {
-                return (toggle as Toggle<byte>).value;
-            }
-            return 0;
         }
 
         public static implicit operator bool(Toggle<T> d)

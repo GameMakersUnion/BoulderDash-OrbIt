@@ -35,10 +35,10 @@ namespace OrbItProcs
             } 
             set 
             {
-                if (parent != null && parent.HasComponent(comp.queuer) && parent[comp.queuer].queuecount < value)
-                {
-                    parent[comp.queuer].queuecount = value;
-                }
+                //if (parent != null && parent.HasComponent(comp.queuer) && parent[comp.queuer].queuecount < value)
+                //{
+                //    parent[comp.queuer].queuecount = value;
+                //}
                 _waveLength = value;
             } 
         }
@@ -177,23 +177,15 @@ namespace OrbItProcs
             Room room = parent.room;
             //float mapzoom = room.zoom;
 
-            int count = 0;
-            //Queue<float> scales = parent.comps[comp.queuer].scales;
-            //Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
-
             foreach (Vector2 metapos in metapositions)
             {
-                room.camera.Draw(parent.getTexture(), metapos, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale * waveScale, SpriteEffects.None, 0);
-                count++;
-                
+                room.camera.Draw(parent.texture, metapos, parent.body.color, parent.body.scale * waveScale);
             }
             if (reflective)
             {
-                count = 0;
                 foreach (Vector2 relectpos in reflectpositions)
                 {
-                    room.camera.Draw(parent.getTexture(), relectpos, null, parent.body.color, 0, parent.TextureCenter(), parent.body.scale * waveScale, SpriteEffects.None, 0);
-                    count++;
+                    room.camera.Draw(parent.texture, relectpos, parent.body.color, parent.body.scale * waveScale);
                 }
             }
         }

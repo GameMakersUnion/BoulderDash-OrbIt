@@ -246,7 +246,7 @@ namespace OrbItProcs
             launchNode = new Node(bulletProps);
             //launchNode.comps[comp.laser].brightness = 0.5f;
             launchNode.comps[comp.laser].thickness.value = 3f;
-            launchNode.GetComponent<Movement>().maxVel.value = 15;
+            launchNode.GetComponent<Movement>().maxVelocity.value = 5;
             bulletlife = 1500;
             firefreq = 1;
 
