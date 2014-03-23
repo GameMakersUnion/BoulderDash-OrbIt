@@ -47,7 +47,7 @@ namespace OrbItProcs {
         public int timermax = 60;
 
         public static long totalElapsedMilliseconds = 0;
-
+        public RenderTarget2D roomRenderTarget;
         public Camera camera;
 
         private Group _masterGroup;
@@ -113,6 +113,7 @@ namespace OrbItProcs {
             nodeHashes = new ObservableHashSet<string>();
             CollisionSet = new HashSet<Collider>();
             colIterations = 1;
+            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, game.Width, game.Height);
             camera = new Camera(this, 0.5f);
             scheduler = new Scheduler();
 
@@ -373,7 +374,7 @@ namespace OrbItProcs {
         public void Draw(SpriteBatch spritebatch)
         {
             //spritebatch.Draw(game.textureDict[textures.whitepixel], new Vector2(300, 300), null, Color.Black, 0f, Vector2.Zero, 100f, SpriteEffects.None, 0);
-
+            
             if (targetNode != null)
             {
                 updateTargetNodeGraphic();
@@ -422,7 +423,7 @@ namespace OrbItProcs {
 
             GraphData.DrawGraph();
             //Testing.TestHues();
-
+            
         }
         public void AddManifold(Manifold m)
         {

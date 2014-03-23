@@ -6,9 +6,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.CSharp;
 using System.Reflection;
-
-
-
 using System.Collections.Specialized;
 using System.Collections;
 
@@ -53,6 +50,7 @@ namespace OrbItProcs {
 
     public class Node {
         private string _nodeHash = "";
+
         public string nodeHash { get { return _nodeHash; } set 
         {
             room.nodeHashes.Remove(_nodeHash);

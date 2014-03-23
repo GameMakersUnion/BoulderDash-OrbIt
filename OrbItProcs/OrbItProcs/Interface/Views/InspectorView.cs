@@ -12,6 +12,13 @@ using System.Collections.ObjectModel;
 
 namespace OrbItProcs
 {
+    public enum NumBoxMode
+    {
+        byOne,
+        quadratic,
+        byTen
+
+    }
     public class InspectorView : DetailedView
     {
         public InspectorItem rootItem;
@@ -94,6 +101,7 @@ namespace OrbItProcs
                         ins.ApplyToAllNodes(activeGroup);
                     }
                 }
+                marginalize(textbox);
             }
             else if (control is CheckBox)
             {
@@ -173,6 +181,7 @@ namespace OrbItProcs
                     }
                     if (o is Component)
                     {
+                        
                         Component comp = (Component)o;
                         CheckBox checkbox = new CheckBox(manager);
                         checkbox.Init();
@@ -207,6 +216,7 @@ namespace OrbItProcs
                     {
                         int w = 60;
                         TextBox textbox = new TextBox(manager);
+                        textbox.ClientMargins = new Margins();
                         textbox.Init();
                         textbox.Parent = item.textPanel;
                         textbox.TextColor = UserInterface.TomShanePuke;
@@ -233,8 +243,67 @@ namespace OrbItProcs
 
                             item.AddControl(checkbox);
                             
+
                         }
+                        textbox.ClientArea.Top += 2;
+                        textbox.ClientArea.Left += 4;
+                        textbox.KeyPress += delegate { marginalize(textbox); };
+                        textbox.KeyDown += delegate { marginalize(textbox); };
                         item.AddControl(textbox);
+                        Type primitiveType = !isToggle ? o.GetType() : ((dynamic)o).value.GetType();
+
+                        Button up = new Button(manager);
+                        up.SetSize(textbox.ClientArea.Height, textbox.ClientArea.Height / 2);
+                        up.Anchor = Anchors.Right;
+                        up.Init();
+                        up.Left = textbox.ClientArea.Width - up.Width;
+
+
+                        up.ToolTip.Text = "Increment : RightClick = byOne, MiddleClick = byTen, RightClick = Double";
+                        up.MouseDown += (s, e) =>
+                        {
+                            switch (e.Button)
+                            {
+                                case MouseButton.Left:
+                                    textbox.Text = textbox.Text.increment(primitiveType, NumBoxMode.byOne);
+                                    break;
+                                case MouseButton.Right:
+                                    textbox.Text = textbox.Text.increment(primitiveType, NumBoxMode.quadratic);
+                                    break;
+                                case MouseButton.Middle:
+                                    textbox.Text = textbox.Text.increment(primitiveType, NumBoxMode.byTen);
+                                    break;
+                            }
+                            textbox.SendMessage(Message.KeyUp, new KeyEventArgs(Microsoft.Xna.Framework.Input.Keys.Enter));
+                            marginalize(textbox);
+                        };
+                        textbox.Add(up);
+
+                        Button down = new Button(manager);
+                        down.SetSize(textbox.ClientArea.Height, textbox.ClientArea.Height / 2);
+                        down.Anchor = Anchors.Right;
+                        down.Top = up.Height;
+                        down.Init();
+                        down.ToolTip.Text = "Decrement : RightClick = byOne, MiddleClick = byTen, RightClick = half";
+                        down.MouseDown += (s, e) =>
+                        {
+                            switch (e.Button)
+                            {
+                                case MouseButton.Left:
+                                    textbox.Text = textbox.Text.decrement(primitiveType, NumBoxMode.byOne);
+                                    break;
+                                case MouseButton.Right:
+                                    textbox.Text = textbox.Text.decrement(primitiveType, NumBoxMode.quadratic);
+                                    break;
+                                case MouseButton.Middle:
+                                    textbox.Text = textbox.Text.decrement(primitiveType, NumBoxMode.byTen);
+                                    break;
+                            }
+                            textbox.SendMessage(Message.KeyUp, new KeyEventArgs(Microsoft.Xna.Framework.Input.Keys.Enter));
+                            marginalize(textbox);
+                        };
+                        down.Left = textbox.ClientArea.Width - down.Width;
+                        textbox.Add(down);
 
                         //todo: make tiny + and - buttons
                     }
@@ -343,6 +412,11 @@ namespace OrbItProcs
                     
                 }
             }
+        }
+        public static void marginalize(TextBox t)
+        {
+            t.ClientArea.Top = 2;
+            t.ClientArea.Left = 4;
         }
     }
 }

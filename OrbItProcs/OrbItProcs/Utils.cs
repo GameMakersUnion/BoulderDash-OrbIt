@@ -14,10 +14,95 @@ namespace OrbItProcs {
 
         public const float rootOfTwo = 1.41421356237f;
         public const float invRootOfTwo = 0.70710678118f;
-        
 
 
+        public static object parsePrimitive(Type primitiveType, String value)
+        {
 
+            string s = value.ToString().Trim();
+
+            if (primitiveType == typeof(int))
+            {
+                int v;
+                if (Int32.TryParse(s, out v))
+                {
+                    //fpinfo.SetValue(v, parentItem.obj);
+                    return v;
+                }
+                else return null;
+            }
+            else if (primitiveType == typeof(float))
+            {
+                float v;
+                if (float.TryParse(s, out v))
+                {
+                    //fpinfo.SetValue(v, parentItem.obj);
+                    return v;
+                }
+                else return null;
+            }
+            else if (primitiveType == typeof(double))
+            {
+                double v;
+                if (double.TryParse(s, out v))
+                {
+                    //fpinfo.SetValue(v, parentItem.obj);
+                    return v;
+                }
+                else return null;
+            }
+            else if (primitiveType == typeof(byte))
+            {
+                byte v;
+                if (byte.TryParse(s, out v))
+                {
+                    //fpinfo.SetValue(v, parentItem.obj);
+                    return v;
+                }
+                else return null;
+            }
+            else if (primitiveType.IsEnum)
+            {
+                foreach (var val in Enum.GetValues(primitiveType))
+                {
+                    if (val.ToString().ToLower().Equals(s.ToLower()))
+                    {
+                        return val;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public static string increment(this String origin, Type primitiveType, NumBoxMode n)
+        {
+            dynamic number = parsePrimitive(primitiveType, origin);
+            if (number == null) return "0";
+            switch (n){
+                case NumBoxMode.byOne:
+                    return (number + 1).ToString();
+                case NumBoxMode.byTen:
+                    return (number + 10).ToString();
+                case NumBoxMode.quadratic:
+                    return (number * 2).ToString();
+                default: return "0";
+            }
+        }
+        public static string decrement(this String origin, Type primitiveType, NumBoxMode n)
+        {
+            dynamic number = parsePrimitive(primitiveType, origin);
+            if (number == null) return "0";
+            switch (n)
+            {
+                case NumBoxMode.byOne:
+                    return (number - 1).ToString();
+                case NumBoxMode.byTen:
+                    return (number - 10).ToString();
+                case NumBoxMode.quadratic:
+                    return (number / 2).ToString();
+                default: return "0";
+            }
+        }
         public static Dictionary<comp, Type> compTypes;
         public static Dictionary<Type, comp> compEnums;
 

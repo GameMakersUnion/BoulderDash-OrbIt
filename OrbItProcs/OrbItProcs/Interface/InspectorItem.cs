@@ -884,58 +884,9 @@ namespace OrbItProcs {
                     }
 
                 }
-                string s = value.ToString().Trim();
+                object o = Utils.parsePrimitive(primitiveType, value.ToString());
 
-                if (primitiveType == typeof(int))
-                {
-                    int v;
-                    if (Int32.TryParse(s, out v))
-                    {
-                        //fpinfo.SetValue(v, parentItem.obj);
-                        return v;
-                    }
-                    else return null;
-                }
-                else if (primitiveType == typeof(float))
-                {
-                    float v;
-                    if (float.TryParse(s, out v))
-                    {
-                        //fpinfo.SetValue(v, parentItem.obj);
-                        return v;
-                    }
-                    else return null;
-                }
-                else if (primitiveType == typeof(double))
-                {
-                    double v;
-                    if (double.TryParse(s, out v))
-                    {
-                        //fpinfo.SetValue(v, parentItem.obj);
-                        return v;
-                    }
-                    else return null;
-                }
-                else if (primitiveType == typeof(byte))
-                {
-                    byte v;
-                    if (byte.TryParse(s, out v))
-                    {
-                        //fpinfo.SetValue(v, parentItem.obj);
-                        return v;
-                    }
-                    else return null;
-                }
-                else if (primitiveType.IsEnum)
-                {
-                    foreach(var val in Enum.GetValues(primitiveType))
-                    {
-                        if (val.ToString().ToLower().Equals(s.ToLower()))
-                        {
-                            return val;
-                        }
-                    }
-                }
+                if (o != null) return o;
             }
             else if (value is string)
             {
