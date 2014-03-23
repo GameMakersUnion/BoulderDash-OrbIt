@@ -169,6 +169,7 @@ namespace OrbItProcs
                         {
                             n.RemoveComponent(component.com);
                         }
+                        
                     }
                 }
             }

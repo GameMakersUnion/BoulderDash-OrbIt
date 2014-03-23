@@ -65,6 +65,8 @@ namespace OrbItProcs
             }
         }
 
+        public ToolWindow toolWindow;
+
         public void InitializeFourthPage()
         {
             tbcMain.Visible = false;
@@ -99,6 +101,8 @@ namespace OrbItProcs
             {
                 OptionsWindow oWindow = new OptionsWindow(this);
             };
+
+            toolWindow = new ToolWindow(this);
         }
 
         public void InitializeFifthPage()

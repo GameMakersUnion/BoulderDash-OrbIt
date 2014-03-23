@@ -52,6 +52,8 @@ namespace OrbItProcs {
             }
 
     public class Node {
+        public static int nodeCounter = 0;
+
         private string _nodeHash = "";
         public string nodeHash { get { return _nodeHash; } set 
         {
@@ -59,33 +61,6 @@ namespace OrbItProcs {
             _nodeHash = value;
             room.nodeHashes.Add(value);
         } }
-
-        public static int nodeCounter = 0;
-
-        public T GetComponent<T>() //todo: make Component dictionary (not dynamic) to see if casting to (T) is faster than dynamic (probably casts anyway)
-        {
-            return comps[Utils.compEnums[typeof(T)]];
-        }
-        public bool HasComponent(comp component)
-        {
-            return comps.ContainsKey(component);
-        }
-        public bool HasActiveComponent(comp component)
-        {
-            return comps.ContainsKey(component) && comps[component].active;
-        }
-        [Info(UserLevel.Never)]
-        public dynamic this[comp component]
-        {
-            get
-            {
-                return comps[component];
-            }
-            set
-            {
-                comps[component] = value;
-            }
-        }
 
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;
         private Dictionary<comp, bool> tempCompActiveValues = new Dictionary<comp, bool>();
@@ -126,17 +101,6 @@ namespace OrbItProcs {
                 _active = value;
             }
         }
-        ///<summary>
-        ///Warning: Do not call in update Loop. BE CAREFUL
-        ///</summary>
-        public IEnumerable<Collider> GetColliders()
-        {
-            foreach(Collider c in collision.colliders.Values)
-            {
-                yield return c;
-            }
-            yield return body;
-        }
 
         private bool _IsDeleted = false;
         public bool IsDeleted
@@ -152,25 +116,22 @@ namespace OrbItProcs {
             }
         }
         //public bool IsDefault = false;
-        public int lifetime = -1;
+        //public int lifetime = -1;
 
         private string _name = "node";
         public string name { get { return _name; } set { _name = value; } }
 
-        private int _sentinel = -10;
-        public int sentinelp { get { return _sentinel; } set { _sentinel = value; } }
-
         public Room room = Program.getRoom();
 
-        public Dictionary<comp, dynamic> _comps = new Dictionary<comp, dynamic>();
+        private Dictionary<comp, dynamic> _comps = new Dictionary<comp, dynamic>();
         public Dictionary<comp, dynamic> comps { get { return _comps; } set { _comps = value; } }
 
-        public List<comp> aOtherProps = new List<comp>();
-        public List<comp> aSelfProps = new List<comp>();
-        public List<comp> drawProps = new List<comp>();
+        private List<comp> aOtherProps = new List<comp>();
+        private List<comp> aSelfProps = new List<comp>();
+        private List<comp> drawProps = new List<comp>();
 
-        public List<comp> compsToRemove = new List<comp>();
-        public List<comp> compsToAdd = new List<comp>();
+        private List<comp> compsToRemove = new List<comp>();
+        private List<comp> compsToAdd = new List<comp>();
 
         private HashSet<string> _tags = new HashSet<string>();
         public HashSet<string> tags { get { return _tags; } set { _tags = value; } }
@@ -323,16 +284,15 @@ namespace OrbItProcs {
 
         public void storeInInstance(nodeE val, Dictionary<dynamic,dynamic> dict)
         {
-            if (val == nodeE.active)             active                      = dict[val];
-            if (val == nodeE.position)           body.pos          = dict[val];
-            if (val == nodeE.velocity)           body.velocity          = dict[val];
-            if (val == nodeE.radius)             body.radius            = dict[val];
-            if (val == nodeE.mass)               body.mass              = dict[val];
-            if (val == nodeE.scale)              body.scale             = dict[val];
-            if (val == nodeE.texture)            body.texture           = dict[val];
-            if (val == nodeE.name)               name                        = dict[val];
-            if (val == nodeE.lifetime)           lifetime                    = dict[val];
-            if (val == nodeE.color)              body.color             = dict[val];
+            if (val == nodeE.active) active = dict[val];
+            if (val == nodeE.name) name = dict[val];
+            if (val == nodeE.position) body.pos = dict[val];
+            if (val == nodeE.velocity) body.velocity = dict[val];
+            if (val == nodeE.radius) body.radius = dict[val];
+            if (val == nodeE.mass) body.mass = dict[val];
+            if (val == nodeE.scale) body.scale = dict[val];
+            if (val == nodeE.texture) body.texture = dict[val];
+            if (val == nodeE.color) body.color = dict[val];
         }
 
         public Node() : this(ShapeType.eCircle) { }
@@ -341,8 +301,8 @@ namespace OrbItProcs {
 
         public Node(ShapeType shapetype, bool createHash = true)
         {
-            if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0, 5);
-            else name = name + nodeCounter;
+            //if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0, 5);
+            name = name + nodeCounter;
             room = Program.getRoom();
             if (createHash)
             {
@@ -393,6 +353,30 @@ namespace OrbItProcs {
             SortComponentLists();
         }
 
+        public T GetComponent<T>() //todo: make Component dictionary (not dynamic) to see if casting to (T) is faster than dynamic (probably casts anyway)
+        {
+            return comps[Utils.compEnums[typeof(T)]];
+        }
+        public bool HasComponent(comp component)
+        {
+            return comps.ContainsKey(component);
+        }
+        public bool HasActiveComponent(comp component)
+        {
+            return comps.ContainsKey(component) && comps[component].active;
+        }
+        [Info(UserLevel.Never)]
+        public dynamic this[comp component]
+        {
+            get
+            {
+                return comps[component];
+            }
+            set
+            {
+                comps[component] = value;
+            }
+        }
         public T CheckData<T>(string key)
         {
             if (Kawasaki.ContainsKey(key))

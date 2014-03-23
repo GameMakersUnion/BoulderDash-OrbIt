@@ -15,7 +15,7 @@ namespace OrbItProcs
     public class GroupsView : DetailedView
     {
         Label groupLabel;
-        Button btnCreateGroup;
+        Button btnCreateGroup, btnSelectedNode;
         public GroupsView(Sidebar sidebar, Control parent, int Left, int Top)
             : base(sidebar, parent, Left, Top, false)
         {
@@ -44,6 +44,21 @@ namespace OrbItProcs
             btnCreateGroup.Click += (s, e) =>
             {
                 CreateGroupWindow createwindow = new CreateGroupWindow(sidebar);
+            };
+            HeightCounter += btnCreateGroup.Height + LeftPadding;
+
+            btnSelectedNode = new Button(manager);
+            btnSelectedNode.Init();
+            btnSelectedNode.Parent = parent;
+            btnSelectedNode.Top = HeightCounter;
+            btnSelectedNode.Left = LeftPadding;
+            btnSelectedNode.Text = "Selected Node to Group";
+            btnSelectedNode.Width = 160;
+            btnSelectedNode.Click += (s, e) =>
+            {
+                if (room.targetNode == null) return;
+                Group g = new Group(room.targetNode.CreateClone(), room.generalGroups);
+                UpdateGroups();
             };
         }
 
@@ -99,6 +114,7 @@ namespace OrbItProcs
                 btnEnabled.Left = btnEdit.Left - btnEnabled.Width - 5;
                 btnEnabled.Top = 2;
                 btnEnabled.Height = item.buttonHeight;
+                //btnEnabled.Draw += btnEnabled_Draw;
 
                 //btnEnabled.Text = "On";
                 SetButtonBool(btnEnabled, !g.Disabled);
@@ -136,6 +152,13 @@ namespace OrbItProcs
                     UpdateGroups();
                 };
             }
+        }
+
+        void btnEnabled_Draw(object sender, DrawEventArgs e)
+        {
+            Button b = (Button)sender;
+            //new Rectangle(500, 500, 600, 600)
+            e.Renderer.Draw(sidebar.game.textureDict[textures.blackorb], e.Rectangle, new Rectangle(0,0,25,25), Color.White);
         }
     }
 }

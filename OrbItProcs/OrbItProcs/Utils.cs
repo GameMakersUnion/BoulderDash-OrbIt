@@ -32,6 +32,25 @@ namespace OrbItProcs {
             return compEnums[t];
         }
 
+        public static Info GetInfoClass(object o)
+        {
+            var infos = o.GetType().GetCustomAttributes(typeof(Info), false);
+            if (infos != null && infos.Length > 0)
+            {
+                return (Info)infos.ElementAt(0);
+            }
+            return null;
+        }
+        public static Info GetInfoProperty(PropertyInfo pinfo)
+        {
+            var infos = pinfo.GetCustomAttributes(typeof(Info), false);
+            if (infos != null && infos.Length > 0)
+            {
+                return (Info)infos.ElementAt(0);
+            }
+            return null;
+        }
+
         public static bool isGenericType(Type genericType, Type type)
         {
             if (type.IsGenericType && type.GetGenericTypeDefinition() == genericType)
@@ -248,22 +267,15 @@ namespace OrbItProcs {
         public static Vector2 CENTER_TEXTURE = new Vector2(0.5f, 0.5f);
         public static void DrawLine(Room room, Vector2 start, Vector2 end, float thickness, Color color)
         {
-            float mapzoom = room.zoom;
-            
+            if (thickness * room.zoom < 1) thickness = 1 / room.zoom;
             Vector2 diff = (end - start);// *mapzoom;
             Vector2 centerpoint = (end + start) / 2;
             //centerpoint *= mapzoom;
             float len = diff.Length();
             //thickness *= 2f * mapzoom;
             Vector2 scalevect = new Vector2(len, thickness);
-            float testangle = (float)(Math.Atan2(diff.Y, diff.X));
-
-            //room.game.spriteBatch.Draw(room.game.textureDict[textures.whitepixel], centerpoint, null, color, testangle, CENTER_TEXTURE, scalevect, SpriteEffects.None, 0);
-
-
-
-
-            room.camera.Draw(room.game.textureDict[textures.whitepixel], centerpoint, null, color, testangle, room.game.textureCenters[textures.whitepixel], scalevect, SpriteEffects.None, 0);
+            float angle = (float)(Math.Atan2(diff.Y, diff.X));
+            room.camera.Draw(room.game.textureDict[textures.whitepixel], centerpoint, null, color, angle, room.game.textureCenters[textures.whitepixel], scalevect, SpriteEffects.None, 0);
         }
 
         public static bool checkCollision(Node o1, Node o2)

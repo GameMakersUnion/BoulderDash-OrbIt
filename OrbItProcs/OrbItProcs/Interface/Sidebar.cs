@@ -40,10 +40,19 @@ namespace OrbItProcs
                 _userLevel = value;
 
                 //call refresh on inspector areas
-
-                
+                if (ui.detailedViews != null)
+                {
+                    foreach(DetailedView dv in ui.detailedViews)
+                    {
+                        if (dv is ComponentView)
+                        {
+                            (dv as ComponentView).RefreshComponents();
+                        }
+                    }
+                }
             }
         }
+
 
         public bool CreatingGroup = false;
 

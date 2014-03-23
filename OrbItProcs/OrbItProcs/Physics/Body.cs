@@ -7,12 +7,16 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs
 {
+    /// <summary>
+    /// The Body holds the node's size, position and other properties used in physics and gravity calculations.
+    /// </summary>
+    [Info(UserLevel.User, "The Body holds the node's size, position and other properties used in physics and gravity calculations.")]
     public class Body : Collider
     {
         //public Shape shape;
         //public Vector2 pos = new Vector2(0, 0);
         public Vector2 velocity = new Vector2(0, 0);
-
+        [Info(UserLevel.Developer)]
         public override bool HandlersEnabled
         {
             get { return _HandlersEnabled; }
@@ -34,6 +38,10 @@ namespace OrbItProcs
         }
 
         private bool _ResolveCollision = true;
+        /// <summary>
+        /// Controls whether the node will collide and bounce off other nodes.
+        /// </summary>
+        [Info(UserLevel.User, "Controls whether the node will collide and bounce off other nodes.")]
         public bool isSolid
         {
             get { return _ResolveCollision; }
@@ -53,7 +61,10 @@ namespace OrbItProcs
                 _ResolveCollision = value; 
             }
         }
-        
+        /// <summary>
+        /// Sets the radius of the node's circle, to change it's size.
+        /// </summary>
+        [Info(UserLevel.User, "Sets the radius of the node's circle, to change it's size.")]
         public override float radius
         {
             get { return shape.radius; }
@@ -65,6 +76,10 @@ namespace OrbItProcs
                 shape.radius = value;
             }
         }
+        /// <summary>
+        /// Also sets the nodes radius, using a scale factor.
+        /// </summary>
+        [Info(UserLevel.Advanced, "Also sets the nodes radius, using a scale factor.")]
         public float scale
         {
             get { return _scale; }
@@ -76,28 +91,58 @@ namespace OrbItProcs
                 _scale = value;
             }
         }
+        /// <summary>
+        /// Controls how heavy the node is. Mass is used in collision, gravity, and other velocity based calculations.
+        /// </summary>
+        [Info(UserLevel.User, "Controls how heavy the node is. Mass is used in collision, gravity, and other velocity based calculations.")]
         public float mass
         {
             get { return _mass; }
             set { _mass = value; if (value == 0) invmass = 0; else invmass = 1.0f / value; } //infinite mass is represented by 0
         }
+        /// <summary>
+        /// Controls how easy it is for the node to spin (change it's angular velocity.)
+        /// </summary>
+        [Info(UserLevel.Advanced, "Controls how easy it is for the node to spin (change it's angular velocity.)")]
         public float inertia
         {
             get { return _inertia; }
             set { _inertia = value; if (value == 0) invinertia = 0; else invinertia = 1.0f / value; } //infinite mass is represented by 0
         }
+        [Info(UserLevel.Developer)]
         public float angularVelocity { get { return _angularVelocity; } set { _angularVelocity = value; } }
+        [Info(UserLevel.Developer)]
         public float torque { get { return _torque; } set { _torque = value; } }
+        /// <summary>
+        /// Controls static friction for collisions.
+        /// </summary>
+        [Info(UserLevel.Advanced, "Controls static friction for collisions.")]
         public float staticFriction { get { return _staticFriction; } set { _staticFriction = value; } }
+        /// <summary>
+        /// Controls dynamic friction for collisions.
+        /// </summary>
+        [Info(UserLevel.Advanced, "Controls dynamic friction for collisions.")]
         public float dynamicFriction { get { return _dynamicFriction; } set { _dynamicFriction = value; } }
+        /// <summary>
+        /// Controls how bouncy the node is during collisions. The higher the value, the more bounce.
+        /// </summary>
+        [Info(UserLevel.User, "Controls how bouncy the node is during collisions. The higher the value, the more bounce.")]
         public float restitution { get { return _restitution; } set { _restitution = value; } }
 
         public bool DrawCircle { get; set; }
+        /// <summary>
+        /// Sets the X position of the node.
+        /// </summary>
+        [Info(UserLevel.Advanced, "Sets the X position of the node.")]
         public float X
         {
             get { return pos.X; }
             set { pos.X = value; }
         }
+        /// <summary>
+        /// Sets the Y position of the node.
+        /// </summary>
+        [Info(UserLevel.Advanced, "Sets the Y position of the node.")]
         public float Y
         {
             get { return pos.Y; }
@@ -137,8 +182,11 @@ namespace OrbItProcs
         //private float _radius = 25f;
         private float _scale = 1f;
 
-        
 
+        /// <summary>
+        /// Sets the angle of orientation of the node.
+        /// </summary>
+        [Info(UserLevel.Advanced, "Sets the angle of orientation of the node.")]
         public float orient
         {
             get { return _orient; }
@@ -169,7 +217,10 @@ namespace OrbItProcs
             protected set;
         }
 
-
+        /// <summary>
+        /// The texture that the node will use to render. (This is the picture of the node.)
+        /// </summary>
+        [Info(UserLevel.User, "The texture that the node will use to render. (This is the picture of the node.)")]
         public textures texture
         {
             get { return _texture; }

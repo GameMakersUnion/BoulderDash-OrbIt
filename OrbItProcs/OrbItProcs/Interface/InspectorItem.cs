@@ -518,7 +518,7 @@ namespace OrbItProcs {
                     if (showValueToString) result += " : " + component.active;
                     return result;
                 }
-                if (datatype == data_type.obj || datatype == data_type.none)
+                if (datatype == data_type.obj || datatype == data_type.none && obj != null)
                 {
                     string ts = obj.GetType().ToString().LastWord('.');
                     result += fpinfo.Name;

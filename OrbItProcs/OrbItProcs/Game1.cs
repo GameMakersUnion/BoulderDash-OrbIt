@@ -521,7 +521,7 @@ namespace OrbItProcs
             {
                 newNode.addComponent(comp.lifetime, true);
                 newNode.GetComponent<Lifetime>().timeUntilDeath.value = lifetime;
-                newNode.comps[comp.lifetime].timeOfDeath.enabled = true;
+                newNode.comps[comp.lifetime].timeUntilDeath.enabled = true;
             }
             //Collider col = new Collider(new Circle(Utils.random.Next(200)));
             //col.OnCollisionStay += delegate(Node source, Node target)

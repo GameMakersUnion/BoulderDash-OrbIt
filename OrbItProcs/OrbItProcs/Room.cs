@@ -420,7 +420,7 @@ namespace OrbItProcs {
                     m.ApplyImpulse();
                 }
             }
-            foreach (Node n in masterGroup.fullSet)
+            foreach (Node n in masterGroup.fullSet.ToList())
             {
                 n.movement.IntegrateVelocity();
 

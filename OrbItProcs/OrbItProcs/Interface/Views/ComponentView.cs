@@ -215,28 +215,36 @@ namespace OrbItProcs
             if (itemCount >= 10)
                 width -= 18;
             InspectorItem rootItem = new InspectorItem(null, node, sidebar);
-            CreateItem(new DetailedItem(manager, this, rootItem, backPanel, heightCount, LeftPadding, width));
-            //compItems[0].textPanel.Color = Color.Blue;
-            int height = (viewItems[0].itemHeight - 2);
-            heightCount += height;
+            int height = 0;
+            if (sidebar.userLevel == UserLevel.Debug)
+            {
+                CreateItem(new DetailedItem(manager, this, rootItem, backPanel, heightCount, LeftPadding, width));
+                height = (viewItems[0].itemHeight - 2);
+                heightCount += height;
+            }
             InspectorItem bodyItem = new InspectorItem(null, rootItem, node.body, node.GetType().GetProperty("body"));
             CreateItem(new DetailedItem(manager, this, bodyItem, backPanel, heightCount, LeftPadding, width));
+            Info inf = Utils.GetInfoClass(node.body);
+            if (inf != null) viewItems[0].toolTip = inf.summary;
+
+            if (height == 0) height = (viewItems[0].itemHeight - 2);
+            
+            //heightCount += height;
+
             InspectorItem dictItem = new InspectorItem(null, rootItem, node.comps, node.GetType().GetProperty("comps"));
             foreach (comp c in node.comps.Keys)
             {
-                Component co = (Component)node.comps[c];
-                var infos = co.GetType().GetCustomAttributes(typeof(Info), false);
                 string tooltip = "";
-                if (infos != null && infos.Length > 0)
+                Info info = Utils.GetInfoClass(node.comps[c]);
+                if (info != null)
                 {
-                    Info info = (Info)infos.ElementAt(0);
                     if ((int)info.userLevel > (int)sidebar.userLevel) continue;
                     tooltip = info.summary;
                 }
                 heightCount += height;
                 InspectorItem cItem = new InspectorItem(null, dictItem, node.comps[c], c);
                 DetailedItem di = new DetailedItem(manager, this, cItem, backPanel, heightCount, LeftPadding, width);
-                di.textPanel.ToolTip.Text = tooltip;
+                di.toolTip = tooltip;
                 CreateItem(di);
 
             }

@@ -97,6 +97,20 @@ namespace OrbItProcs
     {
         public DetailedView detailedView;
         public Dictionary<string, Control> itemControls;
+        private string _toolTip = "";
+        public string toolTip
+        {
+            get { return _toolTip; }
+            set
+            {
+                _toolTip = value;
+                if (textPanel != null) textPanel.ToolTip.Text = value;
+                foreach(Control c in itemControls.Values)
+                {
+                    if (!c.Text.Equals("-")) c.ToolTip.Text = value;
+                }
+            }
+        }
 
         public override bool isSelected
         {
@@ -143,6 +157,9 @@ namespace OrbItProcs
                 RemoveControl(control.Name);
             }
             itemControls[control.Name] = control;
+            if (control.Text.Equals("-")) control.ToolTip.Text = "Remove";
+            else control.ToolTip.Text = toolTip;
+
             if (control is ComboBox)
             {
                 (control as ComboBox).ItemIndexChanged += (s, e) =>
