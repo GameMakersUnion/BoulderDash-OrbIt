@@ -310,7 +310,7 @@ namespace OrbItProcs
 
             if (InsBox.ItemIndex < 0 || InsBox.Items.Count == 0) return;
             InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
-
+            
             //UpdateGroupPanel(item, groupPanel);
         }
 
