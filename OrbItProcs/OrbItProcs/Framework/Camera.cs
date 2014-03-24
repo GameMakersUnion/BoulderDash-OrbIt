@@ -28,22 +28,27 @@ namespace OrbItProcs
         }
         public void Draw(textures texture, Vector2 position, Color color, float scale)
         {
+            color *= ((float)color.A / 255f);
             batch.Draw(room.game.textureDict[texture], ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, room.game.textureCenters[texture], scale * zoom, SpriteEffects.None, 0);
         }
         public void Draw(textures texture, Vector2 position, Color color, float scale, float rotation)
         {
+            color *= ((float)color.A / 255f);
             batch.Draw(room.game.textureDict[texture], ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, room.game.textureCenters[texture], scale * zoom, SpriteEffects.None, 0);
         }
         public void Draw(textures texture, Vector2 position, Color color, Vector2 scalevect, float rotation)
         {
+            color *= ((float)color.A / 255f);
             batch.Draw(room.game.textureDict[texture], ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, room.game.textureCenters[texture], scalevect * zoom, SpriteEffects.None, 0);
         }
         public void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0)
         {
+            color *= ((float)color.A / 255f);
             batch.Draw(texture, ((position - pos) * zoom) + CameraOffsetVect, sourceRectangle, color, rotation, origin, scale * zoom, effects, layerDepth);
         }
         public void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, Vector2 scalevect, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0)
         {
+            color *= ((float)color.A / 255f);
             batch.Draw(texture, ((position - pos) * zoom) + CameraOffsetVect, sourceRectangle, color, rotation, origin, scalevect * zoom, effects, layerDepth);
         }
         public void DrawStringScreen(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true)

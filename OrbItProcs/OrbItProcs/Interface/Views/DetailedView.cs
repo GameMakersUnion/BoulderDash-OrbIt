@@ -16,6 +16,7 @@ namespace OrbItProcs
     {
         public Action<DetailedItem, object> ItemCreator;
         public Action<Control, DetailedItem, EventArgs> OnItemEvent;
+        public bool ColorChangeOnSelect = true;
 
         public DetailedView(Sidebar sidebar, Control parent, int Left, int Top, bool Init = true)
             : base(sidebar, parent, Left, Top, Init)
@@ -42,11 +43,11 @@ namespace OrbItProcs
             selectedItem = null;
             foreach(DetailedItem i in viewItems.ToList())
             {
-                backPanel.Remove(i.textPanel);
+                backPanel.Remove(i.panel);
                 viewItems.Remove(i);
             }
         }
-        public virtual void Refresh()
+        public virtual void Refresh(bool notFocused)
         {
             if (viewItems != null)
             {
@@ -65,6 +66,21 @@ namespace OrbItProcs
                 }
             }
         }
+
+        public void AdjustWidth()
+        {
+            if (viewItems != null)
+            {
+                int width = backPanel.Width - 4; //#magic number
+                if (viewItems.Count >= 10)
+                    width -= 18;
+                foreach(var item in viewItems)
+                {
+                    item.panel.Width = width;
+                }
+            }
+        }
+
         public void SetButtonBool(Button button, bool b)
         {
             if (b)
@@ -91,6 +107,18 @@ namespace OrbItProcs
                 return false;
             }
         }
+        public void CreateItem(DetailedItem item)
+        {
+            viewItems.Add(item);
+            SetupScroll(item);
+            item.OnSelect = delegate
+            {
+                if (this != null)
+                {
+                    SelectItem(item);
+                }
+            };
+        }
     }
 
     public class DetailedItem : ViewItem
@@ -104,7 +132,7 @@ namespace OrbItProcs
             set
             {
                 _toolTip = value;
-                if (textPanel != null) textPanel.ToolTip.Text = value;
+                if (panel != null) panel.ToolTip.Text = value;
                 foreach(Control c in itemControls.Values)
                 {
                     if (!c.Text.Equals("-")) c.ToolTip.Text = value;
@@ -120,8 +148,10 @@ namespace OrbItProcs
             }
             set
             {
-                base.isSelected = value;
-                RefreshColor();
+                _isSelected = value;
+                detailedView.selectedItem = this;
+                if (detailedView != null && detailedView.ColorChangeOnSelect)
+                    RefreshColor();
             }
         }
 
@@ -129,17 +159,17 @@ namespace OrbItProcs
             : base(manager, obj, parent, Top, Left, Width)
         {
             this.detailedView = detailedView;
-            textPanel.Width = detailedView.backPanel.Width - 4;
+            panel.Width = Width - 4;
             textColor = detailedView.textColor;
             backColor = detailedView.backColor;
             RefreshColor();
-            textPanel.Click += delegate
-            {
-                if (detailedView != null)
-                {
-                    detailedView.SelectItem(this);
-                }
-            };
+            //panel.Click += delegate
+            //{
+            //    if (detailedView != null)
+            //    {
+            //        detailedView.SelectItem(this);
+            //    }
+            //};
 
             itemControls = new Dictionary<string, Control>();
             if (detailedView.ItemCreator != null)
@@ -159,6 +189,9 @@ namespace OrbItProcs
             itemControls[control.Name] = control;
             if (control.Text.Equals("-")) control.ToolTip.Text = "Remove";
             else control.ToolTip.Text = toolTip;
+            control.ToolTip.Left = 100;
+
+            detailedView.sidebar.ui.SetScrollableControl(control, detailedView.List_ChangeScrollPosition);
 
             if (control is ComboBox)
             {
@@ -176,6 +209,13 @@ namespace OrbItProcs
             {
                 detailedView.InvokeOnItemEvent(control, this, e);
             };
+            if (control is Button)
+            {
+                control.Click += (s, e) =>
+                {
+                    control.Focused = false;
+                };
+            }
             
             //todo: add more handlers as necessary
         }

@@ -31,7 +31,7 @@ namespace OrbItProcs
                 RefreshComponents();
                 if (insView == null) return;
                 insView.Width = value;
-                insView.Refresh();
+                insView.AdjustWidth();
             }
         }
 
@@ -147,6 +147,10 @@ namespace OrbItProcs
                 {
                     lblCurrentComp.TextColor = item.itemControls["component_button_enabled"].TextColor;
                 }
+                if (i.obj is Body)
+                {
+                    lblCurrentComp.TextColor = UserInterface.TomShanePuke;
+                }
             }
         }
 
@@ -205,7 +209,7 @@ namespace OrbItProcs
             {
                 foreach (DetailedItem item in viewItems)
                 {
-                    backPanel.Remove(item.textPanel);
+                    backPanel.Remove(item.panel);
                 }
             }
 
@@ -228,7 +232,7 @@ namespace OrbItProcs
             if (inf != null) viewItems[0].toolTip = inf.summary;
 
             if (height == 0) height = (viewItems[0].itemHeight - 2);
-            
+
             //heightCount += height;
 
             InspectorItem dictItem = new InspectorItem(null, rootItem, node.comps, node.GetType().GetProperty("comps"));
@@ -258,22 +262,7 @@ namespace OrbItProcs
             if (selected != 3) sidebar.tbcMain.SelectedIndex = selected;
         }
 
-        public void CreateItem(DetailedItem item)
-        {
-            viewItems.Add(item);
-            SetupScroll(item);
-            item.OnSelect = delegate
-            {
-                if (this != null)
-                {
-                    SelectItem(item);
-                }
-                else
-                {
-                    throw new SystemException("You've clicked the unclickable. Also, Dante owes Zack a coke.");
-                }
-            };
-        }
+        
 
         public void ToggleGroupComponent(comp c, bool value)
         {
@@ -306,23 +295,26 @@ namespace OrbItProcs
         void btnAddComponent_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             if (activeGroup == null)
-                PopUp.Toast("You haven't selected a Group.");
-            else
             {
-                ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !activeGroup.defaultNode.HasComponent(c))));
-                List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => activeGroup.defaultNode.HasComponent(c)));
-
-                PopUp.opt[] options = new PopUp.opt[]{
-                    new PopUp.opt(PopUp.OptType.info, "Add component to: " + activeGroup.Name),
-                    new PopUp.opt(PopUp.OptType.dropDown, nodecomplist),
-                    };
-
-                PopUp.makePopup(ui, options, "Add Component", delegate(bool a, object[] o)
-                {
-                    if (a) return addComponent(o);
-                    else return false;
-                });
+                PopUp.Toast("You haven't selected a Group.");
+                return;
             }
+            if (rootNode != null) new AddComponentWindow(sidebar, rootNode);
+            return;
+
+            ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !activeGroup.defaultNode.HasComponent(c))));
+            List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => activeGroup.defaultNode.HasComponent(c)));
+
+            PopUp.opt[] options = new PopUp.opt[]{
+                new PopUp.opt(PopUp.OptType.info, "Add component to: " + activeGroup.Name),
+                new PopUp.opt(PopUp.OptType.dropDown, nodecomplist),
+                };
+
+            PopUp.makePopup(ui, options, "Add Component", delegate(bool a, object[] o)
+            {
+                if (a) return addComponent(o);
+                else return false;
+            });
         }
 
         private bool addComponent(object[] o)
@@ -360,111 +352,5 @@ namespace OrbItProcs
             }
             return true;
         }
-    }
-
-
-    public class ComponentViewItem : ViewItem
-    {
-        public ComponentView componentView;
-        public CheckBox checkbox;
-        public Button btnRemove;
-
-        public override bool isSelected
-        {
-            get
-            {
-                return base.isSelected;
-            }
-            set
-            {
-                base.isSelected = value;
-                if (value)
-                {
-                    if (obj != null)
-                    {
-                        //compView.selectedItem = this;
-                        componentView.SetComponent(obj);
-                        //componentView.insArea.SetOverrideString(label.Text);
-                    }
-                }
-                //else
-                //{
-                //    if (componentView.insArea != null)
-                //    {
-                //        //componentView.insArea.ClearInspectorBox();
-                //        //componentView.insArea.SetOverrideString("");
-                //    }
-                //}
-            }
-        }
-
-        public ComponentViewItem(Manager manager, ComponentView componentView, object obj, Control parent, int Top, int Left, int Width)
-            : base(manager, obj, parent, Top, Left, Width)
-        {
-            this.componentView = componentView;
-            this.textPanel.Width = componentView.backPanel.Width - 4;
-            this.textColor = componentView.textColor;
-            this.backColor = componentView.backColor;
-            RefreshColor();
-
-            if (obj is Node)
-            {
-                label.Text = "Root";
-            }
-            else if (obj is Body || obj is Component)
-            {
-                label.Text = obj.GetType().ToString().LastWord('.');
-            }
-            //no checkboxes for root or body
-            if (obj is Component)
-            {
-                Component comp = (Component)obj;
-
-                checkbox = new CheckBox(manager);
-                checkbox.Init();
-                checkbox.Parent = textPanel;
-                checkbox.Left = parent.Width - 45;
-                checkbox.Text = "";
-                checkbox.ToolTip.Text = "Toggle";
-                checkbox.Checked = comp.active;
-                checkbox.CheckedChanged += (s, e) =>
-                {
-                    comp.active = checkbox.Checked;
-                    this.componentView.ToggleGroupComponent(comp.com, comp.active);
-                };
-
-                if (!(comp is Movement) && !(comp is Collision) && !(comp is BasicDraw))
-                {
-                    btnRemove = new Button(manager);
-                    btnRemove.Init();
-                    btnRemove.Parent = textPanel;
-                    btnRemove.TextColor = Color.Red;
-                    btnRemove.Left = checkbox.Left - 20;
-                    btnRemove.Height = buttonHeight;
-                    btnRemove.Width = buttonWidth;
-                    btnRemove.Text = "-";
-                    btnRemove.Click += removeComponent_Click;
-                    btnRemove.ToolTip.Text = "Remove";
-                }
-            }
-
-        }
-
-        void removeComponent_Click(object sender, EventArgs e)
-        {
-            if (!(obj is Component) || componentView == null || componentView.activeGroup == null) return;
-            Component component = (Component)obj;
-
-            componentView.activeGroup.defaultNode.RemoveComponent(component.com);
-            foreach (Node n in componentView.activeGroup.fullSet)
-            {
-                if (n.HasComponent(component.com))
-                {
-                    n.RemoveComponent(component.com);
-                }
-            }
-            componentView.RefreshComponents();
-        }
-
     }
 }

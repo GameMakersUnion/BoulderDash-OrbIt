@@ -12,7 +12,7 @@ namespace OrbItProcs {
     [Info(UserLevel.User, "Attracts or repels nodes that it affects.", mtypes.affectother)]
     public class Gravity : Component, ILinkable
     {
-        public const mtypes CompType = mtypes.affectother;
+        public const mtypes CompType = mtypes.affectother | mtypes.minordraw;
         public override mtypes compType { get { return CompType; } set { } }
         [Info(UserLevel.Developer)]
         public Link link { get; set; }
@@ -44,7 +44,7 @@ namespace OrbItProcs {
         /// <summary>
         /// If enabled, this node not only pulls or pushes other nodes; It itself is pushed and pulled by the nodes it's affecting.
         /// </summary>
-        [Info(UserLevel.User, "If enabled, this node not only pulls or pushes other nodes; It itself is pushed and pulled by the nodes it's affecting.")]
+        [Info(UserLevel.Advanced, "If enabled, this node not only pulls or pushes other nodes; It itself is pushed and pulled by the nodes it's affecting.")]
         public bool AffectBoth { get; set; }
         /// <summary>
         /// Turns the gravity up to 11.
@@ -54,7 +54,7 @@ namespace OrbItProcs {
         /// <summary>
         /// Adds an angle to the gravitational pull
         /// </summary>
-        [Info(UserLevel.Advanced, "Adds an angle to the gravitational pull")]
+        [Info(UserLevel.User, "Adds an angle to the gravitational pull")]
         public int angle { get; set; }
         /// <summary>
         /// The mode that gravity will operate under.
@@ -64,7 +64,11 @@ namespace OrbItProcs {
         /// </summary>
         [Info(UserLevel.User, "The mode that gravity will operate under.")]
         public Mode mode { get; set; }
-
+        /// <summary>
+        /// Causes the node to repulse other nodes, pushing them away.
+        /// </summary>
+        [Info(UserLevel.User, "Causes the node to repulse other nodes, pushing them away.")]
+        public bool Repulsive { get; set; }
 
         public enum Mode
         {
@@ -72,7 +76,7 @@ namespace OrbItProcs {
             Strong,
             ConstantForce,
         }
-
+        private float drawscale;
         public Gravity() : this(null) { }
         public Gravity(Node parent)
         {
@@ -82,6 +86,7 @@ namespace OrbItProcs {
             radius = 800f;
             lowerbound = 20;
             mode = Mode.Normal;
+            Repulsive = false;
         }
 
         //public bool EveryOther = false;
@@ -118,6 +123,7 @@ namespace OrbItProcs {
                         gravForce /= 100; //#magicnumber
                         break;
                 }
+                if (Repulsive) gravForce *= -1;
 
                 if (angle != 0)
                     angle = (angle + Math.PI + (Math.PI * (float)(angle / 180.0f)) % (Math.PI * 2)) - Math.PI;
@@ -151,10 +157,16 @@ namespace OrbItProcs {
         { 
             //do stuff (actually nope; gravity doesn't have this method)
         }
-
+        
         public override void Draw(SpriteBatch spritebatch)
         {
-
+            return;
+            if (!Repulsive)
+            {
+                parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color, drawscale / 50f);
+                drawscale -= 10f;
+                if (drawscale < 0) drawscale = radius;
+            }
         }
     }
 }

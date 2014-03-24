@@ -786,7 +786,6 @@ namespace OrbItProcs
     //================================================== KEY MANAGER ==========================================
     public class KeyManager
     {
-
         public static int HoldCounter = 0;
 
         public Dictionary<KeyBundle, KeyAction> PressedBundles = new Dictionary<KeyBundle, KeyAction>();
@@ -1046,6 +1045,7 @@ namespace OrbItProcs
 
         public void ProcessMouse()
         {
+            if (UserInterface.GameInputDisabled) return;
             DetectMouseButton(newMouseState.LeftButton, oldMouseState.LeftButton, KeyCodes.LeftClick);
             DetectMouseButton(newMouseState.RightButton, oldMouseState.RightButton, KeyCodes.RightClick);
             DetectMouseButton(newMouseState.MiddleButton, oldMouseState.MiddleButton, KeyCodes.MiddleClick);

@@ -116,15 +116,25 @@ namespace OrbItProcs {
             if (compEnums.ContainsKey(t)) throw new SystemException("Type was not found in compEnums dictionary.");
             return compEnums[t];
         }
-
-        public static Info GetInfoClass(object o)
+        public static mtypes GetCompTypes(Type t)
         {
-            var infos = o.GetType().GetCustomAttributes(typeof(Info), false);
+            FieldInfo pinfo = t.GetField("CompType");
+            if (pinfo == null || pinfo.FieldType != typeof(mtypes)) return mtypes.none;
+            return (mtypes)pinfo.GetValue(null);
+        }
+
+        public static Info GetInfoType(Type t)
+        {
+            var infos = t.GetCustomAttributes(typeof(Info), false);
             if (infos != null && infos.Length > 0)
             {
                 return (Info)infos.ElementAt(0);
             }
             return null;
+        }
+        public static Info GetInfoClass(object o)
+        {
+            return GetInfoType(o.GetType());
         }
         public static Info GetInfoProperty(PropertyInfo pinfo)
         {
@@ -161,14 +171,11 @@ namespace OrbItProcs {
                        .SelectMany(assembly => assembly.GetTypes())
                        .Where(type => type.IsSubclassOf(typeof(Component)));
 
+
             foreach(Type t in types)
             {
                 string name = t.ToString().ToLower();
-                if (name.Contains('.'))
-                {
-                    int index = name.LastIndexOf('.');
-                    name = name.Substring(index+1);
-                }
+                name = name.LastWord('.');
                 comp c;
                 if (Enum.TryParse<comp>(name, out c))
                 {
@@ -179,6 +186,13 @@ namespace OrbItProcs {
                     Console.WriteLine("{0} did not have an equivalent enum value", t.ToString());
                 }
             }
+            Dictionary<comp, Type> ct = new Dictionary<comp, Type>();
+            foreach(comp c in Enum.GetValues(typeof(comp)))
+            {
+                if (!compTypes.ContainsKey(c)) { Console.WriteLine("Class didn't exist for enum value " + c); continue; }
+                ct[c] = compTypes[c];
+            }
+            compTypes = ct;
 
             compEnums = new Dictionary<Type, comp>(); //move this later
             foreach (comp key in Utils.compTypes.Keys.ToList())
@@ -248,7 +262,7 @@ namespace OrbItProcs {
 
                                 break;
                             };
-                return message;
+            return message;
         }
         
         public static float[] toFloatArray(this Vector2 v2)

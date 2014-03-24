@@ -16,6 +16,7 @@ namespace OrbItProcs
     {
         Label groupLabel;
         Button btnCreateGroup, btnSelectedNode;
+        public CreateGroupWindow createGroupWindow;
         public GroupsView(Sidebar sidebar, Control parent, int Left, int Top)
             : base(sidebar, parent, Left, Top, false)
         {
@@ -43,7 +44,7 @@ namespace OrbItProcs
             btnCreateGroup.Width = 120;
             btnCreateGroup.Click += (s, e) =>
             {
-                CreateGroupWindow createwindow = new CreateGroupWindow(sidebar);
+                createGroupWindow = new CreateGroupWindow(sidebar);
             };
             HeightCounter += btnCreateGroup.Height + LeftPadding;
 
@@ -92,9 +93,9 @@ namespace OrbItProcs
                 item.label.Text = g.Name;
                 Button btnEdit = new Button(manager);
                 btnEdit.Init();
-                btnEdit.Parent = item.textPanel;
+                btnEdit.Parent = item.panel;
                 btnEdit.Width = 90;
-                btnEdit.Left = item.textPanel.Width - btnEdit.Width - 10;
+                btnEdit.Left = item.panel.Width - btnEdit.Width - 10;
                 btnEdit.Top = 2;
                 btnEdit.Height = item.buttonHeight;
                 
@@ -109,7 +110,7 @@ namespace OrbItProcs
 
                 Button btnEnabled = new Button(manager);
                 btnEnabled.Init();
-                btnEnabled.Parent = item.textPanel;
+                btnEnabled.Parent = item.panel;
                 btnEnabled.Width = 30;
                 btnEnabled.Left = btnEdit.Left - btnEnabled.Width - 5;
                 btnEnabled.Top = 2;
@@ -130,7 +131,7 @@ namespace OrbItProcs
 
                 Button btnRemove = new Button(manager);
                 btnRemove.Init();
-                btnRemove.Parent = item.textPanel;
+                btnRemove.Parent = item.panel;
                 btnRemove.Width = item.buttonWidth;
                 btnRemove.Top = 2;
                 btnRemove.Left = btnEnabled.Left - btnRemove.Width - 5;
@@ -156,7 +157,7 @@ namespace OrbItProcs
 
         void btnEnabled_Draw(object sender, DrawEventArgs e)
         {
-            Button b = (Button)sender;
+            //Button b = (Button)sender;
             //new Rectangle(500, 500, 600, 600)
             e.Renderer.Draw(sidebar.game.textureDict[textures.blackorb], e.Rectangle, new Rectangle(0,0,25,25), Color.White);
         }

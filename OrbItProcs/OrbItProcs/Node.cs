@@ -324,6 +324,7 @@ namespace OrbItProcs {
             }
 
             body = new Body(shape: shape, parent: this);
+            body.radius = 25;
             basicdraw = new BasicDraw(this);
             //name = "blankname";
 

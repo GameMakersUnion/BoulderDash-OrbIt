@@ -13,7 +13,6 @@ namespace OrbItProcs
     [Info(UserLevel.User, "Linked nodes will orbit around the source node at a cosntant random distance and speed", CompType)]
     public class Orbiter : Component, ILinkable
     {
-
         public const mtypes CompType = mtypes.exclusiveLinker;
         public override mtypes compType { get { return CompType; } set { } }
         public struct OrbiterData
@@ -61,7 +60,6 @@ namespace OrbItProcs
             maxRadius = 500;
             maxSpeed = 50;
             speedMult = 1f;
-
         }
 
         public override void AffectOther(Node other)

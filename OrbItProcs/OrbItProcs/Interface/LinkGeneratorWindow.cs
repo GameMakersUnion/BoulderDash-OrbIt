@@ -24,7 +24,7 @@ namespace OrbItProcs
         public LinkGeneratorWindow(Manager manager, Sidebar sidebar)
         {
             Game1 game = Program.getGame();
-            game.ui.GameInputDisabled = true;
+            UserInterface.GameInputDisabled = true;
 
             this.manager = manager;
             this.sidebar = sidebar;
@@ -35,7 +35,7 @@ namespace OrbItProcs
             window.Top = 200;
             window.Height = 200;
             window.Text = "Link Generator";
-            window.Closed += delegate { game.ui.GameInputDisabled = false; };
+            window.Closed += delegate { UserInterface.GameInputDisabled = false; };
             window.ShowModal();
             manager.Add(window);
 

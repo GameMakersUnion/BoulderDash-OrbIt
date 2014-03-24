@@ -39,7 +39,7 @@ namespace OrbItProcs
             window.Top = 0;
             window.Height = sidebar.game.Height;
             window.Text = "Create Group";
-            window.Closed += delegate { sidebar.ui.GameInputDisabled = false; sidebar.CreatingGroup = false; sidebar.ui.game.SwitchToMainRoom(); };
+            window.Closed += delegate { UserInterface.GameInputDisabled = false; sidebar.CreatingGroup = false; sidebar.ui.game.SwitchToMainRoom(); sidebar.groupsView.createGroupWindow = null; };
             //window.ShowModal();
             manager.Add(window);
 

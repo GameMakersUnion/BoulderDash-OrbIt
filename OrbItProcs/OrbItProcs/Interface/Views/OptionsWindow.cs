@@ -22,7 +22,7 @@ namespace OrbItProcs
 
         public OptionsWindow(Sidebar sidebar)
         {
-            sidebar.ui.GameInputDisabled = true;
+            UserInterface.GameInputDisabled = true;
             this.manager = sidebar.manager;
             this.sidebar = sidebar;
             
@@ -33,7 +33,8 @@ namespace OrbItProcs
             window.Top = 200;
             window.Height = 200;
             window.Text = "Options";
-            window.Closed += delegate { sidebar.ui.GameInputDisabled = false; };
+
+            window.Closed += delegate { UserInterface.GameInputDisabled = false; };
             window.ShowModal();
             manager.Add(window);
 
@@ -42,7 +43,7 @@ namespace OrbItProcs
             btnOk.Parent = window;
             btnOk.Left = LeftPadding;
             btnOk.Top = window.Height - (btnOk.Height * 3);
-            btnOk.Text = "Ok";
+            btnOk.Text = "Ok";// +"\u2713";
             btnOk.Click += (s, e) => window.Close();
 
             lblUserLevel = new Label(manager);
