@@ -85,7 +85,6 @@ namespace OrbItProcs
             editTab.Text = "Edit";
 
             tbcViews.SelectedIndex = 0;
-
             activeTabControl = tbcViews;
 
             componentView = new ComponentView(this, editTab, 0, 0);
@@ -97,12 +96,14 @@ namespace OrbItProcs
             btnOptions.Left = LeftPadding;
             btnOptions.Top = editTab.Height - btnOptions.Height - LeftPadding;
             btnOptions.Text = "Options";
+
             btnOptions.Click += (s, e) =>
             {
                 OptionsWindow oWindow = new OptionsWindow(this);
             };
 
             toolWindow = new ToolWindow(this);
+
         }
 
         public void InitializeFifthPage()

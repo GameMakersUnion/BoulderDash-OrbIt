@@ -43,15 +43,13 @@ namespace OrbItProcs
         public Dictionary<proc, Process> processDict { get; set; }
         public Process activeInputProcess;
         public HashSet<Process> processes;
-        public Room room;
         public static MouseState mouseState, oldMouseState;
         public KeyboardState keyState, oldKeyState;
 
         //private int ScrollPosition = 0;
 
-        public ProcessManager(Room room)
+        public ProcessManager(Game1 game)
         {
-            this.room = room;
             this.processDict = new Dictionary<proc, Process>();
             this.processes = new HashSet<Process>();
 
@@ -60,61 +58,55 @@ namespace OrbItProcs
             processDict.Add(proc.singleselect, new SingleSelect());
             processDict.Add(proc.groupselect, new GroupSelect());
             processDict.Add(proc.polygonspawner, new PolygonSpawner());
-            processDict.Add(proc.mapeditor, new MapEditor(room.level));
+            processDict.Add(proc.mapeditor, new MapEditor(game.room.level));
             processDict.Add(proc.graphdata, new GraphData());
-            processDict.Add(proc.cameracontrol, new CameraControl(room.camera));
+            processDict.Add(proc.cameracontrol, new CameraControl(game. room.camera));
 
             activeInputProcess = processDict[proc.spawnnodes];
 
         }
 
-        public void SetProcessKeybinds(KeyManager Keybindset)
+        Action enableKeyBinds(proc p)
         {
-            //
-            Keybindset.Add("spawnnodes", new KeyBundle(KeyCodes.D1, KeyCodes.LeftShift), delegate
+            return delegate
             {
-                Keybindset.AddProcess(processDict[proc.spawnnodes]);//, KeySwitchMethod.Overwrite);
-            });
-            //
-            Keybindset.Add("randomizer", new KeyBundle(KeyCodes.D2, KeyCodes.LeftShift), delegate
-            {
-                Keybindset.AddProcess(processDict[proc.randomizer]);//, KeySwitchMethod.Overwrite);
-            });
-            //
-            Keybindset.Add("groupselect", new KeyBundle(KeyCodes.D3, KeyCodes.LeftShift), delegate
-            {
-                Keybindset.AddProcess(processDict[proc.groupselect]);//, KeySwitchMethod.Overwrite);
-            });
-            //
-            Keybindset.Add("singleselect", new KeyBundle(KeyCodes.D4, KeyCodes.LeftShift), delegate
-            {
-                Keybindset.AddProcess(processDict[proc.singleselect]);//, KeySwitchMethod.Overwrite);
-            });
-            //
-            Keybindset.Add("mapeditor", new KeyBundle(KeyCodes.D5, KeyCodes.LeftShift), delegate
-            {
-                Keybindset.AddProcess(processDict[proc.mapeditor]);//, KeySwitchMethod.Overwrite);
-            });
-            //
-            Keybindset.Add("graphdata", new KeyBundle(KeyCodes.D6, KeyCodes.LeftShift), delegate
-            {
-                Keybindset.AddProcess(processDict[proc.graphdata]);//, KeySwitchMethod.Overwrite);
-            });
-            //
-            Keybindset.Add("polygonspawner", new KeyBundle(KeyCodes.D9, KeyCodes.LeftShift), delegate
-            {
-                Keybindset.AddProcess(processDict[proc.polygonspawner]);//, KeySwitchMethod.Overwrite);
-            });
+                Program.getGame().ui.keyManager.AddProcess(processDict[p]);
+            };
+        }
+
+        public void SetProcessKeybinds()
+        {
+            ToolWindow toolbar = Program.getGame().ui.sidebar.toolWindow;
+            KeyManager Keybindset = Program.getGame().ui.keyManager;
             
-            //
+
+            Keybindset.Add("spawnnodes", new KeyBundle(KeyCodes.D1, KeyCodes.LeftShift), enableKeyBinds(proc.spawnnodes));
+            toolbar.AddButton("spawn",enableKeyBinds(proc.spawnnodes), "Spawn node of selected group. RightClick to spawn many" );
+            toolbar.AddButton("remove", Utils.notImplementedException, "Take a hike.");
+            
+            Keybindset.Add("groupselect", new KeyBundle(KeyCodes.D3, KeyCodes.LeftShift), enableKeyBinds(proc.groupselect));
+            Keybindset.Add("singleselect", new KeyBundle(KeyCodes.D4, KeyCodes.LeftShift), enableKeyBinds(proc.singleselect));
+            toolbar.AddButton("select", enableKeyBinds(proc.singleselect), "Click to select a node, drag to select many");
+
+            Keybindset.Add("mapeditor", new KeyBundle(KeyCodes.D5, KeyCodes.LeftShift), enableKeyBinds(proc.mapeditor)); 
+            toolbar.AddButton("level",enableKeyBinds(proc.mapeditor), "Click to set static colidable polygons." );
+
+            Keybindset.Add("randomizer", new KeyBundle(KeyCodes.D2, KeyCodes.LeftShift), enableKeyBinds(proc.randomizer));
+            toolbar.AddButton("random",enableKeyBinds(proc.randomizer), "Click to spawn a random node, right click to spawn a copy of the previous random node." );
+
+            toolbar.AddButton("forceSpawn", Utils.notImplementedException,"Take a hike.");
+            toolbar.AddButton("forcePush", Utils.notImplementedException,"Take a hike.");
+            toolbar.AddButton("control", Utils.notImplementedException,"Take a hike.");
+            toolbar.AddButton("static", Utils.notImplementedException,"Take a hike.");
+            
+
+
+            Keybindset.Add("graphdata", new KeyBundle(KeyCodes.D6, KeyCodes.LeftShift), enableKeyBinds(proc.graphdata)); 
+
+            Keybindset.Add("polygonspawner", new KeyBundle(KeyCodes.D9, KeyCodes.LeftShift), enableKeyBinds(proc.polygonspawner));
+
+
             Keybindset.AddProcess(processDict[proc.cameracontrol], false);
-            //
-            //Keybindset.Add("axismovement", new KeyBundle(KeyCodes.D0), delegate
-            //{
-            //    Keybindset.AddProcess(processDict[proc.axismovement]);//, KeySwitchMethod.Overwrite);
-            //});
-
-
             Keybindset.AddProcess(processDict[proc.spawnnodes]);
         }
 

@@ -19,7 +19,8 @@ using System.IO;
 namespace OrbItProcs {
     public class UserInterface {
 
-        public static Color TomShanePuke = new Color(75, 187, 0);
+        public static bool tomShaneWasClicked = false;
+        public static readonly Color TomShanePuke = new Color(75, 187, 0);
 
         public enum selection
         {
@@ -30,6 +31,7 @@ namespace OrbItProcs {
         }
 
         public static Vector2 MousePos;
+        
         public static Vector2 WorldMousePos;
 
         #region /// Fields ///
@@ -145,7 +147,10 @@ namespace OrbItProcs {
         public void Update(GameTime gameTime)
         {
             ProcessKeyboard();
+            
+
             ProcessMouse();
+            
             ProcessController();
             //only update once per second to save performance (heavy reflection)
             if (refreshCount++ % 60 == 0)
@@ -251,6 +256,10 @@ namespace OrbItProcs {
         {
             mouseState = Mouse.GetState();
 
+            if (UserInterface.tomShaneWasClicked)
+            {
+                mouseState = oldMouseState;
+            }
             //if (mouseState.XButton1 == ButtonState.Pressed)
             //    System.Console.WriteLine("X1");
             //

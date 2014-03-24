@@ -161,10 +161,14 @@ namespace OrbItProcs
             {
                 ComboUpdate(cbTemplate);
             };
-
+            
             btnOk.Click += (s, e) =>
             {
-                //ask to fix name
+                if (String.IsNullOrWhiteSpace(txtName.Text))
+                    PopUp.Toast("Please enter a group name.");
+                else if(sidebar.game.mainRoom.generalGroups.childGroups.Keys.Contains(txtName.Text))
+                    PopUp.Toast("Group already exists.");
+                else{                   
                 Node newNode = tempgroup.defaultNode.CreateClone();
                 newNode.room = sidebar.game.mainRoom;
                 newNode.body.color = ColorChanger.randomColorHue();
@@ -173,6 +177,7 @@ namespace OrbItProcs
                 sidebar.groupsView.UpdateGroups();
 
                 window.Close();
+                }
             };
         }
 

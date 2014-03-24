@@ -15,7 +15,40 @@ namespace OrbItProcs {
         public const float rootOfTwo = 1.41421356237f;
         public const float invRootOfTwo = 0.70710678118f;
 
+        public static Texture2D Crop(this Texture2D image, Rectangle source)
+        {
+            var graphics = image.GraphicsDevice;
+            var ret = new RenderTarget2D(graphics, source.Width, source.Height);
+            var sb = new SpriteBatch(graphics);
 
+            graphics.SetRenderTarget(ret); // draw to image
+            graphics.Clear(new Color(0, 0, 0, 0));
+
+            sb.Begin();
+            sb.Draw(image, Vector2.Zero, source, Color.White);
+            sb.End();
+
+            graphics.SetRenderTarget(null); // set back to main window
+
+            return (Texture2D)ret;
+        }
+        public static Texture2D[,] sliceSpriteSheet(this Texture2D spritesheet, int columnsX, int rowsY)
+        {
+           Texture2D[,] result = new Texture2D[columnsX,rowsY];
+            int width = spritesheet.Bounds.Width / columnsX;
+            int height = spritesheet.Bounds.Height / rowsY;
+           for (int x = 0; x < columnsX; x++)
+           {
+               for (int y = 0; y < rowsY; y++)
+               {
+                   result[x, y] = spritesheet.Crop(new Rectangle(x * width, y * height, width, height));
+               }
+           }
+           return result;
+           
+            
+        }
+        public static void notImplementedException() { PopUp.Toast("Zack and Dante are lazy.", "NotImplementedException"); }
         public static object parsePrimitive(Type primitiveType, String value)
         {
 

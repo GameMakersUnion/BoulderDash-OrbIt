@@ -1070,7 +1070,7 @@ namespace OrbItProcs
             {
                 //Console.WriteLine("----------------");
             }
-            if (event1)
+            if (event1 && !UserInterface.tomShaneWasClicked)
             {
                 //Console.WriteLine(newButtonState);
 

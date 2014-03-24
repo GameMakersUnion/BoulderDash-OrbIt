@@ -206,6 +206,7 @@ namespace OrbItProcs
                 textureCenters[tex] = new Vector2(t.Width / 2f, t.Height / 2f);
             }
 
+            
             font = Content.Load<SpriteFont>("Courier New");
             DelegatorMethods.InitializeDelegateMethods();
             spriteBatch = new SpriteBatch(Graphics.GraphicsDevice);
@@ -218,7 +219,7 @@ namespace OrbItProcs
             tempRoom.borderColor = Color.Red;
             Program.room = room;
 
-            processManager = new ProcessManager(room);
+            processManager = new ProcessManager(this);
 
             ui.Initialize(room);
 
@@ -249,7 +250,7 @@ namespace OrbItProcs
                 }
             }
 
-            processManager.SetProcessKeybinds(ui.keyManager);
+            processManager.SetProcessKeybinds();
             ui.keyManager.addProcessKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
             ui.keyManager.addProcessKeyAction("togglesidebar", KeyCodes.OemTilde, OnPress: ui.ToggleSidebar);
             ui.keyManager.addProcessKeyAction("switchview", KeyCodes.PageDown, OnPress: ui.SwitchView);
@@ -318,7 +319,6 @@ namespace OrbItProcs
             ui.sidebar.inspectorArea.room = newRoom;
             ui.sidebar.insArea2.room = newRoom;
             ui.sidebar.UpdateGroupComboBoxes();
-            processManager.room = newRoom;
             foreach (Process p in processManager.processes)
             {
                 p.room = newRoom;
@@ -375,6 +375,8 @@ namespace OrbItProcs
             //frameRateCounter.UpdateElapsed(gameTime.ElapsedGameTime);
             frameRateCounter.Update(gameTime);
 
+            if (IsActive) ui.Update(gameTime);
+
             if (!ui.IsPaused)
             {
                 if (room != null) room.Update(gameTime);
@@ -386,7 +388,7 @@ namespace OrbItProcs
                 if (room != null) room.gridSystemLines = new List<Microsoft.Xna.Framework.Rectangle>();
             }
 
-            if (IsActive) ui.Update(gameTime);
+            
             if (t != null) t.Join();
         }
         public float backgroundHue = 180;
