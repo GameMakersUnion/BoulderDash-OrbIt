@@ -108,7 +108,7 @@ namespace OrbItProcs
 
         public void SetupScroll(T item)
         {
-            sidebar.ui.SetScrollableControl(item.textPanel, List_ChangeScrollPosition);
+            sidebar.ui.SetScrollableControl(item.panel, List_ChangeScrollPosition);
         }
 
         public void List_ChangeScrollPosition(int change)
@@ -130,7 +130,7 @@ namespace OrbItProcs
 
     public class ViewItem
     {
-        private bool _isSelected = false;
+        protected bool _isSelected = false;
         public virtual bool isSelected
         {
             get { return _isSelected; }
@@ -154,12 +154,12 @@ namespace OrbItProcs
         {
             if (isSelected)
             {
-                if (textPanel != null) textPanel.Color = textColor;
+                if (panel != null) panel.Color = textColor;
                 if (label != null) label.TextColor = backColor;
             }
             else
             {
-                if (textPanel != null) textPanel.Color = backColor;
+                if (panel != null) panel.Color = backColor;
                 if (label != null) label.TextColor = textColor;
             }
         }
@@ -167,7 +167,7 @@ namespace OrbItProcs
         //public ListView listView;
         public object obj;
         public Label label;
-        public Panel textPanel;
+        public Panel panel;
 
         public int itemHeight = 23;
         public int buttonHeight = 13;
@@ -185,27 +185,27 @@ namespace OrbItProcs
             this.obj = obj;
 
 
-            textPanel = new Panel(manager);
-            textPanel.Init();
-            textPanel.Parent = parent;
-            textPanel.Top = Top;
-            textPanel.Height = itemHeight;
-            textPanel.Click += textPanel_Click;
+            panel = new Panel(manager);
+            panel.Init();
+            panel.Parent = parent;
+            panel.Top = Top;
+            panel.Height = itemHeight;
+            panel.Click += textPanel_Click;
             //textPanel.BackColor = Color.Transparent;
             //textPanel.Color = new Color(0,0,0,120);
-            textPanel.BevelColor = new Color(0, 0, 0);
-            textPanel.BevelBorder = BevelBorder.All;
-            textPanel.BevelStyle = BevelStyle.Raised;
-            
+            panel.BevelColor = new Color(0, 0, 0);
+            panel.BevelBorder = BevelBorder.All;
+            panel.BevelStyle = BevelStyle.Raised;
+            panel.Width = Width;
 
             //listView.sidebar.ui.SetScrollableControl(textPanel, listView.ComponentsList_ChangeScrollPosition);
 
             label = new Label(manager);
             label.Init();
-            label.Parent = textPanel;
+            label.Parent = panel;
             label.Left = Left;
-            textPanel.Width = Width;
             label.Width = Width - 10;
+            label.Top = 1;
 
             if (obj != null)
             {
@@ -237,10 +237,6 @@ namespace OrbItProcs
                     {
                         OnSelect();
                     }
-                    //if (listView != null)
-                    //{
-                    //    listView.SelectItem(this);
-                    //}
                 }
             }
         }

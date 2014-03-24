@@ -24,7 +24,7 @@ namespace OrbItProcs
     public class Queuer : Component
     {
 
-        public const mtypes CompType = mtypes.affectself;
+        public const mtypes CompType = mtypes.affectself | mtypes.tracer;
         public override mtypes compType { get { return CompType; } set { } }
         private queues _qs = queues.none;
         public queues qs { get { return _qs; } set { _qs = value; } }

@@ -25,7 +25,7 @@ namespace OrbItProcs
         /// <summary>
         /// How many milliseconds this node has been alive
         /// </summary>
-        [Info(UserLevel.User, "How many milliseconds have passed since this node was spawned")]
+        [Info(UserLevel.Advanced, "How many milliseconds have passed since this node was spawned")]
         public int lifetime { get; set; }
 
 

@@ -149,8 +149,6 @@ namespace OrbItProcs {
                 { comp.basicdraw, true },
                 { comp.collision, true },
                 { comp.movement, true },
-                { comp.waver, false },
-                //{ comp.scheduler, true },
             };
             #endregion
 

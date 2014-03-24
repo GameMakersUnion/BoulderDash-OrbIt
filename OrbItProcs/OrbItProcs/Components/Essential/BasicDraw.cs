@@ -47,7 +47,11 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "Blue color component")]
         public int Blue { get; set; }
-
+        /// <summary>
+        /// Alpha color component
+        /// </summary>
+        [Info(UserLevel.User, "Alpha color component")]
+        public int Alpha { get; set; }
         public BasicDraw() : this(null) { }
         public BasicDraw(Node parent = null) 
         {
@@ -64,6 +68,7 @@ namespace OrbItProcs
             Red = c.R;
             Green = c.G;
             Blue = c.B;
+            Alpha = c.A;
         }
 
         public override void OnSpawn()
@@ -87,7 +92,7 @@ namespace OrbItProcs
         {
             if (parent != null)
             {
-                parent.body.color = new Color(Red, Green, Blue);
+                parent.body.color = new Color(Red, Green, Blue, Alpha);
             }
         }
         

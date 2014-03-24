@@ -215,10 +215,8 @@ namespace OrbItProcs
 
         public override void Draw(SpriteBatch batch)
         {
-            Color c = Color.Black;
-            //if (Room.totalElapsedMilliseconds / 1000 % 2 == 0) c = Color.White;
-            //parent.room.camera.Draw(textures.ring, parent.body.pos, c, parent.body.scale * 1.05f);
             parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color, parent.body.scale);
+
 
             foreach (Collider cc in colliders.Values)
             {
@@ -229,107 +227,6 @@ namespace OrbItProcs
                 }
             }
         }
-
-        /*public override void AffectOther(Node other)
-        {
-            if (!active || !other.collision.active) { return; }
-            if (exclusions.Contains(other)) return;
-
-            if (OldCollision)
-            {
-                if (Utils.checkCollision(parent, other))
-                {
-                    parent.OnCollisionInvoke(other);
-                    other.OnCollisionInvoke(parent);
-                    Utils.resolveCollision(parent, other);
-                }
-            }
-            else
-            {
-                if (parent.body.invmass == 0 && other.body.invmass == 0)
-                    return;
-
-                Manifold m = new Manifold(parent.body, other.body);
-                m.Solve();
-
-                if (m.contact_count > 0)
-                {
-                    if (TriggerHandlers)
-                    {
-                        //todo:add to handler list
-                        if (parent.HasCollision())
-                        {
-                            parent.OnCollisionInvoke(other);
-                        }
-                        bool parentstart = parent.HasCollisionStart();
-                        if (parentstart || parent.HasCollisionEnd() || parent.HasCollisionFirst() || parent.HasCollisionNone())
-                        {
-                            //HashSet<Node> lastframe = currentIsCol1 ? collisions1 : collisions2;
-                            //HashSet<Node> thisframe = !currentIsCol1 ? collisions1 : collisions2;
-                            HashSet<Node> lastframe = previousCollision;
-                            HashSet<Node> thisframe = currentCollision;
-                            thisframe.Add(other);
-                            if (!lastframe.Contains(other) && parentstart)
-                            {
-                                parent.OnCollisionStartInvoke(other);
-                            }
-                        }
-
-                        if (other.HasCollision())
-                        {
-                            other.OnCollisionInvoke(parent);
-                        }
-                        bool otherstart = other.HasCollisionStart();
-                        if (otherstart || other.HasCollisionEnd() || other.HasCollisionFirst() || other.HasCollisionNone())
-                        {
-                            //HashSet<Node> lastframe = other.collision.currentIsCol1 ? other.collision.collisions1 : other.collision.collisions2;
-                            //HashSet<Node> thisframe = !other.collision.currentIsCol1 ? other.collision.collisions1 : other.collision.collisions2;
-                            HashSet<Node> lastframe = other.collision.previousCollision;
-                            HashSet<Node> thisframe = other.collision.currentCollision;
-                            thisframe.Add(parent);
-                            if (!lastframe.Contains(parent) && otherstart)
-                            {
-                                other.OnCollisionStartInvoke(parent);
-                            }
-                        }
-                    }
-
-                    
-
-                    if (isSolid && other.collision.isSolid)
-                        parent.room.AddManifold(m);
-                }
-            }
-        }*/
-
-        /*public void ClearCollisionList()
-        {
-            if (!active) return;
-            //HashSet<Node> lastframe = isCollisions1 ? collisions1 : collisions2;
-            //HashSet<Node> thisframe = !isCollisions1 ? collisions1 : collisions2;
-            HashSet<Node> lastframe = previousCollision;
-            HashSet<Node> thisframe = currentCollision;
-
-            if (parent.HasCollisionFirst() && lastframe.Count == 0 && thisframe.Count > 0)
-            {
-                parent.OnCollisionFirstInvoke();
-            }
-            else if (parent.HasCollisionNone() && lastframe.Count > 0 && thisframe.Count == 0)
-            {
-                parent.OnCollisionNoneInvoke();
-            }
-
-            foreach(Node n in lastframe.ToList())
-            {
-                if (!thisframe.Contains(n) && parent.HasCollisionEnd() && TriggerHandlers)
-                {
-                    parent.OnCollisionEndInvoke(n);
-                }
-                lastframe.Remove(n);
-            }
-            currentIsCol1 = !currentIsCol1;
-        }*/
-
         public void ClearCollisionLists()
         {
             if (!active) return;

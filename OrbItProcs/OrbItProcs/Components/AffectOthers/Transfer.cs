@@ -17,17 +17,17 @@ namespace OrbItProcs
         public override mtypes compType { get { return CompType; } set { } }
         public Link link { get; set; }
         /// <summary>
-        /// Distance at which the node is teleported
+        /// Distance at which the node is teleported, based on a scale of the node's radius.
         /// </summary>
-        [Info(UserLevel.User, "Distance at which the node is teleported")]
-        public float radius { get; set; }
+        [Info(UserLevel.User, "Distance at which the node is teleported, based on a scale of the node's radius.")]
+        public float radiusScale { get; set; }
 
         public Transfer() : this(null) { }
         public Transfer(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.transfer; 
-            radius = 25f;
+            com = comp.transfer;
+            radiusScale = 2f;
         }
 
         public override void AffectOther(Node other)
@@ -36,7 +36,8 @@ namespace OrbItProcs
             if (exclusions.Contains(other)) return;
 
             float distVects = Vector2.Distance(other.body.pos, parent.body.pos);
-            if (distVects < radius)
+            float r = parent.body.radius * radiusScale;
+            if (distVects < r)
             {
                 float newX = (parent.body.pos.X - other.body.pos.X) * 2.05f;
                 float newY = (parent.body.pos.Y - other.body.pos.Y) * 2.05f;

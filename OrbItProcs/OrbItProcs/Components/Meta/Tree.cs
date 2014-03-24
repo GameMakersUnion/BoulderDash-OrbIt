@@ -15,7 +15,7 @@ namespace OrbItProcs
     public class Tree : Component
     {
 
-        public const mtypes CompType = mtypes.affectself | mtypes.draw;
+        public const mtypes CompType = mtypes.affectself | mtypes.draw | mtypes.tracer;
         public override mtypes compType { get { return CompType; } set { } }
 
         
@@ -75,11 +75,12 @@ namespace OrbItProcs
             scales = new Queue<float>();
 
         }
-
+        int deathcount = 0;
         public override void AffectSelf()
         {
             if (depth == -1)
             {
+                if (deathcount++ > 15) return;
                 positions.Enqueue(parent.body.pos);
                 scales.Enqueue(parent.body.scale);
                 //parent.nodeState = state.drawOnly;

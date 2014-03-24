@@ -14,7 +14,7 @@ namespace OrbItProcs
     [Info(UserLevel.User, "Replaces the basic draw with a set of lines that trail behind the node, perpendicular to its direction. is said to look like a caterpillar.", CompType)]
     public class WideRay : Component
     {
-        public const mtypes CompType = mtypes.affectself | mtypes.draw;
+        public const mtypes CompType = mtypes.draw | mtypes.tracer;
         public override mtypes compType { get { return CompType; } set { } }
 
         public int _rayLength = 10;
@@ -57,46 +57,6 @@ namespace OrbItProcs
             //if (parent.comps.ContainsKey(comp.queuer)) 
             parent.comps[comp.queuer].qs = parent.comps[comp.queuer].qs | queues.scale | queues.position | queues.angle;
             //int i = 0;
-        }
-
-        public override void InitializeLists()
-        {
-            //positions = new Queue<Vector2>();
-            //angles = new Queue<float>();
-            //scales = new Queue<float>();
-        }
-
-
-        public override void AffectOther(Node other)
-        {
-
-        }
-        public override void AffectSelf()
-        {
-            /*
-            angle = Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) +(Math.PI / 2);
-
-            timer++;
-            if (timer % timerMax == 0)
-            {
-                if (positions.Count < queuecount)
-                {
-                    positions.Enqueue(parent.transform.position);
-                    angles.Enqueue((float)angle);
-                    scales.Enqueue((float)parent.transform.scale);
-                }
-                else
-                {
-                    positions.Dequeue();
-                    positions.Enqueue(parent.transform.position);
-                    angles.Dequeue();
-                    angles.Enqueue((float)angle);
-                    scales.Dequeue();
-                    scales.Enqueue((float)parent.transform.scale);
-                }
-            }
-            */
-
         }
 
         public override void Draw(SpriteBatch spritebatch)

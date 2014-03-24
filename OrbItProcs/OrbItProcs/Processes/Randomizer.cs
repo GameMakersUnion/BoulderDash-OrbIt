@@ -32,7 +32,7 @@ namespace OrbItProcs
 
         public void SpawnFromQueue()
         {
-            System.Console.WriteLine(queuePos + " " + savedDicts.Count);
+            //System.Console.WriteLine(queuePos + " " + savedDicts.Count);
             if (queuePos >= savedDicts.Count) return;
 
             Dictionary<dynamic, dynamic> dict = savedDicts.ElementAt(savedDicts.Count - queuePos - 1);

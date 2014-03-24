@@ -30,42 +30,32 @@ namespace OrbItProcs
     public enum comp
     {
         queuer,
-        
-        collision,
         gravity,
-        fixedforce,
+        transfer,
         displace,
+        fixedforce,
+        spring,
+        colorgravity,
         orbiter,
-
         randvelchange,
         relativemotion,
-        transfer,
         circler,
-        
         modifier,
-
         movement,
-        
         colorchanger,
-        colorgravity,
         lifetime,
         scheduler,
         delegator,
-
         //draw components
-        
         waver,
         laser,
         wideray,
         phaseorb,
         flow,
-
         tether,
-        spring,
         tree,
         basicdraw,
-
-        //repel,
+        collision,
         //middle,
         //slow,
         //siphon,
@@ -137,14 +127,11 @@ namespace OrbItProcs
             IsMouseVisible = true;
             Graphics.SynchronizeWithVerticalRetrace = true;
             IsFixedTimeStep = false;
-            //TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 5);
 
             Width = smallWidth;
             Height = smallHeight;
             //Width = fullWidth;
             //Height = fullHeight;
-            ////
-
             Utils.PopulateComponentTypesDictionary();
 
             ClearBackground = true;
@@ -152,17 +139,8 @@ namespace OrbItProcs
             ExitConfirmation = false;
 
             Manager.AutoUnfocus = false;
-            //MainWindow.Visible = false;
             
-            //Manager.TargetFrames = 60;
-
-            //Collision col = new Collision();
-            //col.AffectOther(null);
-            //typeof(Collision).GetMethod("AffectOther").Invoke();
-
-            //Vector2 vv = new Vector2(0, 0);
-            //vv.Normalize();
-            //Console.WriteLine(vv);
+            Graphics.PreferMultiSampling = false;
         }
 
 
@@ -196,7 +174,7 @@ namespace OrbItProcs
             { textures.whitecircle, Content.Load<Texture2D>("Textures/whitecircle"          )},
             { textures.whitesphere, Content.Load<Texture2D>("Textures/whitesphere"          )},
             { textures.blackorb, Content.Load<Texture2D>("Textures/blackorb"                )},
-            { textures.ring, Content.Load<Texture2D>("Textures/smoothEdge"                  )}
+            { textures.ring, Content.Load<Texture2D>("Textures/ring"                        )}
             };
 
             textureCenters = new Dictionary<textures, Vector2>();
@@ -256,6 +234,91 @@ namespace OrbItProcs
             ui.keyManager.addProcessKeyAction("switchview", KeyCodes.PageDown, OnPress: ui.SwitchView);
             ui.keyManager.addProcessKeyAction("screenshot", KeyCodes.PrintScreen, OnPress: TakeScreenShot);
             ui.keyManager.addProcessKeyAction("removeall", KeyCodes.Delete, OnPress: () => ui.sidebar.btnRemoveAllNodes_Click(null, null));
+
+            /*
+            int count = 0;
+            foreach (var c in tt.Skin.Layers[0].Text.Font.Resource.Characters)
+            {
+                Console.WriteLine("{0} : {1}", count++, c);
+            }*/
+        }
+        /// <summary>
+        /// Allows the game to run logic such as updating the world,
+        /// checking for collisions, gathering input, and playing audio.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Update(GameTime gameTime)
+        {
+
+            GlobalGameTime = gameTime;
+            base.Update(gameTime);
+
+            //frameRateCounter.UpdateElapsed(gameTime.ElapsedGameTime);
+            frameRateCounter.Update(gameTime);
+
+            if (IsActive) ui.Update(gameTime);
+            if (!ui.IsPaused)
+            {
+                if (room != null) room.Update(gameTime);
+            }
+            else
+            {
+                //room.colorEffectedNodes();
+                //room.updateTargetNodeGraphic();
+                if (room != null) room.gridSystemLines = new List<Microsoft.Xna.Framework.Rectangle>();
+            }
+
+
+            if (t != null) t.Join();
+        }
+        public float backgroundHue = 180;
+        public double x = 0;
+        public Color backgroundColor = Color.Black;
+        public static readonly object locker = new object();
+        public Thread t;
+
+        /// <summary>
+        /// This is called when the game should draw itself.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Draw(GameTime gameTime)
+        {
+            //if (!IsActive) return;
+
+            //Console.WriteLine("1");
+            Manager.BeginDraw(gameTime);
+            base.Draw(gameTime);
+            if (!ui.IsPaused)
+            {
+                x += Math.PI / 360.0;
+                backgroundHue = (backgroundHue + ((float)Math.Sin(x) + 1) / 10f) % 360;
+                //backgroundHue = (backgroundHue + 0.1f) % 360;
+                backgroundColor = ColorChanger.getColorFromHSV(backgroundHue, value: 0.2f);
+                //Console.WriteLine("Hue: {0}  R: {1}  G: {2}  B: {3}", backgroundHue, backgroundColor.R, backgroundColor.G, backgroundColor.B);
+            }
+            GraphicsDevice.Clear(backgroundColor);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+
+            room.Draw(spriteBatch);
+            frameRateCounter.Draw(spriteBatch, font);
+            //lock (locker) {
+            //    t = new Thread(() =>
+            //   {
+            //
+            spriteBatch.End();
+
+            Manager.EndDraw();
+
+
+            if (TakeScreenshot)
+            {
+                Screenshot(Manager.Graphics.GraphicsDevice);
+                TakeScreenshot = false;
+            }
+            //Console.WriteLine("2");
+            //   });
+            //    t.Start();
+            //}
         }
         public void SwitchToMainRoom()
         {
@@ -361,85 +424,7 @@ namespace OrbItProcs
             // TODO: Unload any non ContentManager content here
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Update(GameTime gameTime)
-        {
             
-            GlobalGameTime = gameTime;
-            base.Update(gameTime);
-
-            //frameRateCounter.UpdateElapsed(gameTime.ElapsedGameTime);
-            frameRateCounter.Update(gameTime);
-
-            if (IsActive) ui.Update(gameTime);
-
-            if (!ui.IsPaused)
-            {
-                if (room != null) room.Update(gameTime);
-            }
-            else
-            {
-                //room.colorEffectedNodes();
-                //room.updateTargetNodeGraphic();
-                if (room != null) room.gridSystemLines = new List<Microsoft.Xna.Framework.Rectangle>();
-            }
-
-            
-            if (t != null) t.Join();
-        }
-        public float backgroundHue = 180;
-        public double x = 0;
-        public Color backgroundColor = Color.Black;
-        public static readonly object locker = new object();
-        public Thread t;
-
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Draw(GameTime gameTime)
-        {
-            //if (!IsActive) return;
-            
-            //Console.WriteLine("1");
-            Manager.BeginDraw(gameTime);
-            base.Draw(gameTime);
-            if (!ui.IsPaused)
-            {
-                x += Math.PI / 360.0;
-                backgroundHue = (backgroundHue + ((float)Math.Sin(x) + 1)/10f) % 360;
-                //backgroundHue = (backgroundHue + 0.1f) % 360;
-                backgroundColor = ColorChanger.getColorFromHSV(backgroundHue, value: 0.2f);
-                //Console.WriteLine("Hue: {0}  R: {1}  G: {2}  B: {3}", backgroundHue, backgroundColor.R, backgroundColor.G, backgroundColor.B);
-            }
-            GraphicsDevice.Clear(backgroundColor);
-            spriteBatch.Begin();
-
-            room.Draw(spriteBatch);
-            frameRateCounter.Draw(spriteBatch, font);
-            //lock (locker) {
-            //    t = new Thread(() =>
-            //   {
-            //
-                   spriteBatch.End();
-
-                   Manager.EndDraw();
-
-
-                   if (TakeScreenshot)
-                   {
-                       Screenshot(Manager.Graphics.GraphicsDevice);
-                       TakeScreenshot = false;
-                   }
-                   //Console.WriteLine("2");
-            //   });
-            //    t.Start();
-            //}
-        }
 
         public Node spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)
         {

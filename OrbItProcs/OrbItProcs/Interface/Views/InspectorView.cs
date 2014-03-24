@@ -77,7 +77,7 @@ namespace OrbItProcs
                 top = (viewItems[0].itemHeight - 4) * viewItems.Count;
             }
             DetailedItem detailedItem = new DetailedItem(manager, this, item, backPanel, top, LeftPadding, backPanel.Width - 4);
-            if (item.ToolTip.Length > 0) detailedItem.textPanel.ToolTip.Text = item.ToolTip;
+            if (item.ToolTip.Length > 0) detailedItem.panel.ToolTip.Text = item.ToolTip;
             viewItems.Add(detailedItem);
             SetupScroll(detailedItem);
         }
@@ -153,9 +153,11 @@ namespace OrbItProcs
                 {
                     Component component = (Component)ins.obj;
                     component.active = GetButtonBool((Button)control);
-                    if (this.GetType() == typeof(ComponentView))
+                    if (this is ComponentView)
                     {
-                        (this as ComponentView).lblCurrentComp.TextColor = control.TextColor;
+                        ComponentView cv = (ComponentView)this;
+                        if (cv.lblCurrentComp.Text.Equals(component.GetType().ToString().LastWord('.')))
+                            cv.lblCurrentComp.TextColor = control.TextColor;
                     }
                     //ins.SetValue(checkbox.Checked);
                     if (GroupSync)
@@ -177,8 +179,8 @@ namespace OrbItProcs
                         {
                             n.RemoveComponent(component.com);
                         }
-                        
                     }
+                    if (this is ComponentView) (this as ComponentView).RefreshComponents();
                 }
             }
 
@@ -187,11 +189,13 @@ namespace OrbItProcs
 
         private void ItemCreatorDelegate(DetailedItem item, object obj)
         {
+            if (obj == null) return;
             if (obj is InspectorItem)
             {
                 InspectorItem inspectorItem = (InspectorItem)obj;
+                if (inspectorItem.obj == null) return;
                 object o = inspectorItem.obj;
-                bool isToggle = o.GetType().IsGenericType && o.GetType().GetGenericTypeDefinition() == typeof(Toggle<>);
+                bool isToggle = Utils.isToggle(o);
                 if (o != null)
                 {
                     if (o is Node)
@@ -204,7 +208,6 @@ namespace OrbItProcs
                     }
                     if (o is Component)
                     {
-                        
                         Component comp = (Component)o;
                         //CheckBox checkbox = new CheckBox(manager);
                         //checkbox.Init();
@@ -219,10 +222,10 @@ namespace OrbItProcs
 
                         Button btnEnabled = new Button(manager);
                         btnEnabled.Init();
-                        btnEnabled.Parent = item.textPanel;
+                        btnEnabled.Parent = item.panel;
                         btnEnabled.TextColor = Color.Red;
-                        btnEnabled.Width = 40;
-                        btnEnabled.Left = item.textPanel.Width - btnEnabled.Width - 20;
+                        btnEnabled.Width = 25;
+                        btnEnabled.Left = item.panel.Width - btnEnabled.Width - 20;
                         btnEnabled.Top = 3;
                         btnEnabled.Height = item.buttonHeight;
                         btnEnabled.ToolTip.Text = "Toggle Active";
@@ -235,7 +238,7 @@ namespace OrbItProcs
                         {
                             Button btnRemove = new Button(manager);
                             btnRemove.Init();
-                            btnRemove.Parent = item.textPanel;
+                            btnRemove.Parent = item.panel;
                             btnRemove.TextColor = Color.Red;
                             btnRemove.Left = btnEnabled.Left - 20;
                             btnRemove.Top = 3;
@@ -253,7 +256,7 @@ namespace OrbItProcs
                         TextBox textbox = new TextBox(manager);
                         textbox.ClientMargins = new Margins();
                         textbox.Init();
-                        textbox.Parent = item.textPanel;
+                        textbox.Parent = item.panel;
                         textbox.TextColor = UserInterface.TomShanePuke;
                         textbox.Left = backPanel.Width - w - 26;
                         textbox.Width = w;
@@ -279,9 +282,9 @@ namespace OrbItProcs
 
                             Button btnEnabled = new Button(manager);
                             btnEnabled.Init();
-                            btnEnabled.Parent = item.textPanel;
+                            btnEnabled.Parent = item.panel;
                             btnEnabled.TextColor = Color.Red;
-                            btnEnabled.Width = 40;
+                            btnEnabled.Width = 25;
                             btnEnabled.Left = textbox.Left - btnEnabled.Width;
                             //btnEnabled.Top = 3;
                             btnEnabled.Height = item.buttonHeight;
@@ -296,8 +299,16 @@ namespace OrbItProcs
                         }
                         textbox.ClientArea.Top += 2;
                         textbox.ClientArea.Left += 4;
-                        textbox.KeyPress += delegate { marginalize(textbox); };
-                        textbox.KeyDown += delegate { marginalize(textbox); };
+                        //textbox.KeyPress += delegate { marginalize(textbox); };
+                        //textbox.KeyDown += delegate { marginalize(textbox); };
+                        textbox.FocusLost += delegate
+                        {
+                            textbox.SendMessage(Message.KeyUp, new KeyEventArgs(Microsoft.Xna.Framework.Input.Keys.Enter));
+                        };
+                        textbox.ClientArea.Move += delegate 
+                        { 
+                            marginalize(textbox); 
+                        };
                         item.AddControl(textbox);
                         Type primitiveType = !isToggle ? o.GetType() : ((dynamic)o).value.GetType();
 
@@ -306,7 +317,7 @@ namespace OrbItProcs
                         up.Anchor = Anchors.Right;
                         up.Init();
                         up.Left = textbox.ClientArea.Width - up.Width;
-
+                        sidebar.ui.SetScrollableControl(up, List_ChangeScrollPosition);
 
                         up.ToolTip.Text = "Increment : RightClick = byOne, MiddleClick = byTen, RightClick = Double";
                         up.MouseDown += (s, e) =>
@@ -352,6 +363,7 @@ namespace OrbItProcs
                             marginalize(textbox);
                         };
                         down.Left = textbox.ClientArea.Width - down.Width;
+                        sidebar.ui.SetScrollableControl(down, List_ChangeScrollPosition);
                         textbox.Add(down);
 
                         //todo: make tiny + and - buttons
@@ -365,7 +377,7 @@ namespace OrbItProcs
                         textbox.Init();
 
 
-                        textbox.Parent = item.textPanel;
+                        textbox.Parent = item.panel;
                         textbox.TextColor = UserInterface.TomShanePuke;
                         textbox.Left = backPanel.Width - w - 26;
                         textbox.Width = w;
@@ -400,10 +412,10 @@ namespace OrbItProcs
                         //item.AddControl(checkbox);
                         Button btnEnabled = new Button(manager);
                         btnEnabled.Init();
-                        btnEnabled.Parent = item.textPanel;
+                        btnEnabled.Parent = item.panel;
                         btnEnabled.TextColor = Color.Red;
-                        btnEnabled.Width = 40;
-                        btnEnabled.Left = item.textPanel.Width - btnEnabled.Width - 20;
+                        btnEnabled.Width = 25;
+                        btnEnabled.Left = item.panel.Width - btnEnabled.Width - 20;
                         //btnEnabled.Top = 3;
                         btnEnabled.Height = item.buttonHeight;
                         btnEnabled.ToolTip.Text = "Toggle Enabled";
@@ -418,7 +430,7 @@ namespace OrbItProcs
                         combobox.ClientMargins = new Margins();
                         combobox.Init();
                         combobox.TextColor = UserInterface.TomShanePuke;
-                        combobox.Parent = item.textPanel;
+                        combobox.Parent = item.panel;
                         combobox.Left = backPanel.Width - w - 26;
                         combobox.Height = combobox.Height - 4;
                         combobox.Width = w;
@@ -448,7 +460,29 @@ namespace OrbItProcs
             }
         }
 
-        public override void Refresh()
+        public string NumberToString(object o)
+        {
+            if (o is int)
+            {
+                return o.ToString();
+            }
+            else if (o is Single)
+            {
+                Single single = (Single)o;
+                if (single < 0.099)
+                {
+                    return single.ToString();
+                }
+                else
+                {
+                    return string.Format("{0:#.##}", single);
+                }
+            }
+            
+            return o.ToString();
+        }
+
+        public override void Refresh(bool notFocused)
         {
             if (viewItems != null)
             {
@@ -467,10 +501,60 @@ namespace OrbItProcs
                         foreach(string name in item.itemControls.Keys)
                         {
                             Control control = item.itemControls[name];
+                            if (notFocused && control.Focused) continue;
                             //todo:implement refresh controls
+                            if (control is ComboBox)
+                            {
+                                object ee = insItem.GetValue();
+                                if (ee.GetType().IsEnum)
+                                {
+                                    ComboBox cb = (ComboBox)control;
+                                    int count = 0;
+                                    foreach (object i in cb.Items)
+                                    {
+                                        if (i.ToString().Equals(ee.ToString()))
+                                        {
+                                            cb.ItemIndex = count;
+                                            break;
+                                        }
+                                        count++;
+                                    }
+                                }
+                            }
+                            else if (control is TextBox)
+                            {
+                                object val = insItem.GetValue();
+                                if (Utils.isToggle(val))
+                                {
+                                    dynamic tog = val;
+                                    
+                                    control.Text = NumberToString(tog.value);
+                                    
+                                }
+                                else
+                                {
+                                    control.Text = NumberToString(val);
+                                }
+                            }
+                            else if (control is Button)
+                            {
+                                if (control.Name.Contains("enabled"))
+                                {
+                                    object bb = insItem.GetValue();
+                                    if (Utils.isToggle(bb))
+                                    {
+                                        dynamic tog = bb;
+                                        bool bbb = tog.enabled;
+                                        SetButtonBool((Button)control, bbb);
+                                    }
+                                    else if (bb is bool)
+                                    {
+                                        SetButtonBool((Button)control, (bool)bb);
+                                    }
+                                }
+                            }
                         }
                     }
-                    
                 }
             }
         }

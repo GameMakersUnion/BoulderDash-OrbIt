@@ -61,7 +61,10 @@ namespace OrbItProcs {
         #endregion
 
         public float zoomfactor { get; set; }
-        public bool GameInputDisabled { get; set; }
+        public static bool GameInputDisabled { get; set; }
+
+        public static string Checkmark = "\u2714";
+        public static string Cross = "\u2718";
         public bool IsPaused { get; set; }
 
         public Dictionary<dynamic, dynamic> UserProps;
@@ -159,7 +162,7 @@ namespace OrbItProcs {
                 {
                     foreach (var view in detailedViews)
                     {
-                        view.Refresh();
+                        view.Refresh(true);
                     }
                 }
             }

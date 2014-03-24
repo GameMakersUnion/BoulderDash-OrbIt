@@ -70,7 +70,7 @@ namespace OrbItProcs
             get { return shape.radius; }
             set
             {
-                float halfwidth = getTexture() != null ? (parent.getTexture().Width / 2f) : 25f;
+                float halfwidth = getTexture() != null ? (parent.getTexture().Width / 2f) : 128f;
                 if (_scale != (float)value / halfwidth) _scale = value / halfwidth;
                 //_radius = value;
                 shape.radius = value;
@@ -85,7 +85,7 @@ namespace OrbItProcs
             get { return _scale; }
             set 
             {
-                float halfwidth = getTexture() != null ? (parent.getTexture().Width / 2f) : 25f;
+                float halfwidth = getTexture() != null ? (parent.getTexture().Width / 2f) : 128f;
                 //_radius = value * halfwidth;
                 shape.radius = value * halfwidth;
                 _scale = value;

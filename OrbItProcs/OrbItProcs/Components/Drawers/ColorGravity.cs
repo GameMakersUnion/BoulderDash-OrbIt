@@ -177,7 +177,7 @@ namespace OrbItProcs.Components
                     float force = multiplier / (dist * dist) / divisor;
                     huevelocity += force;
 
-                    Console.WriteLine("dist: {0} force: {1}", dist, force);
+                    //Console.WriteLine("dist: {0} force: {1}", dist, force);
 
                 }
                 else if (distancemod == DistanceMod.spatial)

@@ -81,6 +81,7 @@ namespace OrbItProcs
                 foreach(Button bb in buttons.Values)
                 {
                     bb.TextColor = Color.White;
+                    bb.Refresh();
                 }
                 button.TextColor = UserInterface.TomShanePuke;
                 if (action != null) action();

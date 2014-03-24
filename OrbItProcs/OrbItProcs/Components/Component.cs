@@ -23,6 +23,7 @@ namespace OrbItProcs
         minordraw = 16,
         exclusiveLinker = 32,
         essential = 64,
+        tracer = 128,
     };
 
     public abstract class Component {

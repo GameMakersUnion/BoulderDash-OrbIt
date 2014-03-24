@@ -14,7 +14,7 @@ namespace OrbItProcs
     [Info(UserLevel.User, "Nodes will leave behind a trail consisting of fading images of themselves.", CompType)]
     public class PhaseOrb : Component
     {
-        public const mtypes CompType = mtypes.minordraw;
+        public const mtypes CompType = mtypes.minordraw | mtypes.tracer;
         public override mtypes compType { get { return CompType; } set { } }
 
         public int _phaserLength = 10;
@@ -86,29 +86,6 @@ namespace OrbItProcs
         }
         public override void AffectSelf()
         {
-            //angle = Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2);
-            /*
-            if (++timer % timerMax == 0)
-            {
-                
-                if (positions.Count < queuecount)
-                {
-                    //positions.Enqueue(parent.transform.position);
-                    //scales.Enqueue(parent.transform.scale);
-                }
-                else
-                {
-                    //positions.Dequeue();
-                    //positions.Enqueue(parent.transform.position);
-                    //scales.Dequeue();
-                    //scales.Enqueue(parent.transform.scale);
-                }
-                
-
-            }
-            */
-
-
         }
 
         public override void Draw(SpriteBatch spritebatch)

@@ -21,6 +21,23 @@ namespace OrbItProcs
         public string DeclaringTypeName { get; set; }
 
         public string Name { get; set; }
+        public Type FPType
+        {
+            get
+            {
+                if (propertyInfo != null)
+                {
+                    return propertyInfo.PropertyType;
+                }
+                else if (fieldInfo != null)
+                {
+                    return fieldInfo.FieldType;
+                }
+                return null;
+            }
+            set { }
+        }
+
 
         public FPInfo () { /*serializeationiantiszeatned;*/ }
         public FPInfo (FieldInfo fieldInfo)
@@ -149,6 +166,7 @@ namespace OrbItProcs
             }
             else if (fieldInfo != null)
             {
+                if (fieldInfo.IsLiteral) return;
                 fieldInfo.SetValue(ob, value);
             }
         }
@@ -160,6 +178,7 @@ namespace OrbItProcs
             }
             else if (fieldInfo != null)
             {
+                if (fieldInfo.IsLiteral) return;
                 fieldInfo.SetValue(obj, value);
             }
         }
@@ -220,23 +239,7 @@ namespace OrbItProcs
             return "nameless";
         }
         */
-        public Type FPType
-        {
-            get
-            {
-                if (propertyInfo != null)
-                {
-                    return propertyInfo.PropertyType;
-                }
-                else if (fieldInfo != null)
-                {
-                    return fieldInfo.FieldType;
-                }
-                return null;
-            }
-            set { }
-        }
-
+        
         public static void SetValue(string name, object obj, object value)
         {
             PropertyInfo propertyInfo = obj.GetType().GetProperty(name);

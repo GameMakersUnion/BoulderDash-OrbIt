@@ -15,7 +15,7 @@ namespace OrbItProcs
     [Info(UserLevel.User, "Replaces the node's basic draw with one or two waves which have their origin at the nodes position and trail behind it.", CompType)]
     public class Waver : Component
     {
-        public const mtypes CompType = mtypes.affectself | mtypes.draw;
+        public const mtypes CompType = mtypes.affectself | mtypes.draw | mtypes.tracer;
         public override mtypes compType { get { return CompType; } set { } }
         [Info(UserLevel.Developer)]
         public Queue<Vector2> metapositions = new Queue<Vector2>();

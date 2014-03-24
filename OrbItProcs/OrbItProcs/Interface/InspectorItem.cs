@@ -827,7 +827,8 @@ namespace OrbItProcs {
                         toggle = GetValue();
                         dynamic tog2 = value;
                         toggle.GetType().GetProperty("enabled").SetValue(toggle, tog2.enabled, null);
-                        toggle.GetType().GetProperty("value").SetValue(toggle, tog2.value, null);
+                        if (value.GetType() == toggle.value.GetType())
+                            toggle.GetType().GetProperty("value").SetValue(toggle, tog2.value, null);
                         return;
                     }
                     else if (value is bool)
@@ -840,7 +841,8 @@ namespace OrbItProcs {
                     if (san != null)
                     {
                         toggle = GetValue();
-                        toggle.GetType().GetProperty("value").SetValue(toggle, san, null);
+                        if (value.GetType() == toggle.value.GetType())
+                            toggle.GetType().GetProperty("value").SetValue(toggle, san, null);
                     }
                     return;
                 }
@@ -851,7 +853,8 @@ namespace OrbItProcs {
                         fpinfo.SetValue(san, parentItem.obj);
                     return;
                 }
-                fpinfo.SetValue(value, parentItem.obj);
+                if (value.GetType() == fpinfo.FPType)
+                    fpinfo.SetValue(value, parentItem.obj);
             }
             else
             {
