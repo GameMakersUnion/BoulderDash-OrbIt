@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Component = OrbItProcs.Component;
 using System.Collections.ObjectModel;
+using OrbItProcs.Framework;
 
 namespace OrbItProcs {
 
@@ -50,7 +51,8 @@ namespace OrbItProcs {
 
         public static long totalElapsedMilliseconds = 0;
         public RenderTarget2D roomRenderTarget;
-        public Camera camera;
+        
+        public ThreadedCamera camera;
 
         private Group _masterGroup;
         public Group masterGroup
@@ -118,7 +120,7 @@ namespace OrbItProcs {
             CollisionSet = new HashSet<Collider>();
             colIterations = 1;
             roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, game.Width, game.Height);
-            camera = new Camera(this, 0.5f);
+            camera = new ThreadedCamera(this, 0.5f);
             scheduler = new Scheduler();
             borderColor = Color.Green;
             
@@ -137,7 +139,7 @@ namespace OrbItProcs {
             gridsystemCollision = new GridSystem(this, gridsystem.cellsX, 20);
             DrawLinks = true;
             WallWidth = 10;
-            camera = new Camera(this, 0.5f);
+            camera = new ThreadedCamera(this, 0.5f);
             scheduler = new Scheduler();
 
             players = new HashSet<Player>();
@@ -482,7 +484,7 @@ namespace OrbItProcs {
 
             GraphData.DrawGraph();
             //Testing.TestHues();
-            
+            ((ThreadedCamera)camera).Render();
         }
         public void AddManifold(Manifold m)
         {

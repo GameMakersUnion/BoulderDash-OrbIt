@@ -270,6 +270,7 @@ namespace OrbItProcs
 
 
             if (t != null) t.Join();
+
         }
         public float backgroundHue = 180;
         public double x = 0;
@@ -283,42 +284,24 @@ namespace OrbItProcs
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            //if (!IsActive) return;
-
-            //Console.WriteLine("1");
-            Manager.BeginDraw(gameTime);
-            base.Draw(gameTime);
             if (!ui.IsPaused)
             {
                 x += Math.PI / 360.0;
                 backgroundHue = (backgroundHue + ((float)Math.Sin(x) + 1) / 10f) % 360;
-                //backgroundHue = (backgroundHue + 0.1f) % 360;
-                backgroundColor = ColorChanger.getColorFromHSV(backgroundHue, value: 0.2f);
-                //Console.WriteLine("Hue: {0}  R: {1}  G: {2}  B: {3}", backgroundHue, backgroundColor.R, backgroundColor.G, backgroundColor.B);
+                BackgroundColor = ColorChanger.getColorFromHSV(backgroundHue, value: 0.2f);
             }
-            GraphicsDevice.Clear(backgroundColor);
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            base.Draw(gameTime);
 
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             room.Draw(spriteBatch);
             frameRateCounter.Draw(spriteBatch, font);
-            //lock (locker) {
-            //    t = new Thread(() =>
-            //   {
-            //
             spriteBatch.End();
-
-            Manager.EndDraw();
-
 
             if (TakeScreenshot)
             {
                 Screenshot(Manager.Graphics.GraphicsDevice);
                 TakeScreenshot = false;
             }
-            //Console.WriteLine("2");
-            //   });
-            //    t.Start();
-            //}
         }
         public void SwitchToMainRoom()
         {
