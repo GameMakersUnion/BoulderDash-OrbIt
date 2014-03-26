@@ -19,6 +19,7 @@ namespace OrbItProcs
         mapeditor,
         graphdata,
         cameracontrol,
+        directedspawn,
 
     }
 
@@ -61,6 +62,7 @@ namespace OrbItProcs
             processDict.Add(proc.mapeditor, new MapEditor(game.room.level));
             processDict.Add(proc.graphdata, new GraphData());
             processDict.Add(proc.cameracontrol, new CameraControl(game. room.camera));
+            processDict.Add(proc.directedspawn, new DirectedSpawn());
 
             activeInputProcess = processDict[proc.spawnnodes];
 
@@ -94,10 +96,11 @@ namespace OrbItProcs
             Keybindset.Add("randomizer", new KeyBundle(KeyCodes.D2, KeyCodes.LeftShift), enableKeyBinds(proc.randomizer));
             toolbar.AddButton("random",enableKeyBinds(proc.randomizer), "Click to spawn a random node, right click to spawn a copy of the previous random node." );
 
-            toolbar.AddButton("forceSpawn", Utils.notImplementedException,"Take a hike.");
+            toolbar.AddButton("forceSpawn", enableKeyBinds(proc.directedspawn), "Spawn nodes in a direction using left and right click.");
             toolbar.AddButton("forcePush", Utils.notImplementedException,"Take a hike.");
             toolbar.AddButton("control", Utils.notImplementedException,"Take a hike.");
             toolbar.AddButton("static", Utils.notImplementedException,"Take a hike.");
+
             
 
 

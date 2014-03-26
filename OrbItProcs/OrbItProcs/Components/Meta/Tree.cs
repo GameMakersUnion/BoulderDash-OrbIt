@@ -18,7 +18,18 @@ namespace OrbItProcs
         public const mtypes CompType = mtypes.affectself | mtypes.draw | mtypes.tracer;
         public override mtypes compType { get { return CompType; } set { } }
 
-        
+        public override Node parent
+        {
+            get
+            {
+                return base.parent;
+            }
+            set
+            {
+                base.parent = value;
+
+            }
+        }
         public int queuecount { get; set; }
         private float r1, g1, b1;
         private Queue<Vector2> positions;
@@ -44,6 +55,11 @@ namespace OrbItProcs
         public int randlife { get; set; }
 
         private int lifeleft;
+        /// <summary>
+        /// If enabled, causes the tree to leave a 'trunk' trail behind.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, causes the tree to leave a 'trunk' trail behind.")]
+        public bool LeaveTrunk { get; set; }
 
         /// <summary>
         /// The maximum number of children made at every division.
@@ -67,6 +83,7 @@ namespace OrbItProcs
             angleRange = 45;
             randlife = 20;
             maxchilds = 3;
+            LeaveTrunk = true;
         }
 
         public override void InitializeLists()
@@ -78,33 +95,37 @@ namespace OrbItProcs
         int deathcount = 0;
         public override void AffectSelf()
         {
-            if (depth == -1)
+            if (lifeleft == -1)
             {
-                if (deathcount++ > 15) return;
+                if (deathcount++ > 15)
+                {
+                    //active = false;
+                    return;
+                }
+                if (!LeaveTrunk) return;
                 positions.Enqueue(parent.body.pos);
                 scales.Enqueue(parent.body.scale);
                 //parent.nodeState = state.drawOnly;
                 return;
             }
-            if (depth > branchStages)
+            if (depth >= branchStages)
             {
                 lifeleft = -1;
                 parent.body.velocity = new Vector2(0, 0);
                 depth = -1;
                 //return;
-                
+                return;
             }
 
             //angle = Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2);
             float scaledown = 1.0f - 0.01f;
             parent.body.scale *= scaledown;
-            if (lifeleft > 0)
+            if (LeaveTrunk && lifeleft > 0)
             {
                 if (positions.Count < queuecount)
                 {
                     positions.Enqueue(parent.body.pos);
                     scales.Enqueue(parent.body.scale);
-
                 }
                 else
                 {
@@ -155,27 +176,31 @@ namespace OrbItProcs
                     Node newNode = new Node();
                     Node.cloneNode(parent, newNode);
                     newNode.body.velocity = childvel;
-                    if (newNode.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
                     newNode.name = "node" + Node.nodeCounter;
                     //newNode.acceptUserProps(userP);
-                    newNode.comps[comp.tree].depth = depth + 1;
-                    newNode.comps[comp.tree].randlife = randomlife;
-                    newNode.comps[comp.tree].lifeleft = 0;
-                    newNode.comps[comp.tree].maxchilds = Math.Max(1,maxchilds - (depth % 2));
+                    Tree newTree = newNode.Comp<Tree>();
+                    newTree.depth = depth + 1;
+                    newTree.randlife = randomlife;
+                    newTree.lifeleft = 0;
+                    newTree.maxchilds = Math.Max(1, maxchilds - (depth % 2));
                     //parent.room.nodesToAdd.Enqueue(newNode);
                     //parent.room.masterGroup.childGroups.Values.ElementAt(1).IncludeEntity(newNode);
-                    Group g = parent.room.game.ui.sidebar.ActiveGroup;
-                    if (g != null)
-                        g.IncludeEntity(newNode);
-                    
+                    //Group g = parent.room.game.ui.sidebar.ActiveGroup;
+                    if (parent.group != null)
+                    {
+                        parent.group.IncludeEntity(newNode);
+                        newNode.group = parent.group;
+                    }
+                    else
+                    {
+                        
+                    }
                 }
                 //parent.nodeState = state.drawOnly;
 
                 HashSet<Node> hs = new HashSet<Node>();
-                
-
             }
-            if (lifeleft >= 0)
+            else
             {
                 lifeleft++;
             }
@@ -185,6 +210,7 @@ namespace OrbItProcs
 
         public override void Draw(SpriteBatch spritebatch)
         {
+            if (!LeaveTrunk) return;
             Room room = parent.room;
             float mapzoom = room.zoom;
 

@@ -48,7 +48,7 @@ namespace OrbItProcs
                 Type ctype = Utils.compTypes[c];
                 Info info = Utils.GetInfoType(ctype);
                 if (info == null || (int)sidebar.userLevel < (int)info.userLevel) continue;
-                if (node.HasComponent(c)) continue;
+                if (node.HasComp(c)) continue;
                 if ((Utils.GetCompTypes(ctype) & mtypes.exclusiveLinker) == mtypes.exclusiveLinker) continue;
                 DetailedItem ditem = new DetailedItem(manager, this, ctype, backPanel, heightcounter, 0, backPanel.Width - 20);
                 ditem.label.Text = ditem.label.Text;

@@ -120,8 +120,8 @@ namespace OrbItProcs
         public override void OnSpawn()
         {
             if (!active) return;
-            if (parent.comps.ContainsKey(comp.queuer))
-                parent.comps[comp.queuer].positions = metapositions;
+            if (parent.HasComp<Queuer>())
+                parent.Comp<Queuer>().positions = metapositions;
         }
 
         public override void InitializeLists()
@@ -142,9 +142,9 @@ namespace OrbItProcs
                 yval = parent.comps[comp.modifier].modifierInfos["waver"].args["yval"];
             }*/
             float time = 0;
-            if (parent.HasComponent(comp.lifetime))
+            if (parent.HasComp<Lifetime>())
             {
-                time = parent.comps[comp.lifetime].lifetime;
+                time = parent.Comp<Lifetime>().lifetime;
             }
 
             yval = DelegateManager.SineComposite(time, amp, period, vshift, composite);

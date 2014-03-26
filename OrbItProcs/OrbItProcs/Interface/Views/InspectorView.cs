@@ -164,8 +164,8 @@ namespace OrbItProcs
                     {
                         foreach (Node n in activeGroup.fullSet)
                         {
-                            if (n.HasComponent(component.com))
-                                n.comps[component.com].active = component.active;
+                            if (n.HasComp(component.com))
+                                n.comps[component.GetType()].active = component.active;
                         }
                     }
                 }

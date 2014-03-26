@@ -677,7 +677,6 @@ namespace OrbItProcs
     
     public struct KeyBundle
     {
-        
         //public static KeyMouse km(KeyCodes k ) { return new KeyMouse(k); } //to be deleted
         public KeyCodes? effectiveKey;
         public KeyCodes? mod1;
@@ -705,10 +704,8 @@ namespace OrbItProcs
                         this.mod1 = mod2;
                         this.mod2 = mod1;
                     }
-
                 }
             }
-
         }
 
         public KeyBundle(List<KeyCodes> list)

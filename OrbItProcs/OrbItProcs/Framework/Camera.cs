@@ -26,32 +26,32 @@ namespace OrbItProcs
             this.zoom = zoom;
             this.pos = pos ?? Vector2.Zero;
         }
-        public void Draw(textures texture, Vector2 position, Color color, float scale)
+        public virtual void Draw(textures texture, Vector2 position, Color color, float scale)
         {
             color *= ((float)color.A / 255f);
             batch.Draw(room.game.textureDict[texture], ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, room.game.textureCenters[texture], scale * zoom, SpriteEffects.None, 0);
         }
-        public void Draw(textures texture, Vector2 position, Color color, float scale, float rotation)
+        public virtual void Draw(textures texture, Vector2 position, Color color, float scale, float rotation)
         {
             color *= ((float)color.A / 255f);
             batch.Draw(room.game.textureDict[texture], ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, room.game.textureCenters[texture], scale * zoom, SpriteEffects.None, 0);
         }
-        public void Draw(textures texture, Vector2 position, Color color, Vector2 scalevect, float rotation)
+        public virtual void Draw(textures texture, Vector2 position, Color color, Vector2 scalevect, float rotation)
         {
             color *= ((float)color.A / 255f);
             batch.Draw(room.game.textureDict[texture], ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, room.game.textureCenters[texture], scalevect * zoom, SpriteEffects.None, 0);
         }
-        public void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0)
+        public virtual void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0)
         {
             color *= ((float)color.A / 255f);
             batch.Draw(texture, ((position - pos) * zoom) + CameraOffsetVect, sourceRectangle, color, rotation, origin, scale * zoom, effects, layerDepth);
         }
-        public void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, Vector2 scalevect, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0)
+        public virtual void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, Vector2 scalevect, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0)
         {
             color *= ((float)color.A / 255f);
             batch.Draw(texture, ((position - pos) * zoom) + CameraOffsetVect, sourceRectangle, color, rotation, origin, scalevect * zoom, effects, layerDepth);
         }
-        public void DrawStringScreen(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true)
+        public virtual void DrawStringScreen(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true)
         {
             Color c2 = Color.White;
             if (color2 != null) c2 = (Color)color2;
@@ -60,7 +60,7 @@ namespace OrbItProcs
             batch.DrawString(font, text, pos, c2, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
             batch.DrawString(font, text, pos + new Vector2(1, -1), color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
         }
-        public void DrawStringWorld(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true)
+        public virtual void DrawStringWorld(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true)
         {
             Color c2 = Color.White;
             if (color2 != null) c2 = (Color)color2;

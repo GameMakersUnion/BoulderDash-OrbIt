@@ -906,8 +906,8 @@ namespace OrbItProcs
                 PopUp.Toast("You haven't selected a Node.");
             else
             {
-                ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !inspectorArea.editNode.comps.ContainsKey(c))));
-                List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => inspectorArea.editNode.comps.ContainsKey(c)));
+                ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !inspectorArea.editNode.HasComp(c))));
+                List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => inspectorArea.editNode.HasComp(c)));
                 
                 PopUp.opt[] options = new PopUp.opt[]{
                     new PopUp.opt(PopUp.OptType.info, "Add component to: " + inspectorArea.editNode.name),
@@ -931,12 +931,12 @@ namespace OrbItProcs
             if ((bool)o[2])
             {
                 foreach (Node n in ActiveGroup.fullSet)
-                    if (!n.comps.ContainsKey((comp)o[1]))
+                    if (!n.HasComp((comp)o[1]))
                         n.addComponent((comp)o[1], true);
 
                 Node def = ActiveGroup.defaultNode;
-                
-                if (!(def).comps.ContainsKey((comp)o[1]))
+
+                if (!(def).HasComp((comp)o[1]))
                     (def).addComponent((comp)o[1], true);
 
                 inspectorArea.ActiveInspectorParent.DoubleClickItem(inspectorArea);
@@ -945,7 +945,8 @@ namespace OrbItProcs
             }
             else
             {
-                if (!inspectorArea.editNode.comps.ContainsKey((comp)o[1]))
+                comp cc = (comp)o[1];
+                if (!inspectorArea.editNode.comps.ContainsKey(Utils.compTypes[cc]))
                 {
                     inspectorArea.editNode.addComponent((comp)o[1], true);
                     inspectorArea.ActiveInspectorParent.DoubleClickItem(inspectorArea);

@@ -40,7 +40,7 @@ namespace OrbItProcs
             set
             {
                 _active = value;
-                if (parent != null && parent.comps.ContainsKey(com))
+                if (parent != null && parent.HasComp(com))
                 {
                     parent.triggerSortLists();
                 }
@@ -48,7 +48,7 @@ namespace OrbItProcs
         }
         //*
         [Polenter.Serialization.ExcludeFromSerialization]
-        public Node parent { get; set; }
+        public virtual Node parent { get; set; }
 
         //*/
         //flag as not editable in InspectorBox
@@ -103,9 +103,9 @@ namespace OrbItProcs
             return null;
         }
 
-        public static Component GenerateComponent(comp c)
+        public static Component GenerateComponent(Type t)
         {
-            Component component = (Component)Activator.CreateInstance(Utils.GetComponentTypeFromEnum(c));
+            Component component = (Component)Activator.CreateInstance(t);
             return component;
         }
         

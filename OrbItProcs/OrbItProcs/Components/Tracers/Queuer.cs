@@ -62,9 +62,9 @@ namespace OrbItProcs
 
         public override void OnSpawn()
         {
-            if (parent.comps.ContainsKey(comp.waver))
+            if (parent.HasComp<Waver>())
             {
-                positions = parent.GetComponent<Waver>().metapositions;
+                positions = parent.Comp<Waver>().metapositions;
             }
         }
 

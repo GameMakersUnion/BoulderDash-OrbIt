@@ -66,15 +66,16 @@ namespace OrbItProcs
 
     public enum textures
     {
-        blueorb,
-        whiteorb,
-        colororb,
         whitecircle,
-        whitepixel,
-        whitepixeltrans,
+        orientedcircle,
         blackorb,
         whitesphere,
         ring,
+        whiteorb,
+        blueorb,
+        colororb,
+        whitepixel,
+        whitepixeltrans,
     }
 
     public class Game1 : Application
@@ -107,6 +108,8 @@ namespace OrbItProcs
 
         public int Width { get { return Graphics.PreferredBackBufferWidth; } set { Graphics.PreferredBackBufferWidth = value; } }
         public int Height { get { return Graphics.PreferredBackBufferHeight; } set { Graphics.PreferredBackBufferHeight = value; } }
+
+        public bool IsOldUI { get { return ui != null && ui.sidebar != null && ui.sidebar.activeTabControl == ui.sidebar.tbcMain; } }
 
         public static bool Debugging = false;
 
@@ -174,7 +177,8 @@ namespace OrbItProcs
             { textures.whitecircle, Content.Load<Texture2D>("Textures/whitecircle"          )},
             { textures.whitesphere, Content.Load<Texture2D>("Textures/whitesphere"          )},
             { textures.blackorb, Content.Load<Texture2D>("Textures/blackorb"                )},
-            { textures.ring, Content.Load<Texture2D>("Textures/ring"                        )}
+            { textures.ring, Content.Load<Texture2D>("Textures/ring"                        )},
+            { textures.orientedcircle, Content.Load<Texture2D>("Textures/orientedcircle"    )},
             };
 
             textureCenters = new Dictionary<textures, Vector2>();
@@ -224,7 +228,9 @@ namespace OrbItProcs
             {
                 for (int i = 1; i < 5; i++)
                 {
-                    room.players.Add(new Player(i)); //#bigtony
+                    Player p = Player.GetNew(i);
+                    if (p != null)
+                        room.players.Add(p); //#bigtony
                 }
             }
 
@@ -456,6 +462,7 @@ namespace OrbItProcs
                     Node.cloneNode(ui.sidebar.ActiveDefaultNode, newNode);
                 //}
             }
+            newNode.group = activegroup;
             newNode.name = activegroup.Name + Node.nodeCounter;
             newNode.acceptUserProps(userProperties);
 
@@ -507,8 +514,8 @@ namespace OrbItProcs
             if (lifetime != -1)
             {
                 newNode.addComponent(comp.lifetime, true);
-                newNode.GetComponent<Lifetime>().timeUntilDeath.value = lifetime;
-                newNode.comps[comp.lifetime].timeUntilDeath.enabled = true;
+                newNode.Comp<Lifetime>().timeUntilDeath.value = lifetime;
+                newNode.Comp<Lifetime>().timeUntilDeath.enabled = true;
             }
             //Collider col = new Collider(new Circle(Utils.random.Next(200)));
             //col.OnCollisionStay += delegate(Node source, Node target)

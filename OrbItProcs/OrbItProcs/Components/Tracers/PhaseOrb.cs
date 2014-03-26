@@ -31,9 +31,9 @@ namespace OrbItProcs
             }
             set
             {
-                if (parent != null && parent.HasComponent(comp.queuer) && parent[comp.queuer].queuecount < value)
+                if (parent != null && parent.HasComp<Queuer>() && parent.Comp<Queuer>().queuecount < value)
                 {
-                    parent[comp.queuer].queuecount = value;
+                    parent.Comp<Queuer>().queuecount = value;
                 }
                 _phaserLength = value;
             }
@@ -60,9 +60,9 @@ namespace OrbItProcs
 
         public override void AfterCloning()
         {
-            if (!parent.comps.ContainsKey(comp.queuer)) parent.addComponent(comp.queuer, true);
+            if (!parent.HasComp<Queuer>()) parent.addComponent(comp.queuer, true);
             //if (parent.comps.ContainsKey(comp.queuer)) 
-                parent.comps[comp.queuer].qs = parent.comps[comp.queuer].qs | queues.scale | queues.position;
+            parent.Comp<Queuer>().qs = parent.Comp<Queuer>().qs | queues.scale | queues.position;
                 //int i = 0;
         }
 
@@ -106,8 +106,8 @@ namespace OrbItProcs
             int count = 0;
             //foreach (Vector2 pos in positions)
             //Queue<float> scales = ((Queue<float>)(parent.comps[comp.queuer].scales));
-            Queue<float> scales = parent.comps[comp.queuer].scales;
-            Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
+            Queue<float> scales = parent.Comp<Queuer>().scales;
+            Queue<Vector2> positions = ((Queue<Vector2>)(parent.Comp<Queuer>().positions));
             //float t = parent.comps[comp.queuer].scales.ElementAt(2);
             //Console.WriteLine(scales.Count + " :: " + positions.Count);
             int min = Math.Min(positions.Count, scales.Count);

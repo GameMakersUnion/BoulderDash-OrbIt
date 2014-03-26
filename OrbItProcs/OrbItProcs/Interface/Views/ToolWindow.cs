@@ -41,7 +41,6 @@ namespace OrbItProcs
             toolBar.Movable = false;
             toolBar.Text = "Tools";
             manager.Add(toolBar);
-            bool second = false;
 
             Texture2D[,] textures = Program.getGame().Content.Load<Texture2D>("Textures/buttons").sliceSpriteSheet(2, 5);
             buttonTextures["select"] = textures[0,0];

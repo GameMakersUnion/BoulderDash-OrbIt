@@ -31,9 +31,9 @@ namespace OrbItProcs
             }
             set
             {
-                if (parent != null && parent.HasComponent(comp.queuer) && parent[comp.queuer].queuecount < value)
+                if (parent != null && parent.HasComp<Queuer>() && parent.Comp<Queuer>().queuecount < value)
                 {
-                    parent[comp.queuer].queuecount = value;
+                    parent.Comp<Queuer>().queuecount = value;
                 }
                 _rayLength = value;
             }
@@ -53,9 +53,9 @@ namespace OrbItProcs
 
         public override void AfterCloning()
         {
-            if (!parent.comps.ContainsKey(comp.queuer)) parent.addComponent(comp.queuer, true);
+            if (!parent.HasComp<Queuer>()) parent.addComponent(comp.queuer, true);
             //if (parent.comps.ContainsKey(comp.queuer)) 
-            parent.comps[comp.queuer].qs = parent.comps[comp.queuer].qs | queues.scale | queues.position | queues.angle;
+            parent.Comp<Queuer>().qs = parent.Comp<Queuer>().qs | queues.scale | queues.position | queues.angle;
             //int i = 0;
         }
 
@@ -64,9 +64,9 @@ namespace OrbItProcs
             Room room = parent.room;
             float mapzoom = room.zoom;
 
-            Queue<float> scales = parent.comps[comp.queuer].scales;
-            Queue<float> angles = parent.comps[comp.queuer].angles;
-            Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
+            Queue<float> scales = parent.Comp<Queuer>().scales;
+            Queue<float> angles = parent.Comp<Queuer>().angles;
+            Queue<Vector2> positions = ((Queue<Vector2>)(parent.Comp<Queuer>().positions));
 
 
             Vector2 screenPos = parent.body.pos * mapzoom;
