@@ -493,7 +493,7 @@ namespace OrbItProcs {
 
         }
 
-        public void Draw(SpriteBatch spritebatch)
+        public void Draw()
         {
             if (nodeState == state.off || nodeState == state.updateOnly) return;
 
@@ -501,7 +501,7 @@ namespace OrbItProcs {
             {
                 if (!comps[c].CallDraw) continue;
                 if (!comps[c].active) continue;
-                comps[c].Draw(spritebatch);
+                comps[c].Draw();
                 //if (!comps[c].compType.HasFlag(mtypes.minordraw))
                 //    break; //only executes the most significant draw component
             }

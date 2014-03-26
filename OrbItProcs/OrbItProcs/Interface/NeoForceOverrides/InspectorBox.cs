@@ -80,7 +80,13 @@ namespace TomShane.Neoforce.Controls
             //return;
         }
 
-        private void DrawPane(object sender, DrawEventArgs e)
+        private void 
+            
+            
+            
+            
+            
+            Pane(object sender, DrawEventArgs e)
         {
             if (Items != null && Items.Count > 0)
             {

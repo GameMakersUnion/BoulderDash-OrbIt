@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace OrbItProcs.Framework
+namespace OrbItProcs
 {
 
     public struct DrawCommand
@@ -30,7 +30,6 @@ namespace OrbItProcs.Framework
         private SpriteEffects    effects     ;
         private float            layerDepth  ;
         private string           text        ;
-
 
         public DrawCommand(textures texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0)
         {
@@ -91,35 +90,90 @@ namespace OrbItProcs.Framework
                 case DrawType.drawString:
                     batch.DrawString(Camera.font, text, position, color, 0f, Vector2.Zero,scale, SpriteEffects.None,0);
                     return;
+                    if (true)
+                    {
+                        this.color = new Color(color.R/10, color.G/10, color.B/10, 200);
+                    }
             } 
         }
 
     }
     public class ThreadedCamera : Camera
     {
-        EventWaitHandle _wh = new AutoResetEvent(false);
+        ManualResetEventSlim CameraWaiting = new ManualResetEventSlim(false);
         Thread _worker;
-        readonly object _locker = new object();
+        public readonly object _locker = new object();
         Queue<string> _tasks = new Queue<string>();
+        Queue<DrawCommand> thisFrame = new Queue<DrawCommand>();
         Queue<DrawCommand> nextFrame = new Queue<DrawCommand>();
+
+        HashSet<DrawCommand> permanents = new HashSet<DrawCommand>();
+        Queue<DrawCommand> addPerm = new Queue<DrawCommand>();
+        Queue<DrawCommand> removePerm = new Queue<DrawCommand>();
 
         public ThreadedCamera(Room room, float zoom = 0.5f, Vector2? pos = null) : base(room, zoom, pos)
         {
+            _worker = new Thread(Work);
+            _worker.IsBackground = true;
+            _worker.Start();
         }
 
         public void Render()
         {
-            int count = nextFrame.Count;
+            thisFrame = nextFrame;
+            nextFrame = new Queue<DrawCommand>(); //todo: optimize via a/b pooling
+
+            int count = addPerm.Count;
             for (int i = 0; i < count; i++)
             {
-                nextFrame.Dequeue().draw(batch);
+                permanents.Add(addPerm.Dequeue());
             }
 
+            count = removePerm.Count;
+            for (int i = 0; i < count; i++)
+            {
+                permanents.Remove(removePerm.Dequeue());
+            }
+
+            CameraWaiting.Set();
+            //int count = thisFrame.Count;
+            //for (int i = 0; i < count; i++)
+            //{
+            //    thisFrame.Dequeue().draw(batch);
+            //}
+        }
+        public void AddPermanentDraw(textures texture, Vector2 position, Color color, float scale)
+        {
+            addPerm.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, room.game.textureCenters[texture], scale * zoom, SpriteEffects.None, 0));
+        }
+
+        public void removePermanentDraw(textures texture, Vector2 position, Color color, float scale)
+        {
+            removePerm.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, room.game.textureCenters[texture], scale * zoom, SpriteEffects.None, 0));
         }
 
         private void Work(object obj)
         {
-            throw new NotImplementedException();
+            while (true)
+            {
+                CameraWaiting.Reset();
+                    batch.GraphicsDevice.SetRenderTarget(room.roomRenderTarget);
+                    batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+                    int count = thisFrame.Count;
+                    for (int i = 0; i < count; i++)
+                    {
+                        thisFrame.Dequeue().draw(batch);
+                    }
+
+                    foreach (var command in permanents)
+                    {
+                        command.draw(batch);
+                    }
+                    batch.End();
+                    batch.GraphicsDevice.SetRenderTarget(null);
+                Program.getGame().TomShaneWaiting.Set();
+                CameraWaiting.Wait();         // No more tasks - wait for a signal
+            }
         }
         public override void Draw(textures texture, Vector2 position, Color color, float scale)
         {

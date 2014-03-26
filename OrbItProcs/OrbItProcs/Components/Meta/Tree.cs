@@ -183,7 +183,7 @@ namespace OrbItProcs
 
         }
 
-        public override void Draw(SpriteBatch spritebatch)
+        public override void Draw()
         {
             Room room = parent.room;
             float mapzoom = room.zoom;

@@ -213,7 +213,7 @@ namespace OrbItProcs
             }
         }
 
-        public override void Draw(SpriteBatch batch)
+        public override void Draw()
         {
             parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color, parent.body.scale);
 

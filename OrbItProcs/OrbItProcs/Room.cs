@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Component = OrbItProcs.Component;
 using System.Collections.ObjectModel;
-using OrbItProcs.Framework;
+using OrbItProcs;
 
 namespace OrbItProcs {
 
@@ -432,14 +432,14 @@ namespace OrbItProcs {
                 m.PositionalCorrection();
         }
 
-        public void Draw(SpriteBatch spritebatch)
+        public void Draw()
         {
             //spritebatch.Draw(game.textureDict[textures.whitepixel], new Vector2(300, 300), null, Color.Black, 0f, Vector2.Zero, 100f, SpriteEffects.None, 0);
             
             if (targetNode != null)
             {
                 updateTargetNodeGraphic();
-                targetNodeGraphic.Draw(spritebatch);
+                targetNodeGraphic.Draw();
             }
             HashSet<Node> groupset = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
             if (groupset != null)
@@ -449,13 +449,13 @@ namespace OrbItProcs {
                 {
                     targetNodeGraphic.body.pos = n.body.pos;
                     targetNodeGraphic.body.scale = n.body.scale * 1.5f;
-                    targetNodeGraphic.Draw(spritebatch);
+                    targetNodeGraphic.Draw();
                 }
             }
             foreach(var n in masterGroup.fullSet)
             {
                 //Node n = (Node)o;
-                n.Draw(spritebatch);
+                n.Draw();
             }
             int linecount = 0;
 
@@ -463,7 +463,7 @@ namespace OrbItProcs {
             {
                 foreach (Link link in AllActiveLinks)
                 {
-                    link.GenericDraw(spritebatch);
+                    link.GenericDraw();
                 }
             }
             //if (linkTest != null) linkTest.GenericDraw(spritebatch);
@@ -480,11 +480,10 @@ namespace OrbItProcs {
             //player1.Draw(spritebatch);
             //level.Draw(spritebatch);
 
-            game.processManager.Draw(spritebatch);
+            game.processManager.Draw();
 
             GraphData.DrawGraph();
             //Testing.TestHues();
-            ((ThreadedCamera)camera).Render();
         }
         public void AddManifold(Manifold m)
         {

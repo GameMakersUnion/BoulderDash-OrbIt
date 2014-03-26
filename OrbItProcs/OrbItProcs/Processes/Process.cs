@@ -19,7 +19,7 @@ namespace OrbItProcs
         public bool active { get; set; }
 
         public event Action Update;
-        public event Action<SpriteBatch> Draw;
+        public event Action Draw;
         public event ProcessMethod Create;
         public event ProcessMethod Destroy;
         public event Action<Node,Node> Collision;
@@ -66,16 +66,16 @@ namespace OrbItProcs
             if (Update != null) 
                 Update();
         }
-        public void OnDraw(SpriteBatch batch)
+        public void OnDraw()
         {
             foreach (Process p in procs)
             {
                 if (p.active)
                 {
-                    p.OnDraw(batch);
+                    p.OnDraw();
                 }
             }
-            if (Draw != null) Draw(batch);
+            if (Draw != null) Draw();
         }
 
         public void Add(Process p)

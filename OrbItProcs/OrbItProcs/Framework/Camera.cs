@@ -25,6 +25,7 @@ namespace OrbItProcs
             this.zoom = zoom;
             this.pos = pos ?? Vector2.Zero;
         }
+        
         public virtual void Draw(textures texture, Vector2 position, Color color, float scale)
         {
             color *= ((float)color.A / 255f);

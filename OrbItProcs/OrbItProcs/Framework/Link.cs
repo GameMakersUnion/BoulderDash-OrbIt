@@ -686,7 +686,7 @@ namespace OrbItProcs
             
         }
         */
-        public void GenericDraw(SpriteBatch spritebatch)
+        public void GenericDraw()
         {
             if (!active) return;
             //if (!linkComponent.active)

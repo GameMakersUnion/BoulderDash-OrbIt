@@ -80,7 +80,7 @@ namespace OrbItProcs
     public class Game1 : Application
     {
         public static GameTime GlobalGameTime;
-
+        public ManualResetEventSlim TomShaneWaiting = new ManualResetEventSlim(true);
         public UserInterface ui;
         public Room room;
         public SpriteBatch spriteBatch;
@@ -112,17 +112,22 @@ namespace OrbItProcs
 
         public Dictionary<textures, Texture2D> textureDict;
         public Dictionary<textures, Vector2> textureCenters;
-
+        public Texture2D[,] btnTextures;
         public static bool bigTonyOn = false;
 
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
+        public float backgroundHue = 180;
+        public double x = 0;
 
+
+        public static readonly object drawLock = new object();
         /////////////////////
         public Redirector redirector;
         public Testing testing;
 
-        public Game1() : base(true)
+        public Game1() : base()
         {
+
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             Graphics.SynchronizeWithVerticalRetrace = true;
@@ -133,7 +138,6 @@ namespace OrbItProcs
             //Width = fullWidth;
             //Height = fullHeight;
             Utils.PopulateComponentTypesDictionary();
-
             ClearBackground = true;
             BackgroundColor = Color.White;
             ExitConfirmation = false;
@@ -176,6 +180,7 @@ namespace OrbItProcs
             { textures.blackorb, Content.Load<Texture2D>("Textures/blackorb"                )},
             { textures.ring, Content.Load<Texture2D>("Textures/ring"                        )}
             };
+            btnTextures = Program.getGame().Content.Load<Texture2D>("Textures/buttons").sliceSpriteSheet(2, 5);
 
             textureCenters = new Dictionary<textures, Vector2>();
             foreach(var tex in textureDict.Keys)
@@ -202,8 +207,7 @@ namespace OrbItProcs
             ui.Initialize(room);
 
             frameRateCounter = new FrameRateCounter(this);
-            base.Initialize();
-            MainWindow.Visible = false;            
+            base.Initialize();          
 
             testing = new Testing();
 
@@ -249,7 +253,7 @@ namespace OrbItProcs
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-
+            room.camera.Render();
             GlobalGameTime = gameTime;
             base.Update(gameTime);
 
@@ -267,41 +271,38 @@ namespace OrbItProcs
                 //room.updateTargetNodeGraphic();
                 if (room != null) room.gridSystemLines = new List<Microsoft.Xna.Framework.Rectangle>();
             }
-
-
-            if (t != null) t.Join();
-
-        }
-        public float backgroundHue = 180;
-        public double x = 0;
-        public Color backgroundColor = Color.Black;
-        public static readonly object locker = new object();
-        public Thread t;
-
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Draw(GameTime gameTime)
-        {
             if (!ui.IsPaused)
             {
                 x += Math.PI / 360.0;
                 backgroundHue = (backgroundHue + ((float)Math.Sin(x) + 1) / 10f) % 360;
                 BackgroundColor = ColorChanger.getColorFromHSV(backgroundHue, value: 0.2f);
             }
-            base.Draw(gameTime);
-
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            room.Draw(spriteBatch);
+            room.Draw();
             frameRateCounter.Draw(spriteBatch, font);
-            spriteBatch.End();
 
+
+
+        }
+
+
+        protected override void DrawScene(GameTime gameTime)
+        {
+            Manager.Renderer.Begin(BlendingMode.Default);
+            Manager.Renderer.Draw(room.roomRenderTarget, new Microsoft.Xna.Framework.Rectangle(0, 0, Width, Height), Color.White);
+            Manager.Renderer.End();
+            
             if (TakeScreenshot)
             {
                 Screenshot(Manager.Graphics.GraphicsDevice);
                 TakeScreenshot = false;
             }
+        }
+        protected override void Draw(GameTime gameTime)
+        {
+            TomShaneWaiting.Wait();
+            TomShaneWaiting.Reset();
+            base.Draw(gameTime);
+            
         }
         public void SwitchToMainRoom()
         {
@@ -389,13 +390,6 @@ namespace OrbItProcs
                     Console.WriteLine("Failed to deserialize node: {0}", e.Message);
                 }
             }
-        }
-        protected override void LoadContent()
-        {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            //spriteBatch = new SpriteBatch(GraphicsDevice);
-            
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>

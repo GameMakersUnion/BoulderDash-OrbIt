@@ -157,8 +157,8 @@ namespace OrbItProcs {
         { 
             //do stuff (actually nope; gravity doesn't have this method)
         }
-        
-        public override void Draw(SpriteBatch spritebatch)
+
+        public override void Draw()
         {
             return;
             if (!Repulsive)

@@ -126,13 +126,13 @@ namespace OrbItProcs
 
         }
         
-        public void Draw(SpriteBatch batch)
+        public void Draw()
         {
             foreach (Process p in processes)
             {
                 if (p.active)
                 {
-                    p.OnDraw(batch);
+                    p.OnDraw();
                 }
             }
         }

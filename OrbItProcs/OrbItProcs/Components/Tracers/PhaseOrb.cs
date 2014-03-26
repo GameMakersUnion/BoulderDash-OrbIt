@@ -87,8 +87,15 @@ namespace OrbItProcs
         public override void AffectSelf()
         {
         }
+        public override void Draw()
+        {
+            Room room = parent.room;
 
-        public override void Draw(SpriteBatch spritebatch)
+            room.camera.AddPermanentDraw(parent.texture, parent.body.pos, parent.body.color, parent.body.scale);
+        }
+
+
+        public void oldDraw()
         {
             Room room = parent.room;
             float mapzoom = room.zoom;

@@ -183,7 +183,7 @@ namespace OrbItProcs
                 return new Color(v, p, q, alpha);
         }
 
-        public override void Draw(SpriteBatch spritebatch)
+        public override void Draw()
         {
         }
 

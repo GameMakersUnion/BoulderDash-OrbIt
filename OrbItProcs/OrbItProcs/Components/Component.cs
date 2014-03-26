@@ -88,7 +88,7 @@ namespace OrbItProcs
         public virtual void OnSpawn() { }
         public virtual void AffectOther(Node other) { }
         public virtual void AffectSelf() { }
-        public virtual void Draw(SpriteBatch spritebatch) { }
+        public virtual void Draw() { }
 
         public virtual void InitializeLists()
         {

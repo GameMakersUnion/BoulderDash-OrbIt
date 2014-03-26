@@ -130,7 +130,7 @@ namespace OrbItProcs
             qs = qs | queues.customs;
         }
 
-        public override void Draw(SpriteBatch spritebatch)
+        public override void Draw()
         {
         }
 

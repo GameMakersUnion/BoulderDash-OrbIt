@@ -164,7 +164,7 @@ namespace OrbItProcs
             pi.SetValue(parent.body, parent.body.pos.X % 4.0f, null);
         }
 
-        public override void Draw(SpriteBatch spritebatch)
+        public override void Draw()
         {
             //C3.XNA.Primitives2D.DrawCircle()
         }

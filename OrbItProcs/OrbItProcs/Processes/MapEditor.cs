@@ -59,7 +59,7 @@ namespace OrbItProcs
             verts = new List<Vector2>();
         }
 
-        public void DrawEditor(SpriteBatch batch)
+        public void DrawEditor()
         {
             int vertX = 0, vertY = 0;
             MouseToGrid(ref vertX, ref vertY);
@@ -68,11 +68,11 @@ namespace OrbItProcs
             Texture2D tx = room.game.textureDict[textures.whitecircle];
             Vector2 cen = new Vector2(tx.Width / 2f, tx.Height / 2f);//store this in another textureDict to avoid recalculating
 
-            batch.Draw(room.game.textureDict[textures.whitecircle], vert, null, Color.White, 0f, cen, 0.3f, SpriteEffects.None, 0);
+            room.camera.Draw(textures.whitecircle, vert, null, Color.White, 0f, cen, 0.3f, SpriteEffects.None, 0);
 
             foreach(Vector2 v in verts)
             {
-                batch.Draw(room.game.textureDict[textures.whitecircle], v * room.zoom, null, Color.Red, 0f, cen, 0.3f, SpriteEffects.None, 0);
+                room.camera.Draw(textures.whitecircle, v * room.zoom, null, Color.Red, 0f, cen, 0.3f, SpriteEffects.None, 0);
             }
         }
 

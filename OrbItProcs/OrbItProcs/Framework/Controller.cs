@@ -377,8 +377,8 @@ namespace OrbItProcs
 
     public class HalfController : Controller
     {
-        ControlSide side;
-        FullPadMode fullPadMode;
+        public ControlSide side;
+        public FullPadMode fullPadMode;
         bool fullControllerAvailable;
         public HalfController(int player, FullPadMode mode = FullPadMode.spellMode)
         {

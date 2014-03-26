@@ -99,7 +99,7 @@ namespace OrbItProcs
         public override void AffectSelf()
         {
         }
-        public override void Draw(SpriteBatch spritebatch)
+        public override void Draw()
         {
         }
     }
