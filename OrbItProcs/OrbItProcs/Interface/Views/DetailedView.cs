@@ -107,7 +107,7 @@ namespace OrbItProcs
                 return false;
             }
         }
-        public void CreateItem(DetailedItem item)
+        public virtual void CreateItem(DetailedItem item)
         {
             viewItems.Add(item);
             SetupScroll(item);
@@ -163,13 +163,6 @@ namespace OrbItProcs
             textColor = detailedView.textColor;
             backColor = detailedView.backColor;
             RefreshColor();
-            //panel.Click += delegate
-            //{
-            //    if (detailedView != null)
-            //    {
-            //        detailedView.SelectItem(this);
-            //    }
-            //};
 
             itemControls = new Dictionary<string, Control>();
             if (detailedView.ItemCreator != null)

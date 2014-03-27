@@ -45,16 +45,6 @@ namespace OrbItProcs
         public ComponentView(Sidebar sidebar, Control parent, int Left, int Top)
             : base(sidebar, parent, Left, Top, false)
         {
-            GroupSync = true;
-            lblGroup = new Label(manager);
-            lblGroup.Init();
-            lblGroup.Parent = parent;
-            lblGroup.Text = "Group:";
-            lblGroup.Width = 180;
-            lblGroup.Left = LeftPadding;
-            lblGroup.TextColor = Color.Black;
-            lblGroup.Top = HeightCounter;
-            HeightCounter += lblGroup.Height + VertPadding;
 
             lblComponents = new Label(manager);
             lblComponents.Init();
@@ -185,7 +175,7 @@ namespace OrbItProcs
             if (g == null) return;
             activeGroup = g;
             if (insView != null) insView.activeGroup = g;
-            lblGroup.Text = "Group: " + activeGroup.Name;
+            //lblGroup.Text = "Group: " + activeGroup.Name;
             SwitchNode(g.defaultNode, true);
         }
         public void SwitchNode(Node node, bool group)

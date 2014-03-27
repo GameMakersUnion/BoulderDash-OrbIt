@@ -84,7 +84,6 @@ namespace OrbItProcs
                     n.addComponent(c, true);
                 }
             }
-            sidebar.componentView.RefreshComponents();
             if (sidebar.CreatingGroup && sidebar.groupsView.createGroupWindow != null)
             {
                 sidebar.groupsView.createGroupWindow.componentView.RefreshComponents();

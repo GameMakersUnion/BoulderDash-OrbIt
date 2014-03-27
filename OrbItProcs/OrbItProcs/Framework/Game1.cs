@@ -147,7 +147,7 @@ namespace OrbItProcs
             ClearBackground = true;
             BackgroundColor = Color.White;
             ExitConfirmation = false;
-            
+
             Manager.AutoUnfocus = false;
             Manager.Input.InputMethods = InputMethods.Mouse | InputMethods.Keyboard;
             Graphics.PreferMultiSampling = false;
@@ -340,7 +340,6 @@ namespace OrbItProcs
         protected override void Draw(GameTime gameTime)
         {
             //fuck tom shane
-            
         }
         public void SwitchToMainRoom()
         {
