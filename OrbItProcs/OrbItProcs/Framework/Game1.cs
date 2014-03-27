@@ -59,6 +59,7 @@ namespace OrbItProcs
         collision,
         basicdraw,
         meta,
+        shader
         //middle,
         //slow,
         //siphon,
@@ -124,6 +125,9 @@ namespace OrbItProcs
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
         public float backgroundHue = 180;
         public double x = 0;
+
+        // Shader code
+        public static Effect shaderEffect;
 
 
         public static readonly object drawLock = new object();
@@ -203,6 +207,9 @@ namespace OrbItProcs
             DelegatorMethods.InitializeDelegateMethods();
             spriteBatch = new SpriteBatch(Graphics.GraphicsDevice);
 
+            // Shader Code 
+            shaderEffect = Content.Load<Effect>("Effects/Shader");
+               
             ui = new UserInterface(this);
 
             room = new Room(this, 1880, 1175);

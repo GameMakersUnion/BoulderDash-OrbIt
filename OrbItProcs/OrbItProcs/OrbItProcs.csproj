@@ -152,6 +152,7 @@
     <Compile Include="Components\Meta\Shooter.cs" />
     <Compile Include="Components\Meta\Swap.cs" />
     <Compile Include="Components\Scheduler.cs" />
+    <Compile Include="Components\Shader.cs" />
     <Compile Include="Framework\Gametypes\BigTony.cs" />
     <Compile Include="Framework\Gametypes\Gametype.cs" />
     <Compile Include="Interface\Views\AddComponentView.cs" />
