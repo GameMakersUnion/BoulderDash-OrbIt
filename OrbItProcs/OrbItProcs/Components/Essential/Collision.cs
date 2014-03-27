@@ -215,7 +215,8 @@ namespace OrbItProcs
 
         public override void Draw()
         {
-            parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color, parent.body.scale);
+            //Console.WriteLine(Utils.random.Next(10));
+            parent.room.camera.Draw(textures.ring, parent.body.pos, Color.Red, parent.body.scale);
 
 
             foreach (Collider cc in colliders.Values)

@@ -46,7 +46,7 @@ namespace OrbItProcs
             get { return _msInterval; } 
             set 
             {
-
+                appt.interval = msInterval;
                 if (!_msInterval.enabled && value.enabled) parent.scheduler.AddAppointment(appt);
                 if (_msInterval.enabled && !value.enabled) parent.scheduler.RemoveAppointment(appt);
 
@@ -76,7 +76,7 @@ namespace OrbItProcs
 
         //private int pos = 1, sign = 1;
         private int angle = 0;
-        private bool schedulerModerated;
+        //private bool schedulerModerated;
         private Appointment appt;
         //public bool smartshifting { get; set; }
 
@@ -106,11 +106,11 @@ namespace OrbItProcs
         }
         public override void AffectSelf()
         {
-            if (!msInterval.enabled & !schedulerModerated)
+            if (!msInterval.enabled)// && !schedulerModerated)
             {
                 if (colormode == ColorMode.angle)
                 {
-                    float angle = (float)((Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + Math.PI) * (180 / Math.PI));
+                    float angle = (float)((Math.Atan2(parent.body.effvelocity.Y, parent.body.effvelocity.X) + Math.PI) * (180 / Math.PI));
                     parent.body.color = getColorFromHSV(angle, saturation, value);
                 }
                 else if (colormode == ColorMode.position)
@@ -122,8 +122,9 @@ namespace OrbItProcs
                 }
                 else if (colormode == ColorMode.velocity)
                 {
-                    float len = Vector2.Distance(parent.body.velocity, Vector2.Zero);
-                    parent.body.color = getColorFromHSV((float)Math.Min(1.0, len / 20) * 360f, (float)Math.Min(1.0, len / 20), (float)Math.Min(1.0, len / 20));
+                    float len = Vector2.Distance(parent.body.velocity, Vector2.Zero) / 25;
+                    parent.body.color = new Color((parent.body.permaColor.R / 255f) * len, (parent.body.permaColor.G / 255f) * len, (parent.body.permaColor.B / 255f) * len);
+                    //parent.body.color = getColorFromHSV((float)Math.Min(1.0, len / 20) * 360f, (float)Math.Min(1.0, len / 20), (float)Math.Min(1.0, len / 20));
                 }
                 else if (colormode == ColorMode.hueShifter)
                 {
@@ -182,16 +183,11 @@ namespace OrbItProcs
             else
                 return new Color(v, p, q, alpha);
         }
-
-        public override void Draw()
-        {
-        }
-
         private void managedUpdate(Node n, DataStore d){
 
-            schedulerModerated = true;
+            //schedulerModerated = true;
             AffectSelf();
-            schedulerModerated = false;
+            //schedulerModerated = false;
         }
 
     }

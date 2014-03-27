@@ -164,8 +164,8 @@ namespace OrbItProcs
                     {
                         foreach (Node n in activeGroup.fullSet)
                         {
-                            if (n.HasComponent(component.com))
-                                n.comps[component.com].active = component.active;
+                            if (n.HasComp(component.com))
+                                n.comps[component.GetType()].active = component.active;
                         }
                     }
                 }
@@ -209,16 +209,6 @@ namespace OrbItProcs
                     if (o is Component)
                     {
                         Component comp = (Component)o;
-                        //CheckBox checkbox = new CheckBox(manager);
-                        //checkbox.Init();
-                        //checkbox.Parent = item.textPanel;
-                        //checkbox.Left = backPanel.Width - 45;
-                        //checkbox.Top = 2;
-                        //checkbox.Text = "";
-                        //checkbox.ToolTip.Text = "Toggle";
-                        //checkbox.Checked = comp.active;
-                        //checkbox.Name = "component_checkbox_active";
-                        //item.AddControl(checkbox);
 
                         Button btnEnabled = new Button(manager);
                         btnEnabled.Init();
@@ -266,19 +256,6 @@ namespace OrbItProcs
                         if (isToggle)
                         {
                             textbox.Name = "toggle_textbox";
-                            //CheckBox checkbox = new CheckBox(manager);
-                            //checkbox.Init();
-                            //checkbox.Width = 20;
-                            //checkbox.Parent = item.textPanel;
-                            //checkbox.Left = textbox.Left - 30;
-                            //checkbox.Top = 2;
-                            //checkbox.Text = "";
-                            //checkbox.ToolTip.Text = "Toggle";
-                            ////checkbox.Checked = (bool)o;
-                            //checkbox.Name = "toggle_checkbox";
-                            //dynamic toggle = o;
-                            //checkbox.Checked = toggle.enabled;
-                            //textbox.Text = toggle.value.ToString();
 
                             Button btnEnabled = new Button(manager);
                             btnEnabled.Init();
@@ -299,8 +276,6 @@ namespace OrbItProcs
                         }
                         textbox.ClientArea.Top += 2;
                         textbox.ClientArea.Left += 4;
-                        //textbox.KeyPress += delegate { marginalize(textbox); };
-                        //textbox.KeyDown += delegate { marginalize(textbox); };
                         textbox.FocusLost += delegate
                         {
                             textbox.SendMessage(Message.KeyUp, new KeyEventArgs(Microsoft.Xna.Framework.Input.Keys.Enter));
@@ -434,6 +409,7 @@ namespace OrbItProcs
                         combobox.Left = backPanel.Width - w - 26;
                         combobox.Height = combobox.Height - 4;
                         combobox.Width = w;
+                        combobox.MaxItems = 15;
                         int i = 0;
                         foreach(string s in Enum.GetNames(o.GetType()))
                         {
@@ -505,21 +481,22 @@ namespace OrbItProcs
                             //todo:implement refresh controls
                             if (control is ComboBox)
                             {
-                                object ee = insItem.GetValue();
-                                if (ee.GetType().IsEnum)
-                                {
-                                    ComboBox cb = (ComboBox)control;
-                                    int count = 0;
-                                    foreach (object i in cb.Items)
-                                    {
-                                        if (i.ToString().Equals(ee.ToString()))
-                                        {
-                                            cb.ItemIndex = count;
-                                            break;
-                                        }
-                                        count++;
-                                    }
-                                }
+                                continue;
+                                //object ee = insItem.GetValue();
+                                //if (ee.GetType().IsEnum)
+                                //{
+                                //    ComboBox cb = (ComboBox)control;
+                                //    int count = 0;
+                                //    foreach (object i in cb.Items)
+                                //    {
+                                //        if (i.ToString().Equals(ee.ToString()))
+                                //        {
+                                //            cb.ItemIndex = count;
+                                //            break;
+                                //        }
+                                //        count++;
+                                //    }
+                                //}
                             }
                             else if (control is TextBox)
                             {

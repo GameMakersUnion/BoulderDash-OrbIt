@@ -169,21 +169,23 @@ namespace OrbItProcs
                 else if(sidebar.game.mainRoom.generalGroups.childGroups.Keys.Contains(txtName.Text))
                     PopUp.Toast("Group already exists.");
                 else{                   
-                Node newNode = tempgroup.defaultNode.CreateClone();
-                newNode.room = sidebar.game.mainRoom;
-                newNode.body.color = ColorChanger.randomColorHue();
-                newNode.basicdraw.UpdateColor();
-                Group newGroup = new Group(newNode, sidebar.game.mainRoom.generalGroups, Name: txtName.Text.Trim());
-                sidebar.groupsView.UpdateGroups();
+                    Node newNode = tempgroup.defaultNode.CreateClone();
+                    newNode.room = sidebar.game.mainRoom;
+                    newNode.body.color = ColorChanger.randomColorHue();
+                    newNode.basicdraw.UpdateColor();
+                    Group newGroup = new Group(newNode, sidebar.game.mainRoom.generalGroups, Name: txtName.Text.Trim());
+                    newNode.name = txtName.Text.Trim();
+                    newNode.group = newGroup;
+                    sidebar.groupsView.UpdateGroups();
 
-                window.Close();
+                    window.Close();
                 }
             };
         }
 
         public void ComboUpdate(ComboBox cb)
         {
-            if (cb.ItemIndex > 0 && !cb.Text.Equals(""))
+            if (cb.ItemIndex >= 0 && !cb.Text.Equals(""))
             {
                 object o = cb.Items.ElementAt(cb.ItemIndex);
                 if (o is Group)

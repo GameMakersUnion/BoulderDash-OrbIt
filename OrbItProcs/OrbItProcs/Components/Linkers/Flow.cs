@@ -15,7 +15,7 @@ namespace OrbItProcs
     [Info(UserLevel.Advanced, "Use logic (circuit) gates to affect the flow of component affection control", CompType)]
     public class Flow : Component, ILinkable
     {
-        public const mtypes CompType = mtypes.exclusiveLinker | mtypes.minordraw;
+        public const mtypes CompType = mtypes.minordraw;// | mtypes.exclusiveLinker;
         public override mtypes compType { get { return CompType; } set { } }
         public Link link { get; set; }
         public enum gate
@@ -37,12 +37,12 @@ namespace OrbItProcs
                     foreach (Node n in outgoing.ToList())
                     {
                         outgoing.Remove(n);
-                        n.comps[comp.flow].incoming.Remove(parent);
+                        n.Comp<Flow>().incoming.Remove(parent);
                     }
                     foreach (Node n in incoming.ToList())
                     {
                         incoming.Remove(n);
-                        n.comps[comp.flow].outgoing.Remove(parent);
+                        n.Comp<Flow>().outgoing.Remove(parent);
                     }
                 }
             }
@@ -119,9 +119,9 @@ namespace OrbItProcs
             }
             foreach (Node input in incoming)
             {
-                if (input.comps.ContainsKey(comp.flow))
+                if (input.HasComp<Flow>())
                 {
-                    if (!input.comps[comp.flow].activated)
+                    if (!input.Comp<Flow>().activated)
                     {
                         activated = false;
                         return;
@@ -140,9 +140,9 @@ namespace OrbItProcs
             }
             foreach (Node input in incoming)
             {
-                if (input.comps.ContainsKey(comp.flow))
+                if (input.HasComp<Flow>())
                 {
-                    if (input.comps[comp.flow].activated)
+                    if (input.Comp<Flow>().activated)
                     {
                         activated = true;
                         return;
@@ -161,9 +161,9 @@ namespace OrbItProcs
             }
             foreach (Node input in incoming)
             {
-                if (input.comps.ContainsKey(comp.flow))
+                if (input.HasComp<Flow>())
                 {
-                    activated = !input.comps[comp.flow].activated;
+                    activated = !input.Comp<Flow>().activated;
                     return;
                 }
             }
@@ -172,18 +172,18 @@ namespace OrbItProcs
 
         public void AddToOutgoing(Node node)
         {
-            
-            if (node != parent && node.comps.ContainsKey(comp.flow))
+
+            if (node != parent && node.HasComp<Flow>())
             {
                 if (outgoing.Contains(node))
                 {
                     outgoing.Remove(node);
-                    node.comps[comp.flow].incoming.Remove(parent);
+                    node.Comp<Flow>().incoming.Remove(parent);
                 }
                 else
                 {
                     outgoing.Add(node);
-                    node.comps[comp.flow].incoming.Add(parent);
+                    node.Comp<Flow>().incoming.Add(parent);
                 }
             }
             

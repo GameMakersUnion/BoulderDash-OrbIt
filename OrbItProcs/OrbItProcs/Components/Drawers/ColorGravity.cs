@@ -171,7 +171,7 @@ namespace OrbItProcs.Components
                     //huevelocity += force;
 
 
-                    float otherhue = other.comps[comp.colorgravity].hue;
+                    float otherhue = other.Comp<ColorGravity>().hue;
                     dist = GetDist(hue, otherhue);
                     if (dist < 1) return;
                     float force = multiplier / (dist * dist) / divisor;
@@ -185,7 +185,7 @@ namespace OrbItProcs.Components
                     dist = Vector2.Distance(parent.body.pos, other.body.pos) / divisor;
                     if (dist == 0) return;
                     float force = multiplier * other.body.mass * parent.body.mass / (dist * dist);
-                    float diff = hue - other.comps[comp.colorgravity].hue;
+                    float diff = hue - other.Comp<ColorGravity>().hue;
                     //int wrap = Math.Abs(diff) > 180 ? -1 : 1;
                     if (Math.Abs(diff) > 180) force *= -1;
                     if (diff < 0) force *= -1;
@@ -218,7 +218,7 @@ namespace OrbItProcs.Components
                 Vector3 impulse = mag * direction;
                 impulse /= 10000f;
                 if (other.HasActiveComponent(comp.colorgravity))
-                    other.comps[comp.colorgravity].colvelocity += impulse;
+                    other.Comp<ColorGravity>().colvelocity += impulse;
                 colvelocity -= impulse;
             }
         }

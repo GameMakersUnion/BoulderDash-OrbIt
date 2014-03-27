@@ -99,7 +99,7 @@ namespace OrbItProcs {
 
             //if (EveryOther && counter++ % 2 == 0) return;
 
-            if (AffectsOnlyGravity && !other.comps.ContainsKey(comp.gravity)) return;
+            if (AffectsOnlyGravity && !other.HasComp<Gravity>()) return;
 
             float distVects = Vector2.DistanceSquared(other.body.pos, parent.body.pos);
 
@@ -160,12 +160,18 @@ namespace OrbItProcs {
 
         public override void Draw()
         {
-            return;
+            //return;
             if (!Repulsive)
             {
-                parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color, drawscale / 50f);
-                drawscale -= 10f;
-                if (drawscale < 0) drawscale = radius;
+                parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.5f, drawscale / 50f);
+                drawscale -= 2f;
+                if (drawscale < 10) drawscale = radius / 10;
+            }
+            else
+            {
+                parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.5f, drawscale / 50f);
+                drawscale += 2f;
+                if (drawscale > radius / 10) drawscale = 5f;
             }
         }
     }

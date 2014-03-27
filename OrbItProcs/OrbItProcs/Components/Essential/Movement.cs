@@ -176,9 +176,9 @@ namespace OrbItProcs
 
             Vector2 pos = parent.body.pos;
 
-            if (parent.comps.ContainsKey(comp.queuer) && (parent.comps[comp.queuer].qs & queues.position) == queues.position)
+            if (parent.HasComp<Queuer>() && (parent.Comp<Queuer>().qs & queues.position) == queues.position)
             {
-                Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
+                Queue<Vector2> positions = ((Queue<Vector2>)(parent.Comp<Queuer>().positions));
                 pos = positions.ElementAt(0);
             }
 

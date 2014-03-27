@@ -970,7 +970,14 @@ namespace OrbItProcs {
                         }
                         else
                         {
-                            temp = new InspectorItem(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.propertyInfo);
+                            if (next.fpinfo.propertyInfo == null)
+                            {
+                                temp = new InspectorItem(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.fieldInfo);
+                            }
+                            else
+                            {
+                                temp = new InspectorItem(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.propertyInfo);
+                            }
                         }
                     }
                     count++;

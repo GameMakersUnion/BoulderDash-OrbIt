@@ -74,21 +74,6 @@ namespace OrbItProcs
                 }
             }
         }
-        public ObservableHashSet<Node> inheritedP
-        {
-            get { return inherited; }
-            set
-            {
-                return;
-                /*if (inherited == null || inherited.Count > 0) throw new SystemException("inherited was null was setting inheritedP");
-                foreach (Node n in value.ToList())
-                {
-                    Node newNode = n.CreateClone();
-                    inherited.Add(newNode);
-                }*/
-            }
-        }
-        
         private Dictionary<string, Group> _childGroups;
         public Dictionary<string, Group> childGroups
         {
@@ -191,6 +176,8 @@ namespace OrbItProcs
                 }
             }
         }
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public List<Group> groupPath { get; set; }
 
         public Group() : this(null)
         {
@@ -238,10 +225,18 @@ namespace OrbItProcs
 
             //threads[4] = new Thread(new ThreadStart(ThreadStartAction));
             //threads[5] = new Thread(new ThreadStart(ThreadStartAction));
+            groupPath = new List<Group>();
 
             if (parentGroup != null)
             {
                 parentGroup.AddGroup(this.Name, this);
+                Group g = parentGroup;
+
+                while (g != null)
+                {
+                    groupPath.Add(g);
+                    g = g.parentGroup;
+                }
             }
         }
 
@@ -253,38 +248,21 @@ namespace OrbItProcs
                 bool ui = room.game.ui != null && room.game.ui.sidebar.cbListPicker != null;
                 foreach (Node n in e.NewItems)
                 {
-                    if (ui)
-                    {
-                        if (room.game.ui.sidebar.cbListPicker.Text.Equals(Name))
-                        {
-                            room.game.ui.sidebar.lstMain.Items.Add(n);
-                        }
-                    }
                     if (parentGroup != null && !parentGroup.entities.Contains(n) && !Disabled)
                     {
                         parentGroup.inherited.Add(n);
                     }
                     fullSet.Add(n);
                 }
-                if (ui) room.game.ui.sidebar.SyncTitleNumber(this);
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
             {
                 foreach (Node n in e.OldItems)
                 {
-                    if (room.game.ui != null)
+                    if (sender != fullSet)
                     {
-                        if (room.game.ui.sidebar.cbListPicker.Text.Equals(Name))
-                        {
-                            room.game.ui.sidebar.lstMain.Items.Remove(n);
-                            room.game.ui.sidebar.SyncTitleNumber(this);
-                        }
-                    }
-                    if (!entities.Contains(n) && !inherited.Contains(n))
-                        fullSet.Remove(n);
-                    if (parentGroup != null && parentGroup.inherited.Contains(n))
-                    {
-                        parentGroup.inherited.Remove(n);
+                        if (!entities.Contains(n) && !inherited.Contains(n))
+                            fullSet.Remove(n);
                     }
                     if (n.group == this) n.group = null;
                 }
@@ -293,10 +271,17 @@ namespace OrbItProcs
 
         public void EmptyGroup()
         {
+            bool isold = room.game.IsOldUI && room.game.ui.sidebar.cbListPicker.Text.Equals(Name);
             foreach(Node n in fullSet.ToList())
             {
                 DeleteEntity(n);
+                if (isold)
+                {
+                    room.game.ui.sidebar.lstMain.Items.Remove(n);
+                    room.game.ui.sidebar.SyncTitleNumber(this);
+                }
             }
+            
         }
 
         public void ForEachFullSet(Action<Node> action)
@@ -307,10 +292,6 @@ namespace OrbItProcs
                 action(n);
             }
         }
-
-        
-
-
         //adds entity to current group and all parent groups
         public void IncludeEntity(Node entity)
         {
@@ -321,37 +302,50 @@ namespace OrbItProcs
                 //room.CollisionSet.Add(entity);
                 entity.collision.UpdateCollisionSet();
             }
+            if (room.game.IsOldUI && room.game.ui.sidebar.cbListPicker.Text.Equals(Name))
+            {
+                room.game.ui.sidebar.lstMain.Items.Add(entity);
+                room.game.ui.sidebar.SyncTitleNumber(this);
+            }
             //if (parentGroup != null)
             //    parentGroup.IncludeEntity(entity);
         }
         //removes entity from current group and all child groups
         public void DiscludeEntity(Node entity)
         {
-            if (entity is Node && parentGroup == null) ((Node)entity).active = false;
-
+            entity.collision.RemoveCollidersFromSet();
             entities.Remove(entity);
-            inherited.Remove(entity);
-            fullSet.Remove(entity);
-
-            if (childGroups.Count > 0)
+            if (inherited.Contains(entity))
+                inherited.Remove(entity);
+            //fullSet.Remove(entity);
+            foreach(Group g in groupPath)
             {
-                foreach (Group childgroup in childGroups.Values.ToList())
-                {
-                    childgroup.DiscludeEntity(entity);
-                }
+                g.inherited.Remove(entity);
+                //if (g.fullSet.Contains(entity))
+                //    System.Diagnostics.Debugger.Break();
             }
+            //if (childGroups.Count > 0)
+            //{
+            //    foreach (Group childgroup in childGroups.Values.ToList())
+            //    {
+            //        if (childgroup.fullSet.Contains(entity))
+            //            childgroup.DiscludeEntity(entity);
+            //    }
+            //}
         }
         //removes entity from all groups, starting from the highest root
         public void DeleteEntity(Node entity)
         {
-            Group root = this;
-            while (root.parentGroup != null)
-            {
-                root = root.parentGroup;
-            }
-            root.DiscludeEntity(entity);
-            entity.collision.RemoveCollidersFromSet();
-            //room.CollisionSet.Remove(entity);
+            //entity.active = false;
+            //Group root = this;
+            //while (root.parentGroup != null)
+            //{
+            //    root = root.parentGroup;
+            //}
+            DiscludeEntity(entity);
+            //DiscludeEntity(entity);
+            //entities.Remove(entity);
+            entity.group = null;
             entity.OnDelete();
         }
 

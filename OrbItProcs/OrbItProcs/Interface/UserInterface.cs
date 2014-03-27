@@ -151,7 +151,6 @@ namespace OrbItProcs {
         {
             ProcessKeyboard();
             
-
             ProcessMouse();
             
             ProcessController();
@@ -278,25 +277,25 @@ namespace OrbItProcs {
                     return;
             }
 
-            if (!keyManager.MouseInGameBox)
-            {
+            //if (!keyManager.MouseInGameBox)
+            //{
                 if (ScrollAction != null)
                 {
                     if (mouseState.ScrollWheelValue < oldMouseState.ScrollWheelValue)
                     {
-                        ScrollAction(1);
+                        ScrollAction(2);
                     }
                     else if (mouseState.ScrollWheelValue > oldMouseState.ScrollWheelValue)
                     {
-                        ScrollAction(-1);
+                        ScrollAction(-2);
                     }
                 }
                 
                 oldMouseState = mouseState;
-                return;
-            }
+               // return;
+            //}
 
-            if (GameInputDisabled) return;
+            if (GameInputDisabled || !keyManager.MouseInGameBox) return;
             //game.processManager.PollMouse(mouseState, oldMouseState);
             int worldMouseX = (int)WorldMousePos.X;
             int worldMouseY = (int)WorldMousePos.Y;

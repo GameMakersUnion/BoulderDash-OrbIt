@@ -8,9 +8,9 @@ using Microsoft.Xna.Framework.Graphics;
 namespace OrbItProcs
 {
     /// <summary>
-    /// When another node enters this radius, it is displaced without affecting its velocity.
+    /// When another node enters this radius, it is displaced in the direction of the angle without affecting its velocity.
     /// </summary>
-    [Info(UserLevel.User, "When another node enters this radius, it is displaced without affecting its velocity.", CompType)]
+    [Info(UserLevel.User, "When another node enters this radius, it is displaced in the direction of the angle without affecting its velocity.", CompType)]
     public class Displace : Component, ILinkable
     {
         public const mtypes CompType = mtypes.affectother;
@@ -30,9 +30,9 @@ namespace OrbItProcs
         public int lowerbound { get; set; }
 
         /// <summary>
-        /// The strength with which the other node will be displaced
+        /// The strength with which the other node will be moved away.
         /// </summary>
-        [Info(UserLevel.Advanced, "The strength with which the other node will be displaced")]
+        [Info(UserLevel.User, "The strength with which the other node will be moved away.")]
         public float pushfactor { get; set; }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace OrbItProcs
             if (distVects < radius)
             {
                 if (distVects < lowerbound) distVects = lowerbound;
-                double angle = Math.Atan2((parent.body.pos.Y - other.body.pos.Y), (parent.body.pos.X - other.body.pos.X));
+                double aa = Math.Atan2((parent.body.pos.Y - other.body.pos.Y), (parent.body.pos.X - other.body.pos.X));
                 //float counterforce = 100 / distVects;
                 //float gravForce = multiplier / (distVects * distVects * counterforce);
                 //Console.WriteLine(angle);
@@ -83,14 +83,14 @@ namespace OrbItProcs
                 else gravForce = (pushfactor * parent.body.mass * other.body.mass) / (distVects);
 
                 if (angle != 0)
-                    angle = (angle + Math.PI + (Math.PI * (float)(angle / 180.0f)) % (Math.PI * 2)) - Math.PI;
+                    aa = (aa + Math.PI + (Math.PI * (float)(angle / 180.0f)) % (Math.PI * 2)) - Math.PI;
 
                 //float gravForce = gnode1.GravMultiplier;
-                float velX = (float)Math.Cos(angle) * gravForce;
-                float velY = (float)Math.Sin(angle) * gravForce;
+                float velX = (float)Math.Cos(aa) * gravForce;
+                float velY = (float)Math.Sin(aa) * gravForce;
                 Vector2 delta = new Vector2(velX, velY);
 
-                if (!ConstantPush) delta *= other.body.invmass;;
+                if (!ConstantPush) delta *= other.body.invmass;
 
                 other.body.pos -= delta;
 

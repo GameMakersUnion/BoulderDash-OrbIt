@@ -17,8 +17,6 @@ namespace OrbItProcs
 
         public const mtypes CompType = mtypes.affectself | mtypes.draw | mtypes.tracer;
         public override mtypes compType { get { return CompType; } set { } }
-
-        
         public int queuecount { get; set; }
         private float r1, g1, b1;
         private Queue<Vector2> positions;
@@ -44,6 +42,11 @@ namespace OrbItProcs
         public int randlife { get; set; }
 
         private int lifeleft;
+        /// <summary>
+        /// If enabled, causes the tree to leave a 'trunk' trail behind.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, causes the tree to leave a 'trunk' trail behind.")]
+        public bool LeaveTrunk { get; set; }
 
         /// <summary>
         /// The maximum number of children made at every division.
@@ -67,64 +70,69 @@ namespace OrbItProcs
             angleRange = 45;
             randlife = 20;
             maxchilds = 3;
+            LeaveTrunk = true;
         }
 
         public override void InitializeLists()
         {
             positions = new Queue<Vector2>();
             scales = new Queue<float>();
-
         }
         int deathcount = 0;
+        bool original = false;
         public override void AffectSelf()
         {
-            if (depth == -1)
+            if (lifeleft == -1)
             {
-                if (deathcount++ > 15) return;
+                if (deathcount++ > 15)
+                {
+                    //active = false;
+                    return;
+                }
+                if (!LeaveTrunk) return;
                 positions.Enqueue(parent.body.pos);
                 scales.Enqueue(parent.body.scale);
                 //parent.nodeState = state.drawOnly;
                 return;
             }
-            if (depth > branchStages)
+            if (depth >= branchStages)
             {
                 lifeleft = -1;
                 parent.body.velocity = new Vector2(0, 0);
                 depth = -1;
+                original = false;
                 //return;
-                
+                return;
             }
-
+            original = true;
             //angle = Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2);
             float scaledown = 1.0f - 0.01f;
             parent.body.scale *= scaledown;
-            if (lifeleft > 0)
-            {
-                if (positions.Count < queuecount)
-                {
-                    positions.Enqueue(parent.body.pos);
-                    scales.Enqueue(parent.body.scale);
-
-                }
-                else
-                {
-                    if (positions.Count > 0)
-                    {
-                        positions.Dequeue();
-                        positions.Enqueue(parent.body.pos);
-                    }
-                    if (scales.Count > 0)
-                    {
-                        scales.Dequeue();
-                        scales.Enqueue(parent.body.scale);
-                    }
-                }
-            }
+            //if (LeaveTrunk && lifeleft > 0)
+            //{
+            //    if (positions.Count < queuecount)
+            //    {
+            //        positions.Enqueue(parent.body.pos);
+            //        scales.Enqueue(parent.body.scale);
+            //    }
+            //    else
+            //    {
+            //        if (positions.Count > 0)
+            //        {
+            //            positions.Dequeue();
+            //            positions.Enqueue(parent.body.pos);
+            //        }
+            //        if (scales.Count > 0)
+            //        {
+            //            scales.Dequeue();
+            //            scales.Enqueue(parent.body.scale);
+            //        }
+            //    }
+            //}
 
             //branchdeath
             if (lifeleft > randlife)
             {
-                
                 //Console.WriteLine("{0} {1} > {2}",parent.name, lifeleft, randlife);
                 lifeleft = -1;
                 
@@ -155,36 +163,43 @@ namespace OrbItProcs
                     Node newNode = new Node();
                     Node.cloneNode(parent, newNode);
                     newNode.body.velocity = childvel;
-                    if (newNode.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
                     newNode.name = "node" + Node.nodeCounter;
                     //newNode.acceptUserProps(userP);
-                    newNode.comps[comp.tree].depth = depth + 1;
-                    newNode.comps[comp.tree].randlife = randomlife;
-                    newNode.comps[comp.tree].lifeleft = 0;
-                    newNode.comps[comp.tree].maxchilds = Math.Max(1,maxchilds - (depth % 2));
+                    Tree newTree = newNode.Comp<Tree>();
+                    newTree.depth = depth + 1;
+                    if (newTree.depth == branchStages)
+                        newTree.original = false;
+                    newTree.randlife = randomlife;
+                    newTree.lifeleft = 0;
+                    newTree.maxchilds = Math.Max(1, maxchilds - (depth % 2));
                     //parent.room.nodesToAdd.Enqueue(newNode);
                     //parent.room.masterGroup.childGroups.Values.ElementAt(1).IncludeEntity(newNode);
-                    Group g = parent.room.game.ui.sidebar.ActiveGroup;
-                    if (g != null)
-                        g.IncludeEntity(newNode);
-                    
+                    //Group g = parent.room.game.ui.sidebar.ActiveGroup;
+                    if (parent.group != null)
+                    {
+                        parent.group.IncludeEntity(newNode);
+                        newNode.group = parent.group;
+                    }
                 }
                 //parent.nodeState = state.drawOnly;
 
                 HashSet<Node> hs = new HashSet<Node>();
-                
-
             }
-            if (lifeleft >= 0)
+            else
             {
                 lifeleft++;
             }
-
-
         }
 
         public override void Draw()
         {
+            if (!LeaveTrunk || !original) return;
+            parent.room.camera.AddPermanentDraw(parent.texture, parent.body.pos, parent.body.color, parent.body.scale, 0, 200); //trunk doesn't die. (make 500?)
+        }
+
+        public void DrawOld()
+        {
+            if (!LeaveTrunk) return;
             Room room = parent.room;
             float mapzoom = room.zoom;
 

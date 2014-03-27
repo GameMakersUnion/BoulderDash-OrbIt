@@ -57,13 +57,13 @@ namespace OrbItProcs
             Node found = SelectNode(UserInterface.WorldMousePos);
             if (found != null)
             {
-                if (room.targetNode != null && room.targetNode.comps.ContainsKey(comp.flow))
+                if (room.targetNode != null && room.targetNode.HasComp<Flow>())
                 {
-                    room.targetNode.comps[comp.flow].AddToOutgoing(found);
+                    room.targetNode.Comp<Flow>().AddToOutgoing(found);
                 }
-                if (room.targetNode != null && room.targetNode.comps.ContainsKey(comp.tether))
+                if (room.targetNode != null && room.targetNode.HasComp<Tether>())
                 {
-                    room.targetNode.comps[comp.tether].AddToOutgoing(found);
+                    room.targetNode.Comp<Tether>().AddToOutgoing(found);
                 }
             }
             else
@@ -76,13 +76,13 @@ namespace OrbItProcs
             Node found = SelectNode(UserInterface.WorldMousePos);
             if (found != null)
             {
-                if (found.comps.ContainsKey(comp.flow))
+                if (found.HasComp<Flow>())
                 {
-                    found.comps[comp.flow].activated = !found.comps[comp.flow].activated;
+                    found.Comp<Flow>().activated = !found.Comp<Flow>().activated;
                 }
-                if (found.comps.ContainsKey(comp.tether))
+                if (found.HasComp<Tether>())
                 {
-                    found.comps[comp.tether].activated = !found.comps[comp.tether].activated;
+                    found.Comp<Tether>().activated = !found.Comp<Tether>().activated;
                 }
             }
             else

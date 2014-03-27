@@ -226,7 +226,7 @@ namespace OrbItProcs
             //heightCount += height;
 
             InspectorItem dictItem = new InspectorItem(null, rootItem, node.comps, node.GetType().GetProperty("comps"));
-            foreach (comp c in node.comps.Keys)
+            foreach (Type c in node.comps.Keys)
             {
                 string tooltip = "";
                 Info info = Utils.GetInfoClass(node.comps[c]);
@@ -260,7 +260,7 @@ namespace OrbItProcs
             {
                 foreach (Node n in activeGroup.fullSet)
                 {
-                    if (n.HasComponent(c)) n[c].active = value;
+                    if (n.HasComp(c)) n[c].active = value;
                 }
             }
         }
@@ -290,21 +290,20 @@ namespace OrbItProcs
                 return;
             }
             if (rootNode != null) new AddComponentWindow(sidebar, rootNode);
-            return;
 
-            ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !activeGroup.defaultNode.HasComponent(c))));
-            List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => activeGroup.defaultNode.HasComponent(c)));
-
-            PopUp.opt[] options = new PopUp.opt[]{
-                new PopUp.opt(PopUp.OptType.info, "Add component to: " + activeGroup.Name),
-                new PopUp.opt(PopUp.OptType.dropDown, nodecomplist),
-                };
-
-            PopUp.makePopup(ui, options, "Add Component", delegate(bool a, object[] o)
-            {
-                if (a) return addComponent(o);
-                else return false;
-            });
+            //ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !activeGroup.defaultNode.HasComponent(c))));
+            //List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => activeGroup.defaultNode.HasComponent(c)));
+            //
+            //PopUp.opt[] options = new PopUp.opt[]{
+            //    new PopUp.opt(PopUp.OptType.info, "Add component to: " + activeGroup.Name),
+            //    new PopUp.opt(PopUp.OptType.dropDown, nodecomplist),
+            //    };
+            //
+            //PopUp.makePopup(ui, options, "Add Component", delegate(bool a, object[] o)
+            //{
+            //    if (a) return addComponent(o);
+            //    else return false;
+            //});
         }
 
         private bool addComponent(object[] o)
@@ -313,11 +312,11 @@ namespace OrbItProcs
             comp c = (comp)o[1];
             foreach (Node n in activeGroup.fullSet)
             {
-                if (!n.HasComponent(c))
+                if (!n.HasComp(c))
                     n.addComponent(c, true);
             }
             Node def = activeGroup.defaultNode;
-            if (!def.HasComponent(c))
+            if (!def.HasComp(c))
                 def.addComponent(c, true);
 
             //refresh view

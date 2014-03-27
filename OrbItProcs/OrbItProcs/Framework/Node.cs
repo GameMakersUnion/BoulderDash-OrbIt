@@ -38,15 +38,7 @@ namespace OrbItProcs {
     public class DataStore : Dictionary<string, dynamic>
     {
         public DataStore() : base() { }
-
-        //public DataStore (params Tuple<string, dynamic>[] items) : base(items.Length)
-        //{
-        //    foreach(var item in items)
-        //    {
-        //        this[item.Item1] = item.Item2;
-        //    }
-        //}
-            }
+    }
 
     public class Node {
         public static int nodeCounter = 0;
@@ -61,7 +53,7 @@ namespace OrbItProcs {
         } }
 
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;
-        private Dictionary<comp, bool> tempCompActiveValues = new Dictionary<comp, bool>();
+        private Dictionary<Type, bool> tempCompActiveValues = new Dictionary<Type, bool>();
 
         private state _nodeState = state.on;
         public state nodeState { get { return _nodeState; } set { _nodeState = value; } }
@@ -74,25 +66,19 @@ namespace OrbItProcs {
             {
                 if (_active && !value)
                 {
-                    foreach (comp c in comps.Keys.ToList())
+                    foreach (Type t in comps.Keys.ToList())
                     {
-                        if (comps[c] is Component)
-                        {
-                            tempCompActiveValues[c] = comps[c].active;
-                            comps[c].active = false;
-                        }
+                        tempCompActiveValues[t] = comps[t].active;
+                        comps[t].active = false;
                     }
                     collision.RemoveCollidersFromSet();
                 }
                 else if (!_active && value)
                 {
-                    foreach (comp c in comps.Keys.ToList())
+                    foreach (Type t in comps.Keys.ToList())
                     {
-                        if (comps[c] is Component)
-                        {
-                            if (tempCompActiveValues.ContainsKey(c)) comps[c].active = tempCompActiveValues[c];
-                            else comps[c].active = true;
-                        }
+                        if (tempCompActiveValues.ContainsKey(t)) comps[t].active = tempCompActiveValues[t];
+                        else comps[t].active = true;
                     }
                     if (collision != null) collision.UpdateCollisionSet();
                 }
@@ -117,19 +103,25 @@ namespace OrbItProcs {
         //public int lifetime = -1;
 
         private string _name = "node";
-        public string name { get { return _name; } set { _name = value; } }
+        public string name { get { return _name; } 
+            set 
+            { 
+                _name = value;
+                if (value.Equals("Group115"))
+                    Console.WriteLine("Group115");
+            } 
+        }
 
         public Room room = Program.getRoom();
 
-        private Dictionary<comp, dynamic> _comps = new Dictionary<comp, dynamic>();
-        public Dictionary<comp, dynamic> comps { get { return _comps; } set { _comps = value; } }
+        private Dictionary<Type, Component> _comps = new Dictionary<Type, Component>();
+        public Dictionary<Type, Component> comps { get { return _comps; } set { _comps = value; } }
 
-        private List<comp> aOtherProps = new List<comp>();
-        private List<comp> aSelfProps = new List<comp>();
-        private List<comp> drawProps = new List<comp>();
-
-        private List<comp> compsToRemove = new List<comp>();
-        private List<comp> compsToAdd = new List<comp>();
+        private List<Type> aOtherProps = new List<Type>();
+        private List<Type> aSelfProps = new List<Type>();
+        private List<Type> drawProps = new List<Type>();
+        private List<Type> compsToRemove = new List<Type>();
+        private List<Type> compsToAdd = new List<Type>();
 
         private HashSet<string> _tags = new HashSet<string>();
         public HashSet<string> tags { get { return _tags; } set { _tags = value; } }
@@ -153,11 +145,11 @@ namespace OrbItProcs {
                 _movement = value;
                 if (comps != null && value != null)
                 {
-                    if (comps.ContainsKey(comp.movement))
+                    if (HasComp<Movement>())
                     {
-                        comps.Remove(comp.movement);
+                        comps.Remove(typeof(Movement));
                     }
-                    comps.Add(comp.movement, value);
+                    comps.Add(typeof(Movement), value);
                 }
             }
         }
@@ -171,11 +163,11 @@ namespace OrbItProcs {
                 _collision = value;
                 if (comps != null && value != null)
                 {
-                    if (comps.ContainsKey(comp.collision))
+                    if (HasComp<Collision>())
                     {
-                        comps.Remove(comp.collision);
+                        comps.Remove(typeof(Collision));
                     }
-                    comps.Add(comp.collision, value);
+                    comps.Add(typeof(Collision), value);
                 }
             }
         }
@@ -188,11 +180,11 @@ namespace OrbItProcs {
                 _basicdraw = value;
                 if (comps != null && value != null)
                 {
-                    if (comps.ContainsKey(comp.basicdraw))
+                    if (HasComp<BasicDraw>())
                     {
-                        comps.Remove(comp.basicdraw);
+                        comps.Remove(typeof(BasicDraw));
                     }
-                    comps.Add(comp.basicdraw, value);
+                    comps.Add(typeof(BasicDraw), value);
                 }
             }
         }
@@ -202,6 +194,8 @@ namespace OrbItProcs {
             get { return body.texture; }
             set { body.texture = value; }
         }
+        public Player player;
+
 
         private ObservableHashSet<Link> _SourceLinks = new ObservableHashSet<Link>();
         [Polenter.Serialization.ExcludeFromSerialization]
@@ -211,7 +205,17 @@ namespace OrbItProcs {
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> TargetLinks { get { return _TargetLinks; } set { _TargetLinks = value; } }
         [Polenter.Serialization.ExcludeFromSerialization]
-        public Group group { get; set; }
+        public Group group
+        {
+            get { return _group; }
+            set
+            {
+                //if (value == null)
+                //    Console.WriteLine("FUCKLE");
+                _group = value;
+            }
+        }
+        private Group _group;
 
         [Polenter.Serialization.ExcludeFromSerialization]
         [Info(UserLevel.Never)]
@@ -219,15 +223,15 @@ namespace OrbItProcs {
         {
             get
             {
-                if (!comps.ContainsKey(comp.delegator))
+                if (!HasComp<Delegator>())
                 {
                     addComponent(comp.delegator, true);
                 }
-                return comps[comp.delegator];
+                return Comp<Delegator>();
             }
             set
             {
-                comps[comp.delegator] = value;
+                comps[typeof(Delegator)] = value;
             }
         }
         [Polenter.Serialization.ExcludeFromSerialization]
@@ -236,15 +240,15 @@ namespace OrbItProcs {
         {
             get
             {
-                if (!comps.ContainsKey(comp.scheduler))
+                if (!HasComp<Scheduler>())
                 {
                     addComponent(comp.scheduler, true);
                 }
-                return comps[comp.scheduler];
+                return Comp<Scheduler>();
             }
             set
             {
-                comps[comp.scheduler] = value;
+                comps[typeof(Scheduler)] = value;
             }
         }
 
@@ -264,9 +268,9 @@ namespace OrbItProcs {
             get { return true; }
             set 
             {
-                foreach (comp c in comps.Keys.ToList())
+                foreach (Type c in comps.Keys.ToList())
                 {
-                    ((Component)comps[c]).parent = this;
+                    comps[c].parent = this;
                 }
                 body.parent = this;
                 collision.parent = this;
@@ -343,37 +347,62 @@ namespace OrbItProcs {
                 // if the key is a comp type, we need to add the component to comps dict
                 if (p is comp)
                 {
-                    fetchComponent(p, userProps[p]);
+                    comp c = (comp)p;
+                    fetchComponent(Utils.compTypes[c], userProps[c]);
                 }
                 // if the key is a node type, we need to update the instance variable value
                 else if (p is nodeE)
-                    storeInInstance(p, userProps);
+                {
+                    nodeE nn = (nodeE)p;
+                    storeInInstance(nn, userProps);
+                }
             }
             SortComponentLists();
         }
 
-        public T GetComponent<T>() //todo: make Component dictionary (not dynamic) to see if casting to (T) is faster than dynamic (probably casts anyway)
+        public T Comp<T>() where T : Component
         {
-            return comps[Utils.compEnums[typeof(T)]];
+            return (T)comps[typeof(T)];
         }
-        public bool HasComponent(comp component)
+        public bool HasComp<T>() where T : Component
         {
-            return comps.ContainsKey(component);
+            return comps.ContainsKey(typeof(T));
         }
+        public bool HasComp(comp component)
+        {
+            return comps.ContainsKey(Utils.compTypes[component]);
+        }
+        public bool HasComp(Type componentType)
+        {
+            return comps.ContainsKey(componentType);
+        }
+
         public bool HasActiveComponent(comp component)
         {
-            return comps.ContainsKey(component) && comps[component].active;
+            Type t = Utils.compTypes[component];
+            return comps.ContainsKey(t) && comps[t].active;
+        }
+        public void EnsureContains<T>(bool active = true) where T : Component
+        {
+            if (!HasComp<T>())
+            {
+                addComponent<T>(active);
+            }
+        }
+        public bool HasActiveComponent<T>()
+        {
+            return comps.ContainsKey(typeof(T)) && comps[typeof(T)].active;
         }
         [Info(UserLevel.Never)]
         public dynamic this[comp component]
         {
             get
             {
-                return comps[component];
+                return comps[Utils.compTypes[component]];
             }
             set
             {
-                comps[component] = value;
+                comps[Utils.compTypes[component]] = value;
             }
         }
         public T CheckData<T>(string key)
@@ -425,21 +454,21 @@ namespace OrbItProcs {
                 ///*
                 returnObjectsFinal = room.gridsystem.retrieve(body, reach);
                 //int cellReach = (int)(body.radius * 2) / room.gridsystem.cellWidth * 2;
-                if (comps.ContainsKey(comp.flow) && comps[comp.flow].active)
-                {
-                    returnObjectsFinal = new List<Collider>();
-                    if (comps[comp.flow].activated)
-                    {
-                        returnObjectsFinal = comps[comp.flow].outgoing.ToList();
-                    }
-                }
+                //if (HasActiveComponent<Flow>())
+                //{
+                //    returnObjectsFinal = new List<Collider>();
+                //    if (Component<Flow>().activated)
+                //    {
+                //        returnObjectsFinal = Component<Flow>().outgoing.ToList();
+                //    }
+                //}
                 returnObjectsFinal.Remove(body);
 
                 foreach (Collider other in returnObjectsFinal)
                 {
                     if (other.parent.active)
                     {
-                        foreach (comp c in aOtherProps)
+                        foreach (Type c in aOtherProps)
                         {
                             if (!comps[c].active) continue;
                             comps[c].AffectOther(other.parent);
@@ -473,7 +502,7 @@ namespace OrbItProcs {
 
             if (OnAffectOthers != null) OnAffectOthers.Invoke(this, null);
 
-            foreach (comp c in aSelfProps)
+            foreach (Type c in aSelfProps)
             {
                 comps[c].AffectSelf();
             }
@@ -497,7 +526,7 @@ namespace OrbItProcs {
         {
             if (nodeState == state.off || nodeState == state.updateOnly) return;
 
-            foreach (comp c in drawProps)
+            foreach (Type c in drawProps)
             {
                 if (!comps[c].CallDraw) continue;
                 if (!comps[c].active) continue;
@@ -526,7 +555,7 @@ namespace OrbItProcs {
             return ret;
         }
 
-        public void setCompActive(comp c, bool Active)
+        public void setCompActive(Type c, bool Active)
         {
             if (comps.ContainsKey(c))
             {
@@ -540,7 +569,7 @@ namespace OrbItProcs {
 
         //assuming caller knows that c is contained in comps (to prevent a very frequent comparison) 
         //(probably called from a foreach of comps.keys anyway)
-        public bool isCompActive(comp c)
+        public bool isCompActive(Type c)
         {
             return comps[c].active;
         }
@@ -562,8 +591,9 @@ namespace OrbItProcs {
                 // if the key is a comp type, we need to add the component to comps dict
                 if (p is comp)
                 {
-                    fetchComponent(p, userProps[p]);
-                    if (comps.ContainsKey(p)) comps[p].active = userProps[p];
+                    Type t = Utils.compTypes[p];
+                    fetchComponent(t, userProps[p]);
+                    if (HasComp(t)) comps[t].active = userProps[p];
                 }
             }
             SortComponentLists();
@@ -571,11 +601,21 @@ namespace OrbItProcs {
 
         public void addComponent(comp c, bool active, bool overwrite = false)
         {
-            bool fetch = fetchComponent(c, active, overwrite);
+            bool fetch = fetchComponent(Utils.compTypes[c], active, overwrite);
+            if (fetch) SortComponentLists();
+        }
+        public void addComponent(Type t, bool active, bool overwrite = false)
+        {
+            bool fetch = fetchComponent(t, active, overwrite);
+            if (fetch) SortComponentLists();
+        }
+        public void addComponent<T>(bool active, bool overwrite = false) where T : Component
+        {
+            bool fetch = fetchComponent(typeof(T), active, overwrite);
             if (fetch) SortComponentLists();
         }
 
-        public void addComponentSafe(comp c)
+        public void addComponentSafe(Type c)
         {
             if (comps.ContainsKey(c)) { Console.WriteLine("AddComponentSafe didn't perform: key already exists."); return; }
 
@@ -587,7 +627,7 @@ namespace OrbItProcs {
         public void addComponent(Component component, bool active)
         {
             component.parent = this;
-            comps.Add(component.com, component);
+            comps.Add(component.GetType(), component);
 
             component.Initialize(this);
             SortComponentLists();
@@ -595,19 +635,19 @@ namespace OrbItProcs {
 
 
 
-        public bool fetchComponent(comp c, bool active, bool overwrite = false)
+        public bool fetchComponent(Type t, bool active, bool overwrite = false)
         {
-            if (c == comp.movement)
+            if (t == typeof(Movement))
             {
                 movement.active = active;
                 return false;
             }
-            else if (c == comp.collision)
+            else if (t == typeof(Collision))
             {
                 collision.active = active;
                 return false;
             }
-            else if (c == comp.basicdraw)
+            else if (t == typeof(BasicDraw))
             {
                 basicdraw.active = active;
                 return false;
@@ -615,19 +655,20 @@ namespace OrbItProcs {
             
             if (overwrite)
             {
-                Component component = MakeComponent(c, active, this);
-                if (comps.ContainsKey(c))
+
+                Component component = MakeComponent(t, active, this);
+                if (HasComp(t))
                 {
-                    comps.Remove(c);
+                    comps.Remove(t);
                 }
-                comps.Add(c, component);
+                comps.Add(t, component);
             }
             else
             {
-                if (!comps.ContainsKey(c))
+                if (!HasComp(t))
                 {
-                    Component component = MakeComponent(c, active, this);
-                    comps.Add(c, component);
+                    Component component = MakeComponent(t, active, this);
+                    comps.Add(t, component);
                 }
                 else
                 {
@@ -637,11 +678,11 @@ namespace OrbItProcs {
             return true;
         }
 
-        public Component MakeComponent(comp c, bool active, Node parent)
+        public Component MakeComponent(Type t, bool active, Node parent)
         {
             Component component;
 
-            component = Component.GenerateComponent(c);
+            component = Component.GenerateComponent(t);
             component.parent = this;
             component.active = active;
             component.AfterCloning();
@@ -651,13 +692,14 @@ namespace OrbItProcs {
 
         public void RemoveComponent(comp c)
         {
-            if (!comps.ContainsKey(c))
+            Type t = Utils.compTypes[c];
+            if (!comps.ContainsKey(t))
             {
                 //Console.WriteLine("Component already removed or doesn't exist.");
                 return;
             }
-            comps[c].active = false;
-            compsToRemove.Add(c);
+            comps[t].active = false;
+            compsToRemove.Add(t);
             if (!room.masterGroup.entities.Contains(this))
             {
                 SortComponentLists();
@@ -672,9 +714,9 @@ namespace OrbItProcs {
 
         public void RemoveComponentTriggered()
         {
-            List<comp> toremove = new List<comp>();
-            List<comp> toaddremove = new List<comp>();
-            foreach (comp c in compsToRemove)
+            List<Type> toremove = new List<Type>();
+            List<Type> toaddremove = new List<Type>();
+            foreach (Type c in compsToRemove)
             {
                 if (comps.ContainsKey(c))
                 {
@@ -692,7 +734,7 @@ namespace OrbItProcs {
                     }
                 }
             }
-            foreach (comp c in compsToAdd)
+            foreach (Type c in compsToAdd)
             {
                 if (comps.ContainsKey(c)) continue;
 
@@ -719,23 +761,29 @@ namespace OrbItProcs {
 
         public void SortComponentListsUpdate()
         {
-            aOtherProps = new List<comp>();
-            aSelfProps = new List<comp>();
+            aOtherProps = new List<Type>();
+            aSelfProps = new List<Type>();
 
             var clist = comps.Keys.ToList();
-            clist.Sort();
-
-            foreach (comp c in clist)
+            Comparison<Type> typeComparer = delegate(Type t1, Type t2)
             {
-                if (c == comp.movement || c == comp.collision) continue;
+                string s1 = t1.ToString().LastWord('.');
+                string s2 = t2.ToString().LastWord('.');
+                return s1.CompareTo(s2);
+            };
+            clist.Sort(typeComparer);
+
+            foreach (Type c in clist)
+            {
+                if (c == typeof(Movement) || c == typeof(Collision)) continue;
                 if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].compType & mtypes.affectother) == mtypes.affectother))
                 {
                     aOtherProps.Add(c);
                 }
             }
-            foreach (comp c in clist)
+            foreach (Type c in clist)
             {
-                if (c == comp.movement) continue;
+                if (c == typeof(Movement)) continue;
                 if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].compType & mtypes.affectself) == mtypes.affectself))
                 {
                     aSelfProps.Add(c);
@@ -745,19 +793,25 @@ namespace OrbItProcs {
 
         public void SortComponentListsDraw()
         {
-            drawProps = new List<comp>();
+            drawProps = new List<Type>();
 
             var clist = comps.Keys.ToList();
-            clist.Sort();
+            Comparison<Type> typeComparer = delegate(Type t1, Type t2)
+            {
+                string s1 = t1.ToString().LastWord('.');
+                string s2 = t2.ToString().LastWord('.');
+                return s1.CompareTo(s2);
+            };
+            clist.Sort(typeComparer);
 
-            foreach (comp c in clist)
+            foreach (Type c in clist)
             {
                 if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].compType & mtypes.minordraw) == mtypes.minordraw))
                 {
                     drawProps.Add(c);
                 }
             }
-            foreach (comp c in clist)
+            foreach (Type c in clist)
             {
                 if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].compType & mtypes.draw) == mtypes.draw))
                 {
@@ -793,7 +847,7 @@ namespace OrbItProcs {
 
         public void OnSpawn()
         {
-            foreach (comp key in comps.Keys.ToList())
+            foreach (Type key in comps.Keys.ToList())
             {
                 Component component = comps[key];
                 MethodInfo mInfo = component.GetType().GetMethod("OnSpawn");
@@ -812,14 +866,16 @@ namespace OrbItProcs {
             //Console.WriteLine("---------------");
             room.nodeHashes.Remove(nodeHash);
 
-            active = false;
-            if (this == room.targetNode) room.targetNode = null;
-            if (this == room.game.ui.sidebar.inspectorArea.editNode) room.game.ui.sidebar.inspectorArea.editNode = null; //todo: social design pattern
-            if (this == room.game.ui.spawnerNode) room.game.ui.spawnerNode = null;
-            if (room.masterGroup != null && room.masterGroup.fullSet.Contains(this))
-            {
-                room.masterGroup.DeleteEntity(this);
-            }
+            //active = false;
+
+            //if (this == room.targetNode) room.targetNode = null;
+            //if (this == room.game.ui.sidebar.inspectorArea.editNode) room.game.ui.sidebar.inspectorArea.editNode = null; //todo: social design pattern
+            //if (this == room.game.ui.spawnerNode) room.game.ui.spawnerNode = null;
+
+            //if (room.masterGroup != null && room.masterGroup.fullSet.Contains(this))
+            //{
+            //    room.masterGroup.DiscludeEntity(this);
+            //}
         }
 
         public Node CreateClone(bool CloneHash = false)
@@ -856,17 +912,17 @@ namespace OrbItProcs {
                 }
                 if (field.Name.Equals("_comps"))
                 {
-                    Dictionary<comp, dynamic> dict = sourceNode.comps;
-                    foreach (comp key in dict.Keys)
+                    Dictionary<Type, Component> dict = sourceNode.comps;
+                    foreach (Type key in dict.Keys)
                     {
-                        if (key == comp.collision || key == comp.movement) continue;
+                        if (key == typeof(Movement) || key == typeof(Collision)) continue;
                         destNode.addComponent(key, sourceNode.comps[key].active);
                         Component.CloneComponent(dict[key], destNode.comps[key]);
                         destNode.comps[key].Initialize(destNode);
                     }
-                    foreach (comp key in destNode.comps.Keys.ToList())
+                    foreach (Type key in destNode.comps.Keys.ToList())
                     {
-                        if (key == comp.collision || key == comp.movement) continue;
+                        if (key == typeof(Movement) || key == typeof(Collision)) continue;
                         Component component = destNode.comps[key];
                         MethodInfo mInfo = component.GetType().GetMethod("AfterCloning");
                         if (mInfo != null

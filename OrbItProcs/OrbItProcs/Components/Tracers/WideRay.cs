@@ -22,7 +22,6 @@ namespace OrbItProcs
         /// Sets the length of the ray.
         /// </summary>
         [Info(UserLevel.User, "Sets the length of the ray. ")]
-        [Polenter.Serialization.ExcludeFromSerialization]
         public int rayLength
         {
             get
@@ -31,42 +30,55 @@ namespace OrbItProcs
             }
             set
             {
-                if (parent != null && parent.HasComponent(comp.queuer) && parent[comp.queuer].queuecount < value)
-                {
-                    parent[comp.queuer].queuecount = value;
-                }
+                //if (parent != null && parent.HasComp<Queuer>() && parent.Comp<Queuer>().queuecount < value)
+                //{
+                //    parent.Comp<Queuer>().queuecount = value;
+                //}
                 _rayLength = value;
             }
         }
-
-        //private double angle = 0;
-        private float rayscale = 20;
-        private int width = 3;
+        /// <summary>
+        /// Sets the thickness of each ray line.
+        /// </summary>
+        [Info(UserLevel.User, "Sets the thickness of each ray line.")]
+        public float rayscale { get; set; }
+        /// <summary>
+        /// Sets the width (length) of each ray line.
+        /// </summary>
+        [Info(UserLevel.User, "Sets the width (length) of each ray line.")]
+        public int width { get; set; }
 
         public WideRay() : this(null) { }
         public WideRay(Node parent = null)
         {
             if (parent != null) this.parent = parent;
             com = comp.wideray;
-            InitializeLists();  
+            rayscale = 20;
+            width = 3;
         }
 
-        public override void AfterCloning()
-        {
-            if (!parent.comps.ContainsKey(comp.queuer)) parent.addComponent(comp.queuer, true);
-            //if (parent.comps.ContainsKey(comp.queuer)) 
-            parent.comps[comp.queuer].qs = parent.comps[comp.queuer].qs | queues.scale | queues.position | queues.angle;
-            //int i = 0;
-        }
+        //public override void AfterCloning()
+        //{
+        //    if (!parent.HasComp<Queuer>()) parent.addComponent(comp.queuer, true);
+        //    parent.Comp<Queuer>().qs = parent.Comp<Queuer>().qs | queues.scale | queues.position | queues.angle;
+        //}
 
         public override void Draw()
+        {
+            Vector2 pos = parent.body.pos;
+            Vector2 scalevect = new Vector2(rayscale, width);
+            float angle = (float)(Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + Math.PI / 2);
+            parent.room.camera.AddPermanentDraw(textures.whitepixel, pos, parent.body.color, scalevect, angle, rayLength);
+        }
+
+        public void DrawOld()
         {
             Room room = parent.room;
             float mapzoom = room.zoom;
 
-            Queue<float> scales = parent.comps[comp.queuer].scales;
-            Queue<float> angles = parent.comps[comp.queuer].angles;
-            Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
+            Queue<float> scales = parent.Comp<Queuer>().scales;
+            Queue<float> angles = parent.Comp<Queuer>().angles;
+            Queue<Vector2> positions = ((Queue<Vector2>)(parent.Comp<Queuer>().positions));
 
 
             Vector2 screenPos = parent.body.pos * mapzoom;

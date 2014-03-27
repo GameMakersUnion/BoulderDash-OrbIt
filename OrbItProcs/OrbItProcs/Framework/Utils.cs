@@ -15,6 +15,10 @@ namespace OrbItProcs {
         public const float rootOfTwo = 1.41421356237f;
         public const float invRootOfTwo = 0.70710678118f;
 
+        public static string Name(this Type t)
+        {
+            return t.ToString().LastWord('.');
+        }
         public static Texture2D Crop(this Texture2D image, Rectangle source)
         {
             var graphics = image.GraphicsDevice;
@@ -386,16 +390,6 @@ namespace OrbItProcs {
                 //    kvp.Key, kvp.Value);
             }
         }
-
-        public static void ensureContains(Dictionary<dynamic, dynamic> props, Dictionary<dynamic, dynamic> defProps)
-        {
-            foreach (dynamic p in defProps.Keys)
-            {
-                if (!props.ContainsKey(p)) props.Add(p, defProps[p]);
-                else props[p] = props[p] ?? defProps[p];
-            }
-            
-        }
         public static Vector2 CENTER_TEXTURE = new Vector2(0.5f, 0.5f);
         public static void DrawLine(Room room, Vector2 start, Vector2 end, float thickness, Color color)
         {
@@ -487,9 +481,9 @@ namespace OrbItProcs {
                 {
                     if (target == null) return;
                     if (target.CheckData<bool>("infected")) return;
-                    if (target.comps.ContainsKey(comp.scheduler))
+                    if (target.HasComp<Scheduler>())
                     {
-                        target.GetComponent<Scheduler>().doAfterXMilliseconds(doAfter, Utils.random.Next(5000));
+                        target.Comp<Scheduler>().doAfterXMilliseconds(doAfter, Utils.random.Next(5000));
                         target.SetData("infected", true);
                     }
                 };

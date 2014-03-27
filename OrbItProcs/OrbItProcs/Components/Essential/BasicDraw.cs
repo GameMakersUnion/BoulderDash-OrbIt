@@ -93,6 +93,7 @@ namespace OrbItProcs
             if (parent != null)
             {
                 parent.body.color = new Color(Red, Green, Blue, Alpha);
+                parent.body.permaColor = parent.body.color;
             }
         }
         
@@ -101,6 +102,7 @@ namespace OrbItProcs
             if (parent != null)
             {
                 parent.body.color = Utils.randomColor();
+                parent.body.permaColor = parent.body.color;
             }
         }
 
@@ -118,7 +120,7 @@ namespace OrbItProcs
             float mapzoom = room.zoom;
 
             Texture2D tex = parent.getTexture();
-            room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale);
+            room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale, parent.body.orient);
 
             /*Rectangle? sourceRect = null;
             int minx = 0, miny = 0, maxx = tex.Width, maxy = tex.Height;

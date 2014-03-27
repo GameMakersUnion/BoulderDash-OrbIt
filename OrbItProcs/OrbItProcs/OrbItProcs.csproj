@@ -47,6 +47,9 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <PlatformTarget>x86</PlatformTarget>
     <XnaCompressContent>false</XnaCompressContent>
+    <NoWarn>
+    </NoWarn>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
@@ -132,7 +135,10 @@
     <Compile Include="Components\Delegator.cs" />
     <Compile Include="Components\Drawers\ColorChanger.cs" />
     <Compile Include="Components\Drawers\ColorGravity.cs" />
+    <Compile Include="Components\Meta\Swap.cs" />
     <Compile Include="Components\Scheduler.cs" />
+    <Compile Include="Framework\Gametypes\BigTony.cs" />
+    <Compile Include="Framework\Gametypes\Gametype.cs" />
     <Compile Include="Interface\Views\AddComponentView.cs" />
     <Compile Include="Interface\Views\AddComponentWindow.cs" />
     <Compile Include="Interface\Views\CreateGroupWindow.cs" />
@@ -155,6 +161,7 @@
     <Compile Include="Interface\Views\ToolWindow.cs" />
     <Compile Include="Physics\Collider.cs" />
     <Compile Include="Processes\CameraControl.cs" />
+    <Compile Include="Processes\DirectedSpawn.cs" />
     <Compile Include="Processes\GraphData.cs" />
     <Compile Include="Physics\Body.cs" />
     <Compile Include="Components\Essential\BasicDraw.cs" />
@@ -202,11 +209,11 @@
     <Compile Include="Interface\PopUp.cs" />
     <Compile Include="Interface\InspectorItem.cs" />
     <Compile Include="Interface\UserInterface.cs" />
-    <Compile Include="Node.cs" />
+    <Compile Include="Framework\Node.cs" />
     <Compile Include="Framework\ModifierInfo.cs" />
     <Compile Include="Physics\Manifold.cs" />
     <Compile Include="Physics\Shape.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="Framework\Player.cs" />
     <Compile Include="Processes\AxisMovement.cs" />
     <Compile Include="Processes\GroupSelect.cs" />
     <Compile Include="Processes\MapEditor.cs" />
@@ -220,11 +227,11 @@
     <Compile Include="Processes\TripSpawnOnCollide.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Game1.cs" />
-    <Compile Include="Room.cs" />
+    <Compile Include="Framework\Game1.cs" />
+    <Compile Include="Framework\Room.cs" />
     <Compile Include="Testing.cs" />
-    <Compile Include="Utils.cs" />
-    <Compile Include="VMath.cs" />
+    <Compile Include="Framework\Utils.cs" />
+    <Compile Include="Processes\VMath.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Includes\C3.XNA.Primitives2D.dll" />

@@ -380,12 +380,19 @@ namespace OrbItProcs
         public ControlSide side;
         public FullPadMode fullPadMode;
         bool fullControllerAvailable;
-        public HalfController(int player, FullPadMode mode = FullPadMode.spellMode)
+        public static HalfController GetNew(int player, FullPadMode mode = FullPadMode.spellMode)
+        {
+            bool win = false;
+            HalfController h = new HalfController(player, ref win, mode);
+            return win ? h : null;
+        }
+
+        private HalfController(int player, ref bool assign, FullPadMode mode = FullPadMode.spellMode)
         {
             halfControllers.Add(this);
             this.fullPadMode = mode;
             this.playerNum = player;
-            reassign();
+            assign = reassign();
         }
 
         public HalfPadState getState()
@@ -402,7 +409,7 @@ namespace OrbItProcs
                 halfControllers.First(x => x.controllerCode == (ControllerCodes)((int)controllerCode << 1)).fullControllerAvailable = true;
             base.unassign();
         }
-        public void reassign()
+        public bool reassign()
         {
             for (int j = 0; j < maxControllers*2; j++)
             {
@@ -419,7 +426,8 @@ namespace OrbItProcs
                     {
                         PopUp.Toast("Insufficient controllers! Player " + playerNum + " will not work!");
                         enabled = false;
-                        return;
+
+                        return false;
                     }
                 }
 
@@ -437,11 +445,12 @@ namespace OrbItProcs
                         halfControllers.First(x => x.controllerCode == (ControllerCodes)((int)controllerCode >> 1)).fullControllerAvailable = false;
                     }
                     assign((ControllerCodes)(1 << i));
-                    return;
+                    return true;
                 }
             }
             if (!GamePad.GetState(controllerIndex).IsConnected)
                 PopUp.Toast("Warning: Player " + playerNum + " is disconnected.");
+            return false;
         }
 
     }

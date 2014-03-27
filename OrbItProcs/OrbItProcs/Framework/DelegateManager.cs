@@ -122,11 +122,11 @@ namespace OrbItProcs
         public static void ChangeArg(Node parent, string infoname, string argname, object value)
         {
             if (parent != null
-                    && parent.comps.ContainsKey(comp.modifier)
-                    && parent.comps[comp.modifier].modifierInfos.ContainsKey(infoname)
-                    && parent.comps[comp.modifier].modifierInfos[infoname].args.ContainsKey(argname))
+                    && parent.HasComp<Modifier>()
+                    && parent.Comp<Modifier>().modifierInfos.ContainsKey(infoname)
+                    && parent.Comp<Modifier>().modifierInfos[infoname].args.ContainsKey(argname))
             {
-                parent.comps[comp.modifier].modifierInfos[infoname].args[argname] = value;
+                parent.Comp<Modifier>().modifierInfos[infoname].args[argname] = value;
             }
         }
 

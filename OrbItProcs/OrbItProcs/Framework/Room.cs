@@ -159,7 +159,7 @@ namespace OrbItProcs {
             defaultNode.name = "master";
             //defaultNode.IsDefault = true;
 
-            defaultNode.comps.Keys.ToList().ForEach(delegate(comp c)
+            defaultNode.comps.Keys.ToList().ForEach(delegate(Type c)
             {
                 defaultNode.comps[c].AfterCloning();
             });
@@ -268,7 +268,7 @@ namespace OrbItProcs {
                 foreach (var player in players)
                 {
                     player.Update(gametime); //#bigtony
-            }
+                }
             }
 
             scheduler.AffectSelf();
@@ -300,7 +300,6 @@ namespace OrbItProcs {
             gridsystemCollision.alreadyVisited = new HashSet<Collider>();
 
             //todo: remove tolists if possible
-
             foreach (var c in CollisionSet) //.ToList() 
             {
                 if (c.parent.active)
@@ -594,7 +593,7 @@ namespace OrbItProcs {
         public void tether()
         {
             Group g1 = masterGroup.FindGroup(game.ui.sidebar.cbListPicker.SelectedItem());
-            g1.defaultNode.comps[comp.tether].compType = mtypes.affectother | mtypes.draw;
+            g1.defaultNode.Comp<Tether>().compType = mtypes.affectother | mtypes.draw;
         }
 
         public void hide()

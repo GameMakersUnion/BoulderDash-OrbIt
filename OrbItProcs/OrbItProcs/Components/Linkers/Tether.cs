@@ -15,7 +15,7 @@ namespace OrbItProcs
     [Info(UserLevel.User, "The position of linked nodes is controlled to stay at a particular distance from the source node.", CompType)]
     public class Tether : Component, ILinkable
     {
-        public const mtypes CompType = mtypes.exclusiveLinker | mtypes.minordraw;
+        public const mtypes CompType = mtypes.minordraw | mtypes.affectself;// | mtypes.exclusiveLinker;
         public override mtypes compType { get { return CompType; } set { } }
         [Info(UserLevel.Developer)]
         public Link link { get; set ; }
@@ -30,18 +30,22 @@ namespace OrbItProcs
                     foreach (Node other in outgoing.ToList())
                     {
                         outgoing.Remove(other);
-                        other.comps[comp.tether].incoming.Remove(parent);
+                        other.Comp<Tether>().incoming.Remove(parent);
                     }
                     foreach (Node other in incoming.ToList())
                     {
-                        
-                        other.comps[comp.tether].outgoing.Remove(parent);
+                        other.Comp<Tether>().outgoing.Remove(parent);
                         incoming.Remove(other);
                     }
                 }
             }
         }
-
+        private bool _activated = false;
+        /// <summary>
+        /// Determines the state of the node. If activated, it actively applies tether's effect. Middle click in select mode to toggle.
+        /// </summary>
+        [Info(UserLevel.Advanced, "Determines the state of the node. If activated, it actively applies tether's effect. Middle click in select mode to toggle.")]
+        public bool activated { get { return _activated; } set { _activated = value; } }
         private HashSet<Node> _outgoing = new HashSet<Node>();
         [Polenter.Serialization.ExcludeFromSerialization]
         public HashSet<Node> outgoing { get { return _outgoing; } set { _outgoing = value; } }
@@ -84,7 +88,7 @@ namespace OrbItProcs
         public Tether() : this(null) { }
         public Tether(Node parent = null)
         {
-            
+            activated = true;
             if (parent != null)
             {
                 this.parent = parent;
@@ -100,7 +104,7 @@ namespace OrbItProcs
 
         public override void AffectOther(Node other) // called when used as a link
         {
-            if (!active) { return; }
+            if (!active || !activated) { return; }
                 Vector2 diff = other.body.pos - parent.body.pos;
                 float len;
                 if (lockedDistance)
@@ -153,7 +157,7 @@ namespace OrbItProcs
             }
         public override void AffectSelf()
         {
-            if (active)
+            if (active && activated)
             {
                 foreach (Node other in outgoing)
                 {
@@ -247,19 +251,19 @@ namespace OrbItProcs
 
         public void AddToOutgoing(Node node)
         {
-            if (node != parent && node.comps.ContainsKey(comp.tether))
+            if (node != parent && node.HasComp<Tether>())
             {
                 if (outgoing.Contains(node))
                 {
                     outgoing.Remove(node);
-                    node.comps[comp.tether].incoming.Remove(parent);
+                    node.Comp<Tether>().incoming.Remove(parent);
                     if (lockedAngle && confiningVects.ContainsKey(node)) confiningVects.Remove(node);
                     if (lockedDistance && lockedVals.ContainsKey(node)) lockedVals.Remove(node);
                 }
                 else
                 {
                     outgoing.Add(node);
-                    node.comps[comp.tether].incoming.Add(parent);
+                    node.Comp<Tether>().incoming.Add(parent);
                     if (lockedAngle && !confiningVects.ContainsKey(node))
                     {
                         Vector2 v = (node.body.pos - parent.body.pos);
@@ -281,8 +285,8 @@ namespace OrbItProcs
             //Queue<float> scales = parent.comps[comp.queuer].scales;
             //Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
             Color col;
-            if (active)
-                col = parent.body.color;
+            if (activated)
+                col = Color.Blue;
             else
                 col = Color.White;
             room.camera.Draw(parent.body.texture, parent.body.pos, col, parent.body.scale * 1.2f);
