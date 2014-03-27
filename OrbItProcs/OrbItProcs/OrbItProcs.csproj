@@ -171,6 +171,7 @@
     <Compile Include="Framework\Controller.cs" />
     <Compile Include="Framework\IndexArray.cs" />
     <Compile Include="Framework\Level.cs" />
+    <Compile Include="Interface\Views\PlayerView.cs" />
     <Compile Include="Interface\Views\SidebarView1.cs" />
     <Compile Include="Interface\Toggle.cs" />
     <Compile Include="Interface\Views\ToolWindow.cs" />

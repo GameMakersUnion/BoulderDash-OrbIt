@@ -75,6 +75,15 @@ namespace OrbItProcs {
                 return masterGroup.childGroups["General Groups"];
             }
         }
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public Group playerGroup
+        {
+            get
+            {
+                if (masterGroup == null) return null;
+                return masterGroup.childGroups["Player Group"];
+            }
+        }
 
         [Polenter.Serialization.ExcludeFromSerialization]
         public Node defaultNode { get; set; }
@@ -173,17 +182,15 @@ namespace OrbItProcs {
 
             if (Groups)
             {
+                Group playerGroup = new Group(defaultNode, masterGroup, Name: "Player Group", Spawnable: false);
+
                 Group generalGroup = new Group(defaultNode, masterGroup, Name: "General Groups", Spawnable: false);
-                //masterGroup.AddGroup(generalGroup.Name, generalGroup);
 
                 Group linkGroup = new Group(defaultNode, masterGroup, Name: "Link Groups", Spawnable: false);
-                //masterGroup.AddGroup(linkGroup.Name, linkGroup);
 
                 Group wallGroup = new Group(defaultNode, masterGroup, Name: "Walls", Spawnable: false);
-                //masterGroup.AddGroup(wallGroup.Name, wallGroup);
 
                 Group firstGroup = new Group(firstdefault, generalGroup, Name: "Group1");
-                //generalGroup.AddGroup(firstGroup.Name, firstGroup);
             }
 
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {

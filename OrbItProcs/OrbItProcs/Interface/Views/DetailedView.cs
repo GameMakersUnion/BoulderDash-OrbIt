@@ -26,8 +26,8 @@ namespace OrbItProcs
         }
         public void Setup(Action<DetailedItem, object> ItemCreator, Action<Control, DetailedItem, EventArgs> OnItemEvent)
         {
-            this.ItemCreator = ItemCreator;
-            this.OnItemEvent = OnItemEvent;
+            this.ItemCreator += ItemCreator;
+            this.OnItemEvent += OnItemEvent;
         }
 
         public void InvokeOnItemEvent(Control control, DetailedItem item, EventArgs eventArgs)

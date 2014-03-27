@@ -203,6 +203,8 @@ namespace OrbItProcs
             DelegatorMethods.InitializeDelegateMethods();
             spriteBatch = new SpriteBatch(Graphics.GraphicsDevice);
 
+            
+
             ui = new UserInterface(this);
 
             room = new Room(this, 1880, 1175);
@@ -258,11 +260,15 @@ namespace OrbItProcs
                 Console.WriteLine("{0} : {1}", count++, c);
             }*/
             CreatePlayers();
+            ui.sidebar.InitializeFifthPage();
         }
 
         public void CreatePlayers()
         {
             Shooter.MakeBullet();
+            Node def = room.masterGroup.defaultNode.CreateClone();
+            def.addComponent(comp.shooter, true);
+            room.playerGroup.defaultNode = def;
             for(int i = 1; i < 5; i++)
             {
                 Player p = Player.GetNew(i);
@@ -275,11 +281,11 @@ namespace OrbItProcs
                 float x = dist * (float)Math.Cos(angle);
                 float y = dist * (float)Math.Sin(angle);
                 spawnPos = new Vector2(room.worldWidth / 2, room.worldHeight / 2) - new Vector2(x, y);
-                Node node = room.game.spawnNode((int)spawnPos.X, (int)spawnPos.Y);
+                Node node = def.CreateClone();
+                node.body.pos = spawnPos;
                 node.name = "player" + i;
-                node.addComponent(comp.shooter, true);
                 p.node = node;
-                room.masterGroup.fullSet.Add(node);
+                room.playerGroup.IncludeEntity(node);
 
             }
         }

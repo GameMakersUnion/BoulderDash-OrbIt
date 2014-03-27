@@ -83,33 +83,7 @@ namespace OrbItProcs
             tbcViews.AddPage();
             tbcViews.AddPage();
             tbcViews.AddPage();
-            TabPage editTab = tbcViews.TabPages[1];
-            editTab.Text = "     Players       ";
-            
-            tbcViews.SelectedIndex = 0;
-            activeTabControl = tbcViews;
 
-            //componentView = new ComponentView(this, editTab, 0, 0);
-            //componentView.SwitchGroup(room.masterGroup.childGroups["General Groups"].childGroups.ElementAt(0).Value);
-
-            btnOptions = new Button(manager);
-            btnOptions.Init();
-            btnOptions.Parent = editTab;
-            btnOptions.Left = LeftPadding;
-            btnOptions.Top = editTab.Height - btnOptions.Height - LeftPadding;
-            btnOptions.Text = "Options";
-
-            btnOptions.Click += (s, e) =>
-            {
-                new OptionsWindow(this);
-            };
-
-            toolWindow = new ToolWindow(this);
-
-        }
-
-        public void InitializeFifthPage()
-        {
             TabPage groupsTab = tbcViews.TabPages[0];
             //tbcViews.Color = Color.Transparent;
             groupsTab.Text = "       Groups       ";
@@ -120,6 +94,35 @@ namespace OrbItProcs
             groupsView = new GroupsView(this, groupsTab, 0, 0);
             groupsView.UpdateGroups();
             tbcViews.SelectedIndex = 0;
+
+            toolWindow = new ToolWindow(this);
+
+        }
+        public PlayerView playerView;
+        public void InitializeFifthPage()
+        {
+            TabPage playersTab = tbcViews.TabPages[1];
+            playersTab.Text = "     Players       ";
+
+            tbcViews.SelectedIndex = 0;
+            activeTabControl = tbcViews;
+
+            //componentView = new ComponentView(this, editTab, 0, 0);
+            //componentView.SwitchGroup(room.masterGroup.childGroups["General Groups"].childGroups.ElementAt(0).Value);
+            playerView = new PlayerView(this, playersTab, LeftPadding, 80);
+
+
+            btnOptions = new Button(manager);
+            btnOptions.Init();
+            btnOptions.Parent = playersTab;
+            btnOptions.Left = LeftPadding;
+            btnOptions.Top = playersTab.Height - btnOptions.Height - LeftPadding;
+            btnOptions.Text = "Options";
+
+            btnOptions.Click += (s, e) =>
+            {
+                new OptionsWindow(this);
+            };
         }
 
 
