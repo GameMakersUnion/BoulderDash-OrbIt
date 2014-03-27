@@ -84,12 +84,18 @@ namespace OrbItProcs
                 button.TextColor = UserInterface.TomShanePuke;
                 if (action != null) action();
             };
+            Program.getGame().Graphics.DeviceReset += (se, e) =>
+            {
+                button.Refresh();
+            };
+
             if (!String.IsNullOrWhiteSpace(tooltip)) button.ToolTip.Text = tooltip;
             else button.ToolTip.Text = s;
             Texture2D tt = buttonTextures[s];
 
             button.Draw += (se, e) =>
             {
+                
                 e.Renderer.Draw(tt, e.Rectangle, Color.White);
             };
 

@@ -148,8 +148,8 @@ namespace OrbItProcs
                 {
                     if (p.node == bigtony)
                     {
-                        p.score += Game1.GlobalGameTime.ElapsedGameTime.Milliseconds;
-                        if (p.score >= maxScore)
+                        p.node.meta.score += Game1.GlobalGameTime.ElapsedGameTime.Milliseconds;
+                        if (p.node.meta.score >= maxScore)
                         {
                             p.node.body.radius += 500;
                             p.node.body.mass += 100;

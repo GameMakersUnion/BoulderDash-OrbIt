@@ -47,6 +47,7 @@ namespace OrbItProcs
         scheduler,
         delegator,
         swap,
+        shooter,
         //draw components
         waver,
         laser,
@@ -55,8 +56,9 @@ namespace OrbItProcs
         flow,
         tether,
         tree,
-        basicdraw,
         collision,
+        basicdraw,
+        meta,
         //middle,
         //slow,
         //siphon,
@@ -145,13 +147,13 @@ namespace OrbItProcs
             ClearBackground = true;
             BackgroundColor = Color.White;
             ExitConfirmation = false;
-
-            Manager.AutoUnfocus = false;
             
+            Manager.AutoUnfocus = false;
+            Manager.Input.InputMethods = InputMethods.Mouse | InputMethods.Keyboard;
             Graphics.PreferMultiSampling = false;
         }
 
-
+        public static bool deviceReset = false;
         public void ToggleFullScreen(bool on)
         {
             Game1.isFullScreen = on;
@@ -167,7 +169,9 @@ namespace OrbItProcs
                 Width = smallWidth;
                 Height = smallHeight;
             }
+            deviceReset = true;
             Manager.Graphics.ApplyChanges();
+            Manager.CreateRenderTarget(Width, Height);
         }
 
         protected override void Initialize()
@@ -229,15 +233,16 @@ namespace OrbItProcs
             //room.player1.body.pos = new Vector2(100, 100);
             //processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
 
-            if (bigTonyOn)
-            {
-                for (int i = 1; i < 5; i++)
-                {
-                    Player p = Player.GetNew(i);
-                    if (p != null)
-                        room.players.Add(p); //#bigtony
-                }
-            }
+            //if (bigTonyOn)
+            //{
+            //    for (int i = 1; i < 5; i++)
+            //    {
+            //        Player p = Player.GetNew(i);
+            //        if (p != null)
+            //            room.players.Add(p); //#bigtony
+            //    }
+            //}
+
 
             processManager.SetProcessKeybinds();
             ui.keyManager.addProcessKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
@@ -252,7 +257,33 @@ namespace OrbItProcs
             {
                 Console.WriteLine("{0} : {1}", count++, c);
             }*/
+            CreatePlayers();
         }
+
+        public void CreatePlayers()
+        {
+            Shooter.MakeBullet();
+            for(int i = 1; i < 5; i++)
+            {
+                Player p = Player.GetNew(i);
+                if (p == null) break;
+                Vector2 spawnPos = Vector2.Zero;
+
+                double angle = Utils.random.NextDouble() * Math.PI * 2;
+                angle -= Math.PI;
+                float dist = 200;
+                float x = dist * (float)Math.Cos(angle);
+                float y = dist * (float)Math.Sin(angle);
+                spawnPos = new Vector2(room.worldWidth / 2, room.worldHeight / 2) - new Vector2(x, y);
+                Node node = room.game.spawnNode((int)spawnPos.X, (int)spawnPos.Y);
+                node.name = "player" + i;
+                node.addComponent(comp.shooter, true);
+                p.node = node;
+                room.masterGroup.fullSet.Add(node);
+
+            }
+        }
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -287,7 +318,9 @@ namespace OrbItProcs
             room.Draw();
             frameRateCounter.Draw(spriteBatch, font);
 
-
+            TomShaneWaiting.Wait();
+            TomShaneWaiting.Reset();
+            base.Draw(gameTime);
 
         }
 
@@ -306,9 +339,7 @@ namespace OrbItProcs
         }
         protected override void Draw(GameTime gameTime)
         {
-            TomShaneWaiting.Wait();
-            TomShaneWaiting.Reset();
-            base.Draw(gameTime);
+            //fuck tom shane
             
         }
         public void SwitchToMainRoom()

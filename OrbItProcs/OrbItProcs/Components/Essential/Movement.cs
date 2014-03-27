@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.Serialization;
 using System.Reflection;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Input;
 
 namespace OrbItProcs
 {
@@ -24,7 +25,7 @@ namespace OrbItProcs
     [Info(UserLevel.User, "Basic Movement Component", CompType)]
     public class Movement : Component {
 
-        public const mtypes CompType = mtypes.essential;// | mtypes.affectself;
+        public const mtypes CompType = mtypes.essential | mtypes.playercontrol;// | mtypes.affectself;
         public override mtypes compType { get { return CompType; } set { } }
         public bool pushable { get; set; }
 
@@ -163,10 +164,45 @@ namespace OrbItProcs
             PropertyInfo pi = parent.body.GetType().GetProperty("scale");
             pi.SetValue(parent.body, parent.body.pos.X % 4.0f, null);
         }
+        public float absaccel = 0.2f;
+        public float friction = 0.01f;
 
-        public override void Draw()
+        public override void PlayerControl(Controller controller)
         {
-            //C3.XNA.Primitives2D.DrawCircle()
+            Vector2 stick = Vector2.Zero;
+            if (controller is FullController)
+            {
+                FullController fc = (FullController)controller;
+                stick = fc.newGamePadState.ThumbSticks.Left;
+            }
+            else if (controller is HalfController)
+            {
+                //if (node != bigtony) node.collision.colliders["trigger"].radius = body.radius * 1.5f;
+                //else node.collision.colliders["trigger"].radius = body.radius * 1.2f;
+                HalfController hc = (HalfController)controller;
+                //bool clicked = false;
+                stick = hc.newHalfPadState.stick1.v2;
+                //clicked = hc.newHalfPadState.Btn3 == ButtonState.Pressed || hc.newHalfPadState.Btn1 == ButtonState.Pressed;
+                //
+                //if (clicked)
+                //{
+                //    SwitchPlayer(stick);
+                //}
+            }
+            else
+            {
+                return;
+            }
+            stick.Y *= -1;
+            stick *= 0.4f;
+            stick *= absaccel;
+            if ((parent.body.velocity.X != 0 || parent.body.velocity.Y != 0))
+            {
+                stick += parent.body.velocity * -friction;
+            }
+            stick *= parent.body.mass;
+            //todo: update maxvel?
+            parent.body.ApplyForce(stick);
         }
 
         public void fallOff()

@@ -16,17 +16,17 @@ namespace OrbItProcs
         }
         public virtual void Update(GameTime gameTime)
         {
-            foreach(Player p in players)
-            {
-                p.Update(gameTime);
-            }
+            //foreach(Player p in players)
+            //{
+            //    p.Update(gameTime);
+            //}
         }
         public virtual void Draw()
         {
-            foreach (Player p in players)
-            {
-                p.Draw();
-            }
+            //foreach (Player p in players)
+            //{
+            //    p.Draw();
+            //}
         }
     }
 }

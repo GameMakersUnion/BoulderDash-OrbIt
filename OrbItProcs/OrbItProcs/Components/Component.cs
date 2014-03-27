@@ -24,6 +24,8 @@ namespace OrbItProcs
         exclusiveLinker = 32,
         essential = 64,
         tracer = 128,
+        playercontrol = 256,
+        aicontrol = 512,
     };
 
     public abstract class Component {
@@ -49,7 +51,6 @@ namespace OrbItProcs
         //*
         [Polenter.Serialization.ExcludeFromSerialization]
         public virtual Node parent { get; set; }
-
         //*/
         //flag as not editable in InspectorBox
         private comp _com;
@@ -89,6 +90,8 @@ namespace OrbItProcs
         public virtual void AffectOther(Node other) { }
         public virtual void AffectSelf() { }
         public virtual void Draw() { }
+        public virtual void PlayerControl(Controller controller) { }
+        public virtual void AIControl(AIMode aiMode) { }
 
         public virtual void InitializeLists()
         {

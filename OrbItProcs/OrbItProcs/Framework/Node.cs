@@ -120,6 +120,8 @@ namespace OrbItProcs {
         private List<Type> aOtherProps = new List<Type>();
         private List<Type> aSelfProps = new List<Type>();
         private List<Type> drawProps = new List<Type>();
+        private List<Type> playerProps = new List<Type>();
+        private List<Type> aiProps = new List<Type>();
         private List<Type> compsToRemove = new List<Type>();
         private List<Type> compsToAdd = new List<Type>();
 
@@ -188,19 +190,33 @@ namespace OrbItProcs {
                 }
             }
         }
-
+        private Meta _meta;
+        public Meta meta
+        {
+            get { return _meta; }
+            set
+            {
+                _meta = value;
+                if (comps != null && value != null)
+                {
+                    if (HasComp<Meta>())
+                    {
+                        comps.Remove(typeof(Meta));
+                    }
+                    comps.Add(typeof(Meta), value);
+                }
+            }
+        }
         public textures texture
         {
             get { return body.texture; }
             set { body.texture = value; }
         }
-        public Player player;
-
-
+        private Player _player;
+        public Player player { get { return _player; } set { _player = value; if (value != null) SortComponentListsUpdate(); } }
         private ObservableHashSet<Link> _SourceLinks = new ObservableHashSet<Link>();
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> SourceLinks { get { return _SourceLinks; } set { _SourceLinks = value; } }
-
         private ObservableHashSet<Link> _TargetLinks = new ObservableHashSet<Link>();
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> TargetLinks { get { return _TargetLinks; } set { _TargetLinks = value; } }
@@ -211,7 +227,7 @@ namespace OrbItProcs {
             set
             {
                 //if (value == null)
-                //    Console.WriteLine("FUCKLE");
+                //Console.WriteLine("FUCKLE");
                 _group = value;
             }
         }
@@ -311,6 +327,7 @@ namespace OrbItProcs {
                 nodeHash = Utils.uniqueString(room.nodeHashes);
             }
             nodeCounter++;
+            meta = new Meta(this);
             movement = new Movement(this);
             collision = new Collision(this);
             Shape shape;
@@ -376,7 +393,6 @@ namespace OrbItProcs {
         {
             return comps.ContainsKey(componentType);
         }
-
         public bool HasActiveComponent(comp component)
         {
             Type t = Utils.compTypes[component];
@@ -450,18 +466,7 @@ namespace OrbItProcs {
                     //reach = (int)(body.radius * 5) / room.gridsystem.cellWidth;
                     reach = 10;
                 }
-
-                ///*
                 returnObjectsFinal = room.gridsystem.retrieve(body, reach);
-                //int cellReach = (int)(body.radius * 2) / room.gridsystem.cellWidth * 2;
-                //if (HasActiveComponent<Flow>())
-                //{
-                //    returnObjectsFinal = new List<Collider>();
-                //    if (Component<Flow>().activated)
-                //    {
-                //        returnObjectsFinal = Component<Flow>().outgoing.ToList();
-                //    }
-                //}
                 returnObjectsFinal.Remove(body);
 
                 foreach (Collider other in returnObjectsFinal)
@@ -475,7 +480,6 @@ namespace OrbItProcs {
                         }
                     }
                 }
-                //*/
                 /*
                 var buckets = room.gridsystem.retrieveBuckets(this, 115);
                 if (buckets != null)
@@ -497,15 +501,27 @@ namespace OrbItProcs {
                 //*/
 
             }
-
-            
-
             if (OnAffectOthers != null) OnAffectOthers.Invoke(this, null);
 
             foreach (Type c in aSelfProps)
             {
                 comps[c].AffectSelf();
             }
+
+            if (player != null)
+            {
+                player.controller.UpdateNewState();
+                foreach (Type c in playerProps)
+                {
+                    comps[c].PlayerControl(player.controller);
+                }
+                player.controller.UpdateOldState();
+            }
+            //AI execution
+            //foreach (Type c in aiProps)
+            //{
+            //    comps[c].AIControl(meta.aimode);
+            //}
 
             if (movement.active) movement.AffectSelf(); //temporary until make movement list to update at the correct time
 
@@ -787,6 +803,26 @@ namespace OrbItProcs {
                 if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].compType & mtypes.affectself) == mtypes.affectself))
                 {
                     aSelfProps.Add(c);
+                }
+            }
+            if (player != null)
+            {
+                foreach (Type c in clist)
+                {
+                    if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].compType & mtypes.playercontrol) == mtypes.playercontrol))
+                    {
+                        playerProps.Add(c);
+                    }
+                }
+            }
+            if (meta.aimode != AIMode.None && meta.aimode != AIMode.Player)
+            {
+                foreach (Type c in clist)
+                {
+                    if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].compType & mtypes.aicontrol) == mtypes.aicontrol))
+                    {
+                        aiProps.Add(c);
+                    }
                 }
             }
         }

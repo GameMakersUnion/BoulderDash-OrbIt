@@ -263,13 +263,13 @@ namespace OrbItProcs {
             updateTargetNodeGraphic();
 
             //player1.Update(gametime);
-            if (Game1.bigTonyOn)
-            {
-                foreach (var player in players)
-                {
-                    player.Update(gametime); //#bigtony
-                }
-            }
+            //if (Game1.bigTonyOn)
+            //{
+            //    foreach (var player in players)
+            //    {
+            //        player.Update(gametime); //#bigtony
+            //    }
+            //}
 
             scheduler.AffectSelf();
         }

@@ -151,6 +151,11 @@ namespace OrbItProcs
                 {
                     permanents.Remove(removePerm.Dequeue());
                 }
+                if (Game1.deviceReset)
+                {
+                    Game1.deviceReset = false;
+                    room.roomRenderTarget = new RenderTarget2D(room.game.GraphicsDevice, room.game.Width, room.game.Height); 
+                }
             }
 
             CameraWaiting.Set();

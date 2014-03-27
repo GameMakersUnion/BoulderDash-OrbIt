@@ -62,72 +62,72 @@ namespace OrbItProcs
 
         public override void OnSpawn()
         {
-            if (parent.HasComp<Waver>())
-            {
-                positions = parent.Comp<Waver>().metapositions;
-            }
+            //if (parent.HasComp<Waver>())
+            //{
+            //    positions = parent.Comp<Waver>().metapositions;
+            //}
         }
 
         public override void InitializeLists()
         {
-            positions = new Queue<Vector2>();
-            angles = new Queue<float>();
-            scales = new Queue<float>();
+            //positions = new Queue<Vector2>();
+            //angles = new Queue<float>();
+            //scales = new Queue<float>();
         }
 
         public override void Initialize(Node parent)
         {
-            this.parent = parent;
-            if (customqueues.Count > 0) qs = qs | queues.customs;
+            //this.parent = parent;
+            //if (customqueues.Count > 0) qs = qs | queues.customs;
         }
 
 
         public override void AffectSelf()
         {
-            if (++timer % timerMax == 0)
-            {
-                if ((qs & queues.position) == queues.position)
-                {
-                    if (positions.Count > queuecount)
-                    {
-                        positions.Dequeue();
-                    }
-                    positions.Enqueue(parent.body.pos);
-                }
-                if ((qs & queues.scale) == queues.scale)
-                {
-                    if (scales.Count > queuecount)
-                    {
-                        scales.Dequeue();
-                    }
-                    scales.Enqueue((float)parent.body.scale);
-                }
-                if ((qs & queues.angle) == queues.angle)
-                {
-                    if (angles.Count > queuecount)
-                    {
-                        angles.Dequeue();
-                    }
-                    float angle = (float)(Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + (Math.PI / 2));
-                    angles.Enqueue(angle);
-                }
-                if ((qs & queues.customs) == queues.customs)
-                {
-                    foreach (QueueInfo qinfo in customqueues.Values)
-                    {
-                        qinfo.TriggerQueueify();
-                    }
-                }
-            }
+            //if (++timer % timerMax == 0)
+            //{
+            //    if ((qs & queues.position) == queues.position)
+            //    {
+            //        if (positions.Count > queuecount)
+            //        {
+            //            positions.Dequeue();
+            //        }
+            //        positions.Enqueue(parent.body.pos);
+            //    }
+            //    if ((qs & queues.scale) == queues.scale)
+            //    {
+            //        if (scales.Count > queuecount)
+            //        {
+            //            scales.Dequeue();
+            //        }
+            //        scales.Enqueue((float)parent.body.scale);
+            //    }
+            //    if ((qs & queues.angle) == queues.angle)
+            //    {
+            //        if (angles.Count > queuecount)
+            //        {
+            //            angles.Dequeue();
+            //        }
+            //        float angle = (float)(Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + (Math.PI / 2));
+            //        angles.Enqueue(angle);
+            //    }
+            //    if ((qs & queues.customs) == queues.customs)
+            //    {
+            //        foreach (QueueInfo qinfo in customqueues.Values)
+            //        {
+            //            qinfo.TriggerQueueify();
+            //        }
+            //    }
+            //}
         }
 
         public void AddCustomQueue (string queuename, QueueInfo queueinfo)
         {
-            if (!customqueues.ContainsKey(queuename))
-            {
-                customqueues.Add(queuename, queueinfo);
-            }
-            qs = qs | queues.customs;
+            //if (!customqueues.ContainsKey(queuename))
+            //{
+            //    customqueues.Add(queuename, queueinfo);
+            //}
+            //qs = qs | queues.customs;
         }
 
         public override void Draw()

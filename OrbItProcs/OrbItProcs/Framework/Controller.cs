@@ -304,7 +304,6 @@ namespace OrbItProcs
         protected ControllerCodes controllerCode;
         public bool enabled = true;
 
-
         public static Dictionary<int, PlayerIndex> intToPlayerIndex =
             new Dictionary<int, PlayerIndex>(){
             {1, PlayerIndex.One},
@@ -329,14 +328,29 @@ namespace OrbItProcs
             availableControllers = availableControllers | controllerCode;
             controllerCode = ControllerCodes.None;
         }
+        public virtual void UpdateNewState() { }
+        public virtual void UpdateOldState() { }
     }
 
     public class FullController : Controller
     {
-        public FullController(int player) {
+        public GamePadState newGamePadState;
+        public GamePadState oldGamePadState;
+        public static FullController GetNew(int player)
+        {
+            bool win = false;
+            FullController f = new FullController(player, ref win);
+            return win ? f : null;
+        }
+        private FullController(int player, ref bool success) {
             fullControllers.Add(this);
             
             this.playerNum = player;
+            if (player > connectedControllers())
+            {
+                success = false;
+                return;
+            }
 
             if (ControllerCodes.First.isAvailable())
             {
@@ -362,21 +376,30 @@ namespace OrbItProcs
             {
                 PopUp.Toast("Insufficient controllers! Player "+ player +" will not work!");
                 enabled = false;
+                success = false;
                 return;
             }
-
-            if (!GamePad.GetState(controllerIndex).IsConnected)
-                PopUp.Toast("Warning: More Player " + player + " is disconnected.");
+            success = true;
         }
         public GamePadState getState()
         {
             if (enabled == false) return new GamePadState();
             return GamePad.GetState(controllerIndex);
         }
+        public override void UpdateNewState()
+        {
+            newGamePadState = getState();
+        }
+        public override void UpdateOldState()
+        {
+            oldGamePadState = newGamePadState;
+        }
     }
 
     public class HalfController : Controller
     {
+        public HalfPadState newHalfPadState;
+        public HalfPadState oldHalfPadState;
         public ControlSide side;
         public FullPadMode fullPadMode;
         bool fullControllerAvailable;
@@ -403,6 +426,14 @@ namespace OrbItProcs
                     return new HalfPadState(fullPadMode, controllerIndex);
             }
             return new HalfPadState(side, controllerIndex);
+        }
+        public override void UpdateNewState()
+        {
+            newHalfPadState = getState();
+        }
+        public override void UpdateOldState()
+        {
+            oldHalfPadState = newHalfPadState;
         }
         public override void unassign(){
             if (side == ControlSide.right)

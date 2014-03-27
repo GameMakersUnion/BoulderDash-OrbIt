@@ -75,6 +75,12 @@ namespace OrbItProcs
                 return (a.value as IComparable).CompareTo(b as IComparable) > 0;
             else throw new SystemException("Tried to Compare non-Comparables");
         }
+        public static Toggle<T> operator +(Toggle<T> a, T b)
+        {
+            dynamic t = a;
+            t.value += b;
+            return t;
+        }
 
         public static bool operator ==(Toggle<T> a, T b)
         {
