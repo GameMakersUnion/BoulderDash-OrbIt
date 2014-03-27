@@ -17,6 +17,7 @@ namespace OrbItProcs
         Label groupLabel;
         Button btnCreateGroup, btnSelectedNode;
         public CreateGroupWindow createGroupWindow;
+        public EditGroupWindow editGroupWindow;
         public GroupsView(Sidebar sidebar, Control parent, int Left, int Top)
             : base(sidebar, parent, Left, Top, false)
         {
@@ -26,7 +27,7 @@ namespace OrbItProcs
             groupLabel.Parent = parent;
             groupLabel.Left = LeftPadding;
             groupLabel.Top = HeightCounter;
-            groupLabel.Width = 150;
+            groupLabel.Width = sidebar.Width/2;
             groupLabel.Text = "Groups";
             groupLabel.TextColor = Color.Black;
             HeightCounter += groupLabel.Height + LeftPadding;
@@ -45,6 +46,7 @@ namespace OrbItProcs
             btnCreateGroup.Click += (s, e) =>
             {
                 createGroupWindow = new CreateGroupWindow(sidebar);
+
             };
             HeightCounter += btnCreateGroup.Height + LeftPadding;
 
@@ -63,6 +65,15 @@ namespace OrbItProcs
             };
         }
 
+        public override void SelectItem(DetailedItem item)
+        {
+            base.SelectItem(item);
+            if (item.obj == null) return;
+            if (item.obj is Group)
+            {
+                //editGroupWindow.componentView.SwitchGroup((Group)item.obj);
+            }
+        }
         public void UpdateGroups()
         {
             ClearView();
@@ -81,8 +92,7 @@ namespace OrbItProcs
                 top = (viewItems[0].itemHeight - 4) * viewItems.Count;
             }
             DetailedItem detailedItem = new DetailedItem(manager, this, g, backPanel, top, LeftPadding, backPanel.Width - 4);
-            viewItems.Add(detailedItem);
-            SetupScroll(detailedItem);
+            base.CreateItem(detailedItem);
         }
 
         private void ItemCreatorDelegate(DetailedItem item, object obj)
@@ -94,18 +104,20 @@ namespace OrbItProcs
                 Button btnEdit = new Button(manager);
                 btnEdit.Init();
                 btnEdit.Parent = item.panel;
-                btnEdit.Width = 90;
+                btnEdit.Width = 30;
                 btnEdit.Left = item.panel.Width - btnEdit.Width - 10;
                 btnEdit.Top = 2;
                 btnEdit.Height = item.buttonHeight;
                 
-                btnEdit.Text = "Select Group";
-                btnEdit.ToolTip.Text = "Select Group";
+                btnEdit.Text = "Edit";
+                btnEdit.ToolTip.Text = "Edit";
                 btnEdit.TextColor = UserInterface.TomShanePuke;
                 btnEdit.Click += (s, e) =>
                 {
-                    sidebar.tbcViews.SelectedIndex = 0;
-                    sidebar.componentView.SwitchGroup(g);
+                    item.isSelected = true;
+                    editGroupWindow = new EditGroupWindow(sidebar);
+                    editGroupWindow.componentView.SwitchGroup(g);
+
                 };
 
                 Button btnEnabled = new Button(manager);
@@ -143,10 +155,10 @@ namespace OrbItProcs
                 btnRemove.Click += (s, e) =>
                 {
 
-                    if (sidebar.componentView.activeGroup == g) 
-                    { 
-                        sidebar.componentView.ClearView();
-                        sidebar.componentView.activeGroup = null;
+                    if (sidebar.groupsView.editGroupWindow.componentView.activeGroup == g) 
+                    {
+                        sidebar.groupsView.editGroupWindow.componentView.ClearView();
+                        sidebar.groupsView.editGroupWindow.componentView.activeGroup = null;
                     }
                     g.EmptyGroup();
                     g.DeleteGroup();

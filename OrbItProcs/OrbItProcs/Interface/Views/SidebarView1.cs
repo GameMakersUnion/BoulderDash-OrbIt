@@ -15,28 +15,28 @@ namespace OrbItProcs
     public partial class Sidebar
     {
         private bool _EditSelectedNode = false;
-        public bool EditSelectedNode
-        {
-            get { return _EditSelectedNode; }
-            set
-            {
-                if (componentView != null)
-                {
-                    if (value)
-                    {
-                        if (room.targetNode != null)
-                            componentView.SwitchNode(room.targetNode, false);
-                    }
-                    else
-                    {
-                        componentView.SwitchGroup(ActiveGroup);
-                    }
-                }
-                _EditSelectedNode = value;
-            }
-        }
+        //public bool EditSelectedNode
+        //{
+        //    get { return _EditSelectedNode; }
+        //    set
+        //    {
+        //        if (componentView != null)
+        //        {
+        //            if (value)
+        //            {
+        //                if (room.targetNode != null)
+        //                    componentView.SwitchNode(room.targetNode, false);
+        //            }
+        //            else
+        //            {
+        //                componentView.SwitchGroup(ActiveGroup);
+        //            }
+        //        }
+        //        _EditSelectedNode = value;
+        //    }
+        //}
 
-        public ComponentView componentView { get; set; }
+        //public ComponentView componentView { get; set; }
         public DetailedView detailedView { get; set; }
         public InspectorView inspectorView { get; set; }
         public GroupsView groupsView { get; set; }
@@ -81,14 +81,16 @@ namespace OrbItProcs
             tbcViews.Anchor = Anchors.All;
 
             tbcViews.AddPage();
-            TabPage editTab = tbcViews.TabPages[0];
-            editTab.Text = "Edit";
-
+            tbcViews.AddPage();
+            tbcViews.AddPage();
+            TabPage editTab = tbcViews.TabPages[1];
+            editTab.Text = "     Players       ";
+            
             tbcViews.SelectedIndex = 0;
             activeTabControl = tbcViews;
 
-            componentView = new ComponentView(this, editTab, 0, 0);
-            componentView.SwitchGroup(room.masterGroup.childGroups["General Groups"].childGroups.ElementAt(0).Value);
+            //componentView = new ComponentView(this, editTab, 0, 0);
+            //componentView.SwitchGroup(room.masterGroup.childGroups["General Groups"].childGroups.ElementAt(0).Value);
 
             btnOptions = new Button(manager);
             btnOptions.Init();
@@ -99,7 +101,7 @@ namespace OrbItProcs
 
             btnOptions.Click += (s, e) =>
             {
-                OptionsWindow oWindow = new OptionsWindow(this);
+                new OptionsWindow(this);
             };
 
             toolWindow = new ToolWindow(this);
@@ -108,11 +110,9 @@ namespace OrbItProcs
 
         public void InitializeFifthPage()
         {
-            tbcViews.AddPage();
-            TabPage groupsTab = tbcViews.TabPages[1];
+            TabPage groupsTab = tbcViews.TabPages[0];
             //tbcViews.Color = Color.Transparent;
-            groupsTab.Text = "Groups";
-
+            groupsTab.Text = "       Groups       ";
             tbcViews.SelectedIndex = 1;
             activeTabControl = tbcViews;
             //detailedView = new DetailedView(this, testTab, 0, 0);

@@ -78,8 +78,9 @@ namespace OrbItProcs
                     }
                     else
                     {
-                        //if (componentView == null) return null;
-                        return componentView.activeGroup;
+                        if (groupsView == null || groupsView.selectedItem == null) return null;
+                        if (!(groupsView.selectedItem.obj is Group)) return null;
+                        return (Group)groupsView.selectedItem.obj;
                     }
                 }
                 return room.masterGroup;
@@ -835,10 +836,10 @@ namespace OrbItProcs
                 inspectorArea.ResetInspectorBox(room.targetNode);
             }
             
-            if (EditSelectedNode)
-            {
-                componentView.SwitchNode(room.targetNode, false);
-            }
+            //if (EditSelectedNode)
+            //{
+            //    componentView.SwitchNode(room.targetNode, false);
+            //}
         }
 
         void lstPresets_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
@@ -981,7 +982,7 @@ namespace OrbItProcs
             inspectorArea.ResetInspectorBox(activeDef);
 
             //lblEditNodeName.Text = inspectorArea.editNode.name + "(DEFAULT)";
-            inspectorArea.lblInspectorAddress.Text = "/" + activeDef.ToString();
+            //inspectorArea.lblInspectorAddress.Text = "/" + activeDef.ToString();
         }
 
         public void btnRemoveAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)

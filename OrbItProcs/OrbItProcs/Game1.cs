@@ -281,7 +281,8 @@ namespace OrbItProcs
             frameRateCounter.Draw(spriteBatch, font);
 
 
-
+            TomShaneWaiting.Wait();
+            TomShaneWaiting.Reset();
         }
 
 
@@ -297,13 +298,7 @@ namespace OrbItProcs
                 TakeScreenshot = false;
             }
         }
-        protected override void Draw(GameTime gameTime)
-        {
-            TomShaneWaiting.Wait();
-            TomShaneWaiting.Reset();
-            base.Draw(gameTime);
-            
-        }
+
         public void SwitchToMainRoom()
         {
             //room = mainRoom;

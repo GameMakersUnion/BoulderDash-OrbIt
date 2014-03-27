@@ -89,9 +89,7 @@ namespace OrbItProcs
         }
         public override void Draw()
         {
-            Room room = parent.room;
-
-            room.camera.AddPermanentDraw(parent.texture, parent.body.pos, parent.body.color, parent.body.scale);
+            parent.room.camera.AddPermanentDraw(parent.texture, parent.body.pos, parent.body.color, parent.body.scale);
         }
 
 
