@@ -65,30 +65,12 @@ namespace OrbItProcs
             parent.Comp<Queuer>().qs = parent.Comp<Queuer>().qs | queues.scale | queues.position;
                 //int i = 0;
         }
-
-        public override void InitializeLists()
+        public override void Draw()
         {
-            //positions = new Queue<Vector2>();
-            //scales = new Queue<float>();
-
+            parent.room.camera.AddPermanentDraw(parent.texture, parent.body.pos, parent.body.color, parent.body.scale, 0, phaserLength);
         }
 
-        public override void OnSpawn()
-        {
-            //r1 = Utils.random.Next(255) / 255f;
-            //g1 = Utils.random.Next(255) / 255f;
-            //b1 = Utils.random.Next(255) / 255f;
-        }
-
-        public override void AffectOther(Node other)
-        {
-            
-        }
-        public override void AffectSelf()
-        {
-        }
-
-        public override void Draw(SpriteBatch spritebatch)
+        public void oldDraw()
         {
             Room room = parent.room;
             float mapzoom = room.zoom;

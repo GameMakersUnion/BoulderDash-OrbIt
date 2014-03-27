@@ -171,10 +171,10 @@ namespace OrbItProcs
 
         private Dictionary<string, Action<Node, Node>> aOtherDelegates;
         private Dictionary<string, Action<Node>> aSelfDelegates;
-        private Dictionary<string, Action<Node, SpriteBatch>> drawDelegates;
+        private Dictionary<string, Action<Node>> drawDelegates;
         private Dictionary<string, Action<Node, Node, DataStore>> aOtherDelegatesDS;
         private Dictionary<string, Action<Node, DataStore>> aSelfDelegatesDS;
-        private Dictionary<string, Action<Node, SpriteBatch, DataStore>> drawDelegatesDS;
+        private Dictionary<string, Action<Node, DataStore>> drawDelegatesDS;
 
         public Dictionary<string, MethodEntry> delegates { get; set; }
 
@@ -225,7 +225,7 @@ namespace OrbItProcs
             {
                 AddAffectOther(n, del);
             }
-            else if (type == typeof(Action<Node, SpriteBatch>))
+            else if (type == typeof(Action<Node>))
             {
                 AddDraw(n, del);
             }
@@ -373,9 +373,9 @@ namespace OrbItProcs
             if (parent != null) parent.SortComponentListsUpdate();
         }
         //
-        public void AddDraw(string name, Action<Node, SpriteBatch> del)
+        public void AddDraw(string name, Action<Node> del)
         {
-            if (drawDelegates == null) drawDelegates = new Dictionary<string, Action<Node, SpriteBatch>>();
+            if (drawDelegates == null) drawDelegates = new Dictionary<string, Action<Node>>();
             if (drawDelegates.ContainsKey(name)) return;
             drawDelegates[name] = del;
             DataStore ds = new DataStore();
@@ -388,9 +388,9 @@ namespace OrbItProcs
             }
             if (parent != null) parent.SortComponentListsUpdate();
         }
-        public void AddDrawAndDS(string name, Action<Node, SpriteBatch, DataStore> del, DataStore ds)
+        public void AddDrawAndDS(string name, Action<Node, DataStore> del, DataStore ds)
         {
-            if (drawDelegatesDS == null) drawDelegatesDS = new Dictionary<string, Action<Node, SpriteBatch, DataStore>>();
+            if (drawDelegatesDS == null) drawDelegatesDS = new Dictionary<string, Action<Node, DataStore>>();
             if (drawDelegatesDS.ContainsKey(name)) return;
             drawDelegatesDS[name] = del;
             if (ds == null)
@@ -461,14 +461,14 @@ namespace OrbItProcs
                 }
             }
         }
-        public override void Draw(SpriteBatch batch)
+        public override void Draw()
         {
             if (!active) return;
             if (drawDelegates != null)
             {
                 foreach (string key in drawDelegates.Keys)
                 {
-                    drawDelegates[key](parent, batch);
+                    drawDelegates[key](parent);
                 }
             }
             if (drawDelegatesDS != null)
@@ -480,7 +480,7 @@ namespace OrbItProcs
                     {
                         ds = datastores[key];
                     }
-                    drawDelegatesDS[key](parent, batch, ds);
+                    drawDelegatesDS[key](parent, ds);
                 }
             }
         }

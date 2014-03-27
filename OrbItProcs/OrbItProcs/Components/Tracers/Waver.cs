@@ -10,9 +10,9 @@ using System.Reflection;
 namespace OrbItProcs
 {
     /// <summary>
-    /// Replaces the node's basic draw with one or two waves which have their origin at the nodes position and trail behind it.
+    /// Draws one or two waves behind the node in a trail. The wave is customizable in terms of amplitude, period, wave size, and so on.
     /// </summary>
-    [Info(UserLevel.User, "Replaces the node's basic draw with one or two waves which have their origin at the nodes position and trail behind it.", CompType)]
+    [Info(UserLevel.User, "Draws one or two waves behind the node in a trail. The wave is customizable in terms of amplitude, period, wave size, and so on.", CompType)]
     public class Waver : Component
     {
         public const mtypes CompType = mtypes.affectself | mtypes.draw | mtypes.tracer;
@@ -35,10 +35,6 @@ namespace OrbItProcs
             } 
             set 
             {
-                //if (parent != null && parent.HasComponent(comp.queuer) && parent[comp.queuer].queuecount < value)
-                //{
-                //    parent[comp.queuer].queuecount = value;
-                //}
                 _waveLength = value;
             } 
         }
@@ -129,11 +125,6 @@ namespace OrbItProcs
             metapositions = new Queue<Vector2>();
             reflectpositions = new Queue<Vector2>();
         }
-
-        public override void AffectOther(Node other)
-        {
-
-        }
         public override void AffectSelf()
         {
             /*float yval = 0;
@@ -172,7 +163,34 @@ namespace OrbItProcs
 
         }
 
-        public override void Draw(SpriteBatch spritebatch)
+        public override void Draw()
+        {
+            float time = 0;
+            if (parent.HasComp<Lifetime>())
+            {
+                time = parent.Comp<Lifetime>().lifetime;
+            }
+            else return;
+
+            yval = DelegateManager.SineComposite(time, amp, period, vshift, composite);
+
+            Vector2 metapos = new Vector2(parent.body.velocity.Y, -parent.body.velocity.X);
+            VMath.NormalizeSafe(ref metapos);
+            metapos *= yval;
+            Vector2 metaposfinal = parent.body.pos + metapos;
+
+            parent.room.camera.AddPermanentDraw(parent.texture, metaposfinal, parent.body.color, parent.body.scale * waveScale, 0, waveLength);
+            //metapositions.Enqueue(metaposfinal);
+
+            if (reflective)
+            {
+                Vector2 reflectfinal = parent.body.pos - metapos;
+                parent.room.camera.AddPermanentDraw(parent.texture, reflectfinal, parent.body.color, parent.body.scale * waveScale, 0, waveLength);
+                //reflectpositions.Enqueue(reflectfinal);
+            }
+        }
+
+        public void DrawOld()
         {
             Room room = parent.room;
             //float mapzoom = room.zoom;

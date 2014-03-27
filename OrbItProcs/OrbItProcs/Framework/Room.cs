@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Component = OrbItProcs.Component;
 using System.Collections.ObjectModel;
+using OrbItProcs;
 
 namespace OrbItProcs {
 
@@ -50,7 +51,8 @@ namespace OrbItProcs {
 
         public static long totalElapsedMilliseconds = 0;
         public RenderTarget2D roomRenderTarget;
-        public Camera camera;
+        
+        public ThreadedCamera camera;
 
         private Group _masterGroup;
         public Group masterGroup
@@ -118,7 +120,7 @@ namespace OrbItProcs {
             CollisionSet = new HashSet<Collider>();
             colIterations = 1;
             roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, game.Width, game.Height);
-            camera = new Camera(this, 0.5f);
+            camera = new ThreadedCamera(this, 0.5f);
             scheduler = new Scheduler();
             borderColor = Color.Green;
             
@@ -137,7 +139,7 @@ namespace OrbItProcs {
             gridsystemCollision = new GridSystem(this, gridsystem.cellsX, 20);
             DrawLinks = true;
             WallWidth = 10;
-            camera = new Camera(this, 0.5f);
+            camera = new ThreadedCamera(this, 0.5f);
             scheduler = new Scheduler();
 
             players = new HashSet<Player>();
@@ -429,14 +431,14 @@ namespace OrbItProcs {
                 m.PositionalCorrection();
         }
 
-        public void Draw(SpriteBatch spritebatch)
+        public void Draw()
         {
             //spritebatch.Draw(game.textureDict[textures.whitepixel], new Vector2(300, 300), null, Color.Black, 0f, Vector2.Zero, 100f, SpriteEffects.None, 0);
             
             if (targetNode != null)
             {
                 updateTargetNodeGraphic();
-                targetNodeGraphic.Draw(spritebatch);
+                targetNodeGraphic.Draw();
             }
             HashSet<Node> groupset = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
             if (groupset != null)
@@ -446,13 +448,13 @@ namespace OrbItProcs {
                 {
                     targetNodeGraphic.body.pos = n.body.pos;
                     targetNodeGraphic.body.scale = n.body.scale * 1.5f;
-                    targetNodeGraphic.Draw(spritebatch);
+                    targetNodeGraphic.Draw();
                 }
             }
             foreach(var n in masterGroup.fullSet)
             {
                 //Node n = (Node)o;
-                n.Draw(spritebatch);
+                n.Draw();
             }
             int linecount = 0;
 
@@ -460,7 +462,7 @@ namespace OrbItProcs {
             {
                 foreach (Link link in AllActiveLinks)
                 {
-                    link.GenericDraw(spritebatch);
+                    link.GenericDraw();
                 }
             }
             //if (linkTest != null) linkTest.GenericDraw(spritebatch);
@@ -477,11 +479,10 @@ namespace OrbItProcs {
             //player1.Draw(spritebatch);
             //level.Draw(spritebatch);
 
-            game.processManager.Draw(spritebatch);
+            game.processManager.Draw();
 
             GraphData.DrawGraph();
             //Testing.TestHues();
-            
         }
         public void AddManifold(Manifold m)
         {

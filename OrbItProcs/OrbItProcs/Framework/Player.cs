@@ -75,7 +75,7 @@ namespace OrbItProcs
                 
             };
         }
-        bool switchAvailable = true;
+        //bool switchAvailable = true;
         //public void SwitchPlayerNode(Node n, bool addToSavedNodes = true, bool requireKeypress = false, Player other = null)
         //{
         //    if (!switchAvailable || n == null || n.body.mass == 0 ) return;
@@ -214,7 +214,7 @@ namespace OrbItProcs
 
             launchNode = new Node(launchProps);
             //launchNode.comps[comp.laser].brightness = 0.5f;
-            launchNode.Comp<Laser>().thickness.value = 3f;
+            launchNode.Comp<Laser>().thickness = 3f;
             launchNode.Comp<Movement>().maxVelocity.value = 5;
             firefreq = 1;
         }

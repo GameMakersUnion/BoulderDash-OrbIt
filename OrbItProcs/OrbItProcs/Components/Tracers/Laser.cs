@@ -51,7 +51,7 @@ namespace OrbItProcs
         /// Sets the width of the line.
         /// </summary>
         [Info(UserLevel.User, "Sets the width of the line.")]
-        public Toggle<float> thickness { get; set; }
+        public float thickness { get; set; }
         /// <summary>
         /// The ratio of the white core to the coloured outer parts of the laser.
         /// </summary>
@@ -73,7 +73,7 @@ namespace OrbItProcs
             com = comp.laser; 
             InitializeLists();
             brightness = new Toggle<float>(1f, false);
-            thickness = new Toggle<float>(1f, false);
+            thickness = 5f;
             beamRatio = 0.7f;
             IsColorByAngle = true;
             beamCount = 1;
@@ -90,7 +90,81 @@ namespace OrbItProcs
         {
             this.parent = parent;
         }
-        public override void Draw(SpriteBatch spritebatch)
+        private Vector2 prevPos = Vector2.Zero;
+        public override void Draw()
+        {
+            Vector2 start = parent.body.pos;
+            if (prevPos == Vector2.Zero)
+            {
+                prevPos = start;
+                return;
+            }
+            //don't draw lines from screen edge to edge if screenwrapping
+            if (parent.movement.mode == movemode.screenwrap)
+            {
+                float diffx = prevPos.X - start.X;
+                if (diffx > parent.room.worldWidth / 2)
+                {
+                    start.X += parent.room.worldWidth;
+                }
+                else if (diffx < -parent.room.worldWidth / 2)
+                {
+                    start.X -= parent.room.worldWidth;
+                }
+                float diffy = prevPos.Y - start.Y;
+                if (diffy > parent.room.worldHeight / 2)
+                {
+                    start.Y += parent.room.worldHeight;
+                }
+                else if (diffy < -parent.room.worldHeight / 2)
+                {
+                    start.Y -= parent.room.worldHeight;
+                }
+            }
+
+            Vector2 diff = (prevPos - start);
+            Vector2 centerpoint = (prevPos + start) / 2;
+            float len = diff.Length();
+            Vector2 scalevect;
+            float xscale = len;
+            float yscale = thickness;
+            //float outerscale = yscale;
+            //float beamdist = 1f;
+            if (brightness)
+            {
+                xscale = brightness;
+            }
+            //if (thickness)
+            //{
+            //    yscale = thickness;
+            //    outerscale = yscale * beamRatio;
+            //}
+
+            scalevect = new Vector2(xscale, yscale);
+
+            float testangle = (float)(Math.Atan2(diff.Y, diff.X));
+
+            VMath.NormalizeSafe(ref diff);
+            diff = new Vector2(-diff.Y, diff.X);
+
+            //uncommet later when not using direction based color shit
+            Color coll;
+            int alpha = 255;//i * (255 / min);
+            //Console.WriteLine(alpha);
+            if (IsColorByAngle)
+            {
+                coll = ColorChanger.getColorFromHSV((testangle + (float)Math.PI) * (float)(180 / Math.PI));
+            }
+            else
+            {
+                coll = new Color(parent.body.color.R, parent.body.color.G, parent.body.color.B, alpha);
+            }
+
+            parent.room.camera.AddPermanentDraw(textures.whitepixel, centerpoint, parent.body.color, scalevect, testangle, laserLength);
+            prevPos = start;
+        }
+
+        public void DrawOld()
         {
             Room room = parent.room;
             //float mapzoom = room.zoom;
@@ -114,8 +188,6 @@ namespace OrbItProcs
                 if (i == positions.Count) end = parent.body.pos;
                 else
                 {
-                    
-
                     end = positions.ElementAt(i);
                 }
                 if (end.IsFucked() || start.IsFucked()) break;
@@ -154,11 +226,11 @@ namespace OrbItProcs
                 {
                     xscale = brightness;
                 }
-                if (thickness)
-                {
-                    yscale = thickness;
-                    outerscale = yscale * beamRatio;
-                }
+                //if (thickness)
+                //{
+                //    yscale = thickness;
+                //    outerscale = yscale * beamRatio;
+                //}
 
                 scalevect = new Vector2(xscale, yscale);
 

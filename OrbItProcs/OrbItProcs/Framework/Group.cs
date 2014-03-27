@@ -413,7 +413,7 @@ namespace OrbItProcs
         {
             if (groupState.In(GroupState.on, GroupState.drawingOnly))
             {
-                entities.ToList().ForEach(delegate(Node n) { ((Node)n).Draw(spritebatch); });
+                entities.ToList().ForEach(delegate(Node n) { ((Node)n).Draw(); });
             }
         }
 

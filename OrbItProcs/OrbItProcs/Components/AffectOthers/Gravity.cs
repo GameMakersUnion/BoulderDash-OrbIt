@@ -157,15 +157,21 @@ namespace OrbItProcs {
         { 
             //do stuff (actually nope; gravity doesn't have this method)
         }
-        
-        public override void Draw(SpriteBatch spritebatch)
+
+        public override void Draw()
         {
             //return;
             if (!Repulsive)
             {
-                parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color, drawscale / 50f);
-                drawscale -= 10f;
-                if (drawscale < 0) drawscale = radius / 3;
+                parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.5f, drawscale / 50f);
+                drawscale -= 2f;
+                if (drawscale < 10) drawscale = radius / 10;
+            }
+            else
+            {
+                parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.5f, drawscale / 50f);
+                drawscale += 2f;
+                if (drawscale > radius / 10) drawscale = 5f;
             }
         }
     }

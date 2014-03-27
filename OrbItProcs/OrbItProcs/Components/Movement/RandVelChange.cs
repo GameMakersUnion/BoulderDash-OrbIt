@@ -35,7 +35,7 @@ namespace OrbItProcs
             parent.body.velocity.Y += dy;
         }
 
-        public override void Draw(SpriteBatch spritebatch)
+        public override void Draw()
         {
         }
 

@@ -47,6 +47,9 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <PlatformTarget>x86</PlatformTarget>
     <XnaCompressContent>false</XnaCompressContent>
+    <NoWarn>
+    </NoWarn>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
@@ -132,9 +135,10 @@
     <Compile Include="Components\Delegator.cs" />
     <Compile Include="Components\Drawers\ColorChanger.cs" />
     <Compile Include="Components\Drawers\ColorGravity.cs" />
+    <Compile Include="Components\Meta\Swap.cs" />
     <Compile Include="Components\Scheduler.cs" />
-    <Compile Include="Framework\BigTony.cs" />
-    <Compile Include="Framework\Gametype.cs" />
+    <Compile Include="Framework\Gametypes\BigTony.cs" />
+    <Compile Include="Framework\Gametypes\Gametype.cs" />
     <Compile Include="Interface\Views\AddComponentView.cs" />
     <Compile Include="Interface\Views\AddComponentWindow.cs" />
     <Compile Include="Interface\Views\CreateGroupWindow.cs" />

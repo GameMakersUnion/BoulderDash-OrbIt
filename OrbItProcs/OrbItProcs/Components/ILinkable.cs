@@ -16,6 +16,6 @@ namespace OrbItProcs
         
         void AffectSelf();
         void AffectOther(Node other);
-        void Draw(SpriteBatch spritebatch);
+        void Draw();
     }
 }

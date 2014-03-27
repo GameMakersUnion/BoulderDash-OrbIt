@@ -271,7 +271,7 @@ namespace OrbItProcs.Components
             return (float)(180 / Math.PI * Math.Atan2(Math.Sqrt(3) * (g - b), 2 * r - g - b));
         }
 
-        public override void Draw(SpriteBatch spritebatch)
+        public override void Draw()
         {
         }
 

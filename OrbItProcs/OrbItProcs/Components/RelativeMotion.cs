@@ -56,7 +56,7 @@ namespace OrbItProcs
         }
 
 
-        public override void Draw(SpriteBatch spritebatch)
+        public override void Draw()
         {
             Color col = parent.body.color;
             parent.room.camera.Draw(parent.texture, parent.body.pos, col, parent.body.scale * 1.2f);

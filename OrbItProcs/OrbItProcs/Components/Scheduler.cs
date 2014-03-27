@@ -140,7 +140,7 @@ namespace OrbItProcs
             CheckAppointments();
         }
 
-        public override void Draw(SpriteBatch spritebatch)
+        public override void Draw()
         {
         }
 

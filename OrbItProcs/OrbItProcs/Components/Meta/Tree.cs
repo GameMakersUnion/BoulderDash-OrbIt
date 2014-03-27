@@ -17,19 +17,6 @@ namespace OrbItProcs
 
         public const mtypes CompType = mtypes.affectself | mtypes.draw | mtypes.tracer;
         public override mtypes compType { get { return CompType; } set { } }
-
-        public override Node parent
-        {
-            get
-            {
-                return base.parent;
-            }
-            set
-            {
-                base.parent = value;
-
-            }
-        }
         public int queuecount { get; set; }
         private float r1, g1, b1;
         private Queue<Vector2> positions;
@@ -90,9 +77,9 @@ namespace OrbItProcs
         {
             positions = new Queue<Vector2>();
             scales = new Queue<float>();
-
         }
         int deathcount = 0;
+        bool original = false;
         public override void AffectSelf()
         {
             if (lifeleft == -1)
@@ -113,39 +100,39 @@ namespace OrbItProcs
                 lifeleft = -1;
                 parent.body.velocity = new Vector2(0, 0);
                 depth = -1;
+                original = false;
                 //return;
                 return;
             }
-
+            original = true;
             //angle = Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2);
             float scaledown = 1.0f - 0.01f;
             parent.body.scale *= scaledown;
-            if (LeaveTrunk && lifeleft > 0)
-            {
-                if (positions.Count < queuecount)
-                {
-                    positions.Enqueue(parent.body.pos);
-                    scales.Enqueue(parent.body.scale);
-                }
-                else
-                {
-                    if (positions.Count > 0)
-                    {
-                        positions.Dequeue();
-                        positions.Enqueue(parent.body.pos);
-                    }
-                    if (scales.Count > 0)
-                    {
-                        scales.Dequeue();
-                        scales.Enqueue(parent.body.scale);
-                    }
-                }
-            }
+            //if (LeaveTrunk && lifeleft > 0)
+            //{
+            //    if (positions.Count < queuecount)
+            //    {
+            //        positions.Enqueue(parent.body.pos);
+            //        scales.Enqueue(parent.body.scale);
+            //    }
+            //    else
+            //    {
+            //        if (positions.Count > 0)
+            //        {
+            //            positions.Dequeue();
+            //            positions.Enqueue(parent.body.pos);
+            //        }
+            //        if (scales.Count > 0)
+            //        {
+            //            scales.Dequeue();
+            //            scales.Enqueue(parent.body.scale);
+            //        }
+            //    }
+            //}
 
             //branchdeath
             if (lifeleft > randlife)
             {
-                
                 //Console.WriteLine("{0} {1} > {2}",parent.name, lifeleft, randlife);
                 lifeleft = -1;
                 
@@ -180,6 +167,8 @@ namespace OrbItProcs
                     //newNode.acceptUserProps(userP);
                     Tree newTree = newNode.Comp<Tree>();
                     newTree.depth = depth + 1;
+                    if (newTree.depth == branchStages)
+                        newTree.original = false;
                     newTree.randlife = randomlife;
                     newTree.lifeleft = 0;
                     newTree.maxchilds = Math.Max(1, maxchilds - (depth % 2));
@@ -191,10 +180,6 @@ namespace OrbItProcs
                         parent.group.IncludeEntity(newNode);
                         newNode.group = parent.group;
                     }
-                    else
-                    {
-                        
-                    }
                 }
                 //parent.nodeState = state.drawOnly;
 
@@ -204,11 +189,15 @@ namespace OrbItProcs
             {
                 lifeleft++;
             }
-
-
         }
 
-        public override void Draw(SpriteBatch spritebatch)
+        public override void Draw()
+        {
+            if (!LeaveTrunk || !original) return;
+            parent.room.camera.AddPermanentDraw(parent.texture, parent.body.pos, parent.body.color, parent.body.scale, 0, 200); //trunk doesn't die. (make 500?)
+        }
+
+        public void DrawOld()
         {
             if (!LeaveTrunk) return;
             Room room = parent.room;

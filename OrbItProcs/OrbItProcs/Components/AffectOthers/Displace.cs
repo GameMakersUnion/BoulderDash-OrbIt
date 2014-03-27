@@ -8,9 +8,9 @@ using Microsoft.Xna.Framework.Graphics;
 namespace OrbItProcs
 {
     /// <summary>
-    /// When another node enters this radius, it is displaced without affecting its velocity.
+    /// When another node enters this radius, it is displaced in the direction of the angle without affecting its velocity.
     /// </summary>
-    [Info(UserLevel.User, "When another node enters this radius, it is displaced without affecting its velocity.", CompType)]
+    [Info(UserLevel.User, "When another node enters this radius, it is displaced in the direction of the angle without affecting its velocity.", CompType)]
     public class Displace : Component, ILinkable
     {
         public const mtypes CompType = mtypes.affectother;
@@ -30,9 +30,9 @@ namespace OrbItProcs
         public int lowerbound { get; set; }
 
         /// <summary>
-        /// The strength with which the other node will be displaced
+        /// The strength with which the other node will be moved away.
         /// </summary>
-        [Info(UserLevel.User, "The strength with which the other node will be displaced")]
+        [Info(UserLevel.User, "The strength with which the other node will be moved away.")]
         public float pushfactor { get; set; }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace OrbItProcs
         public override void AffectSelf()
         {
         }
-        public override void Draw(SpriteBatch spritebatch)
+        public override void Draw()
         {
         }
     }

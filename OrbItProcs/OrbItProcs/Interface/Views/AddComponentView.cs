@@ -51,6 +51,7 @@ namespace OrbItProcs
                 if (node.HasComp(c)) continue;
                 if ((Utils.GetCompTypes(ctype) & mtypes.exclusiveLinker) == mtypes.exclusiveLinker) continue;
                 DetailedItem ditem = new DetailedItem(manager, this, ctype, backPanel, heightcounter, 0, backPanel.Width - 20);
+                SetupScroll(ditem);
                 ditem.label.Text = ditem.label.Text;
                 ditem.label.Left += 50;
                 CreateItem(ditem);

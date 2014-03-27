@@ -22,7 +22,6 @@ namespace OrbItProcs
         /// Sets the length of the ray.
         /// </summary>
         [Info(UserLevel.User, "Sets the length of the ray. ")]
-        [Polenter.Serialization.ExcludeFromSerialization]
         public int rayLength
         {
             get
@@ -31,35 +30,48 @@ namespace OrbItProcs
             }
             set
             {
-                if (parent != null && parent.HasComp<Queuer>() && parent.Comp<Queuer>().queuecount < value)
-                {
-                    parent.Comp<Queuer>().queuecount = value;
-                }
+                //if (parent != null && parent.HasComp<Queuer>() && parent.Comp<Queuer>().queuecount < value)
+                //{
+                //    parent.Comp<Queuer>().queuecount = value;
+                //}
                 _rayLength = value;
             }
         }
-
-        //private double angle = 0;
-        private float rayscale = 20;
-        private int width = 3;
+        /// <summary>
+        /// Sets the thickness of each ray line.
+        /// </summary>
+        [Info(UserLevel.User, "Sets the thickness of each ray line.")]
+        public float rayscale { get; set; }
+        /// <summary>
+        /// Sets the width (length) of each ray line.
+        /// </summary>
+        [Info(UserLevel.User, "Sets the width (length) of each ray line.")]
+        public int width { get; set; }
 
         public WideRay() : this(null) { }
         public WideRay(Node parent = null)
         {
             if (parent != null) this.parent = parent;
             com = comp.wideray;
-            InitializeLists();  
+            rayscale = 20;
+            width = 3;
         }
 
-        public override void AfterCloning()
+        //public override void AfterCloning()
+        //{
+        //    if (!parent.HasComp<Queuer>()) parent.addComponent(comp.queuer, true);
+        //    parent.Comp<Queuer>().qs = parent.Comp<Queuer>().qs | queues.scale | queues.position | queues.angle;
+        //}
+
+        public override void Draw()
         {
-            if (!parent.HasComp<Queuer>()) parent.addComponent(comp.queuer, true);
-            //if (parent.comps.ContainsKey(comp.queuer)) 
-            parent.Comp<Queuer>().qs = parent.Comp<Queuer>().qs | queues.scale | queues.position | queues.angle;
-            //int i = 0;
+            Vector2 pos = parent.body.pos;
+            Vector2 scalevect = new Vector2(rayscale, width);
+            float angle = (float)(Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + Math.PI / 2);
+            parent.room.camera.AddPermanentDraw(textures.whitepixel, pos, parent.body.color, scalevect, angle, rayLength);
         }
 
-        public override void Draw(SpriteBatch spritebatch)
+        public void DrawOld()
         {
             Room room = parent.room;
             float mapzoom = room.zoom;
@@ -79,14 +91,14 @@ namespace OrbItProcs
             {
                 scalevect.X = scales.ElementAt(i) * 50;
                 //spritebatch.Draw(parent.getTexture(textures.whitepixel), positions.ElementAt(i) * mapzoom, null, parent.body.color, angles.ElementAt(i), centerTexture, scalevect, SpriteEffects.None, 0);
-                room.camera.Draw(parent.getTexture(textures.whitepixel), positions.ElementAt(i), null, parent.body.color, angles.ElementAt(i), centerTexture, scalevect, SpriteEffects.None, 0);
+                room.camera.Draw(textures.whitepixel, positions.ElementAt(i), null, parent.body.color, angles.ElementAt(i), centerTexture, scalevect, SpriteEffects.None, 0);
                 count++;
             }
 
             float testangle = (float)(Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + (Math.PI / 2));
             scalevect.X = parent.body.scale * 50;
             //spritebatch.Draw(parent.getTexture(textures.whitepixel), parent.body.pos * mapzoom, null, parent.body.color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
-            room.camera.Draw(parent.getTexture(textures.whitepixel), parent.body.pos, null, parent.body.color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
+            room.camera.Draw(textures.whitepixel, parent.body.pos, null, parent.body.color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
             
         }
 

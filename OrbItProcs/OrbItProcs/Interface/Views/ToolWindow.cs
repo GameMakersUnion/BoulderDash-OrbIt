@@ -42,16 +42,15 @@ namespace OrbItProcs
             toolBar.Text = "Tools";
             manager.Add(toolBar);
 
-            Texture2D[,] textures = Program.getGame().Content.Load<Texture2D>("Textures/buttons").sliceSpriteSheet(2, 5);
-            buttonTextures["select"] = textures[0,0];
-            buttonTextures["random"] = textures[1,0];
-            buttonTextures["spawn"] = textures[0,1];
-            buttonTextures["level"] = textures[1,1];
-            buttonTextures["forceSpawn"] = textures[0,2];
-            buttonTextures["forcePush"] = textures[1,2];
-            buttonTextures["control"] = textures[0,3];
-            buttonTextures["static"] = textures[1,3];
-            buttonTextures["remove"] = textures[0,4];
+            buttonTextures["select"] = Program.getGame().btnTextures[0, 0];
+            buttonTextures["random"] = Program.getGame().btnTextures[1, 0];
+            buttonTextures["spawn"] = Program.getGame().btnTextures[0, 1];
+            buttonTextures["level"] = Program.getGame().btnTextures[1, 1];
+            buttonTextures["forceSpawn"] = Program.getGame().btnTextures[0, 2];
+            buttonTextures["forcePush"] = Program.getGame().btnTextures[1, 2];
+            buttonTextures["control"] = Program.getGame().btnTextures[0, 3];
+            buttonTextures["static"] = Program.getGame().btnTextures[1, 3];
+            buttonTextures["remove"] = Program.getGame().btnTextures[0, 4];
 
 
 

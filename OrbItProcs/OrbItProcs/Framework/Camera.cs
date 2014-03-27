@@ -17,11 +17,10 @@ namespace OrbItProcs
         public float zoom;
         public Vector2 pos;
         public SpriteBatch batch;
-        public SpriteFont font;
+        public static readonly SpriteFont font = Program.getGame().font;
         public Camera(Room room, float zoom = 0.5f, Vector2? pos = null)
         {
             this.room = room;
-            this.font = room.game.font;
             this.batch = room.game.spriteBatch;
             this.zoom = zoom;
             this.pos = pos ?? Vector2.Zero;
@@ -41,15 +40,15 @@ namespace OrbItProcs
             color *= ((float)color.A / 255f);
             batch.Draw(room.game.textureDict[texture], ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, room.game.textureCenters[texture], scalevect * zoom, SpriteEffects.None, 0);
         }
-        public virtual void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0)
+        public virtual void Draw(textures texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0)
         {
             color *= ((float)color.A / 255f);
-            batch.Draw(texture, ((position - pos) * zoom) + CameraOffsetVect, sourceRectangle, color, rotation, origin, scale * zoom, effects, layerDepth);
+            batch.Draw(room.game.textureDict[texture], ((position - pos) * zoom) + CameraOffsetVect, sourceRect, color, rotation, origin, scale * zoom, effects, layerDepth);
         }
-        public virtual void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, Vector2 scalevect, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0)
+        public virtual void Draw(textures texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, Vector2 scalevect, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0)
         {
             color *= ((float)color.A / 255f);
-            batch.Draw(texture, ((position - pos) * zoom) + CameraOffsetVect, sourceRectangle, color, rotation, origin, scalevect * zoom, effects, layerDepth);
+            batch.Draw(room.game.textureDict[texture], ((position - pos) * zoom) + CameraOffsetVect, sourceRect, color, rotation, origin, scalevect * zoom, effects, layerDepth);
         }
         public virtual void DrawStringScreen(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true)
         {

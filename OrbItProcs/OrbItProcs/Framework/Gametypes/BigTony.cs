@@ -37,12 +37,12 @@ namespace OrbItProcs
         public CollisionDelegate onCollisionEnter;
         public CollisionDelegate onCollisionExit;
         
-        public float maxScore = 50000;
-        int colorChange = 120;
-        float smallmass = 2;
-        float bigmass = 5;
-        float tonymass = 10;
-        public Node bigtony = null;
+        public static float maxScore = 50000;
+        public static int colorChange = 120;
+        public static float smallmass = 2;
+        public static float bigmass = 5;
+        public static float tonymass = 10;
+        public static Node bigtony = null;
         public BigTony() : base()
         {
             room.game.ui.SetSidebarActive(false);
@@ -63,9 +63,14 @@ namespace OrbItProcs
             accel = new Vector2(0, 0);
             absaccel = 0.2f;
             friction = 0.01f;
+            before = (n) => { if (n != bigtony) n.body.mass = smallmass; };
+            after = (n) => { if (n != bigtony) n.body.mass = bigmass; };
 
+            InitializePlayers();
             
         }
+        Action<Node> before;
+        Action<Node> after;
         public void InitializePlayers()
         {
             for (int i = 0; i < 8; i++)
@@ -90,74 +95,12 @@ namespace OrbItProcs
                 p.node.collision.AddCollider("trigger", collider);
                 collider.OnCollisionEnter += onCollisionEnter;
                 collider.OnCollisionExit += onCollisionExit;
+
+                p.node.addComponent<Swap>(true);
+                p.node.Comp<Swap>().OnSwapBefore += before;
+                p.node.Comp<Swap>().OnSwapAfter += after;
             }
         }
-        
-        public void SwitchPlayerNode(Node n1, Node n2)
-        {
-            if (n1.player == null && n2.player == null)
-            {
-                return;
-            }
-            else if (n1.player != null && n2.player != null)
-            {
-                BigTonyData data1 = n1.player.Data<BigTonyData>();
-                BigTonyData data2 = n2.player.Data<BigTonyData>();
-                if (data1 == null || data2 == null) return;
-                if (!data1.switchAvailable || !data2.switchAvailable) return;
-                n1.player.node.body.color = n2.player.node.body.color;
-                Node temp = n1.player.node;
-                n1.player.node.collision.SwapCollider(n2.player.node, "trigger");
-
-                n1.player.node = n2.player.node;
-                n1.player.node.body.color = n1.player.pColor;
-                n2.player.node = temp;
-
-                data1.switchAvailable = false;
-                data2.switchAvailable = false;
-                room.scheduler.doAfterXMilliseconds(nn => data1.switchAvailable = true, 1000);
-                room.scheduler.doAfterXMilliseconds(nn => data2.switchAvailable = true, 1000);
-            }
-            else
-            {
-                Player p1;
-                Node n;
-                if (n1.player != null && n2.player == null)
-                {
-                    p1 = n1.player;
-                    n = n2;
-                }
-                else if (n1.player == null && n2.player != null)
-                {
-                    p1 = n2.player;
-                    n = n1;
-                }
-                else
-                {
-                    p1 = null;
-                    n = null;
-                }
-                p1.node.body.color = Color.White;
-                p1.node.body.texture = textures.whitecircle;
-                if (p1.node != bigtony) p1.node.body.mass = smallmass;
-                p1.node.collision.SwapCollider(n, "trigger");
-
-                Collider col = p1.node.collision.GetCollider("trigger");
-                if (col != null) col.HandlersEnabled = false;
-
-                Collider col2 = n.collision.GetCollider("trigger");
-                if (col2 != null) col2.HandlersEnabled = true;
-
-                p1.node = n;
-                if (p1.node != bigtony) p1.node.body.mass = bigmass;
-
-                p1.node.body.texture = textures.blackorb;
-                p1.node.body.color = p1.pColor;
-                room.scheduler.doAfterXMilliseconds(nn => p1.Data<BigTonyData>().switchAvailable = true, 1000);
-            }
-            //don't switch if both are nodes
-        }
-
         public void MakeBigTony(Room room)
         {
             //if (bigtony != null)
