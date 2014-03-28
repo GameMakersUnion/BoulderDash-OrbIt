@@ -120,7 +120,11 @@ namespace OrbItProcs
             float mapzoom = room.zoom;
 
             Texture2D tex = parent.getTexture();
-            room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale, parent.body.orient);
+
+            if (parent.HasComp(comp.shader))
+                room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale, parent.body.orient, parent.Comp<Shader>().shaderPack);
+            else
+                room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale, parent.body.orient);
 
             /*Rectangle? sourceRect = null;
             int minx = 0, miny = 0, maxx = tex.Width, maxy = tex.Height;
