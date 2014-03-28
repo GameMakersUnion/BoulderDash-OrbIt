@@ -65,6 +65,7 @@ namespace OrbItProcs
         //ghost,
         //chrono,
         //weird,
+        sword,
     };
 
     public enum textures
@@ -278,9 +279,10 @@ namespace OrbItProcs
                 Node node = room.game.spawnNode((int)spawnPos.X, (int)spawnPos.Y);
                 node.name = "player" + i;
                 node.addComponent(comp.shooter, true);
+                node.addComponent(comp.sword, true);
                 p.node = node;
                 room.masterGroup.fullSet.Add(node);
-
+                node.OnSpawn();
             }
         }
 

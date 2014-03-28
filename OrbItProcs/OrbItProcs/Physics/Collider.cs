@@ -33,6 +33,10 @@ namespace OrbItProcs
         public Shape shape;
         public Vector2 pos = new Vector2(0, 0);
         public Vector2 objectSpacePos = new Vector2(0, 0);
+
+
+        public HashSet<Collider> exclusionList = new HashSet<Collider>();
+        
         //public Vector2 velocity = new Vector2(0, 0);
 
         [Polenter.Serialization.ExcludeFromSerialization]
@@ -120,7 +124,7 @@ namespace OrbItProcs
 
         public virtual void CheckCollisionBody(Body other)
         {
-
+            
             //if (!active || !other.active) { return; }
             //if (exclusions.Contains(other)) return;
 
