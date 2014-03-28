@@ -375,7 +375,8 @@ namespace OrbItProcs {
                                         if (cc is Body)
                                         {
                                             Body bb = (Body)cc;
-                                            b.CheckCollisionBody(bb);
+                                            if (!b.exclusionList.Contains(bb)) b.CheckCollisionBody(bb);
+                                            
                                         }
                                         else
                                         {
@@ -397,7 +398,7 @@ namespace OrbItProcs {
                                         if (cc is Body)
                                         {
                                             Body bb = (Body)cc;
-                                            c.CheckCollisionBody(bb);
+                                            if (!c.exclusionList.Contains(bb)) c.CheckCollisionBody(bb);
                                         }
                                         else
                                         {

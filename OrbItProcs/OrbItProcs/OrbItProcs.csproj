@@ -149,6 +149,7 @@
     <Compile Include="Components\Delegator.cs" />
     <Compile Include="Components\Drawers\ColorChanger.cs" />
     <Compile Include="Components\Drawers\ColorGravity.cs" />
+    <Compile Include="Components\Meta\Sword.cs" />
     <Compile Include="Components\Meta\Shooter.cs" />
     <Compile Include="Components\Meta\Swap.cs" />
     <Compile Include="Components\Scheduler.cs" />

@@ -59,13 +59,14 @@ namespace OrbItProcs
         collision,
         basicdraw,
         meta,
-        shader
+        shader,
         //middle,
         //slow,
         //siphon,
         //ghost,
         //chrono,
         //weird,
+        sword,
     };
 
     public enum textures
@@ -288,8 +289,11 @@ namespace OrbItProcs
                 node.body.pos = spawnPos;
                 node.name = "player" + i;
                 node.body.color = p.pColor;
+                node.addComponent(comp.shooter, true);
+                node.addComponent(comp.sword, true);
                 p.node = node;
                 room.playerGroup.IncludeEntity(node);
+                node.OnSpawn();
             }
         }
 
