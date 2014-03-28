@@ -15,6 +15,7 @@ namespace OrbItProcs
         public int shootingRate { get; set; }
         private int shootingRateCount = 0;
         public float speed { get; set; }
+        public float damage { get; set; }
         public Shooter() : this(null) { }
         public Shooter(Node parent)
         {
@@ -22,6 +23,7 @@ namespace OrbItProcs
             bulletLife = 1000;
             shootingRate = 5;
             speed = 15f;
+            damage = 1f;
         }
         public static void MakeBullet()
         {
@@ -44,6 +46,7 @@ namespace OrbItProcs
             bulletNode.Comp<Laser>().thickness = 5f;
             bulletNode.Comp<Laser>().laserLength = 20;
             bulletNode.Comp<Movement>().randInitialVel.enabled = false;
+            
         }
         public override void PlayerControl(Controller controller)
         {
@@ -72,6 +75,29 @@ namespace OrbItProcs
             n.body.velocity = dir * speed;
             n.body.pos = parent.body.pos;
             parent.room.game.spawnNode(n);
+            CollisionDelegate bulletHit = (n1, n2) =>
+            {
+                Console.WriteLine("1");
+                Node bullet, them;
+                if (n1 == n)
+                {
+                    bullet = n1;
+                    them = n2;
+                }
+                else if (n2 == n)
+                {
+                    bullet = n2;
+                    them = n1;
+                }
+                else
+                {
+                    return;
+                }
+                them.meta.TakeDamage(parent, damage);
+                bullet.meta.Die(null);
+            };
+            n.body.OnCollisionEnter += bulletHit;
         }
+
     }
 }

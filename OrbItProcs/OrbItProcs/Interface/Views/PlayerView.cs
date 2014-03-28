@@ -92,7 +92,6 @@ namespace OrbItProcs
                     item.isSelected = true;
                     //editGroupWindow = new EditGroupWindow(sidebar);
                     //editGroupWindow.componentView.SwitchGroup(g);
-
                 };
 
                 Button btnEnabled = new Button(manager);

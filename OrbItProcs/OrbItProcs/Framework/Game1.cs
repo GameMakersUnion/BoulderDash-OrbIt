@@ -59,6 +59,7 @@ namespace OrbItProcs
         collision,
         basicdraw,
         meta,
+        shader
         //middle,
         //slow,
         //siphon,
@@ -124,6 +125,9 @@ namespace OrbItProcs
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
         public float backgroundHue = 180;
         public double x = 0;
+
+        // Shader code
+        public static Effect shaderEffect;
 
 
         public static readonly object drawLock = new object();
@@ -203,8 +207,9 @@ namespace OrbItProcs
             DelegatorMethods.InitializeDelegateMethods();
             spriteBatch = new SpriteBatch(Graphics.GraphicsDevice);
 
-            
-
+            // Shader Code 
+            shaderEffect = Content.Load<Effect>("Effects/Shader");
+               
             ui = new UserInterface(this);
 
             room = new Room(this, 1880, 1175);
@@ -273,20 +278,18 @@ namespace OrbItProcs
             {
                 Player p = Player.GetNew(i);
                 if (p == null) break;
-                Vector2 spawnPos = Vector2.Zero;
-
                 double angle = Utils.random.NextDouble() * Math.PI * 2;
                 angle -= Math.PI;
                 float dist = 200;
                 float x = dist * (float)Math.Cos(angle);
                 float y = dist * (float)Math.Sin(angle);
-                spawnPos = new Vector2(room.worldWidth / 2, room.worldHeight / 2) - new Vector2(x, y);
+                Vector2 spawnPos = new Vector2(room.worldWidth / 2, room.worldHeight / 2) - new Vector2(x, y);
                 Node node = def.CreateClone();
                 node.body.pos = spawnPos;
                 node.name = "player" + i;
+                node.body.color = p.pColor;
                 p.node = node;
                 room.playerGroup.IncludeEntity(node);
-
             }
         }
 

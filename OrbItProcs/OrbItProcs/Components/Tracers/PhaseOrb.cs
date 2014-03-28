@@ -31,10 +31,10 @@ namespace OrbItProcs
             }
             set
             {
-                if (parent != null && parent.HasComp<Queuer>() && parent.Comp<Queuer>().queuecount < value)
-                {
-                    parent.Comp<Queuer>().queuecount = value;
-                }
+                //if (parent != null && parent.HasComp<Queuer>() && parent.Comp<Queuer>().queuecount < value)
+                //{
+                //    parent.Comp<Queuer>().queuecount = value;
+                //}
                 _phaserLength = value;
             }
         }
@@ -60,10 +60,8 @@ namespace OrbItProcs
 
         public override void AfterCloning()
         {
-            if (!parent.HasComp<Queuer>()) parent.addComponent(comp.queuer, true);
-            //if (parent.comps.ContainsKey(comp.queuer)) 
-            parent.Comp<Queuer>().qs = parent.Comp<Queuer>().qs | queues.scale | queues.position;
-                //int i = 0;
+            //if (!parent.HasComp<Queuer>()) parent.addComponent(comp.queuer, true);
+            //parent.Comp<Queuer>().qs = parent.Comp<Queuer>().qs | queues.scale | queues.position;
         }
         public override void Draw()
         {

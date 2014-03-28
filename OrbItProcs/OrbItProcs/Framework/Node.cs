@@ -815,7 +815,7 @@ namespace OrbItProcs {
                     }
                 }
             }
-            if (meta.aimode != AIMode.None && meta.aimode != AIMode.Player)
+            if (meta.AImode != AIMode.None && meta.AImode != AIMode.Player)
             {
                 foreach (Type c in clist)
                 {
@@ -891,6 +891,20 @@ namespace OrbItProcs {
                     && mInfo.DeclaringType == component.GetType())
                 {
                     component.OnSpawn();
+                }
+            }
+        }
+
+        public void OnDeath(Node other)
+        {
+            foreach (Type key in comps.Keys.ToList())
+            {
+                Component component = comps[key];
+                MethodInfo mInfo = component.GetType().GetMethod("OnDeath");
+                if (mInfo != null
+                    && mInfo.DeclaringType == component.GetType())
+                {
+                    component.OnDeath(other);
                 }
             }
         }

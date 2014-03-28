@@ -81,10 +81,8 @@ namespace OrbItProcs
 
         public override void AfterCloning()
         {
-            if (!parent.HasComp<Queuer>()) parent.addComponent(comp.queuer, true);
-            //if (parent.comps.ContainsKey(comp.queuer)) 
-            parent.Comp<Queuer>().qs = parent.Comp<Queuer>().qs | queues.scale | queues.position;// | queues.angle;
-            //int i = 0;
+            //if (!parent.HasComp<Queuer>()) parent.addComponent(comp.queuer, true);
+            //parent.Comp<Queuer>().qs = parent.Comp<Queuer>().qs | queues.scale | queues.position;// | queues.angle;
         }
         public override void Initialize(Node parent)
         {
@@ -159,7 +157,6 @@ namespace OrbItProcs
             {
                 coll = new Color(parent.body.color.R, parent.body.color.G, parent.body.color.B, alpha);
             }
-
             parent.room.camera.AddPermanentDraw(textures.whitepixel, centerpoint, parent.body.color, scalevect, testangle, laserLength);
             prevPos = start;
         }

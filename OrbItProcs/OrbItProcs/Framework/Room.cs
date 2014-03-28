@@ -307,7 +307,7 @@ namespace OrbItProcs {
             gridsystemCollision.alreadyVisited = new HashSet<Collider>();
 
             //todo: remove tolists if possible
-            foreach (var c in CollisionSet) //.ToList() 
+            foreach (var c in CollisionSet.ToList()) //.ToList() 
             {
                 if (c.parent.active)
                 {

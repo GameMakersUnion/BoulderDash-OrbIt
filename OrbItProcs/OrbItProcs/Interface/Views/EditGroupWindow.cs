@@ -64,7 +64,7 @@ namespace OrbItProcs
 
             componentView = new ComponentView(sidebar, window, 0, HeightCounter);
             componentView.Width = 200;
-
+            
             window.Width += 100;
             window.Width -= 100;
 

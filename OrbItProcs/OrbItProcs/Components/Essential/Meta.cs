@@ -63,40 +63,54 @@ namespace OrbItProcs
         /// If this node is controlled by an AI, this will determine it's behaviour.
         /// </summary>
         [Info(UserLevel.User, "If this node is controlled by an AI, this will determine it's behaviour.")]
-        public AIMode aimode { get; set; }
+        public AIMode AImode { get; set; }
         /// <summary>
         /// If the node is deadly, this node will kill other nodes on contact.
         /// </summary>
         [Info(UserLevel.User, "If the node is deadly, this node will kill other nodes on contact.")]
         public bool deadly { get; set; }
+
+        /// <summary>
+        /// The radius of the node.
+        /// </summary>
+        [Info(UserLevel.User, "The radius of the node.")]
+        public float radius { get { return parent != null ? parent.body.radius : 25; } set { if (parent != null) parent.body.radius = value; } }
+
         public Action<Node, Node> OnDeath { get; set; }
         public Action<Node, Node, int> OnTakeDamage { get; set; }
-
         public Meta() : this(null) { }
         public Meta(Node parent)
         {
             this.parent = parent;
             score = new Toggle<float>(0, false);
-            maxHealth = new Toggle<float>(100, false);
+            maxHealth = new Toggle<float>(100, true);
             currentHealth = maxHealth.value;
             worth = new Toggle<float>(1, false);
             armour = new Toggle<float>(1, false);
             damageMode = DamageMode.Nothing;
-            aimode = AIMode.None;
+            AImode = AIMode.None;
             deadly = false;
-            OnDeath = Die;
         }
         public override void AffectSelf()
         {
             
         }
-        public void TakeDamage(Node n, Node other, int damage)
+        public void TakeDamage(Node other, float damage)
         {
-
+            if (maxHealth.enabled)
+            {
+                currentHealth = (float)Math.Max(currentHealth - damage, 0);
+                if (currentHealth <= 0)
+                {
+                    Die(other);
+                }
+            }
         }
-        public void Die(Node n, Node other)
+        public void Die(Node other)
         {
-
+            if (OnDeath != null) OnDeath(parent, other);
+            parent.OnDeath(other);
+            parent.group.DeleteEntity(parent);
         }
     }
 }

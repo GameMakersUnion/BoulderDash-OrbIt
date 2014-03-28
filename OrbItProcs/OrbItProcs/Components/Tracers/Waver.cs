@@ -115,9 +115,9 @@ namespace OrbItProcs
 
         public override void OnSpawn()
         {
-            if (!active) return;
-            if (parent.HasComp<Queuer>())
-                parent.Comp<Queuer>().positions = metapositions;
+            //if (!active) return;
+            //if (parent.HasComp<Queuer>())
+            //    parent.Comp<Queuer>().positions = metapositions;
         }
 
         public override void InitializeLists()
