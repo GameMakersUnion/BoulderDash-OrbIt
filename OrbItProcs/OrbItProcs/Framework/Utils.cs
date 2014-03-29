@@ -12,12 +12,62 @@ namespace OrbItProcs {
 
     public static class Utils {
 
+        public static float between0and2pi(this float value)
+        {
+            if (value > 2 * VMath.PI) value = value % (2 * VMath.PI);
+            if (value < 0)
+                value = 2 * VMath.PI + value;
+            return value;
+        }
+
         public const float rootOfTwo = 1.41421356237f;
         public const float invRootOfTwo = 0.70710678118f;
 
         public static string Name(this Type t)
         {
             return t.ToString().LastWord('.');
+        }
+        public static Vector2 AngleToVector(float angle)
+        {
+            return new Vector2((float)Math.Sin(angle), -(float)Math.Cos(angle));
+        }
+        public static float CircularDistance(float x, float v, int t = 360)
+        {
+            int half = t / 2;
+            if (x == v) return 0;
+            if (x > v)
+            {
+                if (v > x - half)
+                {
+                    return x - v;
+                }
+                else
+                {
+                    return t - x + v;
+                }
+            }
+            else
+            {
+                if (v < x + half)
+                {
+                    return v - x;
+                }
+                else
+                {
+                    return x - t + v;
+                }
+            }
+        }
+
+        public static float VectorToAngle(Vector2 vector)
+        {
+            float value = (float)Math.Atan2(vector.X, -vector.Y);
+            if (value > 2f * VMath.PI)
+                value = value % (2 * VMath.PI);
+            if (value < 0)
+                value = 2f * VMath.PI + value;
+
+            return value;
         }
         public static Texture2D Crop(this Texture2D image, Rectangle source)
         {
@@ -491,5 +541,27 @@ namespace OrbItProcs {
             }
         }
 
+
+        internal static float AngleLerp(float source, float dest, float p)
+        {
+
+            float result = 0f;
+            float pi = VMath.PI;
+
+
+            if (source < pi / 2 && dest > (3 * pi) / 2)
+            {
+                result = MathHelper.Lerp(source, dest - (2 * pi), p);
+            }
+            else if (source > (3 * pi / 2) && dest < pi / 2)
+            {
+                result = MathHelper.Lerp(source, dest + (2 * pi), p);
+            }
+            else
+            {
+                result = MathHelper.Lerp(source, dest, p);
+            }
+            return result;
+        }
     } // end of class.
 }

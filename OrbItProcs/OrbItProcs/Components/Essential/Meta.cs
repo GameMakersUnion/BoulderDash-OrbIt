@@ -110,7 +110,11 @@ namespace OrbItProcs
         {
             if (OnDeath != null) OnDeath(parent, other);
             parent.OnDeath(other);
-            parent.group.DeleteEntity(parent);
+            
+            if (parent.group != null)
+            {
+                parent.group.DeleteEntity(parent);
+            }
         }
     }
 }

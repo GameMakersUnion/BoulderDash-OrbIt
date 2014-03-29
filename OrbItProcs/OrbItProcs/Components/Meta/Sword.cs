@@ -22,7 +22,7 @@ namespace OrbItProcs
             cooldown
         }
 
-        public const mtypes CompType = mtypes.playercontrol;// | mtypes.affectself;
+        public const mtypes CompType = mtypes.playercontrol|mtypes.minordraw;// | mtypes.affectself;
         public override mtypes compType { get { return CompType; } set { } }
 
         public float distance { get; set; }
@@ -34,6 +34,8 @@ namespace OrbItProcs
         public float swordWidth { get; set; }
         public int swingRate { get; set; }
         private int swingRateCount = 0;
+
+        public int speed { get; set; }
         public Sword() : this(null) { }
         public Sword(Node parent)
         {
@@ -42,6 +44,8 @@ namespace OrbItProcs
             distance = 60;
             swordLength = 40;
             swordWidth = 5;
+            speed = 3;
+
 
 
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>()
@@ -72,6 +76,7 @@ namespace OrbItProcs
         public override void OnSpawn()
         {
             //Node.cloneNode(parent.room.game.ui.sidebar.ActiveDefaultNode, sword);
+            parent.body.texture = textures.orientedcircle;
             Polygon poly = new Polygon();
             poly.body = sword.body;
             poly.SetBox(swordWidth, swordLength);
@@ -92,35 +97,43 @@ namespace OrbItProcs
             if (controller is FullController)
             {
                 FullController fc = (FullController)controller;
-                target = fc.newGamePadState.ThumbSticks.Right;
-                if (target.LengthSquared() > 0.5 * 0.5)
+                sword.movement.active = false;
+                //sword.body.velocity = Utils.AngleToVector(sword.body.orient + (float)Math.PI/2) * 100;
+                sword.body.velocity = sword.body.effvelocity * 1000;
+
+                if (fc.newGamePadState.ThumbSticks.Right.LengthSquared() > 0.9 * 0.9)
                 {
+                    target = fc.newGamePadState.ThumbSticks.Right;
                     enabled = true;
                     target.Normalize();
                     target *= distance;
                     target *= new Vector2(1, -1);
-                    sword.body.pos = target + parent.body.pos;
-
+                    target += parent.body.pos;
+                    sword.body.pos = Vector2.Lerp(sword.body.pos, target, 0.1f);
+                    //sword.body.pos = target + parent.body.pos;
+                    Vector2 result = sword.body.pos - parent.body.pos;
+                    sword.body.SetOrientV2(result);
+                    
                 }
                 else
                 {
                     enabled = false;
-                    sword.body.pos = parent.body.pos;
+                    Vector2 restPos = new Vector2(parent.body.radius, 0).Rotate(parent.body.orient) + parent.body.pos;
+                    sword.body.pos = Vector2.Lerp(sword.body.pos, restPos, 0.1f);
+                    sword.body.orient = Utils.AngleLerp(sword.body.orient, parent.body.orient, 0.1f);
                 }
 
                 //sword.body.pos = position;
                 
             }
         }
-        //public void FireNode(Vector2 dir)
-        //{
-        //    Node n = bulletNode.CreateClone();
-        //    n.Comp<Lifetime>().timeUntilDeath.value = bulletLife;
-        //    dir.Y *= -1;
-        //    n.body.velocity = dir * speed;
-        //    n.body.pos = parent.body.pos;
-        //    parent.room.game.spawnNode(n);
-        //}
+
+        public override void Draw()
+        {
+            base.Draw();
+            parent.room.camera.Draw(textures.sword, sword.body.pos, parent.body.color,sword.body.scale*2, sword.body.orient);
+        }
+
 
 
     }

@@ -523,7 +523,7 @@ namespace OrbItProcs {
 
             n.body.shape = poly;
             n.body.SetStatic();
-            n.body.SetOrient(0);
+            n.body.orient =(0);
             //n.body.restitution = 1f;
 
             //n.movement.pushable = false;

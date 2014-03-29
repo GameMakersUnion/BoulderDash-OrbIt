@@ -42,7 +42,7 @@ namespace OrbItProcs {
 
     public class Node {
         public static int nodeCounter = 0;
-
+        private Vector2 tempPosition = new Vector2(0, 0);
         private string _nodeHash = "";
 
         public string nodeHash { get { return _nodeHash; } set 
@@ -446,8 +446,13 @@ namespace OrbItProcs {
         {
             tags.Remove(tag);
         }
+
         public virtual void Update(GameTime gametime)
         {
+            if (!movement.pushable && tempPosition != new Vector2(0, 0)) body.pos = tempPosition;
+            body.effvelocity = body.pos - tempPosition;
+            tempPosition = body.pos;
+            
             //collision.ClearCollisionList();
             collision.ClearCollisionLists();
             if (nodeState == state.off || nodeState == state.drawOnly) return;

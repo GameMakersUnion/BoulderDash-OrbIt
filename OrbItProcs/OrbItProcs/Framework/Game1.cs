@@ -81,6 +81,7 @@ namespace OrbItProcs
         colororb,
         whitepixel,
         whitepixeltrans,
+        sword
     }
 
     public class Game1 : Application
@@ -193,6 +194,8 @@ namespace OrbItProcs
             { textures.blackorb, Content.Load<Texture2D>("Textures/blackorb"                )},
             { textures.ring, Content.Load<Texture2D>("Textures/ring"                        )},
             { textures.orientedcircle, Content.Load<Texture2D>("Textures/orientedcircle"    )},
+            { textures.sword, Content.Load<Texture2D>("Textures/sword"    )},
+
             };
             btnTextures = Program.getGame().Content.Load<Texture2D>("Textures/buttons").sliceSpriteSheet(2, 5);
 

@@ -9,7 +9,7 @@ namespace OrbItProcs
     public static class VMath
     {
         public static float EPSILON = 0.0001f;
-        
+        public const float PI = (float)Math.PI;
         #region /// Existing Classes ///
         public static void Test()
         {
@@ -50,7 +50,7 @@ namespace OrbItProcs
         {
             v.X = x; v.Y = y;
         }
-        public static void Rotate(this Vector2 v, float radians)
+        public static Vector2 Rotate(this Vector2 v, float radians)
         {
             double c = Math.Cos(radians);
             double s = Math.Sin(radians);
@@ -58,6 +58,7 @@ namespace OrbItProcs
             double yp = v.X * s + v.Y * c;
             v.X = (float)xp;
             v.Y = (float)yp;
+            return v;
         }
         public static Vector2 ProjectOnto(this Vector2 source, Vector2 target)
         {

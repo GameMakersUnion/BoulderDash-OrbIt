@@ -47,7 +47,7 @@ namespace OrbItProcs
         [Info(UserLevel.User, "If enabled, gives the node this velocity in a random direction when spawned.")]
         public Toggle<float> randInitialVel { get; set; }
 
-        private Vector2 tempPosition = new Vector2(0, 0);
+
 
         private movemode _mode = movemode.wallbounce;
         /// <summary>
@@ -95,7 +95,7 @@ namespace OrbItProcs
             Body b = parent.body;
             b.pos += b.velocity;
             b.orient += b.angularVelocity;
-            b.SetOrient(b.orient);
+            b.orient =(b.orient);
             IntegrateForces(); //calls the integrateforces method
 
             AffectSelf();
@@ -139,9 +139,8 @@ namespace OrbItProcs
 
         public override void AffectSelf()
         {
-            parent.body.effvelocity = parent.body.pos - tempPosition;
-            if (!pushable && tempPosition != new Vector2(0,0)) parent.body.pos = tempPosition;
-            tempPosition = parent.body.pos;
+            
+
 
             //parent.body.position.X += parent.body.velocity.X * VelocityModifier;
             //parent.body.position.Y += parent.body.velocity.Y * VelocityModifier;
@@ -166,34 +165,39 @@ namespace OrbItProcs
         }
         public float absaccel = 0.2f;
         public float friction = 0.01f;
+        private float v = 0.0f;
 
         public override void PlayerControl(Controller controller)
         {
-            Vector2 stick = Vector2.Zero;
-            if (controller is FullController)
-            {
-                FullController fc = (FullController)controller;
-                stick = fc.newGamePadState.ThumbSticks.Left;
-            }
-            else if (controller is HalfController)
-            {
+
+            Vector2 stick = controller.getLeftStick();
+            Vector2 stick2 = controller.getRightStick();
+            
                 //if (node != bigtony) node.collision.colliders["trigger"].radius = body.radius * 1.5f;
                 //else node.collision.colliders["trigger"].radius = body.radius * 1.2f;
-                HalfController hc = (HalfController)controller;
                 //bool clicked = false;
-                stick = hc.newHalfPadState.stick1.v2;
                 //clicked = hc.newHalfPadState.Btn3 == ButtonState.Pressed || hc.newHalfPadState.Btn1 == ButtonState.Pressed;
                 //
                 //if (clicked)
                 //{
                 //    SwitchPlayer(stick);
                 //}
-            }
-            else
+
+            
+            if (stick2.LengthSquared() > 0.6f * 0.6f)
             {
-                return;
+                v = Utils.VectorToAngle(stick2).between0and2pi();
+                if (v == 0f) v = 0.00001f;
             }
-            stick.Y *= -1;
+            else if (stick.LengthSquared() > 0.6f * 0.6f)
+            {
+                v = Utils.VectorToAngle(stick).between0and2pi();
+                if (v == 0f) v = 0.00001f;
+            }
+            float result = Utils.AngleLerp(parent.body.orient, v, 0.1f);
+
+            parent.body.orient =(result);
+
             stick *= 0.4f;
             stick *= absaccel;
             if ((parent.body.velocity.X != 0 || parent.body.velocity.Y != 0))
@@ -203,6 +207,8 @@ namespace OrbItProcs
             stick *= parent.body.mass;
             //todo: update maxvel?
             parent.body.ApplyForce(stick);
+
+
         }
 
         public void fallOff()

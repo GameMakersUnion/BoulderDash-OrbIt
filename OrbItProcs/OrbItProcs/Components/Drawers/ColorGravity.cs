@@ -122,34 +122,6 @@ namespace OrbItProcs.Components
             hue = HueFromColor(parent.body.color);
         }
 
-        public float GetDist(float x, float v, int t = 360)
-        {
-            int half = t / 2;
-            if (x == v) return 0;
-            if (x > v)
-            {
-                if (v > x - half)
-                {
-                    return x - v;
-                }
-                else
-                {
-                    return t - x + v;
-                }
-            }
-            else
-            {
-                if (v < x + half)
-                {
-                    return v - x;
-                }
-                else
-                {
-                    return x - t + v;
-                }
-            }
-        }
-
         public override void AffectOther(Node other)
         {
             if (mode == Mode.hue)
@@ -172,7 +144,7 @@ namespace OrbItProcs.Components
 
 
                     float otherhue = other.Comp<ColorGravity>().hue;
-                    dist = GetDist(hue, otherhue);
+                    dist = Utils.CircularDistance(hue, otherhue);
                     if (dist < 1) return;
                     float force = multiplier / (dist * dist) / divisor;
                     huevelocity += force;

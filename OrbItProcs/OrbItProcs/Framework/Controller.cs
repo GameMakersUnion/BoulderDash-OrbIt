@@ -54,6 +54,7 @@ namespace OrbItProcs
                 case 6: right = ButtonState.Pressed; down = ButtonState.Pressed; break;
                 case 7: right = ButtonState.Pressed; break;
             }
+
         }
         public Stick(ButtonState up, ButtonState down, ButtonState left, ButtonState right)
         {
@@ -108,6 +109,10 @@ namespace OrbItProcs
                 v2 = Vector2.Zero;
             }
         }
+        public static implicit operator Vector2(Stick s)
+        {
+            return s.v2;
+        }
         public bool isCentered()
         {
             if (up == ButtonState.Released &&
@@ -152,17 +157,7 @@ namespace OrbItProcs
 
         public static HalfPadState NullPadState = new HalfPadState();
 
-/*
-        public HalfPadState(bool nll)
-        {
-            stick1 = new Stick(Vector2.Zero);
-            stick2 = new Stick(Vector2.Zero);
-            Btn1 = ButtonState.Released;
-            Btn2 = ButtonState.Released;
-            Btn2AsTrigger = 0.0f;
-            Btn3 = ButtonState.Released;
-            BtnStart = ButtonState.Released;
-        }*/
+
         public HalfPadState(ControlSide side, PlayerIndex controllerIndex)
         {
             if (side == ControlSide.left)
@@ -310,7 +305,8 @@ namespace OrbItProcs
             {2, PlayerIndex.Two},
             {3, PlayerIndex.Three},
             {4, PlayerIndex.Four}};
-
+        public abstract Vector2 getLeftStick();
+        public abstract Vector2 getRightStick();
         public static int connectedControllers()
         {
             for (int i = 1; i <= 4; i++)
@@ -385,6 +381,16 @@ namespace OrbItProcs
         {
             if (enabled == false) return new GamePadState();
             return GamePad.GetState(controllerIndex);
+
+             
+        }
+        public override Vector2 getRightStick()
+        {
+            return newGamePadState.ThumbSticks.Right * new Vector2(1,-1);
+        }
+        public override Vector2 getLeftStick()
+        {
+            return newGamePadState.ThumbSticks.Left * new Vector2(1, -1);
         }
         public override void UpdateNewState()
         {
@@ -417,7 +423,14 @@ namespace OrbItProcs
             this.playerNum = player;
             assign = reassign();
         }
-
+        public override Vector2 getRightStick()
+        {
+            return newHalfPadState.stick1 * new Vector2(1, -1);
+        }
+        public override Vector2 getLeftStick()
+        {
+            return newHalfPadState.stick2 * new Vector2(1, -1);
+        }
         public HalfPadState getState()
         {
             if (enabled == false) return HalfPadState.NullPadState;

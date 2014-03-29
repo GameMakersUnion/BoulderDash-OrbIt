@@ -52,7 +52,7 @@ namespace OrbItProcs
             poly.SetCenterOfMass(vertices);
             newNode.body.shape = poly;
             newNode.body.SetStatic();
-            newNode.body.SetOrient(0);
+            newNode.body.orient = 0;
             newNode.movement.mode = movemode.free;
             newNode.body.restitution = 1f;
             room.game.spawnNode(newNode, g: room.masterGroup.childGroups["Walls"]);

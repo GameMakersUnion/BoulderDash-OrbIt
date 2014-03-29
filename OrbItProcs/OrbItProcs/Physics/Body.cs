@@ -192,6 +192,7 @@ namespace OrbItProcs
             get { return _orient; }
             set
             {
+                value = value.between0and2pi();
                 _orient = value;
                 if (shape != null) shape.SetOrient(value);
             }
@@ -390,10 +391,15 @@ namespace OrbItProcs
             mass = newMass;
         }
 
-        public void SetOrient(float radians)
+        public void SetOrientV2(Vector2 direction)
         {
+            float radians = Utils.VectorToAngle(direction);
             orient = radians;
             shape.SetOrient(radians);
+        }
+        public Vector2 getOrientV2()
+        {
+            return Utils.AngleToVector(orient);
         }
 
         public virtual Texture2D getTexture()
