@@ -15,7 +15,9 @@ namespace OrbItProcs
             Draw += DrawEditor;
             verts = new List<Vector2>();
             addProcessKeyAction("placevertice", KeyCodes.LeftClick, OnPress: PlaceVertice);
-            addProcessKeyAction("placevertice", KeyCodes.Enter, OnPress: FinishWall);
+            addProcessKeyAction("FinishWall", KeyCodes.Enter, OnPress: FinishWall);
+            addProcessKeyAction("FinishWall", KeyCodes.RightClick, OnPress: FinishWall);
+            addProcessKeyAction("ClearWalls", KeyCodes.MiddleClick, OnPress: ClearWalls);
         }
 
         public void PlaceVertice()
@@ -44,26 +46,33 @@ namespace OrbItProcs
         {
             if (verts.Count < 3) return;
             Vector2[] vertices = verts.ToArray();
-            Node newNode = new Node();
-            Node.cloneNode(room.game.ui.sidebar.ActiveDefaultNode, newNode);
-            Polygon poly = new Polygon();
-            poly.body = newNode.body;
+            Node newNode = new Node(ShapeType.ePolygon);
+            //Node.cloneNode(room.game.ui.sidebar.ActiveDefaultNode, newNode);
+            //Polygon poly = new Polygon();
+            //poly.body = newNode.body;
             //poly.FindCentroid(vertices);
+            Polygon poly = (Polygon)newNode.body.shape;
             poly.SetCenterOfMass(vertices);
-            newNode.body.shape = poly;
+            //newNode.body.shape = poly;
             newNode.body.SetStatic();
             newNode.body.orient = 0;
             newNode.movement.mode = movemode.free;
             newNode.body.restitution = 1f;
+            newNode.meta.maxHealth.enabled = false;
             room.game.spawnNode(newNode, g: room.masterGroup.childGroups["Walls"]);
             verts = new List<Vector2>();
+        }
+
+        public void ClearWalls()
+        {
+            room.masterGroup.childGroups["Walls"].EmptyGroup();
         }
 
         public void DrawEditor()
         {
             int vertX = 0, vertY = 0;
             MouseToGrid(ref vertX, ref vertY);
-            Vector2 vert = new Vector2(vertX, vertY) * room.zoom;
+            Vector2 vert = new Vector2(vertX, vertY);
 
             Texture2D tx = room.game.textureDict[textures.whitecircle];
             Vector2 cen = new Vector2(tx.Width / 2f, tx.Height / 2f);//store this in another textureDict to avoid recalculating
@@ -72,7 +81,7 @@ namespace OrbItProcs
 
             foreach(Vector2 v in verts)
             {
-                room.camera.Draw(textures.whitecircle, v * room.zoom, null, Color.Red, 0f, cen, 0.3f, SpriteEffects.None, 0);
+                room.camera.Draw(textures.whitecircle, v, null, Color.Red, 0f, cen, 0.3f, SpriteEffects.None, 0);
             }
         }
 
@@ -81,6 +90,8 @@ namespace OrbItProcs
         public void MouseToGrid(ref int x, ref int y)
         {
             Vector2 MousePos = UserInterface.WorldMousePos;
+
+            Console.WriteLine(room.worldWidth + " : " + room.worldHeight + "  :::  " + MousePos.X + " : " + MousePos.Y);
             double dx = MousePos.X / (double)room.level.cellWidth;
             double dy = MousePos.Y / (double)room.level.cellHeight;
 

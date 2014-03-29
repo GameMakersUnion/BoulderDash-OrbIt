@@ -103,6 +103,12 @@ namespace OrbItProcs
             OnCollisionAllExit -= OnCollisionAllExit;
         }
 
+        public void AddExclusion(Collider other)
+        {
+            exclusionList.Add(other);
+            other.exclusionList.Add(this);
+        }
+
         public Collider() : this(shape: null) { }
         public Collider(Shape shape = null, Node parent = null)
         {

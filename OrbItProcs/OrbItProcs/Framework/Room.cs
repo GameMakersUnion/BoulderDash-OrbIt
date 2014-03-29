@@ -30,13 +30,14 @@ namespace OrbItProcs {
 
         #region // Lists // --------------------------------------------\
         [Polenter.Serialization.ExcludeFromSerialization]
-        public HashSet<Collider> CollisionSet { get; set; }
+        public HashSet<Collider> CollisionSetCircle { get; set; }
+        public HashSet<Collider> CollisionSetPolygon { get; set; }
         //[Polenter.Serialization.ExcludeFromSerialization]
         public List<Rectangle> gridSystemLines = new List<Rectangle>(); //dns
         //[Polenter.Serialization.ExcludeFromSerialization]
         private List<Manifold> contacts = new List<Manifold>(); //dns
         #endregion
-        public GridSystem gridsystem { get; set; }
+        public GridSystem gridsystemAffect { get; set; }
         public GridSystem gridsystemCollision { get; set; }
         //[Polenter.Serialization.ExcludeFromSerialization]
         public Level level { get; set; }
@@ -84,6 +85,15 @@ namespace OrbItProcs {
                 return masterGroup.childGroups["Player Group"];
             }
         }
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public Group itemGroup
+        {
+            get
+            {
+                if (masterGroup == null) return null;
+                return masterGroup.childGroups["Item Group"];
+            }
+        }
 
         [Polenter.Serialization.ExcludeFromSerialization]
         public Node defaultNode { get; set; }
@@ -126,15 +136,48 @@ namespace OrbItProcs {
             game = Program.getGame();
             groupHashes = new ObservableHashSet<string>();
             nodeHashes = new ObservableHashSet<string>();
-            CollisionSet = new HashSet<Collider>();
+            CollisionSetCircle = new HashSet<Collider>();
+            CollisionSetPolygon = new HashSet<Collider>();
             colIterations = 1;
-            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, game.Width, game.Height);
+            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, Game1.Width, Game1.Height);
             camera = new ThreadedCamera(this, 0.5f);
             scheduler = new Scheduler();
             borderColor = Color.Green;
-            
+            collideAction = (c1, c2) =>
+            {
+                
+                if (c1.parent == c2.parent) return;
+                if (c1 is Body)
+                {
+                    Body b = (Body)c1;
+                    
+                    if (gridsystemCollision.alreadyVisited.Contains(c2)) return;
+                    if (c2 is Body)
+                    {
+                        Body bb = (Body)c2;
+                        if (!b.exclusionList.Contains(bb)) b.CheckCollisionBody(bb);
+                    }
+                    else
+                    {
+                        b.CheckCollisionCollider(c2);
+                    }
+                }
+                else
+                {
+                    if (gridsystemCollision.alreadyVisited.Contains(c2)) return;
+                    if (c2 is Body)
+                    {
+                        Body bb = (Body)c2;
+                        if (!c1.exclusionList.Contains(bb)) c1.CheckCollisionBody(bb);
+                    }
+                    else
+                    {
+                        //c.CheckCollision(c2);
+                    }
+                }
+            };
         }
-
+        Action<Collider, Collider> collideAction;
         public Room(Game1 game, int worldWidth, int worldHeight, bool Groups = true) : this()
         {
             //this.mapzoom = 2f;
@@ -142,10 +185,10 @@ namespace OrbItProcs {
             this.worldHeight = worldHeight;
 
             // grid System
-            gridsystem = new GridSystem(this, 40, 5);
-            level = new Level(this, 40, 40, gridsystem.cellWidth, gridsystem.cellHeight);
+            gridsystemAffect = new GridSystem(this, 40, 5);
+            level = new Level(this, 40, 40, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
 
-            gridsystemCollision = new GridSystem(this, gridsystem.cellsX, 20);
+            gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX, 20);
             DrawLinks = true;
             WallWidth = 10;
             camera = new ThreadedCamera(this, 0.5f);
@@ -179,17 +222,13 @@ namespace OrbItProcs {
             //firstdefault.IsDefault = true;
 
             masterGroup = new Group(defaultNode, Name: defaultNode.name, Spawnable: false);
-
             if (Groups)
             {
                 Group playerGroup = new Group(defaultNode, masterGroup, Name: "Player Group", Spawnable: false);
-
+                Group itemGroup = new Group(defaultNode, masterGroup, Name: "Item Group", Spawnable: false);
                 Group generalGroup = new Group(defaultNode, masterGroup, Name: "General Groups", Spawnable: false);
-
                 Group linkGroup = new Group(defaultNode, masterGroup, Name: "Link Groups", Spawnable: false);
-
                 Group wallGroup = new Group(defaultNode, masterGroup, Name: "Walls", Spawnable: false);
-
                 Group firstGroup = new Group(firstdefault, generalGroup, Name: "Group1");
             }
 
@@ -204,50 +243,41 @@ namespace OrbItProcs {
         
         public void AddCollider(Collider collider)
         {
-            CollisionSet.Add(collider);
+            if (collider.shape is Circle)
+                CollisionSetCircle.Add(collider);
+            else if (collider.shape is Polygon)
+                CollisionSetPolygon.Add(collider);
         }
         public void RemoveCollider(Collider collider)
         {
-            CollisionSet.Remove(collider);
+            if (CollisionSetCircle.Contains(collider))
+                CollisionSetCircle.Remove(collider);
+            if (CollisionSetPolygon.Contains(collider))
+                CollisionSetPolygon.Remove(collider);
         }
 
         public void Update(GameTime gametime)
         {
-            //Testing.StandardizedTesting(700);
-            //Testing.StandardizedTesting2(200);
-            
-            //Console.WriteLine(gametime.ElapsedGameTime.Milliseconds + " :: " + gametime.ElapsedGameTime.TotalMilliseconds);
             long elapsed = 0;
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
             totalElapsedMilliseconds += elapsed;
-            //these make it convienient to check values after pausing the game my mouseing over
-            //if (defaultNode == null) defaultNode = null;
-            //if (game.ui.sidebar.lstComp == null) game.ui.sidebar.lstComp = null;
             
-            gridsystem.clear();
+            gridsystemAffect.clear();
             gridSystemLines = new List<Rectangle>();
 
             game.processManager.Update();
 
             HashSet<Node> toDelete = new HashSet<Node>();
-
-            //if (++timertimer % timermax == 0)
-            //    Console.WriteLine("=======================UPDATE START==========");
-            //if (timertimer % timermax == 0)
-            //    Testing.StartTimer();
             //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
             foreach (var n in masterGroup.childGroups["General Groups"].fullSet)
             {
-                gridsystem.insert(n.body);
+                gridsystemAffect.insert(n.body);
             }
             Testing.OldStopTimer("gridsystem insert");
             //
             UpdateCollision();
             if (contacts.Count > 0) contacts = new List<Manifold>();
-            
 
-            //if (timertimer % timermax == 0)
-            //    Testing.StartTimer();
             foreach(Node n in masterGroup.fullSet.ToList())
             {
                 if (n.active)
@@ -257,10 +287,7 @@ namespace OrbItProcs {
             }
             Testing.OldStopTimer("node update");
 
-            
-            
             if (AfterIteration != null) AfterIteration(this, null);
-
 
             //addGridSystemLines(gridsystem);
             //addLevelLines(level);
@@ -268,15 +295,6 @@ namespace OrbItProcs {
             //colorEffectedNodes();
 
             updateTargetNodeGraphic();
-
-            //player1.Update(gametime);
-            //if (Game1.bigTonyOn)
-            //{
-            //    foreach (var player in players)
-            //    {
-            //        player.Update(gametime); //#bigtony
-            //    }
-            //}
 
             scheduler.AffectSelf();
         }
@@ -288,15 +306,15 @@ namespace OrbItProcs {
             if (algorithm <= 4)
             {
                 gridsystemCollision.clear();
-                foreach (var c in CollisionSet) //.ToList()
+                foreach (var c in CollisionSetCircle) //.ToList()
                 {
                     gridsystemCollision.insert(c);
                 }
             }
-            if (algorithm == 5)
+            if (algorithm >= 5)
             {
                 gridsystemCollision.clearBuckets();
-                foreach (var n in CollisionSet) //.ToList()
+                foreach (var n in CollisionSetCircle) //.ToList()
                 {
                     //Console.WriteLine(CollisionSet.Count);
                     gridsystemCollision.insertToBuckets(n);
@@ -306,57 +324,42 @@ namespace OrbItProcs {
             Testing.PrintTimer("insertion");
             gridsystemCollision.alreadyVisited = new HashSet<Collider>();
 
-            //todo: remove tolists if possible
-            foreach (var c in CollisionSet.ToList()) //.ToList() 
+            foreach (var c in CollisionSetPolygon.ToList())
             {
                 if (c.parent.active)
                 {
-                    int reach; //update later based on cell size and radius (or polygon size.. maybe based on it's AABB)
+                    gridsystemCollision.alreadyVisited.Add(c);
+                    int reach = (int)c.radius * 2;
+                    if (c.shape is Circle)
+                    {
+                        reach = (int)(c.shape as Polygon).polyReach;
+                    }
+                    foreach (var otherCol in CollisionSetPolygon.ToList())
+                    {
+                        collideAction(c, otherCol);
+                    }
+                    foreach (var otherCol in CollisionSetCircle.ToList())
+                    {
+                        collideAction(c, otherCol);
+                    }
+                }
+            }
+
+            foreach (var c in CollisionSetCircle.ToList()) //.ToList() 
+            {
+                if (c.parent.active)
+                {
+                    gridsystemCollision.alreadyVisited.Add(c);
+                    int reach = (int)c.radius * 2;
                     if (c.shape is Polygon)
                     {
-                        reach = 20;
+                        reach = (int)(c.shape as Polygon).polyReach;
+                        foreach (var otherCol in CollisionSetCircle.ToList())
+                        {
+                            collideAction(c, otherCol);
+                        }
                     }
-                    else
-                    {
-                        reach = (int)(c.radius * 5) / gridsystemCollision.cellWidth;
-                        //reach = 2;
-                    }
-                    gridsystemCollision.alreadyVisited.Add(c);
-                    //if (algorithm == 1)
-                    //{
-                    //    ///*
-                    //    //Testing.w("retrieve").Start();
-                    //    List<Collider> retrievedCollider = gridsystemCollision.retrieve(c, reach);
-                    //    //Testing.w("retrieve").Stop();
-                    //    //Testing.w("manifolds").Start();
-                    //    foreach (var r in retrievedCollider) //todo: this may be iterating over a deleted node (or removed)
-                    //    {
-                    //        if (gridsystemCollision.alreadyVisited.Contains(r))
-                    //            continue;
-                    //        //n.collision.AffectOther(r);
-                    //        c.CheckCollisionCollider(r);
-                    //    }
-                    //    //Testing.w("manifolds").Stop();
-                    //}
-                    //else if (algorithm == 4)
-                    //{
-                    //    ///*
-                    //    var buckets = gridsystemCollision.retrieveBuckets(c, 115);
-                    //    if (buckets != null)
-                    //    {
-                    //        foreach (var bucket in buckets)
-                    //        {
-                    //            foreach (var nn in bucket)
-                    //            {
-                    //                if (gridsystemCollision.alreadyVisited.Contains(nn))
-                    //                    continue;
-                    //                c.CheckCollisionCollider(nn);
-                    //            }
-                    //        }
-                    //    }
-                    //    //*/
-                    //}
-                    if (algorithm == 5)
+                    else if (algorithm == 5)
                     {
                         var bucketBag = gridsystemCollision.retrieveBucketBags(c);
                         if (bucketBag != null)
@@ -371,7 +374,7 @@ namespace OrbItProcs {
                                         Collider cc = bucketBag.array[i].array[j];
                                         if (cc.parent == b.parent) continue;
                                         if (gridsystemCollision.alreadyVisited.Contains(cc))
-                                        continue;
+                                            continue;
                                         if (cc is Body)
                                         {
                                             Body bb = (Body)cc;
@@ -387,10 +390,10 @@ namespace OrbItProcs {
                             }
                             else
                             {
-                            for (int i = 0; i < bucketBag.index; i++)
-                            {
-                                for (int j = 0; j < bucketBag.array[i].index; j++)
+                                for (int i = 0; i < bucketBag.index; i++)
                                 {
+                                    for (int j = 0; j < bucketBag.array[i].index; j++)
+                                    {
                                         Collider cc = bucketBag.array[i].array[j];
                                         if (cc.parent == c.parent) continue;
                                         if (gridsystemCollision.alreadyVisited.Contains(cc))
@@ -409,6 +412,10 @@ namespace OrbItProcs {
                             }
                         }
                     }
+                    else if (algorithm == 6)
+                    {
+                        gridsystemCollision.retrieveFromAllOffsets(c, reach, collideAction);
+                    }
                 }
             }
             //Testing.PrintTimer("insertion");
@@ -426,6 +433,8 @@ namespace OrbItProcs {
                 foreach (Manifold m in contacts)
                 {
                     m.ApplyImpulse();
+                    //m.a.parent.SetColor(Color.Green);
+                    //m.b.parent.SetColor(Color.Yellow);
                 }
             }
             foreach (Node n in masterGroup.fullSet.ToList())
@@ -499,6 +508,7 @@ namespace OrbItProcs {
 
         public void MakeWalls()
         {
+            return;
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>() {
                     { nodeE.position, new Vector2(0, 0) },
                     { comp.basicdraw, true },

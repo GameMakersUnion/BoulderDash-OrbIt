@@ -17,6 +17,7 @@ namespace OrbItProcs
         public Action<DetailedItem, object> ItemCreator;
         public Action<Control, DetailedItem, EventArgs> OnItemEvent;
         public bool ColorChangeOnSelect = true;
+        public Action<UserLevel> OnUserLeveChanged;
 
         public DetailedView(Sidebar sidebar, Control parent, int Left, int Top, bool Init = true)
             : base(sidebar, parent, Left, Top, Init)
@@ -47,7 +48,7 @@ namespace OrbItProcs
                 viewItems.Remove(i);
             }
         }
-        public virtual void Refresh(bool notFocused)
+        public virtual void RefreshLight(bool notFocused)
         {
             if (viewItems != null)
             {
@@ -65,6 +66,10 @@ namespace OrbItProcs
                     item.label.Text = item.obj.ToString().LastWord('.');
                 }
             }
+        }
+        public virtual void RefreshRoot()
+        {
+            throw new SystemException("Why are you calling this, you don't even know what the root is");
         }
 
         public void AdjustWidth()

@@ -345,8 +345,8 @@ namespace OrbItProcs
             DiscludeEntity(entity);
             //DiscludeEntity(entity);
             //entities.Remove(entity);
-            entity.group = null;
             entity.OnDelete();
+            entity.group = null;
         }
 
         public Group FindGroup(string name)

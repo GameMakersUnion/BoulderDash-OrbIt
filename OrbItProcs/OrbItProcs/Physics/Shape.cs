@@ -79,6 +79,8 @@ namespace OrbItProcs
         public Vector2[] vertices = new Vector2[MaxPolyVertexCount];
         public Vector2[] normals = new Vector2[MaxPolyVertexCount];
 
+        public float polyReach = 0;
+
         public float LineThickness { get; set; }
         public bool RecurseDrawEnabled { get; set; }
         public int RecurseCount { get; set; }
@@ -159,6 +161,7 @@ namespace OrbItProcs
                 poly.normals[i] = normals[i];
             }
             poly.vertexCount = vertexCount;
+            poly.polyReach = polyReach;
             return poly;
         }
         public override void ComputeMass(float density)
@@ -356,7 +359,7 @@ namespace OrbItProcs
             VMath.Set(ref normals[1], 1, 0);//normals[1].Set(1, 0);
             VMath.Set(ref normals[2], 0, 1);//normals[2].Set(0, 1);
             VMath.Set(ref normals[3], -1, 0);//normals[3].Set(-1, 0);
-
+            polyReach = Vector2.Distance(Vector2.Zero, new Vector2(hw, hh)) * 2;
         }
 
         public void Set(Vector2[] verts, int count)
@@ -426,10 +429,15 @@ namespace OrbItProcs
                     break;
                 }
             }
-
+            float maxDist = 0;
             // Copy vertices into shape's vertices
             for (int i = 0; i < vertexCount; ++i)
+            {
                 vertices[i] = verts[hull[i]];
+                float dist = Vector2.Distance(Vector2.Zero, vertices[i]);
+                if (dist > maxDist) maxDist = dist;
+            }
+            polyReach = maxDist * 2;
 
             ComputeNormals();
         }

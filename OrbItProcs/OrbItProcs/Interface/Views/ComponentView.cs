@@ -35,13 +35,6 @@ namespace OrbItProcs
             }
         }
 
-        //public new List<ComponentViewItem> viewItems;
-        //public new ComponentViewItem selectedItem { get; set; }
-
-        //public ComboBox cbActiveGroup;
-
-        //public InspectorArea insArea;
-
         public ComponentView(Sidebar sidebar, Control parent, int Left, int Top)
             : base(sidebar, parent, Left, Top, false)
         {
@@ -101,10 +94,7 @@ namespace OrbItProcs
 
         public void SetVisible(bool visible)
         {
-            //if (isVisible == visible) return;
             isVisible = visible;
-
-
             if (visible && selectedItem != null)
             {
                 SetComponent(null);
@@ -114,12 +104,6 @@ namespace OrbItProcs
             {
                 SetComponent(null);
             }
-
-            //insArea.InsBox.Visible = visible;
-            //insArea.propertyEditPanel.grouppanel.Visible = visible;
-            //
-            //insArea.InsBox.Refresh();
-            //insArea.propertyEditPanel.grouppanel.Refresh();
         }
 
 
@@ -147,12 +131,12 @@ namespace OrbItProcs
         public void SetComponent(object obj)
         {
             if (insView == null) return;
-            if (obj == null) return;
+            if (obj == null || !(obj is InspectorItem)) return;
             if (obj.GetType().IsClass)
             {
                 insView.backPanel.Visible = true;
                 insView.backPanel.Refresh();
-                insView.SetRootItem(obj);
+                insView.SetRootInspectorItem((InspectorItem)obj);
             }
         }
 
@@ -162,7 +146,10 @@ namespace OrbItProcs
             insView.ClearView();
             lblCurrentComp.Text = "";
         }
-
+        public override void RefreshRoot()
+        {
+            RefreshComponents();
+        }
         public void RefreshComponents()
         {
             if (activeGroup != null)
@@ -289,7 +276,7 @@ namespace OrbItProcs
                 PopUp.Toast("You haven't selected a Group.");
                 return;
             }
-            if (rootNode != null) new AddComponentWindow(sidebar, rootNode);
+            if (rootNode != null) new AddComponentWindow(sidebar, rootNode, this);
 
             //ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !activeGroup.defaultNode.HasComponent(c))));
             //List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => activeGroup.defaultNode.HasComponent(c)));

@@ -89,7 +89,10 @@ namespace OrbItProcs
         {
             if (!active) return;
             if (parent.body.invmass == 0)
+            {
+                parent.body.velocity = Vector2.Zero;
                 return;
+            }
 
             moderateVelocity();
             Body b = parent.body;

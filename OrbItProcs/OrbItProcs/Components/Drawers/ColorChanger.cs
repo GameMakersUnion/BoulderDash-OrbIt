@@ -23,7 +23,13 @@ namespace OrbItProcs
             velocity,
             scale,
             hueShifter,
-            RandomInitial,
+            randomInitial,
+            phaseBlack,
+            phaseWhite,
+            phaseAround,
+            phaseHue,
+            phaseAlpha,
+            phaseAlphaOnly,
         }
 
         /// <summary>
@@ -57,8 +63,8 @@ namespace OrbItProcs
         /// <summary>
         /// Changes the degree by which the node shifts hue. Used by HueShifter ColorMode
         /// </summary>
-        [Info(UserLevel.Advanced, "Changes the degree by which the node shifts hue. Used by HueShifter ColorMode")]
-        public int inc { get; set; }
+        [Info(UserLevel.User, "Changes the degree by which the node shifts hue. Used by HueShifter ColorMode")]
+        public float inc { get; set; }
 
         private float _value = 1f;
         /// <summary>
@@ -75,10 +81,23 @@ namespace OrbItProcs
         public float saturation { get { return _saturation; } set { _saturation = value; } }
 
         //private int pos = 1, sign = 1;
-        private int angle = 0;
+        private float hue = 0;
+        private float permaHue = 0;
         //private bool schedulerModerated;
         private Appointment appt;
         //public bool smartshifting { get; set; }
+        private float currentLerpPos = 0f;
+        private int lerpSign = 1;
+        /// <summary>
+        /// The speed at which to phase to color under the 'phase' modes.
+        /// </summary>
+        [Info(UserLevel.User, "The speed at which to phase to color under the 'phase' modes.")]
+        public float phaseSpeed { get; set; }
+        /// <summary>
+        /// The percentage that the color will phase towards it's color destination.
+        /// </summary>
+        [Info(UserLevel.User, "The percentage that the color will phase towards it's color destination.")]
+        public float phasePercent { get; set; }
 
         public ColorChanger() : this(null) { }
         public ColorChanger(Node parent = null)
@@ -88,13 +107,15 @@ namespace OrbItProcs
             if (parent != null) this.parent = parent;
             com = comp.colorchanger;
             colormode = ColorMode.velocity;
-            inc = 5;
+            inc = 1;
+            phaseSpeed = 10;
+            phasePercent = 100;
         }
 
         public override void OnSpawn()
         {
             if (!active) return;
-            if (colormode == ColorMode.RandomInitial)
+            if (colormode == ColorMode.randomInitial)
             {
                 //parent.body.color = Utils.IntToColor(Utils.CurrentMilliseconds());
                 float num = (float)Utils.random.Next(100000) / (float)100000;
@@ -103,11 +124,14 @@ namespace OrbItProcs
                 parent.body.permaColor = parent.body.color;
 
             }
+            hue = ColorGravity.HueFromColor(parent.body.permaColor);
+            permaHue = hue;
         }
         public override void AffectSelf()
         {
             if (!msInterval.enabled)// && !schedulerModerated)
             {
+                bool black, white;
                 if (colormode == ColorMode.angle)
                 {
                     float angle = (float)((Math.Atan2(parent.body.effvelocity.Y, parent.body.effvelocity.X) + Math.PI) * (180 / Math.PI));
@@ -128,18 +152,82 @@ namespace OrbItProcs
                 }
                 else if (colormode == ColorMode.hueShifter)
                 {
-                        int range = 20;
-                        int tempinc = inc;
-                        if (angle % 120 > 60 - range && angle % 120 < 60 + range)
-                        {
-                            tempinc = inc * 2;
-                            //Console.WriteLine(angle);
-                        }
-                        parent.body.color = getColorFromHSV(angle, saturation, value);
-                        angle = (angle + tempinc) % 360;
+                    float range = 20;
+                    float tempinc = inc;
+                    if (hue % 120 > 60 - range && hue % 120 < 60 + range)
+                    {
+                        tempinc /= 2f;
+                    }
+                    parent.body.color = getColorFromHSV(hue, saturation, value);
+                    hue = (hue + tempinc) % 360;
+                }
+                else if ((black = colormode == ColorMode.phaseBlack) || (white = colormode == ColorMode.phaseWhite))
+                {
+                    Vector3 perma = parent.body.permaColor.ToVector3();
+                    Vector3 dest = Vector3.Zero;
+                    if (black)
+                    {
+                        dest = Vector3.Zero;
+                    }
+                    else
+                    {
+                        dest = Vector3.One;
+                    }
+                    dest = Vector3.Lerp(perma, dest, phasePercent / 100f);
+                    currentLerpPos += (phaseSpeed / 1000f) * lerpSign;
+                    if (currentLerpPos > 1)
+                    {
+                        currentLerpPos = 1f;
+                        lerpSign *= -1;
+                    }
+                    else if (currentLerpPos < 0)
+                    {
+                        currentLerpPos = 0;
+                        lerpSign *= -1;
+                    }
+                    parent.body.color = Vector3.Lerp(perma, dest, currentLerpPos).ToColor(parent.body.color.A);
+                }
+                else if (colormode == ColorMode.phaseAround)
+                {
+                    Vector3 perma = parent.body.permaColor.ToVector3();
+                    Vector3 down = Vector3.Zero;
+                    Vector3 up = Vector3.One;
+                    down = Vector3.Lerp(perma, down, phasePercent / 100f);
+                    up = Vector3.Lerp(perma, up, phasePercent / 100f);
+                    currentLerpPos += (phaseSpeed / 1000f) * lerpSign;
+                    if (currentLerpPos > 1)
+                    {
+                        currentLerpPos = 1f;
+                        lerpSign *= -1;
+                    }
+                    else if (currentLerpPos < 0)
+                    {
+                        currentLerpPos = 0;
+                        lerpSign *= -1;
+                    }
+                    parent.body.color = Vector3.Lerp(down, up, currentLerpPos).ToColor(parent.body.color.A);
+                }
+                else if (colormode == ColorMode.phaseHue)
+                {
+                    huedest = permaHue - (phasePercent / 100f * 360 * huesign);
+                    float range = 20;
+                    float tempinc = inc / 100f;
+                    if (hue % 120 > 60 - range && hue % 120 < 60 + range)
+                    {
+                        tempinc /= 2f;
+                    }
+                    float dist = Utils.CircularDistance(hue, permaHue);
+                    //todo:finish algorithm
+
+                    parent.body.color = getColorFromHSV(hue, saturation, value);
+                    hue = (hue + tempinc) % 360;
+                    
                 }
             }
         }
+
+        private float huedest = 0;
+        private float huesign = 1;
 
         public static void ShiftFloat(ref float f, float min, float max, float rate)
         {

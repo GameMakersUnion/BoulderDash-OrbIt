@@ -52,14 +52,8 @@ namespace OrbItProcs
             {
                 lifeLived += mill;
                 if (lifeLived > timeUntilDeath)
-                    Die();
+                    parent.OnDeath(null);
             }
-        }
-
-        public void Die()
-        {
-            parent.active = false;
-            parent.IsDeleted = true;
         }
     }
 }

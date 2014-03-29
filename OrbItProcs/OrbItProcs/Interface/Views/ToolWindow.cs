@@ -32,9 +32,9 @@ namespace OrbItProcs
 
             toolBar.Init();
             toolBar.Top = 0;
-            toolBar.Height = sidebar.game.Height;
+            toolBar.Height = Game1.Height;
             toolBar.Width = 70;
-            toolBar.Left = sidebar.game.Width - toolBar.Width;
+            toolBar.Left = Game1.Width - toolBar.Width;
 
             //toolBar.CloseButtonVisible = false;
 

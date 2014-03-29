@@ -61,7 +61,7 @@ namespace OrbItProcs
 
             this.Left = Left;
             this.Top = Top;
-            this.Height = Height ?? sidebar.game.Height / 3;
+            this.Height = Height ?? Game1.Height / 3;
 
             HeightCounter = Top;
             Width = parent.Width - LeftPadding * 2;

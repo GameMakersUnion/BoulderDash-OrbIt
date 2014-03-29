@@ -202,10 +202,10 @@ namespace OrbItProcs
                                        GamePad.GetState(controllerIndex).Buttons.B);
                 if (stick1.isCentered())
                 {
-                    stick1 = new Stick(GamePad.GetState(controllerIndex).ThumbSticks.Left);
+                    stick1 = new Stick(GamePad.GetState(controllerIndex, GamePadDeadZone.Circular).ThumbSticks.Left);
                 }
 
-                stick2 = new Stick(GamePad.GetState(controllerIndex).ThumbSticks.Right);
+                stick2 = new Stick(GamePad.GetState(controllerIndex, GamePadDeadZone.Circular).ThumbSticks.Right);
                 if (stick2.isCentered())
                 {
                     stick2 = new Stick(GamePad.GetState(controllerIndex).DPad.Up,
@@ -230,8 +230,8 @@ namespace OrbItProcs
             }
             else
             {
-                stick1 = new Stick(GamePad.GetState(controllerIndex).ThumbSticks.Left);
-                stick2 = new Stick(GamePad.GetState(controllerIndex).ThumbSticks.Right);
+                stick1 = new Stick(GamePad.GetState(controllerIndex, GamePadDeadZone.Circular).ThumbSticks.Left);
+                stick2 = new Stick(GamePad.GetState(controllerIndex, GamePadDeadZone.Circular).ThumbSticks.Right);
                 if (stick2.isCentered())
                 {
                     stick2 = new Stick(GamePad.GetState(controllerIndex).DPad.Up,
@@ -298,6 +298,13 @@ namespace OrbItProcs
         protected PlayerIndex controllerIndex;
         protected ControllerCodes controllerCode;
         public bool enabled = true;
+
+        public static void ResetControllers()
+        {
+            availableControllers = ControllerCodes.All;
+            halfControllers = new List<HalfController>();
+            fullControllers = new List<FullController>();
+        }
 
         public static Dictionary<int, PlayerIndex> intToPlayerIndex =
             new Dictionary<int, PlayerIndex>(){
@@ -380,7 +387,7 @@ namespace OrbItProcs
         public GamePadState getState()
         {
             if (enabled == false) return new GamePadState();
-            return GamePad.GetState(controllerIndex);
+            return GamePad.GetState(controllerIndex, GamePadDeadZone.Circular);;
 
              
         }

@@ -12,7 +12,7 @@ namespace OrbItProcs
         [Info(UserLevel.User, "This node has a nifty sword he can swing to attack enemies. ", CompType)]
     public class Sword : Component
     {
-        private Node sword;
+        public Node sword;
 
         public enum swordState
         {
@@ -58,8 +58,6 @@ namespace OrbItProcs
 
 
             sword = new Node(props);
-
-
            // Polygon poly = new Polygon();
            // poly.body = sword.body;
            // poly.SetBox(100, 110);
@@ -69,8 +67,6 @@ namespace OrbItProcs
             //Node newNode = new Node();
 
             //room.game.spawnNode(newNode);
-            
-
         }
 
         public override void OnSpawn()
@@ -84,7 +80,12 @@ namespace OrbItProcs
             sword.body.shape = poly;
             sword.body.pos = parent.body.pos;
             sword.body.DrawCircle = false;
-            parent.room.game.spawnNode(sword);
+            ///parent.room.game.spawnNode(sword);
+
+
+            parent.room.itemGroup.IncludeEntity(sword);
+            sword.OnSpawn();
+
             sword.body.exclusionList.Add(parent.body);
             parent.body.exclusionList.Add(sword.body);
         }
@@ -133,8 +134,9 @@ namespace OrbItProcs
             base.Draw();
             parent.room.camera.Draw(textures.sword, sword.body.pos, parent.body.color,sword.body.scale*2, sword.body.orient);
         }
-
-
-
+        public override void Death(Node other)
+        {
+            sword.OnDeath(other);
+        }
     }
 }

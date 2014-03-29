@@ -87,9 +87,10 @@ namespace OrbItProcs
             currentHealth = maxHealth.value;
             worth = new Toggle<float>(1, false);
             armour = new Toggle<float>(1, false);
-            damageMode = DamageMode.Nothing;
+            damageMode = DamageMode.Everything;
             AImode = AIMode.None;
             deadly = false;
+            active = true;
         }
         public override void AffectSelf()
         {
@@ -100,21 +101,20 @@ namespace OrbItProcs
             if (maxHealth.enabled)
             {
                 currentHealth = (float)Math.Max(currentHealth - damage, 0);
+                currentHealth = (float)Math.Min(currentHealth, maxHealth.value);
+                float percent = 0.65f;
+                parent.body.color = parent.body.permaColor * ((currentHealth / maxHealth.value) * percent + (1f - percent));
                 if (currentHealth <= 0)
                 {
-                    Die(other);
+                    //Die(other);
+                    parent.OnDeath(other);
                 }
             }
         }
-        public void Die(Node other)
+        public override void Death(Node other)
         {
             if (OnDeath != null) OnDeath(parent, other);
-            parent.OnDeath(other);
-            
-            if (parent.group != null)
-            {
-                parent.group.DeleteEntity(parent);
-            }
         }
     }
 }
+

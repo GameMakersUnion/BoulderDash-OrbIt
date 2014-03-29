@@ -6,6 +6,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs {
+    public enum AffectDirection
+    {
+        AffectsOthers,
+        OthersAffectThis,
+        Both,
+    }
+
     /// <summary>
     /// Attracts or repels nodes that it affects.
     /// </summary>
@@ -24,7 +31,7 @@ namespace OrbItProcs {
         /// <summary>
         /// Distance at which other nodes are attracted/repelled from this node
         /// </summary>
-        [Info(UserLevel.Advanced, "Distance at which other nodes are attracted/repelled from this node")]
+        [Info(UserLevel.User, "Distance at which other nodes are attracted/repelled from this node")]
         public float radius { get ; set ; }
         /// <summary>
         /// Represents minimum distance taken into account when calculating grav force strength.
@@ -47,11 +54,6 @@ namespace OrbItProcs {
         [Info(UserLevel.Advanced, "If enabled, this node not only pulls or pushes other nodes; It itself is pushed and pulled by the nodes it's affecting.")]
         public bool AffectBoth { get; set; }
         /// <summary>
-        /// Turns the gravity up to 11.
-        /// </summary>
-        [Info(UserLevel.Advanced, "Turns the gravity up to 11.")]
-        public bool StrongGravity { get; set; }
-        /// <summary>
         /// Adds an angle to the gravitational pull
         /// </summary>
         [Info(UserLevel.User, "Adds an angle to the gravitational pull")]
@@ -65,10 +67,21 @@ namespace OrbItProcs {
         [Info(UserLevel.User, "The mode that gravity will operate under.")]
         public Mode mode { get; set; }
         /// <summary>
+        /// The direction in which this component takes effect.
+        /// </summary>
+        [Info(UserLevel.User, "The direction in which this component takes effect.")]
+        public AffectDirection affectDirection { get; set; }
+        /// <summary>
         /// Causes the node to repulse other nodes, pushing them away.
         /// </summary>
         [Info(UserLevel.User, "Causes the node to repulse other nodes, pushing them away.")]
         public bool Repulsive { get; set; }
+
+        /// <summary>
+        /// If the distance to the node is less than the deadZone, no gravity is applied.
+        /// </summary>
+        [Info(UserLevel.User, "If the distance to the node is less than the deadZone, no gravity is applied.")]
+        public Toggle<float> deadZone { get; set; }
 
         public enum Mode
         {
@@ -76,6 +89,7 @@ namespace OrbItProcs {
             Strong,
             ConstantForce,
         }
+        
         private float drawscale;
         public Gravity() : this(null) { }
         public Gravity(Node parent)
@@ -87,6 +101,7 @@ namespace OrbItProcs {
             lowerbound = 20;
             mode = Mode.Normal;
             Repulsive = false;
+            deadZone = new Toggle<float>(100, true);
         }
 
         //public bool EveryOther = false;
@@ -102,14 +117,22 @@ namespace OrbItProcs {
             if (AffectsOnlyGravity && !other.HasComp<Gravity>()) return;
 
             float distVects = Vector2.DistanceSquared(other.body.pos, parent.body.pos);
+            Node affector = parent;
+            Node affected = other;
+            if (affectDirection == AffectDirection.OthersAffectThis)
+            {
+                affector = other;
+                affected = parent;
+            }
 
             if (distVects < radius * radius)
             {
                 distVects = (float)Math.Sqrt(distVects);
+                if (deadZone.enabled && distVects < deadZone.value) return;
                 if (distVects < lowerbound) distVects = lowerbound;
-                double angle = Math.Atan2((parent.body.pos.Y - other.body.pos.Y), (parent.body.pos.X - other.body.pos.X));
+                double angle = Math.Atan2((affector.body.pos.Y - affected.body.pos.Y), (affector.body.pos.X - affected.body.pos.X));
 
-                float gravForce = (multiplier * parent.body.mass * other.body.mass);
+                float gravForce = (multiplier * affector.body.mass * affected.body.mass);
 
                 switch (mode)
                 {
@@ -138,16 +161,15 @@ namespace OrbItProcs {
                 other.transform.velocity += delta;
                 //*/
                 //*
-
-                if (AffectBoth)
+                if (affectDirection == AffectDirection.Both)
                 {
                     delta /= 2;
-                        other.body.velocity += delta * other.body.invmass;
-                        parent.body.velocity -= delta * parent.body.invmass;
-                    }
-                    else
-                    {
-                        other.body.ApplyForce(delta);
+                    affected.body.velocity += delta * other.body.invmass;
+                    affector.body.velocity -= delta * parent.body.invmass;
+                }
+                else
+                {
+                    affected.body.ApplyForce(delta);
                 }
                 //other.body.velocity += delta;
                 //other.body.velocity /= other.body.mass; //creates snakelike effect when put below increments
