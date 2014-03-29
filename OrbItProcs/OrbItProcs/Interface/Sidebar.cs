@@ -28,7 +28,7 @@ namespace OrbItProcs
     {
         EventHandler NotImplemented;
         public Game1 game;
-        public Room room;
+        public Room room { get { return game.room; } }
         public UserInterface ui;
         private UserLevel _userLevel = UserLevel.User;
         public UserLevel userLevel
@@ -117,7 +117,7 @@ namespace OrbItProcs
                 _Width = value;
                 if (ui.SidebarActive)
                 {
-                    Camera.CameraOffset = value;
+                    ThreadedCamera.CameraOffset = value;
                 }
             }
         }
@@ -166,7 +166,6 @@ namespace OrbItProcs
 
         public void Initialize(Room room)
         {
-            this.room = room;
             manager.Initialize();
 
             #region /// Master ///

@@ -89,7 +89,7 @@ namespace OrbItProcs
         public Formation()
         {
             //..
-            this.room = Program.getRoom();
+            this.room = Game1.game.room;
             this.AffectionSets = new Dictionary<Node, ObservableHashSet<Node>>();
         }
 
@@ -100,7 +100,7 @@ namespace OrbItProcs
                             int NearestNValue = 1,
                             bool InitializeFormation = true)
         {
-            this.room = Program.getRoom();
+            this.room = Game1.game.room;
             this.link = link;
             //this.FormationType = FormationType;
             this.Uninhabited = Uninhabited;
@@ -115,7 +115,7 @@ namespace OrbItProcs
                             Formation form,
                             bool InitializeFormation = true)
         {
-            this.room = Program.getRoom();
+            this.room = Game1.game.room;
             this.link = link;
             //this.FormationType = FormationType;
             this.Uninhabited = form.Uninhabited;

@@ -15,7 +15,7 @@ namespace OrbItProcs
 
     public class Process
     {
-        public Room room;
+        public Room room { get { return Game1.game.room; } }
         public bool active { get; set; }
 
         public event Action Update;
@@ -35,7 +35,6 @@ namespace OrbItProcs
         public Process()
         { 
             // / // / //
-            room = Program.getRoom();
             active = true;
         }
 

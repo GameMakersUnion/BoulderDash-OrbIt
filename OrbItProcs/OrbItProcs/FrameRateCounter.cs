@@ -66,7 +66,7 @@ namespace OrbItProcs {
             string ups = string.Format("ups: {0}", updateRate);
             string process = "";
             //string fpsups = string.Format("fps:{0} ups:{1}", frameRate, updateRate);
-            Room room = Program.getRoom();
+            Room room = Game1.game.room;
             bool hasProcess = room != null && room.game.ui.keyManager.TemporaryProcess != null;
             if (hasProcess)
             {

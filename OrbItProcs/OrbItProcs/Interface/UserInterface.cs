@@ -38,7 +38,8 @@ namespace OrbItProcs {
         #region /// Fields ///
 
         public Game1 game;
-        public Room room;
+        public Room room { get { return game.room; } }
+
 
         public KeyManager keyManager;
 
@@ -77,11 +78,11 @@ namespace OrbItProcs {
                 _SidebarActive = value;
                 if (value)
                 {
-                    Camera.CameraOffset = sidebar.Width;
+                    ThreadedCamera.CameraOffset = sidebar.Width;
                 }
                 else
                 {
-                    Camera.CameraOffset = 0;
+                    ThreadedCamera.CameraOffset = 0;
                 }
             } 
         }
@@ -105,7 +106,6 @@ namespace OrbItProcs {
 
         public void Initialize(Room room)
         {
-            this.room = room;
             sidebar.Initialize(room);
             groupSelectSet = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
         }
@@ -269,7 +269,7 @@ namespace OrbItProcs {
             //if (mouseState.XButton2 == ButtonState.Pressed)
             //    System.Console.WriteLine("X2");
 
-            MousePos = new Vector2(mouseState.X, mouseState.Y) - Camera.CameraOffsetVect;
+            MousePos = new Vector2(mouseState.X, mouseState.Y) - ThreadedCamera.CameraOffsetVect;
             WorldMousePos = (MousePos / room.zoom) + room.camera.pos;
             //ignore mouse clicks outside window
             if (!Game1.isFullScreen)

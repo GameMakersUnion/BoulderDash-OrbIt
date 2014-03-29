@@ -23,7 +23,7 @@ namespace OrbItProcs
 
         public LinkGeneratorWindow(Manager manager, Sidebar sidebar)
         {
-            Game1 game = Program.getGame();
+            Game1 game = Game1.game;
             UserInterface.GameInputDisabled = true;
 
             this.manager = manager;

@@ -192,13 +192,13 @@ namespace OrbItProcs
         public delegate bool singleConfirmDelegate(bool confirm, object answer);
 
         public static void Toast(string message = "", string title = "Hey! Listen!")
-        { makePopup(Program.getGame().ui, new opt[]{new opt(OptType.info,message)}, title); }
+        { makePopup(Game1.game.ui, new opt[]{new opt(OptType.info,message)}, title); }
         public static void Prompt(string message = "", string title = "Hey! Listen!", singleConfirmDelegate action = null)
-        { makePopup(Program.getGame().ui, new opt[] { new opt(OptType.prompt, message) }, title, delegate(bool c, object[] a) { return action(c, a[0]); }); }
+        { makePopup(Game1.game.ui, new opt[] { new opt(OptType.prompt, message) }, title, delegate(bool c, object[] a) { return action(c, a[0]); }); }
         public static void Select(string message = "", string title = "Hey! Listen!", singleConfirmDelegate action = null, ObservableCollection<object> list = null)
-        { makePopup(Program.getGame().ui, new opt[] { new opt(OptType.info, message), new opt(OptType.dropDown, list) }, title, delegate(bool c, object[] a) { return action(c, a[1]); }); }
+        { makePopup(Game1.game.ui, new opt[] { new opt(OptType.info, message), new opt(OptType.dropDown, list) }, title, delegate(bool c, object[] a) { return action(c, a[1]); }); }
         public static void Text(string message = "", string title = "Hey! Listen!", singleConfirmDelegate action = null, string content = "")
-        { makePopup(Program.getGame().ui, new opt[] { new opt(OptType.info, message), new opt(OptType.textBox, content) }, title, delegate(bool c, object[] a) { return action(c, a[1]); }); }
+        { makePopup(Game1.game.ui, new opt[] { new opt(OptType.info, message), new opt(OptType.textBox, content) }, title, delegate(bool c, object[] a) { return action(c, a[1]); }); }
 
         public static void Complex(UserInterface ui)
         {

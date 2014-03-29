@@ -132,8 +132,10 @@ namespace OrbItProcs {
 
         public Room()
         {
-            Program.room = this;
-            game = Program.getGame();
+            
+            
+            game = Game1.game;
+            game.room = this;
             groupHashes = new ObservableHashSet<string>();
             nodeHashes = new ObservableHashSet<string>();
             CollisionSetCircle = new HashSet<Collider>();

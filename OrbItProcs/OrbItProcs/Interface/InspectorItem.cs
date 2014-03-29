@@ -302,7 +302,7 @@ namespace OrbItProcs {
                     propertyInfos = parent.GetType().GetProperties().ToList();
                 }
 
-                UserLevel userlevel = Program.getGame().ui.sidebar.userLevel;
+                UserLevel userlevel = Game1.game.ui.sidebar.userLevel;
 
                 foreach (PropertyInfo pinfo in propertyInfos)
                 {

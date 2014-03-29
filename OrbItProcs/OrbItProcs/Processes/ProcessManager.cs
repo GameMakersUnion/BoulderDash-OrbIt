@@ -72,14 +72,14 @@ namespace OrbItProcs
         {
             return delegate
             {
-                Program.getGame().ui.keyManager.AddProcess(processDict[p]);
+                Game1.game.ui.keyManager.AddProcess(processDict[p]);
             };
         }
 
         public void SetProcessKeybinds()
         {
-            ToolWindow toolbar = Program.getGame().ui.sidebar.toolWindow;
-            KeyManager Keybindset = Program.getGame().ui.keyManager;
+            ToolWindow toolbar = Game1.game.ui.sidebar.toolWindow;
+            KeyManager Keybindset = Game1.game.ui.keyManager;
             
 
             Keybindset.Add("spawnnodes", new KeyBundle(KeyCodes.D1, KeyCodes.LeftShift), enableKeyBinds(proc.spawnnodes));
