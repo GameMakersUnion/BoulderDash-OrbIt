@@ -43,7 +43,7 @@ namespace OrbItProcs {
         {
             room = Program.getRoom();
             alreadyVisited = new HashSet<Collider>();
-            GenerateAllReachOffsetsPerCoord(300);
+            //GenerateAllReachOffsetsPerCoord(300);
         }
 
         public GridSystem(Room room, int cellsX, int cellReach = 4): this()
@@ -199,18 +199,30 @@ namespace OrbItProcs {
                 }
             }
         }
-        public void retrieveFromAllOffsets(Collider collider, float reachDistance, Action<Node> action)
+        public void retrieveFromAllOffsets(Collider collider, float reachDistance, Action<Collider, Collider> action)
         {
             int x = (int)collider.pos.X / cellWidth;
             int y = (int)collider.pos.Y / cellHeight;
             if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
-            for (int i = 0; i < FindCount(reachDistance); i++)
+            int findcount = FindCount(reachDistance);
+            for (int i = 0; i < findcount; i++)
             {
-                foreach(var tuple in distToOffsets.ElementAt(i).Value)
+                foreach (var tuple in distToOffsets.ElementAt(i).Value)
                 {
-                    foreach (Collider c in grid[tuple.Item1, tuple.Item2])
+                    int xx = tuple.Item1 + x; int yy = tuple.Item2 + y;
+                    if (xx < 0 || xx >= cellsX || yy < 0 || yy >= cellsY) continue;
+                    //foreach (Collider c in grid[tuple.Item1, tuple.Item2])
+                    //{
+                    //    action(collider, c);
+                    //}
+                    IndexArray<Collider> buck = arrayGrid[xx][yy];
+                    int count = buck.index;
+                    //if (count > 0) Console.WriteLine(count);
+                    for (int j = 0; j < count; j++)
                     {
-                        action(c.parent);
+                        Collider c = arrayGrid[xx][yy].array[j];
+                        if (alreadyVisited.Contains(c) || collider == c) continue;
+                        action(collider, c);
                     }
                 }
             }
@@ -309,7 +321,12 @@ namespace OrbItProcs {
             foreach(float f in distToOffsets.Keys)
             {
                 count++;
-                if (f > dist) return count;
+                if (f > dist)
+                {
+                    distToCount[dist] = count;
+                    return count;
+                }
+
             }
             return count;
         }

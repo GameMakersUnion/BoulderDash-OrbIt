@@ -295,7 +295,6 @@ namespace OrbItProcs
         {
             Circle A = (Circle)a.shape;
             Polygon B = (Polygon)b.shape;
-
             m.contact_count = 0;
 
             // Transform circle center to Polygon model space

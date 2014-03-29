@@ -196,7 +196,7 @@ namespace OrbItProcs
             {
                 foreach (var n in room.masterGroup.fullSet)
                 {
-                    Tuple<int, int> t = room.gridsystem.getIndexs(n.body);
+                    Tuple<int, int> t = room.gridsystemAffect.getIndexs(n.body);
                     if (i == 0)
                         ind[c] += t.Item1 + "," + t.Item2 + " ";
                 }
@@ -207,7 +207,7 @@ namespace OrbItProcs
             {
                 foreach (var n in room.masterGroup.fullSet)
                 {
-                    Tuple<int, int> t = room.gridsystem.getIndexsNew(n.body);
+                    Tuple<int, int> t = room.gridsystemAffect.getIndexsNew(n.body);
                     if (i == 0)
                         ind[c] += t.Item1 + "," + t.Item2 + " ";
                 }
@@ -228,7 +228,7 @@ namespace OrbItProcs
         public void Gridsystem()
         {
             for (int i = 0; i < 4; i++)
-                room.gridsystem.testRetrieve(10, 10, i);
+                room.gridsystemAffect.testRetrieve(10, 10, i);
         }
 
         public void TriangleTest2()

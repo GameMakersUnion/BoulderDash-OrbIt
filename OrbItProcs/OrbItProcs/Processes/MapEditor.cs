@@ -15,7 +15,9 @@ namespace OrbItProcs
             Draw += DrawEditor;
             verts = new List<Vector2>();
             addProcessKeyAction("placevertice", KeyCodes.LeftClick, OnPress: PlaceVertice);
-            addProcessKeyAction("placevertice", KeyCodes.Enter, OnPress: FinishWall);
+            addProcessKeyAction("FinishWall", KeyCodes.Enter, OnPress: FinishWall);
+            addProcessKeyAction("FinishWall", KeyCodes.RightClick, OnPress: FinishWall);
+            addProcessKeyAction("ClearWalls", KeyCodes.MiddleClick, OnPress: ClearWalls);
         }
 
         public void PlaceVertice()
@@ -44,19 +46,26 @@ namespace OrbItProcs
         {
             if (verts.Count < 3) return;
             Vector2[] vertices = verts.ToArray();
-            Node newNode = new Node();
-            Node.cloneNode(room.game.ui.sidebar.ActiveDefaultNode, newNode);
-            Polygon poly = new Polygon();
-            poly.body = newNode.body;
+            Node newNode = new Node(ShapeType.ePolygon);
+            //Node.cloneNode(room.game.ui.sidebar.ActiveDefaultNode, newNode);
+            //Polygon poly = new Polygon();
+            //poly.body = newNode.body;
             //poly.FindCentroid(vertices);
+            Polygon poly = (Polygon)newNode.body.shape;
             poly.SetCenterOfMass(vertices);
-            newNode.body.shape = poly;
+            //newNode.body.shape = poly;
             newNode.body.SetStatic();
             newNode.body.SetOrient(0);
             newNode.movement.mode = movemode.free;
             newNode.body.restitution = 1f;
+            newNode.meta.maxHealth.enabled = false;
             room.game.spawnNode(newNode, g: room.masterGroup.childGroups["Walls"]);
             verts = new List<Vector2>();
+        }
+
+        public void ClearWalls()
+        {
+            room.masterGroup.childGroups["Walls"].EmptyGroup();
         }
 
         public void DrawEditor()

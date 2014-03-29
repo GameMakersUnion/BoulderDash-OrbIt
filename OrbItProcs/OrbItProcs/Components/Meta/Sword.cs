@@ -76,6 +76,8 @@ namespace OrbItProcs
             sword.body.pos = parent.body.pos;
             sword.body.DrawCircle = false;
             ///parent.room.game.spawnNode(sword);
+
+
             parent.room.itemGroup.IncludeEntity(sword);
             sword.OnSpawn();
 

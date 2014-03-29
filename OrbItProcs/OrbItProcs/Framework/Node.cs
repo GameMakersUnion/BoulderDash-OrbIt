@@ -329,7 +329,7 @@ namespace OrbItProcs {
             nodeCounter++;
             meta = new Meta(this);
             movement = new Movement(this);
-            collision = new Collision(this);
+            
             Shape shape;
             if (shapetype == ShapeType.eCircle)
             {
@@ -346,7 +346,9 @@ namespace OrbItProcs {
 
             body = new Body(shape: shape, parent: this);
             body.radius = 25;
+            collision = new Collision(this);
             basicdraw = new BasicDraw(this);
+            movement.active = true; collision.active = true; basicdraw.active = true;
             //name = "blankname";
 
             //comps.Add(comp.body, body);
@@ -466,7 +468,7 @@ namespace OrbItProcs {
                     //reach = (int)(body.radius * 5) / room.gridsystem.cellWidth;
                     reach = 10;
                 }
-                returnObjectsFinal = room.gridsystem.retrieve(body, reach);
+                returnObjectsFinal = room.gridsystemAffect.retrieve(body, reach);
                 returnObjectsFinal.Remove(body);
 
                 foreach (Collider other in returnObjectsFinal)
