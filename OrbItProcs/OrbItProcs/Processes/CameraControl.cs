@@ -11,7 +11,7 @@ namespace OrbItProcs
     public class CameraControl : Process
     {
         public float velocity = 5f;
-        public CameraControl(Camera camera)
+        public CameraControl(ThreadedCamera camera)
         {
             Update += update;
         }

@@ -42,15 +42,15 @@ namespace OrbItProcs
             toolBar.Text = "Tools";
             manager.Add(toolBar);
 
-            buttonTextures["select"] = Program.getGame().btnTextures[0, 0];
-            buttonTextures["random"] = Program.getGame().btnTextures[1, 0];
-            buttonTextures["spawn"] = Program.getGame().btnTextures[0, 1];
-            buttonTextures["level"] = Program.getGame().btnTextures[1, 1];
-            buttonTextures["forceSpawn"] = Program.getGame().btnTextures[0, 2];
-            buttonTextures["forcePush"] = Program.getGame().btnTextures[1, 2];
-            buttonTextures["control"] = Program.getGame().btnTextures[0, 3];
-            buttonTextures["static"] = Program.getGame().btnTextures[1, 3];
-            buttonTextures["remove"] = Program.getGame().btnTextures[0, 4];
+            buttonTextures["select"] = Game1.game.btnTextures[0, 0];
+            buttonTextures["random"] = Game1.game.btnTextures[1, 0];
+            buttonTextures["spawn"] = Game1.game.btnTextures[0, 1];
+            buttonTextures["level"] = Game1.game.btnTextures[1, 1];
+            buttonTextures["forceSpawn"] = Game1.game.btnTextures[0, 2];
+            buttonTextures["forcePush"] = Game1.game.btnTextures[1, 2];
+            buttonTextures["control"] = Game1.game.btnTextures[0, 3];
+            buttonTextures["static"] = Game1.game.btnTextures[1, 3];
+            buttonTextures["remove"] = Game1.game.btnTextures[0, 4];
 
 
 
@@ -84,7 +84,7 @@ namespace OrbItProcs
                 button.TextColor = UserInterface.TomShanePuke;
                 if (action != null) action();
             };
-            Program.getGame().Graphics.DeviceReset += (se, e) =>
+            Game1.game.Graphics.DeviceReset += (se, e) =>
             {
                 button.Refresh();
             };

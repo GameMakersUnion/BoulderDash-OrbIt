@@ -112,7 +112,7 @@ namespace OrbItProcs {
             } 
         }
 
-        public Room room = Program.getRoom();
+        public Room room = Game1.game.room;
 
         private Dictionary<Type, Component> _comps = new Dictionary<Type, Component>();
         public Dictionary<Type, Component> comps { get { return _comps; } set { _comps = value; } }
@@ -321,7 +321,7 @@ namespace OrbItProcs {
         {
             //if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0, 5);
             name = name + nodeCounter;
-            room = Program.getRoom();
+            room = Game1.game.room;
             if (createHash)
             {
                 nodeHash = Utils.uniqueString(room.nodeHashes);
@@ -956,7 +956,7 @@ namespace OrbItProcs {
 
         public static void cloneNode(Node sourceNode, Node destNode, bool CloneHash = false) //they must be the same type
         {
-            destNode.room = Program.getRoom();
+            destNode.room = Game1.game.room;
             //dynamic returnval;
             List<FieldInfo> fields = sourceNode.GetType().GetFields().ToList();
             fields.AddRange(sourceNode.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance).ToList());

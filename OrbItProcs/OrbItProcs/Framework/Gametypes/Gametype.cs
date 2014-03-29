@@ -11,7 +11,7 @@ namespace OrbItProcs
         public HashSet<Player> players { get; set; }
         public Gametype()
         {
-            room = Program.getRoom();
+            room = Game1.game.room;
             players = new HashSet<Player>();
         }
         public virtual void Update(GameTime gameTime)

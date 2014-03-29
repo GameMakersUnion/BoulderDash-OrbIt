@@ -41,7 +41,7 @@ namespace OrbItProcs {
 
         public GridSystem() 
         {
-            room = Program.getRoom();
+            room = Game1.game.room;
             alreadyVisited = new HashSet<Collider>();
             //GenerateAllReachOffsetsPerCoord(300);
         }

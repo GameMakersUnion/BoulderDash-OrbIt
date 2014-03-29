@@ -238,8 +238,8 @@ namespace OrbItProcs
             string filename = "Presets//Rooms//room1.xml";
             room.game.serializer = new Polenter.Serialization.SharpSerializer();
             Room rm = (Room)room.game.serializer.Deserialize(filename);
-
-            room.game.ResetRoomReferences(rm);
+            room.game.room = rm;
+            
 
         }
         public void Serialize_Room_Binary()//F9
@@ -253,8 +253,7 @@ namespace OrbItProcs
             string filename = "Presets//Rooms//room1.bin";
             room.game.serializer = new Polenter.Serialization.SharpSerializer(true);
             Room rm = (Room)room.game.serializer.Deserialize(filename);
-
-            room.game.ResetRoomReferences(rm);
+            room.game.room = rm;
 
         }
         //==============================================================================

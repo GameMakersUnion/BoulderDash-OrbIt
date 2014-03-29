@@ -83,64 +83,78 @@ namespace OrbItProcs
         whitepixeltrans,
         sword
     }
-
+    public enum resolutions
+    {
+        FHD_1920x1080,
+        HD_1366x768,
+        SXGA_1280x1024,
+        WSXGA_1680x1050,
+        XGA_1024x768,
+        WXGA_1280x800,
+        SVGA_800x600,
+        VGA_640x480,
+    }
     public class Game1 : Application
     {
         public static Game1 game;
 
+        #region ///Assets///
+        public static SpriteFont font;
+        #endregion
+        #region ///Components///
+        public SharpSerializer serializer = new SharpSerializer();
+        #endregion
+        #region ///Components///
+        private Room _activeRoom;
+        public Room room
+        {
+            get { return _activeRoom; }
+            set
+            {
+                if (value == null) throw new SystemException("Room was null when reseting room references");
+                _activeRoom = value;
+                if (ui != null)
+                    ui.sidebar.UpdateGroupComboBoxes();
+            }
+        }
+        public Room mainRoom;
+        public Room tempRoom;
+        #endregion
+
         public static GameTime GlobalGameTime;
         public ManualResetEventSlim TomShaneWaiting = new ManualResetEventSlim(true);
         public UserInterface ui;
-        public Room room;
+
         public SpriteBatch spriteBatch;
-        public SpriteFont font;
-        FrameRateCounter frameRateCounter;
-
-        public SharpSerializer serializer = new SharpSerializer();
-
-        public Room mainRoom;
-        public Room tempRoom;
-
+        public FrameRateCounter frameRateCounter;
         public ProcessManager processManager { get; set; }
         public static int smallWidth = 1280;
         public static int smallHeight = 650;
         public static bool soundEnabled = false;
-        //public static int fullWidth = 1680;
-        //public static int fullHeight = 1050;
-
         public static int fullWidth = 1920;
         public static int fullHeight = 1080;
         public static string filepath = "Presets//Nodes/";
         public static bool isFullScreen = false;
         public static bool TakeScreenshot = false;
-
         public static int Width { get { return game.Graphics.PreferredBackBufferWidth; } set { game.Graphics.PreferredBackBufferWidth = value; } }
         public static int Height { get { return game.Graphics.PreferredBackBufferHeight; } set { game.Graphics.PreferredBackBufferHeight = value; } }
-
         public bool IsOldUI { get { return ui != null && ui.sidebar != null && ui.sidebar.activeTabControl == ui.sidebar.tbcMain; } }
-
         public static bool Debugging = false;
-
         public Dictionary<textures, Texture2D> textureDict;
         public Dictionary<textures, Vector2> textureCenters;
         public Texture2D[,] btnTextures;
         public static bool bigTonyOn = false;
-
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
         public float backgroundHue = 180;
         public double x = 0;
-
-        // Shader code
-        public static Effect shaderEffect;
-
-
+        public static Effect shaderEffect; // Shader code
         public static readonly object drawLock = new object();
-        /////////////////////
         public Redirector redirector;
         public Testing testing;
-
         public static bool EnablePlayers = true;
-        public Game1() : base()
+
+
+        private Game1() : base()
         {
             game = this;
             Content.RootDirectory = "Content";
@@ -150,8 +164,7 @@ namespace OrbItProcs
 
             Width = smallWidth;
             Height = smallHeight;
-            //Width = fullWidth;
-            //Height = fullHeight;
+
             Utils.PopulateComponentTypesDictionary();
             ClearBackground = true;
             BackgroundColor = Color.White;
@@ -162,23 +175,23 @@ namespace OrbItProcs
             Graphics.PreferMultiSampling = false;
         }
 
-        public static bool deviceReset = false;
+
+        //public static bool deviceReset = false;
         public void ToggleFullScreen(bool on)
         {
             Game1.isFullScreen = on;
             Manager.Graphics.IsFullScreen = on;
-            if (on)
+            if (false)
             {
                 Width = fullWidth;
                 Height = fullHeight;
                 
             }
-            else
+            else if (false)
             {
                 Width = smallWidth;
                 Height = smallHeight;
             }
-            deviceReset = true;
             Manager.Graphics.ApplyChanges();
             Manager.CreateRenderTarget(Width, Height);
         }
@@ -200,7 +213,7 @@ namespace OrbItProcs
             { textures.sword, Content.Load<Texture2D>("Textures/sword"    )},
 
             };
-            btnTextures = Program.getGame().Content.Load<Texture2D>("Textures/buttons").sliceSpriteSheet(2, 5);
+            btnTextures = Game1.game.Content.Load<Texture2D>("Textures/buttons").sliceSpriteSheet(2, 5);
 
             textureCenters = new Dictionary<textures, Vector2>();
             foreach(var tex in textureDict.Keys)
@@ -216,14 +229,17 @@ namespace OrbItProcs
 
             // Shader Code 
             shaderEffect = Content.Load<Effect>("Effects/Shader");
-               
-            ui = new UserInterface(this);
+
 
             room = new Room(this, 1880, 1175);
             mainRoom = room;
             tempRoom = new Room(this, 1880, 1175);
             tempRoom.borderColor = Color.Red;
-            Program.room = room;
+            room = room;
+
+            ui = new UserInterface(this);
+
+
 
             processManager = new ProcessManager(this);
 
@@ -265,12 +281,6 @@ namespace OrbItProcs
             ui.keyManager.addProcessKeyAction("screenshot", KeyCodes.PrintScreen, OnPress: TakeScreenShot);
             ui.keyManager.addProcessKeyAction("removeall", KeyCodes.Delete, OnPress: () => ui.sidebar.btnRemoveAllNodes_Click(null, null));
 
-            /*
-            int count = 0;
-            foreach (var c in tt.Skin.Layers[0].Text.Font.Resource.Characters)
-            {
-                Console.WriteLine("{0} : {1}", count++, c);
-            }*/
             if (EnablePlayers)
             {
                 CreatePlayers();
@@ -279,7 +289,7 @@ namespace OrbItProcs
         }
         public static void ResetPlayers()
         {
-            Room r = Program.getRoom();
+            Room r = Game1.game.room;
             r.playerGroup.EmptyGroup();
             Controller.ResetControllers();
             CreatePlayers();
@@ -288,7 +298,7 @@ namespace OrbItProcs
 
         public static void CreatePlayers()
         {
-            Room r = Program.getRoom();
+            Room r = Game1.game.room;
             Shooter.MakeBullet();
             Node def = r.masterGroup.defaultNode.CreateClone();
             def.addComponent(comp.shooter, true);
@@ -316,21 +326,16 @@ namespace OrbItProcs
             }
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
             room.camera.Render();
             GlobalGameTime = gameTime;
             base.Update(gameTime);
 
-            //frameRateCounter.UpdateElapsed(gameTime.ElapsedGameTime);
             frameRateCounter.Update(gameTime);
 
             if (IsActive) ui.Update(gameTime);
+
             if (!ui.IsPaused)
             {
                 if (room != null) room.Update(gameTime);
@@ -393,56 +398,26 @@ namespace OrbItProcs
             TakeScreenshot = true;
         }
 
-        public static void Screenshot(GraphicsDevice device)
+        public void Screenshot(GraphicsDevice device)
         {
-            byte[] screenData;
-
-            screenData = new byte[device.PresentationParameters.BackBufferWidth * device.PresentationParameters.BackBufferHeight * 4];
-
-            device.GetBackBufferData<byte>(screenData);
-
-            Texture2D t2d = new Texture2D(device, device.PresentationParameters.BackBufferWidth, device.PresentationParameters.BackBufferHeight, false, device.PresentationParameters.BackBufferFormat);
-
-            t2d.SetData<byte>(screenData);
-
-            int i = 0;
+            Texture2D t2d = room.roomRenderTarget;
+            int i = 0; string name;
             string date = DateTime.Now.ToShortDateString().Replace('/', '-');
-            //date = date.Replace;
-            //string name = "Screenshots//SS_" + date + "_#" + i + ".png";
-            string name = "..//..//..//Screenshots//SS_" + date + "_#" + i + ".png";
-            while (File.Exists(name))
+            do
             {
-                i += 1;
                 name = "..//..//..//Screenshots//SS_" + date + "_#" + i + ".png";
-            }
+                i += 1;
+            } while (File.Exists(name));
+            
             Stream st = new FileStream(name, FileMode.Create);
-
             t2d.SaveAsPng(st, t2d.Width, t2d.Height);
-
             st.Close();
-
             t2d.Dispose();
         } 
 
         public void ResetRoomReferences(Room newRoom, bool main = false)
         {
-            if (newRoom == null) throw new SystemException("Room was null when reseting room references");
-            Program.room = newRoom;
-            room = newRoom;
-            if (main) mainRoom = newRoom;
-            ui.room = newRoom;
-            ui.sidebar.room = newRoom;
-            ui.sidebar.inspectorArea.room = newRoom;
-            ui.sidebar.insArea2.room = newRoom;
-            ui.sidebar.UpdateGroupComboBoxes();
-            foreach (Process p in processManager.processes)
-            {
-                p.room = newRoom;
-            }
-            foreach(Process p in processManager.processDict.Values)
-            {
-                p.room = newRoom;
-            }
+
         }
 
         public void InitializePresets()
@@ -459,18 +434,7 @@ namespace OrbItProcs
                     Console.WriteLine("Failed to deserialize node: {0}", e.Message);
                 }
             }
-        }
-
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
-        /// </summary>
-        protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
-        }
-
-            
+        }     
 
         public Node spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)
         {
@@ -493,55 +457,11 @@ namespace OrbItProcs
             Node newNode = new Node();
             if (!blank)
             {
-                //if (ui.spawnerNode != null)
-                //{
-                //    Node.cloneNode(ui.spawnerNode, newNode);
-                //}
-                //else
-                //{
-                    Node.cloneNode(ui.sidebar.ActiveDefaultNode, newNode);
-                //}
+                Node.cloneNode(ui.sidebar.ActiveDefaultNode, newNode);
             }
             newNode.group = activegroup;
             newNode.name = activegroup.Name + Node.nodeCounter;
             newNode.acceptUserProps(userProperties);
-
-            /*CollisionDelegate toggleWhite = delegate(Node source, Node target)
-            {
-                if (target == null) return;
-                if (source.body.color == Color.White)
-                    source.body.color = Utils.randomColor();
-                else
-                    source.body.color = Color.White;
-
-            };
-            CollisionDelegate randomCol = delegate(Node source, Node target)
-            {
-                if (target == null) return;
-                source.body.color = Utils.randomColor();
-            };
-            CollisionDelegate absorbColor = delegate(Node source, Node target)
-            {
-                if (target == null) return;
-                int div = 25;
-                int r = (int)source.body.color.R + ((int)target.body.color.R - (int)source.body.color.R) / div;
-                int g = (int)source.body.color.G + ((int)target.body.color.G - (int)source.body.color.G) / div;
-                int b = (int)source.body.color.B + ((int)target.body.color.B - (int)source.body.color.B) / div;
-                source.body.color = new Color(r, g, b, (int)source.body.color.A);
-            };
-            CollisionDelegate empty = delegate(Node s, Node t) { };
-            Action<Node> first = n => n.body.color = n.body.permaColor;
-            Action<Node> none = n => n.body.color = Color.White;
-
-            //newNode.OnCollisionFirst += first;
-            //newNode.OnCollisionNone += none;
-            //newNode.OnCollisionEnd += (mm, mmm) => { };*/
-
-            
-
-            //newNode.delegator.AddAffectOther("switchVel", delegation);
-            //newNode.delegator.AddAffectSelfAndDS("sprint", sprint, dd);
-
             AssignColor(activegroup, newNode);
             return SpawnNodeHelper(newNode, afterSpawnAction, activegroup, lifetime);
         }
@@ -557,13 +477,6 @@ namespace OrbItProcs
                 newNode.Comp<Lifetime>().timeUntilDeath.value = lifetime;
                 newNode.Comp<Lifetime>().timeUntilDeath.enabled = true;
             }
-            //Collider col = new Collider(new Circle(Utils.random.Next(200)));
-            //col.OnCollisionStay += delegate(Node source, Node target)
-            //{
-            //    source.body.color = Utils.randomColor();
-            //};
-            //newNode.collision.AddCollider(col);
-
             g.IncludeEntity(newNode);
             return newNode;
         }
@@ -636,25 +549,11 @@ namespace OrbItProcs
             NodePresets.Remove(p);
         }
 
-        public void StartStateMachine()
+        public static void Start()
         {
-            IEnumerable<bool> sm = StateMachine();
-            IEnumerator<bool> statemachine = sm.GetEnumerator();
-            bool state;
-            state = statemachine.MoveNext();
-            state = statemachine.MoveNext();
-            state = statemachine.MoveNext();
-        }
-
-        IEnumerable<bool> StateMachine()
-        {
-            bool state = false;
-            while(true)
-            {
-                Console.WriteLine("state:" + state);
-                yield return state;
-                state = !state;
-            }
+            if (game != null) throw new SystemException("Game was already Started");
+            game = new Game1();
+            game.Run();
         }
     }
 }

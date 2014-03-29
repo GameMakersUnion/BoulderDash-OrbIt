@@ -81,7 +81,7 @@ namespace OrbItProcs
         public static void DrawGraph()
         {
             /*Rectangle? sourceRect = null;
-            Room roomm = Program.getRoom();
+            Room roomm = Game1.game.room;
             Texture2D tex = roomm.game.textureDict[textures.whiteorb];
             Vector2 pos = new Vector2(300, 300);
             if (activated)
@@ -95,7 +95,7 @@ namespace OrbItProcs
             ShowFloatGraph();
             float xRange = max.X - min.X;
             float yRange = max.Y - min.Y;
-            Room room = Program.getRoom();
+            Room room = Game1.game.room;
             float datapoints = 0;
             foreach (float f in floatData.Keys)
             {

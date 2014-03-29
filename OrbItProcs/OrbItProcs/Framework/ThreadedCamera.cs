@@ -51,9 +51,6 @@ namespace OrbItProcs
             this.maxlife = maxlife;
             this.life = maxlife;
             this.shaderPack = shaderPack ?? ShaderPack.Default;
-
-            //this.scalevect = default(Vector2);
-            //this.text = null;
         }
         public DrawCommand(textures texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, Vector2 scalevect, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0, int maxlife = -1, ShaderPack? shaderPack = null)
         {
@@ -70,11 +67,7 @@ namespace OrbItProcs
             this.layerDepth = layerDepth;
             this.maxlife = maxlife;
             this.life = maxlife;
-            //this.shaderPack = shaderPack ?? ShaderPack.Default;
             this.shaderPack = shaderPack ?? new ShaderPack(color);
-
-            //this.scale = default(float);
-            //this.text = null;
         }
         public DrawCommand(string text, Vector2 position, Color color, float scale = 0.5f, int maxlife = -1, ShaderPack? shaderPack = null)
         {
@@ -87,15 +80,6 @@ namespace OrbItProcs
             this.maxlife = maxlife;
             this.life = maxlife;
             this.shaderPack = shaderPack ?? ShaderPack.Default;
-
-            //this.scalevect = default(Vector2);
-            //this.rotation = default(float);
-            //this.sourceRect = null;
-            //this.origin = default(Vector2);
-            //this.effects = default(SpriteEffects);
-            //this.layerDepth =  default(int);
-            //this.texture = default(textures);
-
         }
 
         public void Draw(SpriteBatch batch)
@@ -103,25 +87,24 @@ namespace OrbItProcs
             switch (type)
             {
                 case DrawType.standard:
-                    batch.Draw(Program.getGame().textureDict[texture], position, sourceRect, color, rotation, origin, scale, effects, layerDepth);
+                    batch.Draw(Game1.game.textureDict[texture], position, sourceRect, color, rotation, origin, scale, effects, layerDepth);
                     break;
                 case DrawType.vectScaled:
-                    batch.Draw(Program.getGame().textureDict[texture], position, sourceRect, color, rotation, origin, scalevect, effects, layerDepth);
+                    batch.Draw(Game1.game.textureDict[texture], position, sourceRect, color, rotation, origin, scalevect, effects, layerDepth);
                     break;
                 case DrawType.drawString:
-                    batch.DrawString(Camera.font, text, position, color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
+                    batch.DrawString(Game1.font, text, position, color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
                     break;
             }
             if (maxlife > 0)
             {
-                //this.color = new Color(color.R / 10, color.G / 10, color.B / 10, 200);
                 float ratio = (float)Math.Max(life / maxlife, 0.2);
                 this.color = this.permColor * ratio;
             }
         }
 
     }
-    public class ThreadedCamera : Camera
+    public class ThreadedCamera
     {
         ManualResetEventSlim CameraWaiting = new ManualResetEventSlim(false);
         Thread _worker;
@@ -134,9 +117,23 @@ namespace OrbItProcs
         Queue<DrawCommand> addPerm = new Queue<DrawCommand>();
         Queue<DrawCommand> removePerm = new Queue<DrawCommand>();
 
+        private static int _CameraOffset = 0;
+        public static int CameraOffset { get { return _CameraOffset; } set { _CameraOffset = value; CameraOffsetVect = new Vector2(value, 0); } }
+        public static Vector2 CameraOffsetVect = new Vector2(0, 0);
+
+        public Room room;
+        public float zoom;
+        public Vector2 pos;
+        public SpriteBatch batch;
+
+
         public ThreadedCamera(Room room, float zoom = 0.5f, Vector2? pos = null)
-            : base(room, zoom, pos)
         {
+            this.room = room;
+            this.batch = room.game.spriteBatch;
+            this.zoom = zoom;
+            this.pos = pos ?? Vector2.Zero;
+
             _worker = new Thread(Work);
             _worker.Name = "CameraThread";
             _worker.IsBackground = true;
@@ -163,11 +160,6 @@ namespace OrbItProcs
             }
 
             CameraWaiting.Set();
-            //int count = thisFrame.Count;
-            //for (int i = 0; i < count; i++)
-            //{
-            //    thisFrame.Dequeue().draw(batch);
-            //}
         }
         public void AddPermanentDraw(textures texture, Vector2 position, Color color, float scale, float rotation, int life)
         {
@@ -202,8 +194,8 @@ namespace OrbItProcs
                         // ----- Shader Set Parameter Code ---------
                         float[] f;
                         f = new float[2];
-                        f[0] = Program.getGame().GraphicsDevice.Viewport.Width;
-                        f[1] = Program.getGame().GraphicsDevice.Viewport.Height;
+                        f[0] = Game1.game.GraphicsDevice.Viewport.Width;
+                        f[1] = Game1.game.GraphicsDevice.Viewport.Height;
 
                         Game1.shaderEffect.Parameters["Viewport"].SetValue(f);
                         Game1.shaderEffect.Parameters["colour"].SetValue(gg.shaderPack.colour);
@@ -233,7 +225,7 @@ namespace OrbItProcs
                     batch.End();
                 }
                 batch.GraphicsDevice.SetRenderTarget(null);
-                Program.getGame().TomShaneWaiting.Set();
+                Game1.game.TomShaneWaiting.Set();
                 CameraWaiting.Wait();         // No more tasks - wait for a signal
             }
         }

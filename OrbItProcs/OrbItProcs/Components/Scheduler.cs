@@ -49,9 +49,9 @@ namespace OrbItProcs
         public Scheduler() : this(null) { }
         public Scheduler(Node parent = null)
         {
-            start = Program.getGame().Content.Load<SoundEffect>("croc");
-            end = Program.getGame().Content.Load<SoundEffect>("coin");
-            fanfare = Program.getGame().Content.Load<SoundEffect>("fanfare");
+            start = Game1.game.Content.Load<SoundEffect>("croc");
+            end = Game1.game.Content.Load<SoundEffect>("coin");
+            fanfare = Game1.game.Content.Load<SoundEffect>("fanfare");
             if (parent != null) this.parent = parent;
             com = comp.scheduler;
         }

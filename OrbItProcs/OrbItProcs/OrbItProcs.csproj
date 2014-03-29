@@ -247,6 +247,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Framework\Game1.cs" />
     <Compile Include="Framework\Room.cs" />
+    <Compile Include="ScrapBox\CollisionDelegates.cs" />
     <Compile Include="Testing.cs" />
     <Compile Include="Framework\Utils.cs" />
     <Compile Include="Processes\VMath.cs" />

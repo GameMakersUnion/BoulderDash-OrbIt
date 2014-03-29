@@ -52,7 +52,7 @@ namespace OrbItProcs
                 return;
             }
             sucess = true;
-            room = Program.getRoom();
+            room = Game1.game.room;
             this.playerIndex = playerIndex;
             
             switch (playerIndex)
