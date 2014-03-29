@@ -101,7 +101,7 @@ namespace OrbItProcs
             toolbar.AddButton("control", Utils.notImplementedException,"Take a hike.");
             toolbar.AddButton("static", Utils.notImplementedException,"Take a hike.");
 
-            
+            Keybindset.Add("resetplayers", new KeyBundle(KeyCodes.Home), Game1.ResetPlayers);
 
 
             Keybindset.Add("graphdata", new KeyBundle(KeyCodes.D6, KeyCodes.LeftShift), enableKeyBinds(proc.graphdata)); 

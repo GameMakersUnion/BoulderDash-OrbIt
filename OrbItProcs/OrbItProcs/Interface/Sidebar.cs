@@ -48,6 +48,10 @@ namespace OrbItProcs
                         {
                             (dv as ComponentView).RefreshComponents();
                         }
+                        if (dv.OnUserLeveChanged != null)
+                        {
+                            dv.OnUserLeveChanged(value);
+                        }
                     }
                 }
             }
@@ -170,7 +174,7 @@ namespace OrbItProcs
             master.Init();
             master.Name = "Sidebar";
             master.Width = Width;
-            master.Height = game.Height;
+            master.Height = Game1.Height;
             master.Visible = true;
             //SkinControl sc = new SkinControl(manager.Skin.Controls["SideBar"]);
             //master.Skin = sc;

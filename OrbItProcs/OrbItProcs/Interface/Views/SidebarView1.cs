@@ -77,8 +77,9 @@ namespace OrbItProcs
             tbcViews.Left = 0;
             tbcViews.Top = 0;
             tbcViews.Width = master.Width - 5;
-            tbcViews.Height = Program.getGame().Width - 40;
+            tbcViews.Height = Game1.Width - 40;
             tbcViews.Anchor = Anchors.All;
+            tbcViews.Color = UserInterface.TomLight;
 
             tbcViews.AddPage();
             tbcViews.AddPage();

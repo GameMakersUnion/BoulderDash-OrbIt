@@ -68,7 +68,7 @@ namespace OrbItProcs
             window.Description.Text = "";
             window.Width = 200;
             window.Height = 200;
-            window.SetPosition(20, Program.getGame().Height / 4);
+            window.SetPosition(20, Game1.Height / 4);
             int heightCounter = window.Caption.Top;
             int i = 0;
 

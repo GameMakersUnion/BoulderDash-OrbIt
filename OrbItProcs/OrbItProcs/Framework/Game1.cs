@@ -85,6 +85,8 @@ namespace OrbItProcs
 
     public class Game1 : Application
     {
+        public static Game1 game;
+
         public static GameTime GlobalGameTime;
         public ManualResetEventSlim TomShaneWaiting = new ManualResetEventSlim(true);
         public UserInterface ui;
@@ -111,8 +113,8 @@ namespace OrbItProcs
         public static bool isFullScreen = false;
         public static bool TakeScreenshot = false;
 
-        public int Width { get { return Graphics.PreferredBackBufferWidth; } set { Graphics.PreferredBackBufferWidth = value; } }
-        public int Height { get { return Graphics.PreferredBackBufferHeight; } set { Graphics.PreferredBackBufferHeight = value; } }
+        public static int Width { get { return game.Graphics.PreferredBackBufferWidth; } set { game.Graphics.PreferredBackBufferWidth = value; } }
+        public static int Height { get { return game.Graphics.PreferredBackBufferHeight; } set { game.Graphics.PreferredBackBufferHeight = value; } }
 
         public bool IsOldUI { get { return ui != null && ui.sidebar != null && ui.sidebar.activeTabControl == ui.sidebar.tbcMain; } }
 
@@ -136,9 +138,10 @@ namespace OrbItProcs
         public Redirector redirector;
         public Testing testing;
 
+        public static bool EnablePlayers = true;
         public Game1() : base()
         {
-
+            game = this;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             Graphics.SynchronizeWithVerticalRetrace = true;
@@ -265,16 +268,28 @@ namespace OrbItProcs
             {
                 Console.WriteLine("{0} : {1}", count++, c);
             }*/
-            CreatePlayers();
+            if (EnablePlayers)
+            {
+                CreatePlayers();
+            }
             ui.sidebar.InitializeFifthPage();
         }
-
-        public void CreatePlayers()
+        public static void ResetPlayers()
         {
+            Room r = Program.getRoom();
+            r.playerGroup.EmptyGroup();
+            Controller.ResetControllers();
+            CreatePlayers();
+            game.ui.sidebar.playerView.InitializePlayers();
+        }
+
+        public static void CreatePlayers()
+        {
+            Room r = Program.getRoom();
             Shooter.MakeBullet();
-            Node def = room.masterGroup.defaultNode.CreateClone();
+            Node def = r.masterGroup.defaultNode.CreateClone();
             def.addComponent(comp.shooter, true);
-            room.playerGroup.defaultNode = def;
+            r.playerGroup.defaultNode = def;
             for(int i = 1; i < 5; i++)
             {
                 Player p = Player.GetNew(i);
@@ -284,15 +299,16 @@ namespace OrbItProcs
                 float dist = 200;
                 float x = dist * (float)Math.Cos(angle);
                 float y = dist * (float)Math.Sin(angle);
-                Vector2 spawnPos = new Vector2(room.worldWidth / 2, room.worldHeight / 2) - new Vector2(x, y);
+                Vector2 spawnPos = new Vector2(r.worldWidth / 2, r.worldHeight / 2) - new Vector2(x, y);
                 Node node = def.CreateClone();
                 node.body.pos = spawnPos;
                 node.name = "player" + i;
-                node.body.color = p.pColor;
+                node.SetColor(p.pColor);
                 node.addComponent(comp.shooter, true);
                 node.addComponent(comp.sword, true);
+                node.Comp<Sword>().sword.collision.DrawRing = false;
                 p.node = node;
-                room.playerGroup.IncludeEntity(node);
+                r.playerGroup.IncludeEntity(node);
                 node.OnSpawn();
             }
         }

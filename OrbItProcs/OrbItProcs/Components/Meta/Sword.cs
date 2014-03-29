@@ -12,7 +12,7 @@ namespace OrbItProcs
         [Info(UserLevel.User, "This node has a nifty sword he can swing to attack enemies. ", CompType)]
     public class Sword : Component
     {
-        private Node sword;
+        public Node sword;
 
         public enum swordState
         {
@@ -54,8 +54,6 @@ namespace OrbItProcs
 
 
             sword = new Node(props);
-
-
            // Polygon poly = new Polygon();
            // poly.body = sword.body;
            // poly.SetBox(100, 110);
@@ -65,8 +63,6 @@ namespace OrbItProcs
             //Node newNode = new Node();
 
             //room.game.spawnNode(newNode);
-            
-
         }
 
         public override void OnSpawn()
@@ -79,7 +75,10 @@ namespace OrbItProcs
             sword.body.shape = poly;
             sword.body.pos = parent.body.pos;
             sword.body.DrawCircle = false;
-            parent.room.game.spawnNode(sword);
+            ///parent.room.game.spawnNode(sword);
+            parent.room.itemGroup.IncludeEntity(sword);
+            sword.OnSpawn();
+
             sword.body.exclusionList.Add(parent.body);
             parent.body.exclusionList.Add(sword.body);
         }
@@ -100,7 +99,8 @@ namespace OrbItProcs
                     target *= distance;
                     target *= new Vector2(1, -1);
                     sword.body.pos = target + parent.body.pos;
-
+                    Vector2 result = parent.body.pos - sword.body.pos;
+                    sword.body.orient = (float)(Math.Atan2(result.Y, result.X) + Math.PI);
                 }
                 else
                 {
@@ -112,16 +112,9 @@ namespace OrbItProcs
                 
             }
         }
-        //public void FireNode(Vector2 dir)
-        //{
-        //    Node n = bulletNode.CreateClone();
-        //    n.Comp<Lifetime>().timeUntilDeath.value = bulletLife;
-        //    dir.Y *= -1;
-        //    n.body.velocity = dir * speed;
-        //    n.body.pos = parent.body.pos;
-        //    parent.room.game.spawnNode(n);
-        //}
-
-
+        public override void Death(Node other)
+        {
+            sword.OnDeath(other);
+        }
     }
 }

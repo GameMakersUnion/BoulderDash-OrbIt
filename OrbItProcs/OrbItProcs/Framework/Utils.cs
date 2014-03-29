@@ -15,6 +15,26 @@ namespace OrbItProcs {
         public const float rootOfTwo = 1.41421356237f;
         public const float invRootOfTwo = 0.70710678118f;
 
+        public static float Lerp(float start, float end, float amount)
+        {
+            if (amount > 1f) amount = 1f;
+            if (amount < 0f) amount = 0f;
+            if (start > end)
+            {
+                float temp = start;
+                start = end;
+                end = start;
+            }
+            return start + (end - start) * amount;
+        }
+        public static Color ToColor(this Vector4 v)
+        {
+            return new Color(v.X, v.Y, v.Z, v.W);
+        }
+        public static Color ToColor(this Vector3 v, byte alpha)
+        {
+            return new Color(v.X, v.Y, v.Z, (float)alpha / 255f);
+        }
         public static string Name(this Type t)
         {
             return t.ToString().LastWord('.');

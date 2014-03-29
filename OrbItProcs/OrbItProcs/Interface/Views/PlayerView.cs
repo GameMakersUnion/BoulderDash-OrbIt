@@ -54,12 +54,14 @@ namespace OrbItProcs
             lblPlayers.TextColor = Color.Black;
             lblPlayers.Top = HeightCounter;
             HeightCounter += lblPlayers.Height + VertPadding;
+            Width = parent.Width - LeftPadding * 4;
 
             base.Initialize();
 
             insView = new InspectorView(sidebar, parent, Left, HeightCounter);
             insView.GroupSync = true;
             insView.Height = 120;
+            insView.Width = Width;
             Setup(ItemCreatorDelegate, OnEvent2);
             //OnItemEvent += OnEvent2;
 
@@ -154,11 +156,11 @@ namespace OrbItProcs
             insView.backPanel.Refresh();
             if (obj == null)
             {
-                insView.SetRootItem(null);
+                insView.SetRootObject(null);
             }
             else if (obj is Node)
             {
-                insView.SetRootItem((obj as Node).meta);
+                insView.SetRootObject((obj as Node).meta);
             }
         }
 
@@ -169,7 +171,7 @@ namespace OrbItProcs
             {
                 Node n = (Node)ii.obj;
                 InspectorItem metaitem = new InspectorItem(null, n.meta, sidebar);
-                insView.SetRootItem(metaitem);
+                insView.SetRootInspectorItem(metaitem);
                 base.SelectItem(item);
             }
         }

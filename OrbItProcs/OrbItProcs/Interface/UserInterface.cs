@@ -21,7 +21,8 @@ namespace OrbItProcs {
 
         public static bool tomShaneWasClicked = false;
         public static readonly Color TomShanePuke = new Color(75, 187, 0);
-
+        public static readonly Color TomDark = new Color(65, 65, 65);
+        public static readonly Color TomLight = new Color(180, 180, 180);
         public enum selection
         {
             placeNode,
@@ -161,7 +162,7 @@ namespace OrbItProcs {
                 {
                     foreach (var view in detailedViews)
                     {
-                        view.Refresh(true);
+                        view.RefreshLight(true);
                     }
                 }
             }
@@ -273,7 +274,7 @@ namespace OrbItProcs {
             //ignore mouse clicks outside window
             if (!Game1.isFullScreen)
             {
-                if (mouseState.X >= game.Width || mouseState.X < 0 || mouseState.Y >= game.Height || mouseState.Y < 0)
+                if (mouseState.X >= Game1.Width || mouseState.X < 0 || mouseState.Y >= Game1.Height || mouseState.Y < 0)
                     return;
             }
 

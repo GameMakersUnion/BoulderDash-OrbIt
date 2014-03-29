@@ -40,9 +40,9 @@ namespace OrbItProcs
             btnCreateGroup.Init();
             btnCreateGroup.Parent = parent;
             btnCreateGroup.Top = HeightCounter;
-            btnCreateGroup.Left = LeftPadding;
             btnCreateGroup.Text = "Create Group";
-            btnCreateGroup.Width = 120;
+            btnCreateGroup.Width = 160;
+            btnCreateGroup.Left = parent.Width / 2 - btnCreateGroup.Width / 2;
             btnCreateGroup.Click += (s, e) =>
             {
                 createGroupWindow = new CreateGroupWindow(sidebar);
@@ -54,15 +54,28 @@ namespace OrbItProcs
             btnSelectedNode.Init();
             btnSelectedNode.Parent = parent;
             btnSelectedNode.Top = HeightCounter;
-            btnSelectedNode.Left = LeftPadding;
             btnSelectedNode.Text = "Selected Node to Group";
             btnSelectedNode.Width = 160;
+            btnSelectedNode.Left = parent.Width / 2 - btnSelectedNode.Width / 2; ;
             btnSelectedNode.Click += (s, e) =>
             {
                 if (room.targetNode == null) return;
                 Group g = new Group(room.targetNode.CreateClone(), room.generalGroups);
                 UpdateGroups();
             };
+            btnSelectedNode.Visible = false;
+
+            OnUserLeveChanged += (u) =>
+                {
+                    if ((int)u == (int)UserLevel.User)
+                    {
+                        btnSelectedNode.Visible = false;
+                    }
+                    else
+                    {
+                        btnSelectedNode.Visible = true;
+                    }
+                };
         }
 
         public override void SelectItem(DetailedItem item)
@@ -108,17 +121,22 @@ namespace OrbItProcs
                 btnEdit.Left = item.panel.Width - btnEdit.Width - 10;
                 btnEdit.Top = 2;
                 btnEdit.Height = item.buttonHeight;
+
+                EventHandler editgroup = (s, e) =>
+                    {
+                        item.isSelected = true;
+                        editGroupWindow = new EditGroupWindow(sidebar);
+                        editGroupWindow.componentView.SwitchGroup(g);
+                    };
                 
                 btnEdit.Text = "Edit";
                 btnEdit.ToolTip.Text = "Edit";
                 btnEdit.TextColor = UserInterface.TomShanePuke;
-                btnEdit.Click += (s, e) =>
-                {
-                    item.isSelected = true;
-                    editGroupWindow = new EditGroupWindow(sidebar);
-                    editGroupWindow.componentView.SwitchGroup(g);
 
-                };
+                btnEdit.Click += editgroup;
+
+                item.panel.DoubleClick += editgroup;
+                
 
                 Button btnEnabled = new Button(manager);
                 btnEnabled.Init();

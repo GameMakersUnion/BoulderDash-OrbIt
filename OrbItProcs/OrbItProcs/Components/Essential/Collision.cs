@@ -15,8 +15,13 @@ namespace OrbItProcs
     {
         public const mtypes CompType = mtypes.minordraw | mtypes.affectself | mtypes.essential;
         public override mtypes compType { get { return CompType; } set { } }
-
         public Link link { get; set; }
+
+        /// <summary>
+        /// When enabled, draws the ring circle around the node while collision is active.
+        /// </summary>
+        [Info(UserLevel.User, "When enabled, draws the ring circle around the node while collision is active.")]
+        public bool DrawRing { get; set; }
 
         public static Func<Manifold, Collider, Collider, bool>[,] Dispatch = new Func<Manifold, Collider, Collider, bool>[2, 2]
         {
@@ -215,9 +220,9 @@ namespace OrbItProcs
 
         public override void Draw()
         {
+            if (!DrawRing) return;
             //Console.WriteLine(Utils.random.Next(10));
             parent.room.camera.Draw(textures.ring, parent.body.pos, Color.Red, parent.body.scale);
-
 
             foreach (Collider cc in colliders.Values)
             {

@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
-namespace OrbItProcs.Components
+namespace OrbItProcs
 {
     /// <summary>
     /// Modifies the color of affected nodes by using a distance equation. This can be based on their spacial position or an "Imaginary color position"
@@ -122,7 +122,7 @@ namespace OrbItProcs.Components
             hue = HueFromColor(parent.body.color);
         }
 
-        public float GetDist(float x, float v, int t = 360)
+        public static float GetDist(float x, float v, int t = 360)
         {
             int half = t / 2;
             if (x == v) return 0;
@@ -261,12 +261,12 @@ namespace OrbItProcs.Components
             }
         }
 
-        public float HueFromColor(Color c)
+        public static float HueFromColor(Color c)
         {
             //180/pi*atan2( sqrt(3)*(G-B) , 2*R-G-B )
             return (float)(180 / Math.PI * Math.Atan2(Math.Sqrt(3) * (c.G - c.B), 2 * c.R - c.G - c.B));
         }
-        public float HueFromColor(int r, int g, int b)
+        public static float HueFromColor(int r, int g, int b)
         {
             return (float)(180 / Math.PI * Math.Atan2(Math.Sqrt(3) * (g - b), 2 * r - g - b));
         }

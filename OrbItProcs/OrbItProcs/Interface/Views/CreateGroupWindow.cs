@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using TomShane.Neoforce.Controls;
+using EventArgs = TomShane.Neoforce.Controls.EventArgs;
 using EventHandler = TomShane.Neoforce.Controls.EventHandler;
+using Poop = TomShane.Neoforce.Controls.SideBar;
 
 namespace OrbItProcs
 {
@@ -13,13 +15,14 @@ namespace OrbItProcs
         //public Game1 game;
         public Manager manager;
         public Sidebar sidebar;
-        public Window window;
+        public SideBar poop;
         public ComponentView componentView;
         public int HeightCounter = 5;
         public int LeftPadding = 5;
 
         //public Label lblTitle;
         public Button btnOk;
+        public Button btnBack;
         public Room temproom;
         public Group tempgroup;
 
@@ -31,32 +34,72 @@ namespace OrbItProcs
             sidebar.ui.game.SwitchToTempRoom();
             temproom = sidebar.ui.game.tempRoom;
             tempgroup = sidebar.ActiveGroup;//temproom.generalGroups.childGroups.ElementAt(0).Value;
-            
-            window = new Window(manager);
-            window.Init();
-            window.Left = sidebar.master.Left;
-            window.Width = sidebar.Width;
-            window.Top = 0;
-            window.Height = sidebar.game.Height;
-            window.Text = "Create Group";
-            window.Closed += delegate { UserInterface.GameInputDisabled = false; sidebar.CreatingGroup = false; sidebar.ui.game.SwitchToMainRoom(); sidebar.groupsView.createGroupWindow = null; };
+
+            poop = new Poop(manager);
+            poop.Init();
+            int tomtom = 5;
+            poop.ClientArea.BackColor = UserInterface.TomDark;
+            poop.BackColor = Color.Black;
+            poop.BevelBorder = BevelBorder.All;
+            Margins tomtomtomtom = new Margins(tomtom, tomtom, tomtom, tomtom);
+            poop.ClientMargins = tomtomtomtom;
+
+            poop.Left = sidebar.master.Left;
+            poop.Width = sidebar.Width;
+            poop.Top = 0;
+            poop.Height = Game1.Height;
+            //poop.Text = "Create Group";
+            //poop.Closed += delegate { UserInterface.GameInputDisabled = false; sidebar.CreatingGroup = false; sidebar.ui.game.SwitchToMainRoom(); sidebar.groupsView.createGroupWindow = null; };
             //window.ShowModal();
-            manager.Add(window);
+            manager.Add(poop);
 
             int width = 120;
-            int offset = window.Width - width - 20;
+            int offset = poop.Width - width - 20;
+
+            Panel topPanel = new Panel(manager);
+            topPanel.Init();
+            topPanel.Parent = poop;
+            topPanel.Left = LeftPadding;
+            topPanel.Top = LeftPadding;
+            topPanel.Width = poop.Width - LeftPadding * 4;
+            int col = 30;
+            topPanel.Color = new Color(col, col, col);
+            topPanel.BevelBorder = BevelBorder.All;
+            topPanel.BevelStyle = BevelStyle.Flat;
+            topPanel.BevelColor = Color.Black;
+
+            btnBack = new Button(manager);
+            btnBack.Init();
+            btnBack.Parent = topPanel;
+            btnBack.Top = HeightCounter;
+            btnBack.Text = "Back";
+            btnBack.Width = 40;
+            btnBack.Left = LeftPadding;
+            btnBack.Click += (s, e) => Close();
+
+            topPanel.Height = btnBack.Height + LeftPadding * 3;
+
+            Label lblTitle = new Label(manager);
+            lblTitle.Init();
+            lblTitle.Parent = topPanel;
+            lblTitle.Top = HeightCounter + LeftPadding;
+            lblTitle.Width = 120;
+            lblTitle.Left = poop.Width / 2 - lblTitle.Width / 4;
+            lblTitle.Text = "Create Group";
+
+            HeightCounter += lblTitle.Height + LeftPadding * 6;
 
             btnOk = new Button(manager);
             btnOk.Init();
-            btnOk.Parent = window;
-            btnOk.Left = LeftPadding;
-            btnOk.Top = window.Height - (int)(btnOk.Height * 2.8);
+            btnOk.Parent = poop;
+            btnOk.Top = poop.Height - (int)(btnOk.Height * 2.8);
             btnOk.Text = "Create Group";
             btnOk.Width = width;
+            btnOk.Left = poop.Width / 2 - btnOk.Width / 2;
 
             Label lblName = new Label(manager);
             lblName.Init();
-            lblName.Parent = window;
+            lblName.Parent = poop;
             lblName.Left = LeftPadding;
             lblName.Top = HeightCounter;
             lblName.Width = width;
@@ -64,7 +107,7 @@ namespace OrbItProcs
 
             TextBox txtName = new TextBox(manager);
             txtName.Init();
-            txtName.Parent = window;
+            txtName.Parent = poop;
             txtName.Top = HeightCounter;
             txtName.Width = width;
             txtName.Left = offset;
@@ -73,7 +116,7 @@ namespace OrbItProcs
 
             RadioButton rdEmpty = new RadioButton(manager);
             rdEmpty.Init();
-            rdEmpty.Parent = window;
+            rdEmpty.Parent = poop;
             rdEmpty.Top = HeightCounter;
             rdEmpty.Left = LeftPadding;
             rdEmpty.Text = "Default";
@@ -82,7 +125,7 @@ namespace OrbItProcs
 
             RadioButton rdExisting = new RadioButton(manager);
             rdExisting.Init();
-            rdExisting.Parent = window;
+            rdExisting.Parent = poop;
             rdExisting.Top = HeightCounter;
             rdExisting.Left = LeftPadding;
             rdExisting.Text = "Existing";
@@ -91,7 +134,7 @@ namespace OrbItProcs
 
             ComboBox cbExisting = new ComboBox(manager);
             cbExisting.Init();
-            cbExisting.Parent = window;
+            cbExisting.Parent = poop;
             cbExisting.Top = HeightCounter;
             cbExisting.Width = width;
             cbExisting.Left = offset;
@@ -105,7 +148,7 @@ namespace OrbItProcs
 
             RadioButton rdTemplate = new RadioButton(manager);
             rdTemplate.Init();
-            rdTemplate.Parent = window;
+            rdTemplate.Parent = poop;
             rdTemplate.Top = HeightCounter;
             rdTemplate.Left = LeftPadding;
             rdTemplate.Text = "Template";
@@ -114,7 +157,7 @@ namespace OrbItProcs
 
             ComboBox cbTemplate = new ComboBox(manager);
             cbTemplate.Init();
-            cbTemplate.Parent = window;
+            cbTemplate.Parent = poop;
             cbTemplate.Top = HeightCounter;
             cbTemplate.Width = width;
             cbTemplate.Left = offset;
@@ -126,11 +169,11 @@ namespace OrbItProcs
             cbTemplate.Enabled = false;
             HeightCounter += cbTemplate.Height + LeftPadding;
 
-            componentView = new ComponentView(sidebar, window, 0, HeightCounter);
-            componentView.Width = 200;
+            componentView = new ComponentView(sidebar, poop, 0, HeightCounter);
+            componentView.Width = poop.Width - LeftPadding * 4;
 
-            window.Width += 100;
-            window.Width -= 100;
+            poop.Width += 100;
+            poop.Width -= 100;
 
             SetGroup(temproom.defaultNode);
 
@@ -178,9 +221,18 @@ namespace OrbItProcs
                     newNode.group = newGroup;
                     sidebar.groupsView.UpdateGroups();
 
-                    window.Close();
+                    Close();
                 }
             };
+        }
+
+        public void Close()
+        {
+            UserInterface.GameInputDisabled = false;
+            sidebar.CreatingGroup = false;
+            sidebar.ui.game.SwitchToMainRoom();
+            sidebar.groupsView.createGroupWindow = null;
+            manager.Remove(poop);
         }
 
         public void ComboUpdate(ComboBox cb)

@@ -84,6 +84,15 @@ namespace OrbItProcs {
                 return masterGroup.childGroups["Player Group"];
             }
         }
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public Group itemGroup
+        {
+            get
+            {
+                if (masterGroup == null) return null;
+                return masterGroup.childGroups["Item Group"];
+            }
+        }
 
         [Polenter.Serialization.ExcludeFromSerialization]
         public Node defaultNode { get; set; }
@@ -128,7 +137,7 @@ namespace OrbItProcs {
             nodeHashes = new ObservableHashSet<string>();
             CollisionSet = new HashSet<Collider>();
             colIterations = 1;
-            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, game.Width, game.Height);
+            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, Game1.Width, Game1.Height);
             camera = new ThreadedCamera(this, 0.5f);
             scheduler = new Scheduler();
             borderColor = Color.Green;
@@ -183,6 +192,8 @@ namespace OrbItProcs {
             if (Groups)
             {
                 Group playerGroup = new Group(defaultNode, masterGroup, Name: "Player Group", Spawnable: false);
+
+                Group itemGroup = new Group(defaultNode, masterGroup, Name: "Item Group", Spawnable: false);
 
                 Group generalGroup = new Group(defaultNode, masterGroup, Name: "General Groups", Spawnable: false);
 

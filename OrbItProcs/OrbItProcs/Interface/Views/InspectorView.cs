@@ -41,32 +41,38 @@ namespace OrbItProcs
             //backPanel.Height = 120;
             Setup(ItemCreatorDelegate, OnEvent);
         }
-
-        public void SetRootItem(object item)
+        public void SetRootObject(object obj)
         {
-            if (item == null) return;
             ClearView();
-            if (item is InspectorItem)
+            if (obj == null)
             {
-                InspectorItem insItem = (InspectorItem)item;
-                insItem.GenerateChildren();
-                foreach (InspectorItem i in insItem.children)
-                {
-                    CreateNewItem(i);
-                }
+                rootItem = null;
+                return;
             }
-            else
+            if (obj is InspectorItem)
             {
-                //InspectorItem insItem = new InspectorItem(null, item, sidebar);
-                //if (item is Body)
-                //{
-                //    //todo: fix item path here
-                //}
-                //insItem.GenerateChildren();
-                //foreach (InspectorItem i in insItem.children)
-                //{
-                //    CreateNewItem(i);
-                //}
+                SetRootInspectorItem((InspectorItem)obj);
+                return;
+            }
+            InspectorItem insItem = new InspectorItem(null, obj, sidebar);
+            SetRootInspectorItem(insItem);
+        }
+        public void SetRootInspectorItem(InspectorItem insItem)
+        {
+            rootItem = insItem;
+            ClearView();
+            if (insItem == null) return;
+            insItem.GenerateChildren();
+            foreach (InspectorItem i in insItem.children)
+            {
+                CreateNewItem(i);
+            }
+        }
+        public override void RefreshRoot()
+        {
+            if (rootItem != null)
+            {
+                SetRootInspectorItem(rootItem);
             }
         }
         public void CreateNewItem(InspectorItem item)
@@ -103,26 +109,6 @@ namespace OrbItProcs
                 }
                 marginalize(textbox);
             }
-            //else if (control is CheckBox)
-            //{
-            //    CheckBox checkbox = (CheckBox)control;
-            //    if (ins.obj is bool)
-            //    {
-            //        ins.SetValue(checkbox.Checked);
-            //        if (GroupSync)
-            //        {
-            //            ins.ApplyToAllNodes(activeGroup);
-            //        }
-            //    }
-            //    else if (checkbox.Name.Equals("toggle_checkbox"))
-            //    {
-            //        ins.SetValue(checkbox.Checked);
-            //        if (GroupSync)
-            //        {
-            //            ins.ApplyToAllNodes(activeGroup);
-            //        }
-            //    }
-            //}
             else if (control is ComboBox)
             {
                 ins.SetValue(control.Text);
@@ -348,10 +334,7 @@ namespace OrbItProcs
                         int w = 60;
                         TextBox textbox = new TextBox(manager);
                         textbox.ClientMargins = new Margins();
-
                         textbox.Init();
-
-
                         textbox.Parent = item.panel;
                         textbox.TextColor = UserInterface.TomShanePuke;
                         textbox.Left = backPanel.Width - w - 26;
@@ -375,16 +358,6 @@ namespace OrbItProcs
                     }
                     else if (o is bool)
                     {
-                        //CheckBox checkbox = new CheckBox(manager);
-                        //checkbox.Init();
-                        //checkbox.Parent = item.textPanel;
-                        //checkbox.Left = backPanel.Width - 45;
-                        //checkbox.Top = 2;
-                        //checkbox.Text = "";
-                        //checkbox.ToolTip.Text = "Toggle";
-                        //checkbox.Checked = (bool)o;
-                        //checkbox.Name = "bool_checkbox";
-                        //item.AddControl(checkbox);
                         Button btnEnabled = new Button(manager);
                         btnEnabled.Init();
                         btnEnabled.Parent = item.panel;
@@ -458,7 +431,7 @@ namespace OrbItProcs
             return o.ToString();
         }
 
-        public override void Refresh(bool notFocused)
+        public override void RefreshLight(bool notFocused)
         {
             if (viewItems != null)
             {
@@ -482,21 +455,6 @@ namespace OrbItProcs
                             if (control is ComboBox)
                             {
                                 continue;
-                                //object ee = insItem.GetValue();
-                                //if (ee.GetType().IsEnum)
-                                //{
-                                //    ComboBox cb = (ComboBox)control;
-                                //    int count = 0;
-                                //    foreach (object i in cb.Items)
-                                //    {
-                                //        if (i.ToString().Equals(ee.ToString()))
-                                //        {
-                                //            cb.ItemIndex = count;
-                                //            break;
-                                //        }
-                                //        count++;
-                                //    }
-                                //}
                             }
                             else if (control is TextBox)
                             {
@@ -504,9 +462,7 @@ namespace OrbItProcs
                                 if (Utils.isToggle(val))
                                 {
                                     dynamic tog = val;
-                                    
                                     control.Text = NumberToString(tog.value);
-                                    
                                 }
                                 else
                                 {

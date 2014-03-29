@@ -869,7 +869,12 @@ namespace OrbItProcs {
             return new Vector2(tx.Width / 2f, tx.Height / 2f); // TODO: maybe cast to floats to make sure it's the exact center.
         }
         
-        
+        public void SetColor(Color c)
+        {
+            body.color = c;
+            body.permaColor = c;
+            basicdraw.UpdateColor();
+        }
 
         public void changeRadius(float newRadius)
         {
@@ -895,17 +900,23 @@ namespace OrbItProcs {
             }
         }
 
-        public void OnDeath(Node other)
+        public void OnDeath(Node other, bool delete = false)
         {
             foreach (Type key in comps.Keys.ToList())
             {
+                if (key == typeof(Meta)) continue;
                 Component component = comps[key];
-                MethodInfo mInfo = component.GetType().GetMethod("OnDeath");
+                MethodInfo mInfo = component.GetType().GetMethod("Death");
                 if (mInfo != null
                     && mInfo.DeclaringType == component.GetType())
                 {
-                    component.OnDeath(other);
+                    component.Death(other);
                 }
+            }
+            meta.Death(other);
+            if (group != null && !delete)
+            {
+                group.DeleteEntity(this);
             }
         }
 
@@ -926,6 +937,7 @@ namespace OrbItProcs {
             //{
             //    room.masterGroup.DiscludeEntity(this);
             //}
+            OnDeath(null, true);
         }
 
         public Node CreateClone(bool CloneHash = false)
