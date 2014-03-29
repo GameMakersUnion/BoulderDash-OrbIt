@@ -100,7 +100,7 @@ namespace OrbItProcs
                 FullController fc = (FullController)controller;
                 sword.movement.active = false;
                 //sword.body.velocity = Utils.AngleToVector(sword.body.orient + (float)Math.PI/2) * 100;
-                sword.body.velocity = sword.body.effvelocity * 1000;
+                sword.body.velocity = sword.body.effvelocity * 500;
 
                 if (fc.newGamePadState.ThumbSticks.Right.LengthSquared() > 0.9 * 0.9)
                 {
