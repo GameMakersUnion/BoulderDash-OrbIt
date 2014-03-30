@@ -94,6 +94,7 @@ namespace OrbItProcs
         SVGA_800x600,
         VGA_640x480,
     }
+
     public class Game1 : Application
     {
         public static Game1 game;
@@ -104,7 +105,7 @@ namespace OrbItProcs
         #region ///Components///
         public SharpSerializer serializer = new SharpSerializer();
         #endregion
-        #region ///Components///
+        #region ///Rooms///
         private Room _activeRoom;
         public Room room
         {
@@ -121,7 +122,7 @@ namespace OrbItProcs
         public Room tempRoom;
         #endregion
 
-        public static GameTime GlobalGameTime;
+        public static GameTime gametime;
         public ManualResetEventSlim TomShaneWaiting = new ManualResetEventSlim(true);
         public UserInterface ui;
 
@@ -145,8 +146,7 @@ namespace OrbItProcs
         public Texture2D[,] btnTextures;
         public static bool bigTonyOn = false;
         public ObservableCollection<object> NodePresets = new ObservableCollection<object>();
-        public float backgroundHue = 180;
-        public double x = 0;
+        
         public static Effect shaderEffect; // Shader code
         public static readonly object drawLock = new object();
         public Redirector redirector;
@@ -161,7 +161,6 @@ namespace OrbItProcs
             IsMouseVisible = true;
             Graphics.SynchronizeWithVerticalRetrace = true;
             IsFixedTimeStep = false;
-
             Width = smallWidth;
             Height = smallHeight;
 
@@ -328,29 +327,20 @@ namespace OrbItProcs
 
         protected override void Update(GameTime gameTime)
         {
+            //Do not write code above this.
             room.camera.Render();
-            GlobalGameTime = gameTime;
             base.Update(gameTime);
-
+            //Do not move the above lines.
+            gametime = gameTime;
             frameRateCounter.Update(gameTime);
-
             if (IsActive) ui.Update(gameTime);
-
             if (!ui.IsPaused)
             {
                 if (room != null) room.Update(gameTime);
             }
             else
             {
-                //room.colorEffectedNodes();
-                //room.updateTargetNodeGraphic();
                 if (room != null) room.gridSystemLines = new List<Microsoft.Xna.Framework.Rectangle>();
-            }
-            if (!ui.IsPaused)
-            {
-                x += Math.PI / 360.0;
-                backgroundHue = (backgroundHue + ((float)Math.Sin(x) + 1) / 10f) % 360;
-                BackgroundColor = ColorChanger.getColorFromHSV(backgroundHue, value: 0.2f);
             }
 
             room.Draw();

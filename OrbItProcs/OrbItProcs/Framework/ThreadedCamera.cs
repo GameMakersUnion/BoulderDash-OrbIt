@@ -118,6 +118,7 @@ namespace OrbItProcs
         Queue<DrawCommand> removePerm = new Queue<DrawCommand>();
 
         private static int _CameraOffset = 0;
+        public float backgroundHue = 180;
         public static int CameraOffset { get { return _CameraOffset; } set { _CameraOffset = value; CameraOffsetVect = new Vector2(value, 0); } }
         public static Vector2 CameraOffsetVect = new Vector2(0, 0);
 
@@ -126,6 +127,7 @@ namespace OrbItProcs
         public Vector2 pos;
         public SpriteBatch batch;
 
+        static double x = 0;
 
         public ThreadedCamera(Room room, float zoom = 0.5f, Vector2? pos = null)
         {
@@ -182,10 +184,16 @@ namespace OrbItProcs
         {
             while (true)
             {
+                
+                x += Math.PI / 360.0;
+                backgroundHue = (backgroundHue + ((float)Math.Sin(x) + 1) / 10f) % 360;
+                Color bg = ColorChanger.getColorFromHSV(backgroundHue, value: 0.2f);
+
                 CameraWaiting.Reset();
-                batch.GraphicsDevice.SetRenderTarget(room.roomRenderTarget);
                 lock (_locker)
                 {
+                    batch.GraphicsDevice.SetRenderTarget(room.roomRenderTarget);
+                    batch.GraphicsDevice.Clear(bg);
                     //batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, Game1.shaderEffect); //tran
                     batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
