@@ -264,7 +264,7 @@ namespace OrbItProcs
 
             if (m.contact_count > 0)
             {
-                
+                if (DoExclusionCheck(other)) return;
                 if (HandlersEnabled)
                 {
                     //todo:add to handler list
@@ -320,6 +320,7 @@ namespace OrbItProcs
 
             if (iscolliding)
             {
+                if (DoExclusionCheck(other)) return;
                 if (other.HandlersEnabled)
                 {
                     //todo:add to handler list

@@ -35,7 +35,7 @@ namespace OrbItProcs
         public Vector2 objectSpacePos = new Vector2(0, 0);
 
 
-        public HashSet<Collider> exclusionList = new HashSet<Collider>();
+        //public HashSet<Collider> exclusionList = new HashSet<Collider>();
         
         //public Vector2 velocity = new Vector2(0, 0);
 
@@ -73,6 +73,35 @@ namespace OrbItProcs
         public Action<Node> OnCollisionFirstEnter;
         public Action<Node> OnCollisionAllExit;
 
+        public Func<Collider, Collider, bool> ExclusionCheck;
+
+        public bool DoExclusionCheck(Collider other)
+        {
+            if (ExclusionCheck != null)
+            {
+                foreach (Func<Collider, Collider, bool> del in ExclusionCheck.GetInvocationList())
+                {
+                    if (del(this, other)) return true;
+                }
+            }
+            return false;
+        }
+        public void AddExclusionCheck(Collider other)
+        {
+            ExclusionCheck += (s, o) =>
+            {
+                return o == other;
+            };
+            other.ExclusionCheck += (s, o) =>
+            {
+                return o == this;
+            };
+        }
+        public void ClearExclusionChecks()
+        {
+            ExclusionCheck = null;
+        }
+
         public void InvokeOnCollisionEnter(Node other)
         {
             if (OnCollisionEnter != null) OnCollisionEnter(parent, other);
@@ -103,11 +132,11 @@ namespace OrbItProcs
             OnCollisionAllExit -= OnCollisionAllExit;
         }
 
-        public void AddExclusion(Collider other)
-        {
-            exclusionList.Add(other);
-            other.exclusionList.Add(this);
-        }
+        //public void AddExclusion(Collider other)
+        //{
+        //    exclusionList.Add(other);
+        //    other.exclusionList.Add(this);
+        //}
 
         public Collider() : this(shape: null) { }
         public Collider(Shape shape = null, Node parent = null)
@@ -140,6 +169,7 @@ namespace OrbItProcs
 
             if (iscolliding)
             {
+                if (DoExclusionCheck(other)) return;
                 if (HandlersEnabled)
                 {
                     //todo:add to handler list

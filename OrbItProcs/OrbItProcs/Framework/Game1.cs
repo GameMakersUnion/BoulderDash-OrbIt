@@ -101,7 +101,7 @@ namespace OrbItProcs
         #region ///Assets///
         public static SpriteFont font;
         #endregion
-        #region ///Components///
+        #region ///Serializer///
         public SharpSerializer serializer = new SharpSerializer();
         #endregion
         #region ///Components///
@@ -151,8 +151,7 @@ namespace OrbItProcs
         public static readonly object drawLock = new object();
         public Redirector redirector;
         public Testing testing;
-        public static bool EnablePlayers = true;
-
+        public static bool EnablePlayers = false;
 
         private Game1() : base()
         {
@@ -206,12 +205,11 @@ namespace OrbItProcs
             { textures.whitepixel, Content.Load<Texture2D>("Textures/whitepixel"            )},
             { textures.whitepixeltrans, Content.Load<Texture2D>("Textures/whitepixeltrans"  )},
             { textures.whitecircle, Content.Load<Texture2D>("Textures/whitecircle"          )},
-            { textures.whitesphere, Content.Load<Texture2D>("Textures/whitesphere"          )},
+            { textures.whitesphere, Content.Load<Texture2D>("Textures/whitesphere"          )},  
             { textures.blackorb, Content.Load<Texture2D>("Textures/blackorb"                )},
             { textures.ring, Content.Load<Texture2D>("Textures/ring"                        )},
             { textures.orientedcircle, Content.Load<Texture2D>("Textures/orientedcircle"    )},
-            { textures.sword, Content.Load<Texture2D>("Textures/sword"    )},
-
+            { textures.sword, Content.Load<Texture2D>("Textures/sword"                      )},
             };
             btnTextures = Game1.game.Content.Load<Texture2D>("Textures/buttons").sliceSpriteSheet(2, 5);
 
@@ -230,16 +228,13 @@ namespace OrbItProcs
             // Shader Code 
             shaderEffect = Content.Load<Effect>("Effects/Shader");
 
-
             room = new Room(this, 1880, 1175);
             mainRoom = room;
             tempRoom = new Room(this, 1880, 1175);
             tempRoom.borderColor = Color.Red;
-            room = room;
+            room = mainRoom;
 
             ui = new UserInterface(this);
-
-
 
             processManager = new ProcessManager(this);
 
@@ -249,8 +244,6 @@ namespace OrbItProcs
             base.Initialize();          
 
             testing = new Testing();
-
-            
 
             ui.sidebar.UpdateGroupComboBoxes();
             ui.sidebar.cbListPicker.ItemIndex = 0;

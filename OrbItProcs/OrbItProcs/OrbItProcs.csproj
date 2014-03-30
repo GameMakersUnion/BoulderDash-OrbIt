@@ -169,7 +169,6 @@
     <Compile Include="Interface\Views\ListView.cs" />
     <Compile Include="Interface\NeoForceOverrides\Slider.cs" />
     <Compile Include="Interface\OrbItAttributes.cs" />
-    <Compile Include="Framework\Camera.cs" />
     <Compile Include="Framework\Controller.cs" />
     <Compile Include="Framework\IndexArray.cs" />
     <Compile Include="Framework\Level.cs" />

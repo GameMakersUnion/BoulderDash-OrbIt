@@ -65,7 +65,7 @@ namespace OrbItProcs
             };
             btnSelectedNode.Visible = false;
 
-            OnUserLeveChanged += (u) =>
+            OnUserLevelChanged += (u) =>
                 {
                     if ((int)u == (int)UserLevel.User)
                     {
@@ -172,12 +172,6 @@ namespace OrbItProcs
                 btnRemove.ToolTip.Text = "Remove";
                 btnRemove.Click += (s, e) =>
                 {
-
-                    if (sidebar.groupsView.editGroupWindow.componentView.activeGroup == g) 
-                    {
-                        sidebar.groupsView.editGroupWindow.componentView.ClearView();
-                        sidebar.groupsView.editGroupWindow.componentView.activeGroup = null;
-                    }
                     g.EmptyGroup();
                     g.DeleteGroup();
                     UpdateGroups();
