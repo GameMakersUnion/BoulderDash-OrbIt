@@ -47,7 +47,7 @@ namespace OrbItProcs
 
         //private int ScrollPosition = 0;
 
-        public ProcessManager(Game1 game)
+        public ProcessManager(OrbIt game)
         {
             this.processDict = new Dictionary<proc, Process>();
             this.processes = new HashSet<Process>();
@@ -70,14 +70,14 @@ namespace OrbItProcs
         {
             return delegate
             {
-                Game1.ui.keyManager.AddProcess(processDict[p]);
+                OrbIt.ui.keyManager.AddProcess(processDict[p]);
             };
         }
 
         public void SetProcessKeybinds()
         {
-            ToolWindow toolbar = Game1.ui.sidebar.toolWindow;
-            KeyManager Keybindset = Game1.ui.keyManager;
+            ToolWindow toolbar = OrbIt.ui.sidebar.toolWindow;
+            KeyManager Keybindset = OrbIt.ui.keyManager;
             
 
             Keybindset.Add("spawnnodes", new KeyBundle(KeyCodes.D1, KeyCodes.LeftShift), enableKeyBinds(proc.spawnnodes));

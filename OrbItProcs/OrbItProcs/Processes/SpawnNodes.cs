@@ -38,7 +38,7 @@ namespace OrbItProcs
         public void SpawnNode()
         {
             ///
-            room.game.spawnNode((int)UserInterface.WorldMousePos.X, (int)UserInterface.WorldMousePos.Y);
+            room.spawnNode((int)UserInterface.WorldMousePos.X, (int)UserInterface.WorldMousePos.Y);
         }
 
         public void TestingStuff()
@@ -92,7 +92,7 @@ namespace OrbItProcs
             {
                 int rx = Utils.random.Next(rad * 2) - rad;
                 int ry = Utils.random.Next(rad * 2) - rad;
-                room.game.spawnNode((int)UserInterface.WorldMousePos.X + rx, (int)UserInterface.WorldMousePos.Y + ry);
+                room.spawnNode((int)UserInterface.WorldMousePos.X + rx, (int)UserInterface.WorldMousePos.Y + ry);
             }
         }
 
@@ -137,11 +137,11 @@ namespace OrbItProcs
                         if (n.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
                     
                     }; 
-                    room.game.spawnNode(userP, after);
+                    room.spawnNode(userP, after);
                 }
                 else
                 {
-                    room.game.spawnNode(userP);
+                    room.spawnNode(userP);
                 }
                 rightClickCount = 0;
             }
@@ -160,7 +160,7 @@ namespace OrbItProcs
             room.game.serializer = new Polenter.Serialization.SharpSerializer();
             ObservableHashSet<Node> ents = (ObservableHashSet<Node>)room.game.serializer.Deserialize(filename);
 
-            Group g = Game1.ui.sidebar.ActiveGroup;
+            Group g = OrbIt.ui.sidebar.ActiveGroup;
             //g.EmptyGroup();
 
             foreach (Node n in ents)
@@ -184,7 +184,7 @@ namespace OrbItProcs
             Group master = (Group)room.game.serializer.Deserialize(filename);
             room.masterGroup = master;
 
-            Game1.ui.sidebar.UpdateGroupComboBoxes();
+            OrbIt.ui.sidebar.UpdateGroupComboBoxes();
         }
 
         public void Serailize_Link()//F5

@@ -68,7 +68,7 @@ namespace OrbItProcs
             window.Description.Text = "";
             window.Width = 200;
             window.Height = 200;
-            window.SetPosition(20, Game1.Height / 4);
+            window.SetPosition(20, OrbIt.Height / 4);
             int heightCounter = window.Caption.Top;
             int i = 0;
 
@@ -192,13 +192,13 @@ namespace OrbItProcs
         public delegate bool singleConfirmDelegate(bool confirm, object answer);
 
         public static void Toast(string message = "", string title = "Hey! Listen!")
-        { makePopup(Game1.ui, new opt[]{new opt(OptType.info,message)}, title); }
+        { makePopup(OrbIt.ui, new opt[]{new opt(OptType.info,message)}, title); }
         public static void Prompt(string message = "", string title = "Hey! Listen!", singleConfirmDelegate action = null)
-        { makePopup(Game1.ui, new opt[] { new opt(OptType.prompt, message) }, title, delegate(bool c, object[] a) { return action(c, a[0]); }); }
+        { makePopup(OrbIt.ui, new opt[] { new opt(OptType.prompt, message) }, title, delegate(bool c, object[] a) { return action(c, a[0]); }); }
         public static void Select(string message = "", string title = "Hey! Listen!", singleConfirmDelegate action = null, ObservableCollection<object> list = null)
-        { makePopup(Game1.ui, new opt[] { new opt(OptType.info, message), new opt(OptType.dropDown, list) }, title, delegate(bool c, object[] a) { return action(c, a[1]); }); }
+        { makePopup(OrbIt.ui, new opt[] { new opt(OptType.info, message), new opt(OptType.dropDown, list) }, title, delegate(bool c, object[] a) { return action(c, a[1]); }); }
         public static void Text(string message = "", string title = "Hey! Listen!", singleConfirmDelegate action = null, string content = "")
-        { makePopup(Game1.ui, new opt[] { new opt(OptType.info, message), new opt(OptType.textBox, content) }, title, delegate(bool c, object[] a) { return action(c, a[1]); }); }
+        { makePopup(OrbIt.ui, new opt[] { new opt(OptType.info, message), new opt(OptType.textBox, content) }, title, delegate(bool c, object[] a) { return action(c, a[1]); }); }
 
         public static void Complex(UserInterface ui)
         {

@@ -59,7 +59,7 @@ namespace OrbItProcs
             newNode.movement.mode = movemode.free;
             newNode.body.restitution = 1f;
             newNode.meta.maxHealth.enabled = false;
-            room.game.spawnNode(newNode, g: room.masterGroup.childGroups["Walls"]);
+            room.spawnNode(newNode, g: room.masterGroup.childGroups["Walls"]);
             verts = new List<Vector2>();
         }
 

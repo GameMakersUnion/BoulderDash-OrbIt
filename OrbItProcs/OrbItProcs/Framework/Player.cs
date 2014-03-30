@@ -52,7 +52,7 @@ namespace OrbItProcs
                 return;
             }
             sucess = true;
-            room = Game1.game.room;
+            room = OrbIt.game.room;
             this.playerIndex = playerIndex;
             
             switch (playerIndex)
@@ -94,7 +94,7 @@ namespace OrbItProcs
             Node.cloneNode(launchNode, newNode);
             newNode.body.velocity = pos - body.pos;
             newNode.body.pos = body.pos + body.velocity * 5;
-            room.game.spawnNode(newNode, lifetime: bulletlife);
+            room.spawnNode(newNode, lifetime: bulletlife);
         }
 
         public void FireNodes()
@@ -113,20 +113,20 @@ namespace OrbItProcs
             newNode.body.velocity = pos - body.pos;
             newNode.body.pos = body.pos + body.velocity * 5;
 
-            room.game.spawnNode(newNode, lifetime: bulletlife);
+            room.spawnNode(newNode, lifetime: bulletlife);
         }
         public static void ResetPlayers()
         {
-            Room r = Game1.game.room;
+            Room r = OrbIt.game.room;
             r.playerGroup.EmptyGroup();
             Controller.ResetControllers();
             CreatePlayers();
-            Game1.ui.sidebar.playerView.InitializePlayers();
+            OrbIt.ui.sidebar.playerView.InitializePlayers();
         }
 
         public static void CreatePlayers()
         {
-            Room r = Game1.game.room;
+            Room r = OrbIt.game.room;
             Shooter.MakeBullet();
             Node def = r.masterGroup.defaultNode.CreateClone();
             def.addComponent(comp.shooter, true);

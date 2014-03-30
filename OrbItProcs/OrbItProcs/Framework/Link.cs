@@ -262,7 +262,7 @@ namespace OrbItProcs
         public Link()
         {
             //..
-            this.room = Game1.game.room;
+            this.room = OrbIt.game.room;
             this.components = new ObservableHashSet<ILinkable>();
             this.sources = new ObservableHashSet<Node>();
             this.targets = new ObservableHashSet<Node>();
@@ -271,7 +271,7 @@ namespace OrbItProcs
         //blank link (for the palette)
         public Link(ILinkable linkComponent, formationtype ftype = formationtype.AllToAll)
         {
-            this.room = Game1.game.room;
+            this.room = OrbIt.game.room;
             this.components = new ObservableHashSet<ILinkable>();
             this.components.Add(linkComponent);
             this._FormationType = ftype;
@@ -280,7 +280,7 @@ namespace OrbItProcs
 
         public Link(Link link, dynamic source, dynamic target)
         {
-            this.room = Game1.game.room;
+            this.room = OrbIt.game.room;
             this.components = new ObservableHashSet<ILinkable>();
 
             this.UpdateTime = link.UpdateTime;
@@ -308,7 +308,7 @@ namespace OrbItProcs
 
         private void Initialize(dynamic src, dynamic trg, ILinkable linkComponent, dynamic formation)
         {
-            this.room = Game1.game.room;
+            this.room = OrbIt.game.room;
             
             if (components == null)
             {
@@ -357,7 +357,7 @@ namespace OrbItProcs
                 this.sources = this.sourceGroup.fullSet;
 
                 room.masterGroup.childGroups["Link Groups"].AddGroup(ss.Name, ss);
-                Game1.ui.sidebar.UpdateGroupComboBoxes();
+                OrbIt.ui.sidebar.UpdateGroupComboBoxes();
 
                 foreach (Node s in this.sources)
                 {
@@ -417,7 +417,7 @@ namespace OrbItProcs
                 this.targetGroup.TargetLinks.Add(this);
 
                 room.masterGroup.childGroups["Link Groups"].AddGroup(ts.Name, ts);
-                Game1.ui.sidebar.UpdateGroupComboBoxes();
+                OrbIt.ui.sidebar.UpdateGroupComboBoxes();
 
                 foreach (Node t in this.targets)
                 {

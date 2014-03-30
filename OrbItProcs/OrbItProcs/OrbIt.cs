@@ -94,9 +94,9 @@ namespace OrbItProcs
         VGA_640x480,
     }
 
-    public class Game1 : Application
+    public class OrbIt : Application
     {
-        public static Game1 game;
+        public static OrbIt game;
         public static UserInterface ui;
         public ProcessManager processManager { get; set; }
 
@@ -134,7 +134,7 @@ namespace OrbItProcs
         public static bool EnablePlayers = true;
 
 
-        private Game1() : base()
+        private OrbIt() : base()
         {
             game = this;
             Content.RootDirectory = "Content";
@@ -156,7 +156,7 @@ namespace OrbItProcs
 
         public void ToggleFullScreen(bool on)
         {
-            Game1.isFullScreen = on;
+            OrbIt.isFullScreen = on;
             Manager.Graphics.IsFullScreen = on;
             if (on)
             {
@@ -172,6 +172,12 @@ namespace OrbItProcs
             Manager.Graphics.ApplyChanges();
             Manager.CreateRenderTarget(Width, Height);
         }
+
+        public void setResolution(resolutions r)
+        {
+
+        }
+
 
         protected override void Initialize()
         {
@@ -276,71 +282,11 @@ namespace OrbItProcs
             }
         }      
 
-        public Node spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)
-        {
-            Group spawngroup = ui.sidebar.ActiveGroup;
-            if (g == null && !spawngroup.Spawnable) return null;
-            if (g != null)
-            {
-                spawngroup = g;
-            }
-            newNode.name = "bullet" + Node.nodeCounter;
-
-            return SpawnNodeHelper(newNode, afterSpawnAction, spawngroup, lifetime);
-        }
-        public Node spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null, bool blank = false, int lifetime = -1)
-        {
-            Group activegroup = ui.sidebar.ActiveGroup;
-            if (activegroup == null || !activegroup.Spawnable) return null;
-            if (room == mainRoom && ui.sidebar.activeTabControl == ui.sidebar.tbcViews && ui.sidebar.tbcViews.SelectedIndex != 0) return null;
-
-            Node newNode = new Node();
-            if (!blank)
-            {
-                Node.cloneNode(ui.sidebar.ActiveDefaultNode, newNode);
-            }
-            newNode.group = activegroup;
-            newNode.name = activegroup.Name + Node.nodeCounter;
-            newNode.acceptUserProps(userProperties);
-            
-            return SpawnNodeHelper(newNode, afterSpawnAction, activegroup, lifetime);
-        }
-
-        
-        private Node SpawnNodeHelper(Node newNode, Action<Node> afterSpawnAction = null, Group g = null, int lifetime = -1)
-        {
-            newNode.OnSpawn();
-            if (afterSpawnAction != null) afterSpawnAction(newNode);
-            if (lifetime != -1)
-            {
-                newNode.addComponent(comp.lifetime, true);
-                newNode.Comp<Lifetime>().timeUntilDeath.value = lifetime;
-                newNode.Comp<Lifetime>().timeUntilDeath.enabled = true;
-            }
-            g.IncludeEntity(newNode);
-            return newNode;
-        }
-
-        public Node spawnNode()
-        {
-            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
-                                { nodeE.position, UserInterface.WorldMousePos },
-            };
-            return spawnNode(userP);
-        }
-
-        public Node spawnNode(int worldMouseX, int worldMouseY)
-        {
-            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
-                                { nodeE.position, new Vector2(worldMouseX,worldMouseY) },
-            };
-            return spawnNode(userP);
-        }
 
         public static void Start()
         {
             if (game != null) throw new SystemException("Game was already Started");
-            game = new Game1();
+            game = new OrbIt();
             game.Run();
         }
     }

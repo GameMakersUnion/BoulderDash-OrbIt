@@ -47,7 +47,7 @@ namespace OrbItProcs
             poop.Left = sidebar.master.Left;
             poop.Width = sidebar.Width;
             poop.Top = 0;
-            poop.Height = Game1.Height;
+            poop.Height = OrbIt.Height;
             //poop.Text = "Create Group";
             //poop.Closed += delegate { UserInterface.GameInputDisabled = false; sidebar.CreatingGroup = false; sidebar.ui.game.SwitchToMainRoom(); sidebar.groupsView.createGroupWindow = null; };
             //window.ShowModal();
@@ -213,7 +213,7 @@ namespace OrbItProcs
                     PopUp.Toast("Group already exists.");
                 else{                   
                     Node newNode = tempgroup.defaultNode.CreateClone();
-                    Game1.game.room = sidebar.game.mainRoom;
+                    OrbIt.game.room = sidebar.game.mainRoom;
                     newNode.body.color = ColorChanger.randomColorHue();
                     newNode.basicdraw.UpdateColor();
                     Group newGroup = new Group(newNode, sidebar.game.mainRoom.generalGroups, Name: txtName.Text.Trim());

@@ -185,7 +185,7 @@ namespace OrbItProcs
         public Group(Node defaultNode = null, Group parentGroup = null, GroupState groupState = GroupState.on, string Name = "", bool Spawnable = true, ObservableHashSet<Node> entities = null)
         {
             if (parentGroup != null) room = parentGroup.room;
-            else  room = Game1.game.room;
+            else  room = OrbIt.game.room;
 
             GroupId = -1;
             groupHash = Utils.uniqueString(room.groupHashes);
@@ -245,7 +245,7 @@ namespace OrbItProcs
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
             {
-                bool ui = Game1.ui != null && Game1.ui.sidebar.cbListPicker != null;
+                bool ui = OrbIt.ui != null && OrbIt.ui.sidebar.cbListPicker != null;
                 foreach (Node n in e.NewItems)
                 {
                     if (parentGroup != null && !parentGroup.entities.Contains(n) && !Disabled)
@@ -271,14 +271,14 @@ namespace OrbItProcs
 
         public void EmptyGroup()
         {
-            bool isold = room.game.IsOldUI && Game1.ui.sidebar.cbListPicker.Text.Equals(Name);
+            bool isold = room.game.IsOldUI && OrbIt.ui.sidebar.cbListPicker.Text.Equals(Name);
             foreach(Node n in fullSet.ToList())
             {
                 DeleteEntity(n);
                 if (isold)
                 {
-                    Game1.ui.sidebar.lstMain.Items.Remove(n);
-                    Game1.ui.sidebar.SyncTitleNumber(this);
+                    OrbIt.ui.sidebar.lstMain.Items.Remove(n);
+                    OrbIt.ui.sidebar.SyncTitleNumber(this);
                 }
             }
             
@@ -302,10 +302,10 @@ namespace OrbItProcs
                 //room.CollisionSet.Add(entity);
                 entity.collision.UpdateCollisionSet();
             }
-            if (room.game.IsOldUI && Game1.ui.sidebar.cbListPicker.Text.Equals(Name))
+            if (room.game.IsOldUI && OrbIt.ui.sidebar.cbListPicker.Text.Equals(Name))
             {
-                Game1.ui.sidebar.lstMain.Items.Add(entity);
-                Game1.ui.sidebar.SyncTitleNumber(this);
+                OrbIt.ui.sidebar.lstMain.Items.Add(entity);
+                OrbIt.ui.sidebar.SyncTitleNumber(this);
             }
             //if (parentGroup != null)
             //    parentGroup.IncludeEntity(entity);

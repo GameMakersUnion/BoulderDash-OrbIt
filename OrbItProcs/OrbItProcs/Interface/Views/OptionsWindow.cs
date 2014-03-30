@@ -81,7 +81,7 @@ namespace OrbItProcs
                 count++;
             }
 
-            CreateCheckBox("FullScreen", Game1.isFullScreen, (o, e) => sidebar.ui.game.ToggleFullScreen((o as CheckBox).Checked));
+            CreateCheckBox("FullScreen", OrbIt.isFullScreen, (o, e) => sidebar.ui.game.ToggleFullScreen((o as CheckBox).Checked));
             CreateCheckBox("Hide Links", sidebar.ui.game.room.DrawLinks, (o, e) => sidebar.ui.game.room.DrawLinks = !(o as CheckBox).Checked);
 
             CreateCheckBox("Edit Selected Node", false, (o, e) => Utils.notImplementedException() );

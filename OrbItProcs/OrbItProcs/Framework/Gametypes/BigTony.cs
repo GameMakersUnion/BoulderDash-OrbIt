@@ -45,7 +45,7 @@ namespace OrbItProcs
         public static Node bigtony = null;
         public BigTony() : base()
         {
-            Game1.ui.SetSidebarActive(false);
+            OrbIt.ui.SetSidebarActive(false);
             onCollisionEnter = delegate(Node s, Node t)
             {
                 if (t != null && !room.playerNodes.Contains(t))
@@ -86,7 +86,7 @@ namespace OrbItProcs
                 spawnPos = new Vector2(room.worldWidth / 2, room.worldHeight / 2) - new Vector2(x, y);
 
                 //add //{ nodeE.position, spawnPos },
-                p.node = room.game.spawnNode(playerProps);
+                p.node = room.spawnNode(playerProps);
                 p.node.name = "player" + p.playerIndex;
 
                 p.node.Comp<Queuer>().queuecount = 100;
@@ -121,13 +121,13 @@ namespace OrbItProcs
             Node tony = new Node(tonyProps);
             room.scheduler.doEveryXMilliseconds(delegate
             {
-                if (Game1.soundEnabled) Scheduler.end.Play(0.3f, -0.5f, 0f);
+                if (OrbIt.soundEnabled) Scheduler.end.Play(0.3f, -0.5f, 0f);
                 int rad = 100;
                 for (int i = 0; i < 10; i++)
                 {
                     int rx = Utils.random.Next(rad * 2) - rad;
                     int ry = Utils.random.Next(rad * 2) - rad;
-                    //room.game.spawnNode(room.worldWidth / 2 + rx, room.worldHeight / 2 + ry);
+                    //room.spawnNode(room.worldWidth / 2 + rx, room.worldHeight / 2 + ry);
 
                 }
             }, 2000);
@@ -148,7 +148,7 @@ namespace OrbItProcs
                 {
                     if (p.node == bigtony)
                     {
-                        p.node.meta.score += Game1.gametime.ElapsedGameTime.Milliseconds;
+                        p.node.meta.score += OrbIt.gametime.ElapsedGameTime.Milliseconds;
                         if (p.node.meta.score >= maxScore)
                         {
                             p.node.body.radius += 500;
@@ -159,7 +159,7 @@ namespace OrbItProcs
                                 //pp.nodeCollision.body.ClearHandlers();
                                 pp.node.collision.AllHandlersEnabled = false;
                             }
-                            if (Game1.soundEnabled) Scheduler.fanfare.Play();
+                            if (OrbIt.soundEnabled) Scheduler.fanfare.Play();
                             bigtony.OnAffectOthers -= updateScores;
                         }
                     }
@@ -167,7 +167,7 @@ namespace OrbItProcs
             };
             bigtony.OnAffectOthers += updateScores;
 
-            if (Game1.bigTonyOn)
+            if (OrbIt.bigTonyOn)
             {
                 room.masterGroup.fullSet.Add(bigtony); //#bigtony
             }

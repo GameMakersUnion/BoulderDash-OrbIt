@@ -27,7 +27,7 @@ namespace OrbItProcs
     public partial class Sidebar
     {
         EventHandler NotImplemented;
-        public Game1 game;
+        public OrbIt game;
         public Room room { get { return game.room; } }
         public UserInterface ui;
         private UserLevel _userLevel = UserLevel.User;
@@ -173,7 +173,7 @@ namespace OrbItProcs
             master.Init();
             master.Name = "Sidebar";
             master.Width = Width;
-            master.Height = Game1.Height;
+            master.Height = OrbIt.Height;
             master.Visible = true;
             //SkinControl sc = new SkinControl(manager.Skin.Controls["SideBar"]);
             //master.Skin = sc;

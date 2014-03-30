@@ -40,7 +40,7 @@ namespace OrbItProcs
             poop.Top = 0;
             poop.Resizable = false;
             poop.Movable = false;
-            poop.Height = Game1.Height;
+            poop.Height = OrbIt.Height;
             poop.Text = "Edit";
             manager.Add(poop);
 

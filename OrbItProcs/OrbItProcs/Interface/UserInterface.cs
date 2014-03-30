@@ -37,7 +37,7 @@ namespace OrbItProcs {
 
         #region /// Fields ///
 
-        public Game1 game{ get { return Game1.game; } }
+        public OrbIt game{ get { return OrbIt.game; } }
         public Room room { get { return game.room; } }
 
 
@@ -269,9 +269,9 @@ namespace OrbItProcs {
             MousePos = new Vector2(mouseState.X, mouseState.Y) - ThreadedCamera.CameraOffsetVect;
             WorldMousePos = (MousePos / room.zoom) + room.camera.pos;
             //ignore mouse clicks outside window
-            if (!Game1.isFullScreen)
+            if (!OrbIt.isFullScreen)
             {
-                if (mouseState.X >= Game1.Width || mouseState.X < 0 || mouseState.Y >= Game1.Height || mouseState.Y < 0)
+                if (mouseState.X >= OrbIt.Width || mouseState.X < 0 || mouseState.Y >= OrbIt.Height || mouseState.Y < 0)
                     return;
             }
 

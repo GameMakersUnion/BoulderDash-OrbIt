@@ -48,7 +48,7 @@ namespace OrbItProcs
             get { return _HandlersEnabled; }
             set
             {
-                if (parent != null && Game1.ui != null && parent.collision.active && parent.collision.AllHandlersEnabled)
+                if (parent != null && OrbIt.ui != null && parent.collision.active && parent.collision.AllHandlersEnabled)
                 {
                     if (value && !parent.IsDefault)
                     {

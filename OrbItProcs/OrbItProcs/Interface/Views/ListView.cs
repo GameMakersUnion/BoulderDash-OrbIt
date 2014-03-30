@@ -15,7 +15,7 @@ namespace OrbItProcs
     public class ListView<T> where T : ViewItem
     {
 
-        public Game1 game;
+        public OrbIt game;
         public Room room { get { return sidebar.room; } }
         public UserInterface ui;
         public Sidebar sidebar;
@@ -61,7 +61,7 @@ namespace OrbItProcs
 
             this.Left = Left;
             this.Top = Top;
-            this.Height = Height ?? Game1.Height / 3;
+            this.Height = Height ?? OrbIt.Height / 3;
 
             HeightCounter = Top;
             Width = parent.Width - LeftPadding * 2;

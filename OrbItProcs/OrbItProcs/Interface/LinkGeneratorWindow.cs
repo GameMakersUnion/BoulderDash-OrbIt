@@ -23,15 +23,15 @@ namespace OrbItProcs
 
         public LinkGeneratorWindow(Manager manager, Sidebar sidebar)
         {
-            Game1 game = Game1.game;
+            OrbIt game = OrbIt.game;
             UserInterface.GameInputDisabled = true;
 
             this.manager = manager;
             this.sidebar = sidebar;
             window = new Window(manager);
             window.Init();
-            window.Left = Game1.ui.sidebar.master.Left;
-            window.Width = Game1.ui.sidebar.master.Width;
+            window.Left = OrbIt.ui.sidebar.master.Left;
+            window.Width = OrbIt.ui.sidebar.master.Width;
             window.Top = 200;
             window.Height = 200;
             window.Text = "Link Generator";

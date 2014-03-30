@@ -6,7 +6,7 @@ namespace OrbItProcs {
     {
         static void Main(string[] args)
         {
-            Game1.Start();
+            OrbIt.Start();
         }
     }
 #endif

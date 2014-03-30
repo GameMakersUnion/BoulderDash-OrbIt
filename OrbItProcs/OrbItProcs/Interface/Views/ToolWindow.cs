@@ -32,9 +32,9 @@ namespace OrbItProcs
 
             toolBar.Init();
             toolBar.Top = 0;
-            toolBar.Height = Game1.Height;
+            toolBar.Height = OrbIt.Height;
             toolBar.Width = 70;
-            toolBar.Left = Game1.Width - toolBar.Width;
+            toolBar.Left = OrbIt.Width - toolBar.Width;
 
             //toolBar.CloseButtonVisible = false;
 
@@ -84,7 +84,7 @@ namespace OrbItProcs
                 button.TextColor = UserInterface.TomShanePuke;
                 if (action != null) action();
             };
-            Game1.game.Graphics.DeviceReset += (se, e) =>
+            OrbIt.game.Graphics.DeviceReset += (se, e) =>
             {
                 button.Refresh();
             };

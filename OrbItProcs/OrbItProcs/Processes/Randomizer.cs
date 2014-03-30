@@ -40,7 +40,7 @@ namespace OrbItProcs
 
             dict[nodeE.position] = UserInterface.WorldMousePos;
 
-            Node n = room.game.spawnNode(dict, blank: true, lifetime: 5000);
+            Node n = room.spawnNode(dict, blank: true, lifetime: 5000);
             if (n != null) g.entities.Add(n);
         }
 
@@ -115,14 +115,14 @@ namespace OrbItProcs
             }
 
 
-            Node n = room.game.spawnNode(userP, blank: true, lifetime: 5000);
+            Node n = room.spawnNode(userP, blank: true, lifetime: 5000);
             if (n != null)
             {
                 savedDicts.Enqueue(userP);
                 Group p = room.masterGroup.childGroups["Link Groups"];
                 Group g = new Group(n, p, Name: n.name);
                 //p.AddGroup(g.Name, g);
-                Game1.ui.sidebar.UpdateGroupComboBoxes();
+                OrbIt.ui.sidebar.UpdateGroupComboBoxes();
                 savedGroups.Enqueue(g);
 
             }

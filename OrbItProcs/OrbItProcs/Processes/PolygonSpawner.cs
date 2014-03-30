@@ -50,7 +50,7 @@ namespace OrbItProcs
             poly.SetCenterOfMass(vertices);
 
             //newNode.body.shape = poly;
-            room.game.spawnNode(newNode);
+            room.spawnNode(newNode);
             verts = new List<Vector2>();
         }
 
@@ -68,14 +68,14 @@ namespace OrbItProcs
             Vector2[] vertices = randVerts.ToArray();
             //Node newNode = new Node(ShapeType.ePolygon);
             Node newNode = new Node();
-            Node.cloneNode(Game1.ui.sidebar.ActiveDefaultNode, newNode);
+            Node.cloneNode(OrbIt.ui.sidebar.ActiveDefaultNode, newNode);
             Polygon poly = new Polygon();
             poly.body = newNode.body;
             poly.SetCenterOfMass(vertices);
             //poly.Set(vertices, vertices.Length);
             newNode.body.shape = poly;
             newNode.body.pos = mp;
-            room.game.spawnNode(newNode);
+            room.spawnNode(newNode);
 
             verts = new List<Vector2>();
         }
@@ -88,13 +88,13 @@ namespace OrbItProcs
             //Vector2[] vertices = verts.ToArray();
             //Node newNode = new Node(ShapeType.ePolygon);
             Node newNode = new Node();
-            Node.cloneNode(Game1.ui.sidebar.ActiveDefaultNode, newNode);
+            Node.cloneNode(OrbIt.ui.sidebar.ActiveDefaultNode, newNode);
             Polygon poly = new Polygon();
             poly.body = newNode.body;
             poly.SetBox(Utils.random.Next(100),Utils.random.Next(100));
             newNode.body.shape = poly;
             newNode.body.pos = mp;
-            room.game.spawnNode(newNode);
+            room.spawnNode(newNode);
 
             //verts = new List<Vector2>();
         }

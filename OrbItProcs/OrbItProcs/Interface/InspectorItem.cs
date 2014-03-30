@@ -52,7 +52,7 @@ namespace OrbItProcs {
             typeof(ModifierInfo),
             typeof(Vector2),
             typeof(Color),
-            typeof(Game1),
+            typeof(OrbIt),
             typeof(Room),
             typeof(GridSystem),
             typeof(Group),
@@ -302,7 +302,7 @@ namespace OrbItProcs {
                     propertyInfos = parent.GetType().GetProperties().ToList();
                 }
 
-                UserLevel userlevel = Game1.ui.sidebar.userLevel;
+                UserLevel userlevel = OrbIt.ui.sidebar.userLevel;
 
                 foreach (PropertyInfo pinfo in propertyInfos)
                 {

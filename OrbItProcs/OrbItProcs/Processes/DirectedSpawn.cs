@@ -43,7 +43,7 @@ namespace OrbItProcs
                 {
                     n.body.velocity = diff;
                 };
-                room.game.spawnNode(userP, after);
+                room.spawnNode(userP, after);
                 rightClickCount = 0;
             }
         }

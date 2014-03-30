@@ -24,7 +24,7 @@ namespace OrbItProcs {
         public int colIterations { get; set; }
 
         #region // References // --------------------------------------------
-        public Game1 game;
+        public OrbIt game;
         public event EventHandler AfterIteration;
         #endregion
 
@@ -132,14 +132,14 @@ namespace OrbItProcs {
 
         public Room()
         {
-            game = Game1.game;
+            game = OrbIt.game;
             game.room = this;
             groupHashes = new ObservableHashSet<string>();
             nodeHashes = new ObservableHashSet<string>();
             CollisionSetCircle = new HashSet<Collider>();
             CollisionSetPolygon = new HashSet<Collider>();
             colIterations = 1;
-            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, Game1.Width, Game1.Height);
+            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, OrbIt.Width, OrbIt.Height);
             camera = new ThreadedCamera(this, 0.5f);
             scheduler = new Scheduler();
             borderColor = Color.Green;
@@ -178,7 +178,7 @@ namespace OrbItProcs {
             };
         }
         Action<Collider, Collider> collideAction;
-        public Room(Game1 game, int worldWidth, int worldHeight, bool Groups = true) : this()
+        public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true) : this()
         {
             //this.mapzoom = 2f;
             this.worldWidth = worldWidth;
@@ -609,7 +609,7 @@ namespace OrbItProcs {
         
         public void tether()
         {
-            Group g1 = masterGroup.FindGroup(Game1.ui.sidebar.cbListPicker.SelectedItem());
+            Group g1 = masterGroup.FindGroup(OrbIt.ui.sidebar.cbListPicker.SelectedItem());
             g1.defaultNode.Comp<Tether>().compType = mtypes.affectother | mtypes.draw;
         }
 
@@ -638,5 +638,68 @@ namespace OrbItProcs {
             }
             return null;
         }
+
+        public Node spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)
+        {
+            Group spawngroup = OrbIt.ui.sidebar.ActiveGroup;
+            if (g == null && !spawngroup.Spawnable) return null;
+            if (g != null)
+            {
+                spawngroup = g;
+            }
+            newNode.name = "bullet" + Node.nodeCounter;
+
+            return SpawnNodeHelper(newNode, afterSpawnAction, spawngroup, lifetime);
+        }
+        public Node spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null, bool blank = false, int lifetime = -1)
+        {
+            Group activegroup = OrbIt.ui.sidebar.ActiveGroup;
+            if (activegroup == null || !activegroup.Spawnable) return null;
+            if (OrbIt.game.room == OrbIt.game.mainRoom && OrbIt.ui.sidebar.activeTabControl == OrbIt.ui.sidebar.tbcViews && OrbIt.ui.sidebar.tbcViews.SelectedIndex != 0) return null;
+
+            Node newNode = new Node();
+            if (!blank)
+            {
+                Node.cloneNode(OrbIt.ui.sidebar.ActiveDefaultNode, newNode);
+            }
+            newNode.group = activegroup;
+            newNode.name = activegroup.Name + Node.nodeCounter;
+            newNode.acceptUserProps(userProperties);
+
+            return SpawnNodeHelper(newNode, afterSpawnAction, activegroup, lifetime);
+        }
+
+
+        private Node SpawnNodeHelper(Node newNode, Action<Node> afterSpawnAction = null, Group g = null, int lifetime = -1)
+        {
+            newNode.OnSpawn();
+            if (afterSpawnAction != null) afterSpawnAction(newNode);
+            if (lifetime != -1)
+            {
+                newNode.addComponent(comp.lifetime, true);
+                newNode.Comp<Lifetime>().timeUntilDeath.value = lifetime;
+                newNode.Comp<Lifetime>().timeUntilDeath.enabled = true;
+            }
+            g.IncludeEntity(newNode);
+            return newNode;
+        }
+
+        public Node spawnNode()
+        {
+            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
+                                { nodeE.position, UserInterface.WorldMousePos },
+            };
+            return spawnNode(userP);
+        }
+
+        public Node spawnNode(int worldMouseX, int worldMouseY)
+        {
+            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
+                                { nodeE.position, new Vector2(worldMouseX,worldMouseY) },
+            };
+            return spawnNode(userP);
+        }
+
+
     }
 }

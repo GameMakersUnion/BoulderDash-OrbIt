@@ -60,7 +60,7 @@ namespace OrbItProcs
             {
                 try
                 {
-                    Node presetnode = (Node) Game1.game.serializer.Deserialize(file);
+                    Node presetnode = (Node) OrbIt.game.serializer.Deserialize(file);
                     NodePresets.Add(presetnode);
                 }
                 catch (Exception e)
@@ -78,10 +78,10 @@ namespace OrbItProcs
             string filename = "Presets//Nodes//" + name + ".xml";
             Action completeSave = delegate
             {
-                Game1.ui.sidebar.inspectorArea.editNode.name = name;
+                OrbIt.ui.sidebar.inspectorArea.editNode.name = name;
                 Node serializenode = new Node();
-                Node.cloneNode(Game1.ui.sidebar.inspectorArea.editNode, serializenode);
-                Game1.game.serializer.Serialize(serializenode, filename);
+                Node.cloneNode(OrbIt.ui.sidebar.inspectorArea.editNode, serializenode);
+                OrbIt.game.serializer.Serialize(serializenode, filename);
                 Assets.NodePresets.Add(serializenode);
             };
 

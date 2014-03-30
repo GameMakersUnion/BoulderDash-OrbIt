@@ -17,8 +17,10 @@
     <XnaProfile>HiDef</XnaProfile>
     <XnaCrossPlatformGroupID>08a7349e-e949-4b1b-98e1-86e5e53a94ca</XnaCrossPlatformGroupID>
     <XnaOutputType>Game</XnaOutputType>
-    <ApplicationIcon>Game.ico</ApplicationIcon>
-    <Thumbnail>GameThumbnail.png</Thumbnail>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <Thumbnail>
+    </Thumbnail>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>C:\Users\Zack\Desktop\Orbit\</PublishUrl>
     <Install>true</Install>
@@ -204,7 +206,7 @@
     <Compile Include="Components\Tracers\Waver.cs" />
     <Compile Include="Components\Tracers\WideRay.cs" />
     <Compile Include="Framework\Formation.cs" />
-    <Compile Include="FrameRateCounter.cs" />
+    <Compile Include="Framework\FrameRateCounter.cs" />
     <Compile Include="Framework\GridSystem.cs" />
     <Compile Include="Interface\ActionBar.cs" />
     <Compile Include="Interface\ActionBox.cs" />
@@ -219,7 +221,7 @@
     <Compile Include="Interface\SidebarThirdPage.cs" />
     <Compile Include="Interface\StackView.cs" />
     <Compile Include="Framework\Link.cs" />
-    <Compile Include="ObservableHashSetOfT.cs" />
+    <Compile Include="Framework\ObservableHashSetOfT.cs" />
     <Compile Include="Physics\AABB.cs" />
     <Compile Include="Framework\DelegateManager.cs" />
     <Compile Include="Framework\Group.cs" />
@@ -227,7 +229,7 @@
     <Compile Include="Interface\PopUp.cs" />
     <Compile Include="Interface\InspectorItem.cs" />
     <Compile Include="Interface\UserInterface.cs" />
-    <Compile Include="Framework\Node.cs" />
+    <Compile Include="Node.cs" />
     <Compile Include="Framework\ModifierInfo.cs" />
     <Compile Include="Physics\Manifold.cs" />
     <Compile Include="Physics\Shape.cs" />
@@ -245,8 +247,8 @@
     <Compile Include="Processes\TripSpawnOnCollide.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Framework\Game1.cs" />
-    <Compile Include="Framework\Room.cs" />
+    <Compile Include="OrbIt.cs" />
+    <Compile Include="Room.cs" />
     <Compile Include="ScrapBox\CollisionDelegates.cs" />
     <Compile Include="ScrapBox\Misc.cs" />
     <Compile Include="ScrapBox\PlayerHealthBars.cs" />
@@ -257,10 +259,6 @@
   <ItemGroup>
     <Content Include="Includes\C3.XNA.Primitives2D.dll" />
     <Content Include="Includes\Polenter.SharpSerializer.dll" />
-    <Content Include="donelist.txt" />
-    <Content Include="Game.ico" />
-    <Content Include="GameThumbnail.png" />
-    <Content Include="Issues.txt" />
     <Content Include="Includes\TomShane.Neoforce.Controls.dll" />
     <None Include="snippets\ctyp.snippet" />
     <None Include="snippets\usrd.snippet" />

@@ -577,7 +577,7 @@ namespace OrbItProcs
 
         void b_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            Game1.ui.sidebar.backPanel.Refresh();
+            OrbIt.ui.sidebar.backPanel.Refresh();
         }
     }
 }

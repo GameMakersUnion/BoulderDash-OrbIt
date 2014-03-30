@@ -135,7 +135,7 @@ namespace OrbItProcs
             get { return _active; }
             set
             {
-                if (parent != null && Game1.ui != null && !parent.IsDefault)
+                if (parent != null && OrbIt.ui != null && !parent.IsDefault)
                 {
                     if (value)
                     {

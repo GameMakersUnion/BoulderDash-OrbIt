@@ -135,7 +135,7 @@ namespace OrbItProcs
         public ThreadedCamera(Room room, float zoom = 0.5f, Vector2? pos = null)
         {
             this.room = room;
-            this.batch = new SpriteBatch(Game1.game.GraphicsDevice);
+            this.batch = new SpriteBatch(OrbIt.game.GraphicsDevice);
             this.zoom = zoom;
             this.pos = pos ?? Vector2.Zero;
 
@@ -210,8 +210,8 @@ namespace OrbItProcs
                         // ----- Shader Set Parameter Code ---------
                         float[] f;
                         f = new float[2];
-                        f[0] = Game1.game.GraphicsDevice.Viewport.Width;
-                        f[1] = Game1.game.GraphicsDevice.Viewport.Height;
+                        f[0] = OrbIt.game.GraphicsDevice.Viewport.Width;
+                        f[1] = OrbIt.game.GraphicsDevice.Viewport.Height;
 
                         Assets.shaderEffect.Parameters["Viewport"].SetValue(f);
                         Assets.shaderEffect.Parameters["colour"].SetValue(gg.shaderPack.colour);

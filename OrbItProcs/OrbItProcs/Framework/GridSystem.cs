@@ -41,7 +41,7 @@ namespace OrbItProcs {
 
         public GridSystem() 
         {
-            room = Game1.game.room;
+            room = OrbIt.game.room;
             alreadyVisited = new HashSet<Collider>();
             //GenerateAllReachOffsetsPerCoord(300);
         }
@@ -512,7 +512,7 @@ namespace OrbItProcs {
         // color the nodes that targetnode is affecting
         public void colorEffectedNodes()
         {
-            Game1 game = room.game;
+            OrbIt game = room.game;
             // coloring the nodes
             if (room.targetNode != null)
             {

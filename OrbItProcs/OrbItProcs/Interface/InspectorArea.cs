@@ -15,7 +15,7 @@ namespace OrbItProcs
 {
     public class InspectorArea
     {
-        public Game1 game;
+        public OrbIt game;
         public Room room { get { return game.room; } }
         public UserInterface ui;
         public Sidebar sidebar;

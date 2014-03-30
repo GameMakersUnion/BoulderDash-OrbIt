@@ -130,7 +130,7 @@ namespace OrbItProcs
                 n.Comp<ColorChanger>().colormode = ColorChanger.ColorMode.none;
                 n.SetColor(parent.player.pColor);
             }
-            parent.room.game.spawnNode(n);
+            parent.room.spawnNode(n);
             CollisionDelegate bulletHit = (n1, n2) =>
             {
                 Node bullet, them;

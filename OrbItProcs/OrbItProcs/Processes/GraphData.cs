@@ -95,7 +95,7 @@ namespace OrbItProcs
             ShowFloatGraph();
             float xRange = max.X - min.X;
             float yRange = max.Y - min.Y;
-            Room room = Game1.game.room;
+            Room room = OrbIt.game.room;
             float datapoints = 0;
             foreach (float f in floatData.Keys)
             {

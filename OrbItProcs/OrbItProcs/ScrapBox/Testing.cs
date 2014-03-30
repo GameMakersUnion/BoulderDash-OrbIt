@@ -44,7 +44,7 @@ namespace OrbItProcs
 
         public Testing()
         {
-            room = Game1.game.room;
+            room = OrbIt.game.room;
 
             Redirector.PopulateDelegatesAll();
             redirector = new Redirector();
@@ -114,17 +114,17 @@ namespace OrbItProcs
         {
             if (++standardizedCounter <= max)
             {
-                Room room = Game1.game.room;
+                Room room = OrbIt.game.room;
                 Dictionary<dynamic, dynamic> standardDictionary = new Dictionary<dynamic, dynamic>(){
                     { nodeE.position, new Vector2(room.worldWidth / 2, room.worldHeight / 2) },
                     //{ comp.gravity, true },
                 };
                 for (int i = 0; i < 10; i++)
-                    Game1.game.spawnNode(standardDictionary);
+                    OrbIt.game.room.spawnNode(standardDictionary);
             }
             else
             {
-                Game1.game.Exit();
+                OrbIt.game.Exit();
             }
         }
         
@@ -133,17 +133,17 @@ namespace OrbItProcs
 
             if (++standardizedCounter <= max)
             {
-                Room room = Game1.game.room;
+                Room room = OrbIt.game.room;
                 Dictionary<dynamic, dynamic> standardDictionary = new Dictionary<dynamic, dynamic>(){
                     { nodeE.position, new Vector2(room.worldWidth / 2, room.worldHeight / 2) },
                     //{ comp.gravity, true },
                 };
 
-                Game1.game.spawnNode(standardDictionary);
+                OrbIt.game.room.spawnNode(standardDictionary);
             }
             else
             {
-                Game1.game.Exit();
+                OrbIt.game.Exit();
             }
         }
 
@@ -248,7 +248,7 @@ namespace OrbItProcs
             for(int i = 0; i < 360; i++)
             {
                 Color col = ColorChanger.getColorFromHSV((float)i);
-                Room room = Game1.game.room;
+                Room room = OrbIt.game.room;
                 float thickness = (float)room.worldWidth / 360f;
                 Utils.DrawLine(room, new Vector2(thickness * i, 0), new Vector2(thickness * i, room.worldHeight), thickness, col);
             }

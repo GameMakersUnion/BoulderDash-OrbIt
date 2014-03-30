@@ -66,7 +66,7 @@ namespace OrbItProcs
 
             //Node newNode = new Node();
 
-            //room.game.spawnNode(newNode);
+            //room.spawnNode(newNode);
         }
 
         public override void OnSpawn()
@@ -80,7 +80,7 @@ namespace OrbItProcs
             sword.body.shape = poly;
             sword.body.pos = parent.body.pos;
             sword.body.DrawCircle = false;
-            ///parent.room.game.spawnNode(sword);
+            ///parent.room.spawnNode(sword);
 
 
             parent.room.itemGroup.IncludeEntity(sword);
