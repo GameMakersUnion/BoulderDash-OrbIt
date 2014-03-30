@@ -8,9 +8,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs {
     public class FrameRateCounter {
-        //ContentManager content;
-        //SpriteBatch spriteBatch;
-        //SpriteFont spriteFont;
         Game1 game;
         int frameRate = 0;
         int frameCounter = 0;
@@ -57,7 +54,7 @@ namespace OrbItProcs {
         }
 
 
-        public void Draw(SpriteBatch spriteBatch, SpriteFont spriteFont)
+        public void Draw(SpriteFont spriteFont)
         {
             frameCounter++;
             int y1 = 70;
@@ -67,11 +64,11 @@ namespace OrbItProcs {
             string process = "";
             //string fpsups = string.Format("fps:{0} ups:{1}", frameRate, updateRate);
             Room room = Game1.game.room;
-            bool hasProcess = room != null && room.game.ui.keyManager.TemporaryProcess != null;
+            bool hasProcess = room != null && Game1.ui.keyManager.TemporaryProcess != null;
             if (hasProcess)
             {
                 y1 += 30;
-                process = room.game.ui.keyManager.TemporaryProcess.GetType().ToString().LastWord('.');
+                process = Game1.ui.keyManager.TemporaryProcess.GetType().ToString().LastWord('.');
             }
 
             room.camera.DrawStringScreen(fps, new Vector2(0, Game1.Height - y1), Color.Black);
@@ -87,17 +84,7 @@ namespace OrbItProcs {
                 room.camera.DrawStringScreen(count, new Vector2(x, Game1.Height - y1), Color.Black, offset: false);
             }
 
-            //draw player scores
-            Vector2 pos = new Vector2(1, 2);
-            //foreach(var p in room.players)
-            //{
-            //    string score = (p.score / 100f).ToString();
-            //    room.camera.DrawStringScreen(score, pos, p.pColor, scale: 1f);
-            //    //spriteBatch.DrawString(spriteFont, score, pos, p.pColor, 0f, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
-            //    //spriteBatch.DrawString(spriteFont, score, new Vector2(pos.X - 1, pos.Y - 1), p.pColor, 0f, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
-            //    pos.X += 100;
-            //
-            //}
+
         }
     }
 }

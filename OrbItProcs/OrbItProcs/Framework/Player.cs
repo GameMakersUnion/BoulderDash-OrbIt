@@ -115,5 +115,43 @@ namespace OrbItProcs
 
             room.game.spawnNode(newNode, lifetime: bulletlife);
         }
+        public static void ResetPlayers()
+        {
+            Room r = Game1.game.room;
+            r.playerGroup.EmptyGroup();
+            Controller.ResetControllers();
+            CreatePlayers();
+            Game1.ui.sidebar.playerView.InitializePlayers();
+        }
+
+        public static void CreatePlayers()
+        {
+            Room r = Game1.game.room;
+            Shooter.MakeBullet();
+            Node def = r.masterGroup.defaultNode.CreateClone();
+            def.addComponent(comp.shooter, true);
+            r.playerGroup.defaultNode = def;
+            for (int i = 1; i < 5; i++)
+            {
+                Player p = Player.GetNew(i);
+                if (p == null) break;
+                double angle = Utils.random.NextDouble() * Math.PI * 2;
+                angle -= Math.PI;
+                float dist = 200;
+                float x = dist * (float)Math.Cos(angle);
+                float y = dist * (float)Math.Sin(angle);
+                Vector2 spawnPos = new Vector2(r.worldWidth / 2, r.worldHeight / 2) - new Vector2(x, y);
+                Node node = def.CreateClone();
+                node.body.pos = spawnPos;
+                node.name = "player" + i;
+                node.SetColor(p.pColor);
+                node.addComponent(comp.shooter, true);
+                node.addComponent(comp.sword, true);
+                node.Comp<Sword>().sword.collision.DrawRing = false;
+                p.node = node;
+                r.playerGroup.IncludeEntity(node);
+                node.OnSpawn();
+            }
+        }
     }
 }

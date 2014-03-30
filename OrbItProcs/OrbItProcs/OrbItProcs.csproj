@@ -141,6 +141,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets.cs" />
     <Compile Include="Components\AffectOthers\Displace.cs" />
     <Compile Include="Components\AffectOthers\FixedForce.cs" />
     <Compile Include="Components\Essential\Meta.cs" />
@@ -169,7 +170,6 @@
     <Compile Include="Interface\Views\ListView.cs" />
     <Compile Include="Interface\NeoForceOverrides\Slider.cs" />
     <Compile Include="Interface\OrbItAttributes.cs" />
-    <Compile Include="Framework\Camera.cs" />
     <Compile Include="Framework\Controller.cs" />
     <Compile Include="Framework\IndexArray.cs" />
     <Compile Include="Framework\Level.cs" />
@@ -248,7 +248,9 @@
     <Compile Include="Framework\Game1.cs" />
     <Compile Include="Framework\Room.cs" />
     <Compile Include="ScrapBox\CollisionDelegates.cs" />
-    <Compile Include="Testing.cs" />
+    <Compile Include="ScrapBox\Misc.cs" />
+    <Compile Include="ScrapBox\PlayerHealthBars.cs" />
+    <Compile Include="ScrapBox\Testing.cs" />
     <Compile Include="Framework\Utils.cs" />
     <Compile Include="Processes\VMath.cs" />
   </ItemGroup>
@@ -260,7 +262,6 @@
     <Content Include="GameThumbnail.png" />
     <Content Include="Issues.txt" />
     <Content Include="Includes\TomShane.Neoforce.Controls.dll" />
-    <None Include="OrbItProcs_TemporaryKey.pfx" />
     <None Include="snippets\ctyp.snippet" />
     <None Include="snippets\usrd.snippet" />
     <None Include="snippets\usra.snippet" />

@@ -45,7 +45,7 @@ namespace OrbItProcs
         public static Node bigtony = null;
         public BigTony() : base()
         {
-            room.game.ui.SetSidebarActive(false);
+            Game1.ui.SetSidebarActive(false);
             onCollisionEnter = delegate(Node s, Node t)
             {
                 if (t != null && !room.playerNodes.Contains(t))

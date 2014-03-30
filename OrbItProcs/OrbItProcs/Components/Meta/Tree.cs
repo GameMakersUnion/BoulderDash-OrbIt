@@ -174,7 +174,7 @@ namespace OrbItProcs
                     newTree.maxchilds = Math.Max(1, maxchilds - (depth % 2));
                     //parent.room.nodesToAdd.Enqueue(newNode);
                     //parent.room.masterGroup.childGroups.Values.ElementAt(1).IncludeEntity(newNode);
-                    //Group g = parent.room.game.ui.sidebar.ActiveGroup;
+                    //Group g = parent.Game1.ui.sidebar.ActiveGroup;
                     if (parent.group != null)
                     {
                         parent.group.IncludeEntity(newNode);

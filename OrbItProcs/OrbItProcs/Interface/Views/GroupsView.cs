@@ -90,8 +90,8 @@ namespace OrbItProcs
         public void UpdateGroups()
         {
             ClearView();
-            showRemoveButton = sidebar.game.mainRoom.generalGroups.childGroups.Count > 1;
-            foreach (Group g in sidebar.game.mainRoom.generalGroups.childGroups.Values)
+            showRemoveButton = sidebar.game.room.generalGroups.childGroups.Count > 1;
+            foreach (Group g in sidebar.game.room.generalGroups.childGroups.Values)
             {
                 CreateNewItem(g);
             }
@@ -189,7 +189,7 @@ namespace OrbItProcs
         {
             //Button b = (Button)sender;
             //new Rectangle(500, 500, 600, 600)
-            e.Renderer.Draw(sidebar.game.textureDict[textures.blackorb], e.Rectangle, new Rectangle(0,0,25,25), Color.White);
+            e.Renderer.Draw(Assets.textureDict[textures.blackorb], e.Rectangle, new Rectangle(0,0,25,25), Color.White);
         }
     }
 }

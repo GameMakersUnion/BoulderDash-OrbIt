@@ -47,7 +47,7 @@ namespace OrbItProcs
             if (verts.Count < 3) return;
             Vector2[] vertices = verts.ToArray();
             Node newNode = new Node(ShapeType.ePolygon);
-            //Node.cloneNode(room.game.ui.sidebar.ActiveDefaultNode, newNode);
+            //Node.cloneNode(Game1.ui.sidebar.ActiveDefaultNode, newNode);
             //Polygon poly = new Polygon();
             //poly.body = newNode.body;
             //poly.FindCentroid(vertices);
@@ -74,7 +74,7 @@ namespace OrbItProcs
             MouseToGrid(ref vertX, ref vertY);
             Vector2 vert = new Vector2(vertX, vertY);
 
-            Texture2D tx = room.game.textureDict[textures.whitecircle];
+            Texture2D tx = Assets.textureDict[textures.whitecircle];
             Vector2 cen = new Vector2(tx.Width / 2f, tx.Height / 2f);//store this in another textureDict to avoid recalculating
 
             room.camera.Draw(textures.whitecircle, vert, null, Color.White, 0f, cen, 0.3f, SpriteEffects.None, 0);

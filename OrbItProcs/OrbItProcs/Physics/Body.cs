@@ -22,7 +22,7 @@ namespace OrbItProcs
             get { return _HandlersEnabled; }
             set
             {
-                if (parent != null && parent.room.game.ui != null && parent.collision.active && parent.collision.AllHandlersEnabled)
+                if (parent != null && Game1.ui != null && parent.collision.active && parent.collision.AllHandlersEnabled)
                 {
                     if (!_HandlersEnabled && value && !parent.IsDefault)
                     {
@@ -47,7 +47,7 @@ namespace OrbItProcs
             get { return _ResolveCollision; }
             set 
             {
-                if (parent != null && parent.room.game.ui != null && parent.collision.active)
+                if (parent != null && Game1.ui != null && parent.collision.active)
                 {
                     if (value && !parent.IsDefault)
                     {

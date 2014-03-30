@@ -161,11 +161,11 @@ namespace OrbItProcs
             cbTemplate.Top = HeightCounter;
             cbTemplate.Width = width;
             cbTemplate.Left = offset;
-            foreach (Node n in sidebar.game.NodePresets)
+            foreach (Node n in Assets.NodePresets)
             {
                 cbTemplate.Items.Add(n);
             }
-            if (sidebar.game.NodePresets.Count > 0) cbTemplate.ItemIndex = 0;
+            if (Assets.NodePresets.Count > 0) cbTemplate.ItemIndex = 0;
             cbTemplate.Enabled = false;
             HeightCounter += cbTemplate.Height + LeftPadding;
 
@@ -213,7 +213,7 @@ namespace OrbItProcs
                     PopUp.Toast("Group already exists.");
                 else{                   
                     Node newNode = tempgroup.defaultNode.CreateClone();
-                    newNode.room = sidebar.game.mainRoom;
+                    Game1.game.room = sidebar.game.mainRoom;
                     newNode.body.color = ColorChanger.randomColorHue();
                     newNode.basicdraw.UpdateColor();
                     Group newGroup = new Group(newNode, sidebar.game.mainRoom.generalGroups, Name: txtName.Text.Trim());

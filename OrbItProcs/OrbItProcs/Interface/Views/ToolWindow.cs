@@ -42,15 +42,15 @@ namespace OrbItProcs
             toolBar.Text = "Tools";
             manager.Add(toolBar);
 
-            buttonTextures["select"] = Game1.game.btnTextures[0, 0];
-            buttonTextures["random"] = Game1.game.btnTextures[1, 0];
-            buttonTextures["spawn"] = Game1.game.btnTextures[0, 1];
-            buttonTextures["level"] = Game1.game.btnTextures[1, 1];
-            buttonTextures["forceSpawn"] = Game1.game.btnTextures[0, 2];
-            buttonTextures["forcePush"] = Game1.game.btnTextures[1, 2];
-            buttonTextures["control"] = Game1.game.btnTextures[0, 3];
-            buttonTextures["static"] = Game1.game.btnTextures[1, 3];
-            buttonTextures["remove"] = Game1.game.btnTextures[0, 4];
+            buttonTextures["select"] = Assets.btnTextures[0, 0];
+            buttonTextures["random"] = Assets.btnTextures[1, 0];
+            buttonTextures["spawn"] = Assets.btnTextures[0, 1];
+            buttonTextures["level"] = Assets.btnTextures[1, 1];
+            buttonTextures["forceSpawn"] = Assets.btnTextures[0, 2];
+            buttonTextures["forcePush"] = Assets.btnTextures[1, 2];
+            buttonTextures["control"] = Assets.btnTextures[0, 3];
+            buttonTextures["static"] = Assets.btnTextures[1, 3];
+            buttonTextures["remove"] = Assets.btnTextures[0, 4];
 
 
 

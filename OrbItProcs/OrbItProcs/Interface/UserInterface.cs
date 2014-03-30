@@ -17,8 +17,9 @@ using Component = OrbItProcs.Component;
 using System.IO;
 
 namespace OrbItProcs {
-    public class UserInterface {
-
+    public class UserInterface 
+    {
+        public static UserInterface ui;
         public static bool tomShaneWasClicked = false;
         public static readonly Color TomShanePuke = new Color(75, 187, 0);
         public static readonly Color TomDark = new Color(65, 65, 65);
@@ -32,12 +33,11 @@ namespace OrbItProcs {
         }
 
         public static Vector2 MousePos;
-        
         public static Vector2 WorldMousePos;
 
         #region /// Fields ///
 
-        public Game1 game;
+        public Game1 game{ get { return Game1.game; } }
         public Room room { get { return game.room; } }
 
 
@@ -90,11 +90,8 @@ namespace OrbItProcs {
         public Node spawnerNode;
         public Sidebar sidebar;
 
-        public UserInterface(Game1 game)
+        private UserInterface()
         {
-            this.game = game;
-            game.ui = this;
-            //this.room = game.room;
             sidebar = new Sidebar(this);
 
             zoomfactor = 0.9f;
@@ -333,6 +330,12 @@ namespace OrbItProcs {
 
             oldMouseScrollValue = mouseState.ScrollWheelValue;
             oldMouseState = mouseState;
+        }
+
+        internal static UserInterface Start()
+        {
+            ui = new UserInterface();
+            return ui;
         }
     }
 }

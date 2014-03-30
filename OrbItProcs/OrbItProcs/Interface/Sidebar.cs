@@ -347,7 +347,7 @@ namespace OrbItProcs
             cbPresets.Width = 160;
             cbPresets.Left = LeftPadding;
             cbPresets.Top = HeightCounter; HeightCounter += cbPresets.Height;
-            game.NodePresets.CollectionChanged += NodePresets_Sync;
+            Assets.NodePresets.CollectionChanged += NodePresets_Sync;
             cbPresets.ItemIndexChanged += cbPresets_ItemIndexChanged;
             cbPresets.Click += cmbPresets_Click;
             #endregion
@@ -519,6 +519,7 @@ namespace OrbItProcs
 
         public void UpdateGroupComboBox(ComboBox cb, params string[] additionalItems)
         {
+            if (room == null) return;
             string tempName = "";
             if (cb.ItemIndex >= 0) tempName = cb.Items.ElementAt(cb.ItemIndex).ToString();
             cb.ItemIndex = 0;
@@ -607,7 +608,7 @@ namespace OrbItProcs
             else
                 PopUp.Text("Pick a preset name", "Name preset", delegate(bool c, object input)
                 {
-                                    if (c) ui.game.saveNode(inspectorArea.editNode, (string)input);
+                                    if (c) Assets.saveNode(inspectorArea.editNode, (string)input);
                     return true;
                 });
         }
@@ -885,7 +886,7 @@ namespace OrbItProcs
             {
                 if (del)
                 {
-                    game.deletePreset((Node)lstPresets.selected());
+                    Assets.deletePreset((Node)lstPresets.selected());
                 }
                 return true;
             });
