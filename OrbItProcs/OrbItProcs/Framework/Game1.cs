@@ -301,7 +301,7 @@ namespace OrbItProcs
             Room r = Game1.game.room;
             Shooter.MakeBullet();
             Node def = r.masterGroup.defaultNode.CreateClone();
-            def.addComponent(comp.shooter, false);
+            def.addComponent(comp.shooter, true);
             r.playerGroup.defaultNode = def;
             for(int i = 1; i < 5; i++)
             {
@@ -315,10 +315,9 @@ namespace OrbItProcs
                 Vector2 spawnPos = new Vector2(r.worldWidth / 2, r.worldHeight / 2) - new Vector2(x, y);
                 Node node = def.CreateClone();
                 node.body.pos = spawnPos;
-                node.movement.mode = movemode.falloff;
                 node.name = "player" + i;
                 node.SetColor(p.pColor);
-                node.addComponent(comp.shooter, false); //todo:produce more bugs
+                node.addComponent(comp.shooter, true);
                 node.addComponent(comp.sword, true);
                 node.Comp<Sword>().sword.collision.DrawRing = false;
                 p.node = node;
@@ -353,13 +352,13 @@ namespace OrbItProcs
                 backgroundHue = (backgroundHue + ((float)Math.Sin(x) + 1) / 10f) % 360;
                 BackgroundColor = ColorChanger.getColorFromHSV(backgroundHue, value: 0.2f);
             }
+
             room.Draw();
             frameRateCounter.Draw(spriteBatch, font);
-
             TomShaneWaiting.Wait();
             TomShaneWaiting.Reset();
             base.Draw(gameTime);
-
+            
         }
 
 

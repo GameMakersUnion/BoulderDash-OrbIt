@@ -161,6 +161,9 @@ namespace OrbItProcs
 
             CameraWaiting.Set();
         }
+
+        
+
         public void AddPermanentDraw(textures texture, Vector2 position, Color color, float scale, float rotation, int life)
         {
             addPerm.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, room.game.textureCenters[texture], scale * zoom, SpriteEffects.None, 0, life));
