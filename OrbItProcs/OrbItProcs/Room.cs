@@ -16,7 +16,7 @@ namespace OrbItProcs {
     {
         public bool DrawLinks { get; set; }
         public float WallWidth { get; set; }
-
+        
         public string name;
 
         public int worldWidth { get; set; }
@@ -49,7 +49,7 @@ namespace OrbItProcs {
 
         public int timertimer = 0;
         public int timermax = 60;
-        
+
         public static long totalElapsedMilliseconds = 0;
         public RenderTarget2D roomRenderTarget;
         
@@ -155,7 +155,8 @@ namespace OrbItProcs {
                     if (c2 is Body)
                     {
                         Body bb = (Body)c2;
-                        if (!b.exclusionList.Contains(bb)) b.CheckCollisionBody(bb);
+                        //if (!b.exclusionList.Contains(bb)) 
+                            b.CheckCollisionBody(bb);
                     }
                     else
                     {
@@ -168,7 +169,8 @@ namespace OrbItProcs {
                     if (c2 is Body)
                     {
                         Body bb = (Body)c2;
-                        if (!c1.exclusionList.Contains(bb)) c1.CheckCollisionBody(bb);
+                        //if (!c1.exclusionList.Contains(bb)) 
+                            c1.CheckCollisionBody(bb);
                     }
                     else
                     {
@@ -329,7 +331,7 @@ namespace OrbItProcs {
                 {
                     gridsystemCollision.alreadyVisited.Add(c);
                     int reach = (int)c.radius * 2;
-                    if (c.shape is Circle)
+                    if (c.shape is Circle)//todo fix the fact that circles are in the polygons list
                     {
                         reach = (int)(c.shape as Polygon).polyReach;
                     }
@@ -377,7 +379,8 @@ namespace OrbItProcs {
                                         if (cc is Body)
                                         {
                                             Body bb = (Body)cc;
-                                            if (!b.exclusionList.Contains(bb)) b.CheckCollisionBody(bb);
+                                            //if (!b.exclusionList.Contains(bb)) 
+                                                b.CheckCollisionBody(bb);
                                             
                                         }
                                         else
@@ -400,7 +403,8 @@ namespace OrbItProcs {
                                         if (cc is Body)
                                         {
                                             Body bb = (Body)cc;
-                                            if (!c.exclusionList.Contains(bb)) c.CheckCollisionBody(bb);
+                                            //if (!c.exclusionList.Contains(bb)) 
+                                                c.CheckCollisionBody(bb);
                                         }
                                         else
                                         {
@@ -411,10 +415,10 @@ namespace OrbItProcs {
                             }
                         }
                     }
-                    else if (algorithm == 6)
-                    {
-                        gridsystemCollision.retrieveFromAllOffsets(c, reach, collideAction);
-                    }
+                    //else if (algorithm == 6)
+                    //{
+                    //    gridsystemCollision.retrieveFromAllOffsets(c, reach, collideAction);
+                    //}
                 }
             }
             //Testing.PrintTimer("insertion");

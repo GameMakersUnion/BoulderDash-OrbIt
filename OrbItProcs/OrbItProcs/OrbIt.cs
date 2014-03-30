@@ -162,7 +162,6 @@ namespace OrbItProcs
             {
                 Width = fullWidth;
                 Height = fullHeight;
-                
             }
             else if (false)
             {
@@ -183,7 +182,6 @@ namespace OrbItProcs
         {
             Assets.LoadAssets(Content);
             DelegatorMethods.InitializeDelegateMethods();
-           
             room = new Room(this, 1880, 1175);
             room.name = "main";
             mainRoom = room;
@@ -196,18 +194,14 @@ namespace OrbItProcs
             ui.Initialize(room);
             frameRateCounter = new FrameRateCounter(this);
             base.Initialize();          
-
-            
             ui.sidebar.UpdateGroupComboBoxes();
             ui.sidebar.cbListPicker.ItemIndex = 0;
             ui.sidebar.cbListPicker.ItemIndex = 2;
             ui.sidebar.cbGroupS.ItemIndex = 2;
             ui.sidebar.cbGroupT.ItemIndex = 2;
-
             //room.player1 = new Player();
             //room.player1.body.pos = new Vector2(100, 100);
             //processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
-
             //if (bigTonyOn)
             //{
             //    for (int i = 1; i < 5; i++)
@@ -217,8 +211,6 @@ namespace OrbItProcs
             //            room.players.Add(p); //#bigtony
             //    }
             //}
-
-
             processManager.SetProcessKeybinds();
             ui.keyManager.addProcessKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
             ui.keyManager.addProcessKeyAction("togglesidebar", KeyCodes.OemTilde, OnPress: ui.ToggleSidebar);
@@ -280,7 +272,7 @@ namespace OrbItProcs
             {
                 room.generalGroups.EmptyGroup();
             }
-        }      
+        }
 
 
         public static void Start()

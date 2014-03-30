@@ -480,13 +480,19 @@ namespace OrbItProcs {
                 {
                     if (other.parent.active)
                     {
-                        foreach (Type c in aOtherProps)
+                        foreach (Type t in aOtherProps)
                         {
-                            if (!comps[c].active) continue;
-                            comps[c].AffectOther(other.parent);
+                            if (!comps[t].active) continue;
+                            comps[t].AffectOther(other.parent);
                         }
                     }
                 }
+                
+                foreach(Component component in comps.Values)
+                {
+                    component.AffectSelf();
+                }
+
                 /*
                 var buckets = room.gridsystem.retrieveBuckets(this, 115);
                 if (buckets != null)

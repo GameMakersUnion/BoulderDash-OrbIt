@@ -147,6 +147,7 @@
     <Compile Include="Components\AffectOthers\Displace.cs" />
     <Compile Include="Components\AffectOthers\FixedForce.cs" />
     <Compile Include="Components\Essential\Meta.cs" />
+    <Compile Include="Components\Items\ItemPickup.cs" />
     <Compile Include="Components\Linkers\Orbiter.cs" />
     <Compile Include="Components\AffectOthers\Spring.cs" />
     <Compile Include="Components\Delegator.cs" />

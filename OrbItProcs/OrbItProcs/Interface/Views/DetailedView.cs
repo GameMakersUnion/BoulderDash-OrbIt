@@ -17,7 +17,7 @@ namespace OrbItProcs
         public Action<DetailedItem, object> ItemCreator;
         public Action<Control, DetailedItem, EventArgs> OnItemEvent;
         public bool ColorChangeOnSelect = true;
-        public Action<UserLevel> OnUserLeveChanged;
+        public Action<UserLevel> OnUserLevelChanged;
 
         public DetailedView(Sidebar sidebar, Control parent, int Left, int Top, bool Init = true)
             : base(sidebar, parent, Left, Top, Init)

@@ -105,8 +105,8 @@ namespace OrbItProcs
             com = comp.colorgravity;
             colvelocity = new Vector3(0f, 0f, 0f);
             multiplier = 1f;
-            distancemod = DistanceMod.spatial;
-            mode = Mode.hue;
+            distancemod = DistanceMod.color;
+            mode = Mode.rgb;
             huevelocity = 0f;
             hue = 0f;
             divisor = 1000f;
@@ -131,23 +131,23 @@ namespace OrbItProcs
                 float dist = 1f;
                 if (distancemod == DistanceMod.color)
                 {
-                    //dist = hue - other.comps[comp.colorgravity].hue;
-                    //if (dist == 0) return;
-                    //float force = multiplier * other.body.mass * parent.body.mass / (dist * dist);
-                    //if (dist < 0) force *= -1;
-                    //float diff = hue - other.comps[comp.colorgravity].hue;
-                    //if (Math.Abs(diff) > 180) force *= -1;
-                    //if (force > maxhuevel) force = maxhuevel;
-                    //else if (force < -maxhuevel) force = -maxhuevel;
-                    //other[comp.colorgravity].huevelocity += force;
-                    //huevelocity += force;
-
-
-                    float otherhue = other.Comp<ColorGravity>().hue;
-                    dist = Utils.CircularDistance(hue, otherhue);
-                    if (dist < 1) return;
-                    float force = multiplier / (dist * dist) / divisor;
+                    dist = hue - other.Comp<ColorGravity>().hue;
+                    if (dist == 0) return;
+                    float force = multiplier * other.body.mass * parent.body.mass / (dist * dist);
+                    if (dist < 0) force *= -1;
+                    float diff = hue - other.Comp<ColorGravity>().hue;
+                    if (Math.Abs(diff) > 180) force *= -1;
+                    if (force > maxhuevel) force = maxhuevel;
+                    else if (force < -maxhuevel) force = -maxhuevel;
+                    other[comp.colorgravity].huevelocity += force;
                     huevelocity += force;
+
+
+                    //float otherhue = other.Comp<ColorGravity>().hue;
+                    //dist = Utils.CircularDistance(hue, otherhue);
+                    //if (dist < 1) return;
+                    //float force = multiplier / (dist * dist) / divisor;
+                    //huevelocity += force;
 
                     //Console.WriteLine("dist: {0} force: {1}", dist, force);
 

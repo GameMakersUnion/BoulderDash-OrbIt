@@ -48,9 +48,9 @@ namespace OrbItProcs
                         {
                             (dv as ComponentView).RefreshComponents();
                         }
-                        if (dv.OnUserLeveChanged != null)
+                        if (dv.OnUserLevelChanged != null)
                         {
-                            dv.OnUserLeveChanged(value);
+                            dv.OnUserLevelChanged(value);
                         }
                     }
                 }

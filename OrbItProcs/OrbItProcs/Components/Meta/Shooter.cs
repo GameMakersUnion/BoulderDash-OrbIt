@@ -120,10 +120,12 @@ namespace OrbItProcs
             dir.Y *= -1;
             n.body.velocity = dir * speed;
             n.body.pos = parent.body.pos;
-            n.body.AddExclusion(parent.body);
+            n.body.AddExclusionCheck(parent.body);
+            //n.body.AddExclusion(parent.body);
             if (parent.HasComp<Sword>())
             {
-                n.body.AddExclusion(parent.Comp<Sword>().sword.body);
+                n.body.AddExclusionCheck(parent.Comp<Sword>().sword.body);
+                //n.body.AddExclusion(parent.Comp<Sword>().sword.body);
             }
             if (parent.player != null)
             {

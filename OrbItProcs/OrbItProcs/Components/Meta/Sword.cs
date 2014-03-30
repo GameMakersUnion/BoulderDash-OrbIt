@@ -85,9 +85,10 @@ namespace OrbItProcs
 
             parent.room.itemGroup.IncludeEntity(sword);
             sword.OnSpawn();
-
-            sword.body.exclusionList.Add(parent.body);
-            parent.body.exclusionList.Add(sword.body);
+            sword.body.AddExclusionCheck(parent.body);
+            //sword.body.exclusionList.Add(parent.body);
+            //
+            //parent.body.exclusionList.Add(sword.body);
         }
         public override void AffectSelf()
         {
