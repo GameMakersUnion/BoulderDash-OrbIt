@@ -48,7 +48,7 @@ namespace OrbItProcs
         {
             //if (buttonState == ButtonState.Released) return;
             Node found = SelectNode(UserInterface.WorldMousePos);
-            room.game.ui.sidebar.SetTargetNode(found);
+            Game1.ui.sidebar.SetTargetNode(found);
 
         }
         public void MakeLink()

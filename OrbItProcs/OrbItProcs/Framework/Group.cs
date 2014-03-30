@@ -245,7 +245,7 @@ namespace OrbItProcs
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
             {
-                bool ui = room.game.ui != null && room.game.ui.sidebar.cbListPicker != null;
+                bool ui = Game1.ui != null && Game1.ui.sidebar.cbListPicker != null;
                 foreach (Node n in e.NewItems)
                 {
                     if (parentGroup != null && !parentGroup.entities.Contains(n) && !Disabled)
@@ -271,14 +271,14 @@ namespace OrbItProcs
 
         public void EmptyGroup()
         {
-            bool isold = room.game.IsOldUI && room.game.ui.sidebar.cbListPicker.Text.Equals(Name);
+            bool isold = room.game.IsOldUI && Game1.ui.sidebar.cbListPicker.Text.Equals(Name);
             foreach(Node n in fullSet.ToList())
             {
                 DeleteEntity(n);
                 if (isold)
                 {
-                    room.game.ui.sidebar.lstMain.Items.Remove(n);
-                    room.game.ui.sidebar.SyncTitleNumber(this);
+                    Game1.ui.sidebar.lstMain.Items.Remove(n);
+                    Game1.ui.sidebar.SyncTitleNumber(this);
                 }
             }
             
@@ -302,10 +302,10 @@ namespace OrbItProcs
                 //room.CollisionSet.Add(entity);
                 entity.collision.UpdateCollisionSet();
             }
-            if (room.game.IsOldUI && room.game.ui.sidebar.cbListPicker.Text.Equals(Name))
+            if (room.game.IsOldUI && Game1.ui.sidebar.cbListPicker.Text.Equals(Name))
             {
-                room.game.ui.sidebar.lstMain.Items.Add(entity);
-                room.game.ui.sidebar.SyncTitleNumber(this);
+                Game1.ui.sidebar.lstMain.Items.Add(entity);
+                Game1.ui.sidebar.SyncTitleNumber(this);
             }
             //if (parentGroup != null)
             //    parentGroup.IncludeEntity(entity);
@@ -469,8 +469,8 @@ namespace OrbItProcs
         /*
         public void UpdateComboBox()
         {
-            room.game.ui.sidebar.cbListPicker.ItemIndex = 0;
-            List<object> list = room.game.ui.sidebar.cbListPicker.Items;
+            Game1.ui.sidebar.cbListPicker.ItemIndex = 0;
+            List<object> list = Game1.ui.sidebar.cbListPicker.Items;
             list.ToList().ForEach((o) => list.Remove(o));
 
             GroupNamesToList(list);

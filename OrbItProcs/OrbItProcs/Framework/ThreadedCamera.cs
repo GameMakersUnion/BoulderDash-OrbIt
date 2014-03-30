@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -87,13 +88,13 @@ namespace OrbItProcs
             switch (type)
             {
                 case DrawType.standard:
-                    batch.Draw(Game1.game.textureDict[texture], position, sourceRect, color, rotation, origin, scale, effects, layerDepth);
+                    batch.Draw(Assets.textureDict[texture], position, sourceRect, color, rotation, origin, scale, effects, layerDepth);
                     break;
                 case DrawType.vectScaled:
-                    batch.Draw(Game1.game.textureDict[texture], position, sourceRect, color, rotation, origin, scalevect, effects, layerDepth);
+                    batch.Draw(Assets.textureDict[texture], position, sourceRect, color, rotation, origin, scalevect, effects, layerDepth);
                     break;
                 case DrawType.drawString:
-                    batch.DrawString(Game1.font, text, position, color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
+                    batch.DrawString(Assets.font, text, position, color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
                     break;
             }
             if (maxlife > 0)
@@ -106,6 +107,7 @@ namespace OrbItProcs
     }
     public class ThreadedCamera
     {
+        public bool TakeScreenshot { get; set; }
         ManualResetEventSlim CameraWaiting = new ManualResetEventSlim(false);
         Thread _worker;
         public readonly object _locker = new object();
@@ -116,8 +118,10 @@ namespace OrbItProcs
         List<DrawCommand> permanents = new List<DrawCommand>();
         Queue<DrawCommand> addPerm = new Queue<DrawCommand>();
         Queue<DrawCommand> removePerm = new Queue<DrawCommand>();
+        public ManualResetEventSlim TomShaneWaiting = new ManualResetEventSlim(true);
 
         private static int _CameraOffset = 0;
+        public float backgroundHue = 180;
         public static int CameraOffset { get { return _CameraOffset; } set { _CameraOffset = value; CameraOffsetVect = new Vector2(value, 0); } }
         public static Vector2 CameraOffsetVect = new Vector2(0, 0);
 
@@ -126,11 +130,12 @@ namespace OrbItProcs
         public Vector2 pos;
         public SpriteBatch batch;
 
+        static double x = 0;
 
         public ThreadedCamera(Room room, float zoom = 0.5f, Vector2? pos = null)
         {
             this.room = room;
-            this.batch = room.game.spriteBatch;
+            this.batch = new SpriteBatch(Game1.game.GraphicsDevice);
             this.zoom = zoom;
             this.pos = pos ?? Vector2.Zero;
 
@@ -138,9 +143,11 @@ namespace OrbItProcs
             _worker.Name = "CameraThread";
             _worker.IsBackground = true;
             _worker.Start();
+
+            //Game1.ui.keyManager.addProcessKeyAction("screenshot", KeyCodes.PrintScreen, OnPress: delegate { TakeScreenshot = true; });
         }
 
-        public void Render()
+        public void RenderAsync()
         {
             thisFrame = nextFrame;
             nextFrame = new Queue<DrawCommand>(); //todo: optimize via a/b pooling
@@ -166,26 +173,32 @@ namespace OrbItProcs
 
         public void AddPermanentDraw(textures texture, Vector2 position, Color color, float scale, float rotation, int life)
         {
-            addPerm.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, room.game.textureCenters[texture], scale * zoom, SpriteEffects.None, 0, life));
+            addPerm.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, 0, life));
         }
         public void AddPermanentDraw(textures texture, Vector2 position, Color color, Vector2 scalevect, float rotation, int life)
         {
-            addPerm.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, room.game.textureCenters[texture], scalevect * zoom, SpriteEffects.None, 0, life));
+            addPerm.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scalevect * zoom, SpriteEffects.None, 0, life));
         }
 
         public void removePermanentDraw(textures texture, Vector2 position, Color color, float scale)
         {
-            removePerm.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, room.game.textureCenters[texture], scale * zoom, SpriteEffects.None, 0));
+            removePerm.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, 0));
         }
 
         private void Work(object obj)
         {
             while (true)
             {
+                
+                x += Math.PI / 360.0;
+                backgroundHue = (backgroundHue + ((float)Math.Sin(x) + 1) / 10f) % 360;
+                Color bg = ColorChanger.getColorFromHSV(backgroundHue, value: 0.2f);
+
                 CameraWaiting.Reset();
-                batch.GraphicsDevice.SetRenderTarget(room.roomRenderTarget);
                 lock (_locker)
                 {
+                    batch.GraphicsDevice.SetRenderTarget(room.roomRenderTarget);
+                    batch.GraphicsDevice.Clear(bg);
                     //batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, Game1.shaderEffect); //tran
                     batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
@@ -200,9 +213,9 @@ namespace OrbItProcs
                         f[0] = Game1.game.GraphicsDevice.Viewport.Width;
                         f[1] = Game1.game.GraphicsDevice.Viewport.Height;
 
-                        Game1.shaderEffect.Parameters["Viewport"].SetValue(f);
-                        Game1.shaderEffect.Parameters["colour"].SetValue(gg.shaderPack.colour);
-                        Game1.shaderEffect.Parameters["enabled"].SetValue(gg.shaderPack.enabled);
+                        Assets.shaderEffect.Parameters["Viewport"].SetValue(f);
+                        Assets.shaderEffect.Parameters["colour"].SetValue(gg.shaderPack.colour);
+                        Assets.shaderEffect.Parameters["enabled"].SetValue(gg.shaderPack.enabled);
 
                         // ----- End Shader Set Parameter Code ---------
 
@@ -226,23 +239,28 @@ namespace OrbItProcs
                     }
                     //Console.WriteLine("2: " + permCount);
                     batch.End();
+                    batch.GraphicsDevice.SetRenderTarget(null);
                 }
-                batch.GraphicsDevice.SetRenderTarget(null);
-                Game1.game.TomShaneWaiting.Set();
+                if (TakeScreenshot)
+                {
+                    Screenshot();
+                    TakeScreenshot = false;
+                }
+                TomShaneWaiting.Set();
                 CameraWaiting.Wait();         // No more tasks - wait for a signal
             }
         }
         public void Draw(textures texture, Vector2 position, Color color, float scale, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, room.game.textureCenters[texture], scale * zoom, SpriteEffects.None, 0, -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, 0, -1, shaderPack));
         }
         public void Draw(textures texture, Vector2 position, Color color, float scale, float rotation, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, room.game.textureCenters[texture], scale * zoom, SpriteEffects.None, 0, -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, 0, -1, shaderPack));
         }
         public void Draw(textures texture, Vector2 position, Color color, Vector2 scalevect, float rotation, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, room.game.textureCenters[texture], scalevect * zoom, SpriteEffects.None, 0, -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scalevect * zoom, SpriteEffects.None, 0, -1, shaderPack));
         }
         public void Draw(textures texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0, ShaderPack? shaderPack = null)
         {
@@ -269,6 +287,29 @@ namespace OrbItProcs
             if (offset) pos += CameraOffsetVect;
             nextFrame.Enqueue(new DrawCommand(text, pos, c2, scale));
             nextFrame.Enqueue(new DrawCommand(text, pos + new Vector2(1, -1), color, scale));
+        }
+
+        public void Screenshot()
+        {
+            Texture2D t2d = room.roomRenderTarget;
+            int i = 0; string name;
+            string date = DateTime.Now.ToShortDateString().Replace('/', '-');
+            do
+            {
+                name = "..//..//..//Screenshots//SS_" + date + "_#" + i + ".png";
+                i += 1;
+            } while (File.Exists(name));
+            Scheduler.fanfare.Play();
+            Stream st = new FileStream(name, FileMode.Create);
+            t2d.SaveAsPng(st, t2d.Width, t2d.Height);
+            st.Close();
+            t2d.Dispose();
+        }
+
+        internal void CatchUp()
+        {
+            TomShaneWaiting.Wait();
+            TomShaneWaiting.Reset();
         }
     }
 }

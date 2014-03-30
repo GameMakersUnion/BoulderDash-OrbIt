@@ -30,8 +30,8 @@ namespace OrbItProcs
             this.sidebar = sidebar;
             window = new Window(manager);
             window.Init();
-            window.Left = game.ui.sidebar.master.Left;
-            window.Width = game.ui.sidebar.master.Width;
+            window.Left = Game1.ui.sidebar.master.Left;
+            window.Width = Game1.ui.sidebar.master.Width;
             window.Top = 200;
             window.Height = 200;
             window.Text = "Link Generator";

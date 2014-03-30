@@ -870,15 +870,15 @@ namespace OrbItProcs {
         }
         public Texture2D getTexture()
         {
-            return room.game.textureDict[body.texture];
+            return Assets.textureDict[body.texture];
         }
         public Texture2D getTexture(textures t)
         {
-            return room.game.textureDict[t];
+            return Assets.textureDict[t];
         }
         public Vector2 TextureCenter()
         { 
-            Texture2D tx = room.game.textureDict[body.texture];
+            Texture2D tx = Assets.textureDict[body.texture];
             return new Vector2(tx.Width / 2f, tx.Height / 2f); // TODO: maybe cast to floats to make sure it's the exact center.
         }
         
@@ -943,8 +943,8 @@ namespace OrbItProcs {
             //active = false;
 
             //if (this == room.targetNode) room.targetNode = null;
-            //if (this == room.game.ui.sidebar.inspectorArea.editNode) room.game.ui.sidebar.inspectorArea.editNode = null; //todo: social design pattern
-            //if (this == room.game.ui.spawnerNode) room.game.ui.spawnerNode = null;
+            //if (this == Game1.ui.sidebar.inspectorArea.editNode) Game1.ui.sidebar.inspectorArea.editNode = null; //todo: social design pattern
+            //if (this == Game1.ui.spawnerNode) Game1.ui.spawnerNode = null;
 
             //if (room.masterGroup != null && room.masterGroup.fullSet.Contains(this))
             //{

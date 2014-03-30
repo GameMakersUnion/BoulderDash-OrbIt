@@ -122,11 +122,11 @@ namespace OrbItProcs
                 Group p = room.masterGroup.childGroups["Link Groups"];
                 Group g = new Group(n, p, Name: n.name);
                 //p.AddGroup(g.Name, g);
-                room.game.ui.sidebar.UpdateGroupComboBoxes();
+                Game1.ui.sidebar.UpdateGroupComboBoxes();
                 savedGroups.Enqueue(g);
 
             }
-            //ListBox lst = room.game.ui.sidebar.lstMain;
+            //ListBox lst = Game1.ui.sidebar.lstMain;
             //Node newNode = (Node)lst.Items.ElementAt(lst.ItemIndex + 1);
             //System.Console.WriteLine(newNode.name);
         }

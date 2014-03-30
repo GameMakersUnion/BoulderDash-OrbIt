@@ -45,7 +45,7 @@ namespace OrbItProcs
         public static Node bigtony = null;
         public BigTony() : base()
         {
-            room.game.ui.SetSidebarActive(false);
+            Game1.ui.SetSidebarActive(false);
             onCollisionEnter = delegate(Node s, Node t)
             {
                 if (t != null && !room.playerNodes.Contains(t))
@@ -148,7 +148,7 @@ namespace OrbItProcs
                 {
                     if (p.node == bigtony)
                     {
-                        p.node.meta.score += Game1.GlobalGameTime.ElapsedGameTime.Milliseconds;
+                        p.node.meta.score += Game1.gametime.ElapsedGameTime.Milliseconds;
                         if (p.node.meta.score >= maxScore)
                         {
                             p.node.body.radius += 500;

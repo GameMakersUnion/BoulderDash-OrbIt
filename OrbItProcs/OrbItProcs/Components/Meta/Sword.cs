@@ -71,7 +71,7 @@ namespace OrbItProcs
 
         public override void OnSpawn()
         {
-            //Node.cloneNode(parent.room.game.ui.sidebar.ActiveDefaultNode, sword);
+            //Node.cloneNode(parent.Game1.ui.sidebar.ActiveDefaultNode, sword);
             parent.body.texture = textures.orientedcircle;
             Polygon poly = new Polygon();
             poly.body = sword.body;

@@ -471,7 +471,7 @@ namespace OrbItProcs {
             //thickness *= 2f * mapzoom;
             Vector2 scalevect = new Vector2(len, thickness);
             float angle = (float)(Math.Atan2(diff.Y, diff.X));
-            room.camera.Draw(textures.whitepixel, centerpoint, null, color, angle, room.game.textureCenters[textures.whitepixel], scalevect, SpriteEffects.None, 0);
+            room.camera.Draw(textures.whitepixel, centerpoint, null, color, angle, Assets.textureCenters[textures.whitepixel], scalevect, SpriteEffects.None, 0);
         }
 
         public static bool checkCollision(Node o1, Node o2)

@@ -14,14 +14,14 @@ namespace OrbItProcs {
 
     public class Room
     {
-        #region // State // --------------------------------------------
         public bool DrawLinks { get; set; }
         public float WallWidth { get; set; }
         
+        public string name;
+
         public int worldWidth { get; set; }
         public int worldHeight { get; set; }
         public int colIterations { get; set; }
-        #endregion
 
         #region // References // --------------------------------------------
         public Game1 game;
@@ -193,7 +193,6 @@ namespace OrbItProcs {
             gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX, 20);
             DrawLinks = true;
             WallWidth = 10;
-            camera = new ThreadedCamera(this, 0.5f);
             scheduler = new Scheduler();
 
             players = new HashSet<Player>();
@@ -614,18 +613,18 @@ namespace OrbItProcs {
         
         public void tether()
         {
-            Group g1 = masterGroup.FindGroup(game.ui.sidebar.cbListPicker.SelectedItem());
+            Group g1 = masterGroup.FindGroup(Game1.ui.sidebar.cbListPicker.SelectedItem());
             g1.defaultNode.Comp<Tether>().compType = mtypes.affectother | mtypes.draw;
         }
 
         public void hide()
         {
-            //game.ui.sidebar.lstComp.Visible = false;
+            //Game1.ui.sidebar.lstComp.Visible = false;
             
         }
         public void show()
         {
-            //game.ui.sidebar.lstComp.Visible = true;
+            //Game1.ui.sidebar.lstComp.Visible = true;
         }
         public Group findGroupByHash(string value)
         {

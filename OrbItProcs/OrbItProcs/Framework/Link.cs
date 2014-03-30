@@ -357,7 +357,7 @@ namespace OrbItProcs
                 this.sources = this.sourceGroup.fullSet;
 
                 room.masterGroup.childGroups["Link Groups"].AddGroup(ss.Name, ss);
-                room.game.ui.sidebar.UpdateGroupComboBoxes();
+                Game1.ui.sidebar.UpdateGroupComboBoxes();
 
                 foreach (Node s in this.sources)
                 {
@@ -417,7 +417,7 @@ namespace OrbItProcs
                 this.targetGroup.TargetLinks.Add(this);
 
                 room.masterGroup.childGroups["Link Groups"].AddGroup(ts.Name, ts);
-                room.game.ui.sidebar.UpdateGroupComboBoxes();
+                Game1.ui.sidebar.UpdateGroupComboBoxes();
 
                 foreach (Node t in this.targets)
                 {

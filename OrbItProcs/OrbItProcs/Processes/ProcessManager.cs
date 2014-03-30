@@ -20,9 +20,7 @@ namespace OrbItProcs
         graphdata,
         cameracontrol,
         directedspawn,
-
     }
-
     public struct MouseArgs
     {
         //MouseButtons mouseButtons;
@@ -61,7 +59,7 @@ namespace OrbItProcs
             processDict.Add(proc.polygonspawner, new PolygonSpawner());
             processDict.Add(proc.mapeditor, new MapEditor(game.room.level));
             processDict.Add(proc.graphdata, new GraphData());
-            processDict.Add(proc.cameracontrol, new CameraControl(game. room.camera));
+            processDict.Add(proc.cameracontrol, new CameraControl(game.room.camera));
             processDict.Add(proc.directedspawn, new DirectedSpawn());
 
             activeInputProcess = processDict[proc.spawnnodes];
@@ -72,14 +70,14 @@ namespace OrbItProcs
         {
             return delegate
             {
-                Game1.game.ui.keyManager.AddProcess(processDict[p]);
+                Game1.ui.keyManager.AddProcess(processDict[p]);
             };
         }
 
         public void SetProcessKeybinds()
         {
-            ToolWindow toolbar = Game1.game.ui.sidebar.toolWindow;
-            KeyManager Keybindset = Game1.game.ui.keyManager;
+            ToolWindow toolbar = Game1.ui.sidebar.toolWindow;
+            KeyManager Keybindset = Game1.ui.keyManager;
             
 
             Keybindset.Add("spawnnodes", new KeyBundle(KeyCodes.D1, KeyCodes.LeftShift), enableKeyBinds(proc.spawnnodes));
@@ -101,7 +99,7 @@ namespace OrbItProcs
             toolbar.AddButton("control", Utils.notImplementedException,"Take a hike.");
             toolbar.AddButton("static", Utils.notImplementedException,"Take a hike.");
 
-            Keybindset.Add("resetplayers", new KeyBundle(KeyCodes.Home), Game1.ResetPlayers);
+            Keybindset.Add("resetplayers", new KeyBundle(KeyCodes.Home), Player.ResetPlayers);
 
 
             Keybindset.Add("graphdata", new KeyBundle(KeyCodes.D6, KeyCodes.LeftShift), enableKeyBinds(proc.graphdata)); 
