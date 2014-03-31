@@ -31,7 +31,7 @@ namespace OrbItProcs {
             groupSelection,
             randomNode,
         }
-
+        public static int SidebarWidth { get; set; }
         public static Vector2 MousePos;
         public static Vector2 WorldMousePos;
 

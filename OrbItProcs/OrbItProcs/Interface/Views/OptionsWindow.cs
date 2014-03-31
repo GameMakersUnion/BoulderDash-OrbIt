@@ -81,7 +81,11 @@ namespace OrbItProcs
                 count++;
             }
 
-            CreateCheckBox("FullScreen", OrbIt.isFullScreen, (o, e) => sidebar.ui.game.ToggleFullScreen((o as CheckBox).Checked));
+            CreateCheckBox("FullScreen", OrbIt.isFullScreen, (o, e) =>
+            {
+                if ((o as CheckBox).Checked) OrbIt.game.setResolution(resolutions.AutoFullScreen, true);
+                else OrbIt.game.setResolution(resolutions.WXGA_1280x800, false);
+            });
             CreateCheckBox("Hide Links", sidebar.ui.game.room.DrawLinks, (o, e) => sidebar.ui.game.room.DrawLinks = !(o as CheckBox).Checked);
 
             CreateCheckBox("Edit Selected Node", false, (o, e) => Utils.notImplementedException() );

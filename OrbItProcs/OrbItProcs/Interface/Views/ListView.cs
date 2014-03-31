@@ -79,6 +79,7 @@ namespace OrbItProcs
             
             #region /// Components List (back panel) ///
             backPanel = new Panel(manager);
+            
             backPanel.Init();
             backPanel.Left = Left + LeftPadding;
             backPanel.Top = HeightCounter;
@@ -93,6 +94,7 @@ namespace OrbItProcs
             backPanel.ClientArea.Height = 200;
             parent.Add(backPanel);
             HeightCounter += backPanel.Height + VertPadding;
+            backPanel.ShowVertScrollBar = true;
             #endregion
         }
 

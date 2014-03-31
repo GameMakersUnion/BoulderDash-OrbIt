@@ -84,14 +84,16 @@ namespace OrbItProcs
     }
     public enum resolutions
     {
-        FHD_1920x1080,
+        AutoFullScreen,
+
+        VGA_640x480,
+        SVGA_800x600,
+        XGA_1024x768,
         HD_1366x768,
+        WXGA_1280x800,
         SXGA_1280x1024,
         WSXGA_1680x1050,
-        XGA_1024x768,
-        WXGA_1280x800,
-        SVGA_800x600,
-        VGA_640x480,
+        FHD_1920x1080,
     }
 
     public class OrbIt : Application
@@ -119,12 +121,7 @@ namespace OrbItProcs
         public static GameTime gametime;
         public FrameRateCounter frameRateCounter;
 
-
-        public static int smallWidth = 1280;
-        public static int smallHeight = 650;
         public static bool soundEnabled = false;
-        public static int fullWidth = 1920;
-        public static int fullHeight = 1080;
         public static bool isFullScreen = false;
         public static int Width { get { return game.Graphics.PreferredBackBufferWidth; } set { game.Graphics.PreferredBackBufferWidth = value; } }
         public static int Height { get { return game.Graphics.PreferredBackBufferHeight; } set { game.Graphics.PreferredBackBufferHeight = value; } }
@@ -137,49 +134,50 @@ namespace OrbItProcs
         private OrbIt() : base()
         {
             game = this;
-            Content.RootDirectory = "Content";
-            IsMouseVisible = true;
-            Graphics.SynchronizeWithVerticalRetrace = true;
-            IsFixedTimeStep = false;
-            Width = smallWidth;
-            Height = smallHeight;
-
             Utils.PopulateComponentTypesDictionary();
-            ClearBackground = true;
-            BackgroundColor = Color.White;
+            Content.RootDirectory = "Content";
+            //IsMouseVisible = true;
+            Graphics.SynchronizeWithVerticalRetrace = true;
             ExitConfirmation = false;
-
-            Manager.AutoUnfocus = false;
+            //IsFixedTimeStep = false;
             Manager.Input.InputMethods = InputMethods.Mouse | InputMethods.Keyboard;
+            Manager.AutoCreateRenderTarget = false;
             Graphics.PreferMultiSampling = false;
         }
-
-        public void ToggleFullScreen(bool on)
+        public void setResolution(resolutions r, bool fullScreen)
         {
-            OrbIt.isFullScreen = on;
-            Manager.Graphics.IsFullScreen = on;
-            if (on)
+            switch (r)
             {
-                Width = fullWidth;
-                Height = fullHeight;
+                case resolutions.AutoFullScreen:
+                    Width = GraphicsDevice.Adapter.CurrentDisplayMode.Width;
+                    Height = GraphicsDevice.Adapter.CurrentDisplayMode.Height;
+                    break;
+                case resolutions.FHD_1920x1080:
+                    Width = 1920; Height = 1080; break;
+                case resolutions.HD_1366x768:
+                    Width = 1366; Height = 768; break;
+                case resolutions.SVGA_800x600:
+                    Width = 800; Height = 600; break;
+                case resolutions.SXGA_1280x1024:
+                    Width = 1280; Height = 1024; break;
+                case resolutions.VGA_640x480:
+                    Width = 640; Height = 480; break;
+                case resolutions.WSXGA_1680x1050:
+                    Width = 1680; Height = 1050; break;
+                case resolutions.WXGA_1280x800:
+                    Width = 1280; Height = 800; break;
+                case resolutions.XGA_1024x768:
+                    Width = 1024; Height = 768; break;
             }
-            else if (false)
-            {
-                Width = smallWidth;
-                Height = smallHeight;
-            }
+            Manager.Graphics.IsFullScreen = fullScreen;
             Manager.Graphics.ApplyChanges();
-            Manager.CreateRenderTarget(Width, Height);
-        }
-
-        public void setResolution(resolutions r)
-        {
-
+            
         }
 
 
         protected override void Initialize()
         {
+            setResolution(resolutions.HD_1366x768, false);
             Assets.LoadAssets(Content);
             DelegatorMethods.InitializeDelegateMethods();
             room = new Room(this, 1880, 1175);
@@ -199,18 +197,7 @@ namespace OrbItProcs
             ui.sidebar.cbListPicker.ItemIndex = 2;
             ui.sidebar.cbGroupS.ItemIndex = 2;
             ui.sidebar.cbGroupT.ItemIndex = 2;
-            //room.player1 = new Player();
-            //room.player1.body.pos = new Vector2(100, 100);
-            //processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
-            //if (bigTonyOn)
-            //{
-            //    for (int i = 1; i < 5; i++)
-            //    {
-            //        Player p = Player.GetNew(i);
-            //        if (p != null)
-            //            room.players.Add(p); //#bigtony
-            //    }
-            //}
+
             processManager.SetProcessKeybinds();
             ui.keyManager.addProcessKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
             ui.keyManager.addProcessKeyAction("togglesidebar", KeyCodes.OemTilde, OnPress: ui.ToggleSidebar);
@@ -273,8 +260,6 @@ namespace OrbItProcs
                 room.generalGroups.EmptyGroup();
             }
         }
-
-
         public static void Start()
         {
             if (game != null) throw new SystemException("Game was already Started");
