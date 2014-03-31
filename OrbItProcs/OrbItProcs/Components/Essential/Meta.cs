@@ -87,7 +87,7 @@ namespace OrbItProcs
             currentHealth = maxHealth.value;
             worth = new Toggle<float>(1, false);
             armour = new Toggle<float>(1, false);
-            damageMode = DamageMode.Everything;
+            damageMode = DamageMode.OnlyPlayers;
             AImode = AIMode.None;
             deadly = false;
             active = true;

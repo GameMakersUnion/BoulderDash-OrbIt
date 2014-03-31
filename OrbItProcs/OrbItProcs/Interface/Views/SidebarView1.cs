@@ -67,7 +67,7 @@ namespace OrbItProcs
 
         public ToolWindow toolWindow;
 
-        public void InitializeFourthPage()
+        public void InitializeGroupsPage()
         {
             tbcMain.Visible = false;
 
@@ -87,12 +87,12 @@ namespace OrbItProcs
 
             TabPage groupsTab = tbcViews.TabPages[0];
             //tbcViews.Color = Color.Transparent;
-            groupsTab.Text = "       Groups       ";
-            tbcViews.SelectedIndex = 1;
+            groupsTab.Text = "Groups";
+            tbcViews.SelectedIndex = 0;
             activeTabControl = tbcViews;
             //detailedView = new DetailedView(this, testTab, 0, 0);
             //inspectorView = new InspectorView(this, groupsTab, 0, 0);
-            groupsView = new GroupsView(this, groupsTab, 0, 0);
+            groupsView = new GroupsView(this, groupsTab, 0, 0, room.generalGroups);
             groupsView.UpdateGroups();
             tbcViews.SelectedIndex = 0;
 
@@ -100,12 +100,11 @@ namespace OrbItProcs
 
         }
         public PlayerView playerView;
-        public void InitializeFifthPage()
+        public void InitializePlayersPage()
         {
             TabPage playersTab = tbcViews.TabPages[1];
-            playersTab.Text = "     Players       ";
-
-            tbcViews.SelectedIndex = 0;
+            playersTab.Text = "Players";
+            tbcViews.SelectedIndex = 1;
             activeTabControl = tbcViews;
 
             //componentView = new ComponentView(this, editTab, 0, 0);
@@ -125,7 +124,17 @@ namespace OrbItProcs
                 new OptionsWindow(this);
             };
         }
+        public void InitializeItemsPage()
+        {
+            TabPage itemsTab = tbcViews.TabPages[2];
+            itemsTab.Text = "Items";
+            tbcViews.SelectedIndex = 2;
+            activeTabControl = tbcViews;
+            groupsView = new GroupsView(this, itemsTab, 0, 0, room.itemGroup);
+            groupsView.UpdateGroups();
 
+            tbcViews.SelectedIndex = 0;
+        }
 
     }
 }

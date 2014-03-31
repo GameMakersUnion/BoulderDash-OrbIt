@@ -67,6 +67,7 @@ namespace OrbItProcs
         //chrono,
         //weird,
         sword,
+        itempayload,
     };
     public enum textures
     {
@@ -131,7 +132,7 @@ namespace OrbItProcs
         public bool IsOldUI { get { return ui != null && ui.sidebar != null && ui.sidebar.activeTabControl == ui.sidebar.tbcMain; } }
         public static bool Debugging = false;
         public static bool bigTonyOn = false;
-        public static bool EnablePlayers = true;
+        
 
 
         private OrbIt() : base()
@@ -199,29 +200,17 @@ namespace OrbItProcs
             ui.sidebar.cbListPicker.ItemIndex = 2;
             ui.sidebar.cbGroupS.ItemIndex = 2;
             ui.sidebar.cbGroupT.ItemIndex = 2;
-            //room.player1 = new Player();
-            //room.player1.body.pos = new Vector2(100, 100);
-            //processManager.processDict.Add(proc.axismovement, new AxisMovement(room.player1, 4));
-            //if (bigTonyOn)
-            //{
-            //    for (int i = 1; i < 5; i++)
-            //    {
-            //        Player p = Player.GetNew(i);
-            //        if (p != null)
-            //            room.players.Add(p); //#bigtony
-            //    }
-            //}
+
             processManager.SetProcessKeybinds();
             ui.keyManager.addProcessKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
             ui.keyManager.addProcessKeyAction("togglesidebar", KeyCodes.OemTilde, OnPress: ui.ToggleSidebar);
             ui.keyManager.addProcessKeyAction("switchview", KeyCodes.PageDown, OnPress: ui.SwitchView);
             ui.keyManager.addProcessKeyAction("removeall", KeyCodes.Delete, OnPress: () => ui.sidebar.btnRemoveAllNodes_Click(null, null));
 
-            if (EnablePlayers)
-            {
-                Player.CreatePlayers();
-            }
-            ui.sidebar.InitializeFifthPage();
+            Player.CreatePlayers();
+
+            ui.sidebar.InitializePlayersPage();
+            ui.sidebar.InitializeItemsPage();
         }
        
         protected override void Update(GameTime gameTime)
@@ -273,8 +262,6 @@ namespace OrbItProcs
                 room.generalGroups.EmptyGroup();
             }
         }
-
-
         public static void Start()
         {
             if (game != null) throw new SystemException("Game was already Started");

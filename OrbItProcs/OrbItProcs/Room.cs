@@ -218,6 +218,7 @@ namespace OrbItProcs {
             });
 
             Node firstdefault = new Node();
+            //firstdefault.addComponent(comp.itempayload, true);
             Node.cloneNode(defaultNode, firstdefault);
             firstdefault.name = "[G0]0";
             //firstdefault.IsDefault = true;
@@ -676,6 +677,7 @@ namespace OrbItProcs {
 
         private Node SpawnNodeHelper(Node newNode, Action<Node> afterSpawnAction = null, Group g = null, int lifetime = -1)
         {
+            //newNode.addComponent(comp.itempayload, true);
             newNode.OnSpawn();
             if (afterSpawnAction != null) afterSpawnAction(newNode);
             if (lifetime != -1)
@@ -684,6 +686,7 @@ namespace OrbItProcs {
                 newNode.Comp<Lifetime>().timeUntilDeath.value = lifetime;
                 newNode.Comp<Lifetime>().timeUntilDeath.enabled = true;
             }
+            
             g.IncludeEntity(newNode);
             return newNode;
         }

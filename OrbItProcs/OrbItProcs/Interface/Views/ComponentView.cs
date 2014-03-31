@@ -14,7 +14,7 @@ namespace OrbItProcs
 {
     public class ComponentView : InspectorView
     {
-        public Label lblComponents, lblGroup, lblCurrentComp;
+        public Label lblComponents, lblCurrentComp;
         public Button btnAddComponent;
 
         public InspectorView insView;
@@ -38,7 +38,6 @@ namespace OrbItProcs
         public ComponentView(Sidebar sidebar, Control parent, int Left, int Top)
             : base(sidebar, parent, Left, Top, false)
         {
-
             lblComponents = new Label(manager);
             lblComponents.Init();
             lblComponents.Parent = parent;
@@ -173,7 +172,7 @@ namespace OrbItProcs
             this.rootNode = node;
             if (!group)
             {
-                lblGroup.Text = "Node: " + node.name;
+                //lblGroup.Text = "Node: " + node.name;
                 //activeGroup = null;
                 GroupSync = false;
                 insView.GroupSync = false;

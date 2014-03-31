@@ -40,6 +40,7 @@ namespace OrbItProcs
         //public ComboBox cbActiveGroup;
 
         //public InspectorArea insArea;
+        public EditGroupWindow editGroupWindow;
 
         public PlayerView(Sidebar sidebar, Control parent, int Left, int Top)
             : base(sidebar, parent, Left, Top, false)
@@ -94,6 +95,10 @@ namespace OrbItProcs
                     item.isSelected = true;
                     //editGroupWindow = new EditGroupWindow(sidebar);
                     //editGroupWindow.componentView.SwitchGroup(g);
+                    editGroupWindow = new EditGroupWindow(sidebar);
+                    //editGroupWindow.componentView.SwitchGroup(g);
+                    editGroupWindow.componentView.SwitchNode(n, false);
+
                 };
 
                 Button btnEnabled = new Button(manager);

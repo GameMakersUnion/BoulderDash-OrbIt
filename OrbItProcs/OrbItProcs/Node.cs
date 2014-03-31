@@ -653,10 +653,12 @@ namespace OrbItProcs {
 
         }
 
-        public void addComponent(Component component, bool active)
+        public void addComponent(Component component, bool active, bool overwrite = false)
         {
             component.parent = this;
-            comps.Add(component.GetType(), component);
+            if (comps.ContainsKey(component.GetType()) && !overwrite) return;
+            comps[component.GetType()] = component;
+            component.active = active;
 
             component.Initialize(this);
             SortComponentLists();
@@ -711,8 +713,8 @@ namespace OrbItProcs {
         {
             Component component;
 
-            component = Component.GenerateComponent(t);
-            component.parent = this;
+            component = Component.GenerateComponent(t, parent);
+            //component.parent = this;
             component.active = active;
             component.AfterCloning();
 
@@ -913,7 +915,7 @@ namespace OrbItProcs {
             }
         }
 
-        public void OnDeath(Node other, bool delete = false)
+        public void OnDeath(Node other, bool delete = true)
         {
             foreach (Type key in comps.Keys.ToList())
             {
@@ -927,7 +929,7 @@ namespace OrbItProcs {
                 }
             }
             meta.Death(other);
-            if (group != null && !delete)
+            if (group != null && delete)
             {
                 group.DeleteEntity(this);
             }
@@ -950,7 +952,7 @@ namespace OrbItProcs {
             //{
             //    room.masterGroup.DiscludeEntity(this);
             //}
-            OnDeath(null, true);
+            OnDeath(null, false);
         }
 
         public Node CreateClone(bool CloneHash = false)

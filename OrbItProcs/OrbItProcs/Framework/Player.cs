@@ -23,6 +23,7 @@ namespace OrbItProcs
         public int playerIndex;
 
         public Color pColor;
+        public string ColorName;
 
         public Controller controller;
 
@@ -57,10 +58,10 @@ namespace OrbItProcs
             
             switch (playerIndex)
             {
-                case 1: pColor = Color.Blue; break;
-                case 2: pColor = Color.Green; break;
-                case 3: pColor = Color.Red; break;
-                case 4: pColor = Color.Yellow; break;
+                case 1: pColor = Color.Blue; ColorName = "Blue"; break;
+                case 2: pColor = Color.Green; ColorName = "Green"; break;
+                case 3: pColor = Color.Red; ColorName = "Red"; break;
+                case 4: pColor = Color.Yellow; ColorName = "Yellow"; break;
             }
         }
         //
@@ -123,9 +124,10 @@ namespace OrbItProcs
             CreatePlayers();
             OrbIt.ui.sidebar.playerView.InitializePlayers();
         }
-
+        public static bool EnablePlayers = true;
         public static void CreatePlayers()
         {
+            if (!EnablePlayers) return;
             Room r = OrbIt.game.room;
             Shooter.MakeBullet();
             Node def = r.masterGroup.defaultNode.CreateClone();
@@ -143,7 +145,7 @@ namespace OrbItProcs
                 Vector2 spawnPos = new Vector2(r.worldWidth / 2, r.worldHeight / 2) - new Vector2(x, y);
                 Node node = def.CreateClone();
                 node.body.pos = spawnPos;
-                node.name = "player" + i;
+                node.name = "player" + p.ColorName;
                 node.SetColor(p.pColor);
                 node.addComponent(comp.shooter, true);
                 node.addComponent(comp.sword, true);

@@ -13,7 +13,6 @@ namespace OrbItProcs
     public class Sword : Component
     {
         public Node sword;
-
         public enum swordState
         {
             sheathed,
@@ -24,29 +23,37 @@ namespace OrbItProcs
 
         public const mtypes CompType = mtypes.playercontrol|mtypes.minordraw;// | mtypes.affectself;
         public override mtypes compType { get { return CompType; } set { } }
-
+        /// <summary>
+        /// The distance from the player the sword will swing at.
+        /// </summary>
+        [Info(UserLevel.User, "The distance from the player the sword will swing at.")]
         public float distance { get; set; }
-        public float length{get;set;}
-        Vector2 target;
-        bool enabled; 
+        /// <summary>
+        /// The length of the sword that is used when the sword is initialized.
+        /// </summary>
+        [Info(UserLevel.Advanced, "The length of the sword that is used when the sword is initialized.")]
         public float swordLength { get; set; }
-
+        /// <summary>
+        /// The width of the sword that is used when the sword is initialized.
+        /// </summary>
+        [Info(UserLevel.Advanced, "The width of the sword that is used when the sword is initialized.")]
         public float swordWidth { get; set; }
-        public int swingRate { get; set; }
-        private int swingRateCount = 0;
+        //public int swingRate { get; set; }
+        //int swingRateCount = 0;
+        //bool enabled; 
+        //public float length{get;set;}
+        //public int speed { get; set; }
 
-        public int speed { get; set; }
+        Vector2 target;
         public Sword() : this(null) { }
         public Sword(Node parent)
         {
             this.parent = parent;
-            swingRate = 5;
             distance = 60;
             swordLength = 40;
             swordWidth = 5;
-            speed = 3;
-
-
+            //swingRate = 5;
+            //speed = 3;
 
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>()
             {
@@ -56,17 +63,7 @@ namespace OrbItProcs
                 //{comp.waver, true},
             };
 
-
             sword = new Node(props);
-           // Polygon poly = new Polygon();
-           // poly.body = sword.body;
-           // poly.SetBox(100, 110);
-           // sword.body.shape = poly;
-           // //sword.body.pos = position;
-
-            //Node newNode = new Node();
-
-            //room.spawnNode(newNode);
         }
 
         public override void OnSpawn()
@@ -106,7 +103,7 @@ namespace OrbItProcs
                 if (fc.newGamePadState.ThumbSticks.Right.LengthSquared() > 0.9 * 0.9)
                 {
                     target = fc.newGamePadState.ThumbSticks.Right;
-                    enabled = true;
+                    //enabled = true;
                     target.Normalize();
                     target *= distance;
                     target *= new Vector2(1, -1);
@@ -119,7 +116,7 @@ namespace OrbItProcs
                 }
                 else
                 {
-                    enabled = false;
+                    //enabled = false;
                     Vector2 restPos = new Vector2(parent.body.radius, 0).Rotate(parent.body.orient) + parent.body.pos;
                     sword.body.pos = Vector2.Lerp(sword.body.pos, restPos, 0.1f);
                     sword.body.orient = Utils.AngleLerp(sword.body.orient, parent.body.orient, 0.1f);

@@ -20,11 +20,12 @@ namespace OrbItProcs
         public int HeightCounter = 5;
         public int LeftPadding = 5;
         public Label lblComp, lblProperties;
-        Button btnAdd, btnCancel;
+        Button btnAdd;//, btnCancel;
         public Node node;
         public DetailedView view;
         public AddComponentWindow(Sidebar sidebar, Node n, DetailedView view)
         {
+            Control par = sidebar.tbcViews.TabPages[0];
             UserInterface.GameInputDisabled = true;
             this.view = view;
             this.manager = sidebar.manager;
@@ -33,42 +34,79 @@ namespace OrbItProcs
             poop = new Poop(manager);
             poop.Init();
             poop.Left = sidebar.master.Left;
-            poop.Width = 600;
-            poop.Top = 50;
-            poop.Height = 380;
-            poop.Left = poop.Width - poop.Width / 2;
+            poop.Width = par.Width;
+            poop.Top = 5;
+            poop.Height = par.Height + 15;
+            poop.BevelBorder = BevelBorder.All;
+            poop.BevelColor = Color.Black;
+            poop.Left = LeftPadding;// poop.Width - poop.Width / 2;
             poop.Text = "Add Component";
+            poop.BackColor = new Color(30, 60, 30);
             manager.Add(poop);
             //sideBar.ShowModal();
-            
 
+            //
+            Panel topPanel = new Panel(manager);
+            topPanel.Init();
+            topPanel.Parent = poop;
+            topPanel.Left = LeftPadding;
+            topPanel.Top = LeftPadding;
+            topPanel.Width = poop.Width - LeftPadding * 4;
+            int col = 30;
+            topPanel.Color = new Color(col, col, col);
+            topPanel.BevelBorder = BevelBorder.All;
+            topPanel.BevelStyle = BevelStyle.Flat;
+            topPanel.BevelColor = Color.Black;
+            Button btnBack = new Button(manager);
+            btnBack.Init();
+            btnBack.Parent = topPanel;
+            btnBack.Top = HeightCounter;
+            btnBack.Text = "Back";
+            btnBack.Width = 40;
+            btnBack.Left = LeftPadding;
+            btnBack.Click += Close;
+            topPanel.Height = btnBack.Height + LeftPadding * 3;
+            Label lblTitle = new Label(manager);
+            lblTitle.Init();
+            lblTitle.Parent = topPanel;
+            lblTitle.Top = HeightCounter + LeftPadding;
+            lblTitle.Width = 120;
+            lblTitle.Left = poop.Width / 2 - lblTitle.Width / 4;
+            lblTitle.Text = "Add Component";
+            HeightCounter += lblTitle.Height + LeftPadding * 6;
+            //
             NewLabel("Add", 15, false);
-            NewLabel("Name", 65, false);
-            NewLabel("Weight", 180, false);
-            NewLabel("Affects\nOthers", 280, true);
-            NewLabel("Affects\n  Self", 380, true);
-            NewLabel("Draw", 480, false);
+            NewLabel("Name", 50, false);
+            //NewLabel("Weight", 180, false);
+            //NewLabel("Affects\nOthers", 280, true);
+            //NewLabel("Affects\n  Self", 380, true);
+            //NewLabel("Draw", 480, false);
+            int left = 145;
+            NewLabel("AO", left, false);
+            NewLabel("AS", left + 20, false);
+            NewLabel("DR", left + 40, false);
 
-            addCompView = new AddComponentView(sidebar, poop, LeftPadding, 50);
+            addCompView = new AddComponentView(sidebar, poop, LeftPadding, 80, par.Height);
+            //addCompView.Height += 210;
             addCompView.InitNode(n);
 
             btnAdd = new Button(manager);
             btnAdd.Init();
             btnAdd.Parent = poop;
-            btnAdd.Left = 10;
-            btnAdd.Top = poop.Height - btnAdd.Height * 3;
-            btnAdd.Left = poop.Width - btnAdd.Width - 50;
-            btnAdd.Text = "Add";
+            btnAdd.Width = 150;
+            btnAdd.Top = poop.Height - btnAdd.Height * 2;
+            btnAdd.Left = poop.Width / 2 - btnAdd.Width / 2;
+            btnAdd.Text = "Add Components";
             btnAdd.Click += AddComponents;
 
-            btnCancel = new Button(manager);
-            btnCancel.Init();
-            btnCancel.Parent = poop;
-            btnCancel.Left = btnAdd.Width + 30;
-            btnCancel.Top = btnAdd.Top;
-            btnCancel.Left = btnAdd.Left - btnCancel.Width - 30;
-            btnCancel.Text = "Cancel";
-            btnCancel.Click += Close;
+            //btnCancel = new Button(manager);
+            //btnCancel.Init();
+            //btnCancel.Parent = poop;
+            //btnCancel.Left = btnAdd.Width + 30;
+            //btnCancel.Top = btnAdd.Top;
+            //btnCancel.Left = btnAdd.Left - btnCancel.Width - 30;
+            //btnCancel.Text = "Cancel";
+            //btnCancel.Click += Close;
         }
         public void Close(object sender, EventArgs e)
         {
@@ -100,7 +138,7 @@ namespace OrbItProcs
             Label lbl = new Label(manager);
             lbl.Init();
             lbl.Parent = poop;
-            lbl.Top = 35;
+            lbl.Top = 60;
             lbl.Text = s;
             lbl.Left = left;
             lbl.Width = 100;

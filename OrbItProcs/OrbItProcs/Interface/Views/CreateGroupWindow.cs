@@ -21,7 +21,7 @@ namespace OrbItProcs
         public int LeftPadding = 5;
 
         //public Label lblTitle;
-        public Button btnOk;
+        public Button btnCreateGroup;
         public Button btnBack;
         public Room temproom;
         public Group tempgroup;
@@ -89,13 +89,13 @@ namespace OrbItProcs
 
             HeightCounter += lblTitle.Height + LeftPadding * 6;
 
-            btnOk = new Button(manager);
-            btnOk.Init();
-            btnOk.Parent = poop;
-            btnOk.Top = poop.Height - (int)(btnOk.Height * 2.8);
-            btnOk.Text = "Create Group";
-            btnOk.Width = width;
-            btnOk.Left = poop.Width / 2 - btnOk.Width / 2;
+            btnCreateGroup = new Button(manager);
+            btnCreateGroup.Init();
+            btnCreateGroup.Parent = poop;
+            btnCreateGroup.Top = poop.Height - (int)(btnCreateGroup.Height * 2);
+            btnCreateGroup.Text = "Create Group";
+            btnCreateGroup.Width = width;
+            btnCreateGroup.Left = poop.Width / 2 - btnCreateGroup.Width / 2;
 
             Label lblName = new Label(manager);
             lblName.Init();
@@ -112,6 +112,19 @@ namespace OrbItProcs
             txtName.Width = width;
             txtName.Left = offset;
             HeightCounter += txtName.Height + LeftPadding;
+
+            Button btnRandomName = new Button(manager);
+            btnRandomName.Init();
+            btnRandomName.Parent = poop;
+            btnRandomName.Top = HeightCounter;
+            btnRandomName.Width = txtName.Width;
+            btnRandomName.Left = offset;
+            btnRandomName.Text = "Random Name";
+            HeightCounter += txtName.Height + LeftPadding;
+            btnRandomName.Click += (s, e) =>
+            {
+                txtName.Text = Utils.RandomName();
+            };
 
 
             RadioButton rdEmpty = new RadioButton(manager);
@@ -205,7 +218,7 @@ namespace OrbItProcs
                 ComboUpdate(cbTemplate);
             };
             
-            btnOk.Click += (s, e) =>
+            btnCreateGroup.Click += (s, e) =>
             {
                 if (String.IsNullOrWhiteSpace(txtName.Text))
                     PopUp.Toast("Please enter a group name.");

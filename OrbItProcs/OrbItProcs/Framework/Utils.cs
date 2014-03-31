@@ -23,6 +23,21 @@ namespace OrbItProcs {
         public const float rootOfTwo = 1.41421356237f;
         public const float invRootOfTwo = 0.70710678118f;
 
+        public static string RandomName(int tries = 0)
+        {
+            var dict = Utils.compTypes;
+            int depth = Utils.random.Next(dict.Count);
+            Type t = dict.ElementAt(depth).Value;
+            var props = t.GetProperties();
+            int i = Utils.random.Next(props.Length);
+            var pinfo = props.ElementAt(i);
+            if (tries < 10 && typeof(Component).GetProperty(pinfo.Name) != null)
+            {
+                return RandomName(++tries);
+            }
+            return pinfo.Name;
+        }
+
         public static float Lerp(float start, float end, float amount)
         {
             if (amount > 1f) amount = 1f;

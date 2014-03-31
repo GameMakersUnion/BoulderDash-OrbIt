@@ -108,13 +108,18 @@ namespace OrbItProcs
             return null;
         }
 
-        public static Component GenerateComponent(Type t)
+        public static Component GenerateComponent(Type t, Node par)
         {
-            Component component = (Component)Activator.CreateInstance(t);
+            Component component = (Component)Activator.CreateInstance(t, par);
             return component;
         }
         
-
+        public Component CreateClone(Node par)
+        {
+            Component comp = (Component)Activator.CreateInstance(this.GetType(), par);
+            CloneComponent(this, comp);
+            return comp;
+        }
        public static void CloneComponent(Component sourceComp, Component destComp)
        {
            List<FieldInfo> fields = sourceComp.GetType().GetFields().ToList();

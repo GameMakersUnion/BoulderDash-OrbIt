@@ -400,7 +400,7 @@ namespace OrbItProcs
 
             InitializeSecondPage();
             InitializeThirdPage();
-            InitializeFourthPage();
+            InitializeGroupsPage();
             
         }
 

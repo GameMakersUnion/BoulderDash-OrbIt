@@ -20,11 +20,6 @@ namespace OrbItProcs
 
         private Vector2 _force = new Vector2(0, 1);
         /// <summary>
-        /// The direction and magnitude of the force
-        /// </summary>
-        [Info(UserLevel.Advanced, "The direction and magnitude of the force")]
-        public Vector2 force { get; set; }
-        /// <summary>
         /// The horizontal force applied: positive is rightwards, negative is leftwards.
         /// </summary>
         [Info(UserLevel.User, "The horizontal force applied: positive is rightwards, negative is leftwards.")]
@@ -42,7 +37,7 @@ namespace OrbItProcs
         /// <summary>
         /// Determine if we should stop pushing the other node after his velocity exceeds this value in the direction of the force we are applying.
         /// </summary>
-        [Info(UserLevel.Advanced, "Determine if we should stop pushing the other node after his velocity exceeds this value in the direction of the force we are applying.")]
+        [Info(UserLevel.User, "Determine if we should stop pushing the other node after his velocity exceeds this value in the direction of the force we are applying.")]
         public Toggle<float> terminal { get; set; }
 
         public FixedForce() : this(null) { }
@@ -59,8 +54,11 @@ namespace OrbItProcs
             if (!active) { return; }
             if (exclusions.Contains(other)) return;
 
-            if (terminal.enabled == false || (terminal.value > 0 && other.body.velocity.ProjectOnto(force).Length() < terminal.value))
-                other.body.ApplyForce(force * multiplier / 10f);//other.body.velocity += force * multiplier / 10f;
+            if (terminal.enabled == false || (terminal.value > 0))
+            {
+                if (other.body.velocity.ProjectOnto(_force).Length() < terminal.value)
+                    other.body.ApplyForce(_force * multiplier / 10f);//other.body.velocity += force * multiplier / 10f;
+            }
         }
         public override void AffectSelf()
         {

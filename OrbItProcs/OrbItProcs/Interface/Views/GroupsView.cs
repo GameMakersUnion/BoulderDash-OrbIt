@@ -15,12 +15,14 @@ namespace OrbItProcs
     public class GroupsView : DetailedView
     {
         Label groupLabel;
-        Button btnCreateGroup, btnSelectedNode;
+        Button btnCreateGroup;
+        public Group parentGroup;
         public CreateGroupWindow createGroupWindow;
         public EditGroupWindow editGroupWindow;
-        public GroupsView(Sidebar sidebar, Control parent, int Left, int Top)
+        public GroupsView(Sidebar sidebar, Control parent, int Left, int Top, Group parentGroup)
             : base(sidebar, parent, Left, Top, false)
         {
+            this.parentGroup = parentGroup;
             HeightCounter = Top + 23;
             groupLabel = new Label(manager);
             groupLabel.Init();
@@ -46,36 +48,8 @@ namespace OrbItProcs
             btnCreateGroup.Click += (s, e) =>
             {
                 createGroupWindow = new CreateGroupWindow(sidebar);
-
             };
             HeightCounter += btnCreateGroup.Height + LeftPadding;
-
-            btnSelectedNode = new Button(manager);
-            btnSelectedNode.Init();
-            btnSelectedNode.Parent = parent;
-            btnSelectedNode.Top = HeightCounter;
-            btnSelectedNode.Text = "Selected Node to Group";
-            btnSelectedNode.Width = 160;
-            btnSelectedNode.Left = parent.Width / 2 - btnSelectedNode.Width / 2; ;
-            btnSelectedNode.Click += (s, e) =>
-            {
-                if (room.targetNode == null) return;
-                Group g = new Group(room.targetNode.CreateClone(), room.generalGroups);
-                UpdateGroups();
-            };
-            btnSelectedNode.Visible = false;
-
-            OnUserLevelChanged += (u) =>
-                {
-                    if ((int)u == (int)UserLevel.User)
-                    {
-                        btnSelectedNode.Visible = false;
-                    }
-                    else
-                    {
-                        btnSelectedNode.Visible = true;
-                    }
-                };
         }
 
         public override void SelectItem(DetailedItem item)
@@ -89,9 +63,10 @@ namespace OrbItProcs
         }
         public void UpdateGroups()
         {
+            if (parentGroup == null) return;
             ClearView();
-            showRemoveButton = sidebar.game.room.generalGroups.childGroups.Count > 1;
-            foreach (Group g in sidebar.game.room.generalGroups.childGroups.Values)
+            showRemoveButton = parentGroup.childGroups.Count > 1;
+            foreach (Group g in parentGroup.childGroups.Values)
             {
                 CreateNewItem(g);
             }
@@ -123,11 +98,11 @@ namespace OrbItProcs
                 btnEdit.Height = item.buttonHeight;
 
                 EventHandler editgroup = (s, e) =>
-                    {
-                        item.isSelected = true;
-                        editGroupWindow = new EditGroupWindow(sidebar);
-                        editGroupWindow.componentView.SwitchGroup(g);
-                    };
+                {
+                    item.isSelected = true;
+                    editGroupWindow = new EditGroupWindow(sidebar);
+                    editGroupWindow.componentView.SwitchGroup(g);
+                };
                 
                 btnEdit.Text = "Edit";
                 btnEdit.ToolTip.Text = "Edit";
