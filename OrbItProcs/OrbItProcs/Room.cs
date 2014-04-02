@@ -146,8 +146,8 @@ namespace OrbItProcs {
             CollisionSetCircle = new HashSet<Collider>();
             CollisionSetPolygon = new HashSet<Collider>();
             colIterations = 1;
-            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, OrbIt.Width, OrbIt.Height);
-            camera = new ThreadedCamera(this, 0.5f);
+            
+            camera = new ThreadedCamera(this, 1f);
             scheduler = new Scheduler();
             borderColor = Color.Green;
             collideAction = (c1, c2) =>
@@ -196,7 +196,7 @@ namespace OrbItProcs {
             // grid System
             gridsystemAffect = new GridSystem(this, 40, 5);
             level = new Level(this, 40, 40, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
-
+            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
             gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX, 20);
             DrawLinks = true;
             WallWidth = 10;
@@ -316,6 +316,7 @@ namespace OrbItProcs {
 
         public void Update(GameTime gametime)
         {
+            camera.RenderAsync();
             long elapsed = 0;
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
             totalElapsedMilliseconds += elapsed;
@@ -355,6 +356,9 @@ namespace OrbItProcs {
             updateTargetNodeGraphic();
 
             scheduler.AffectSelf();
+
+            Draw();
+            camera.CatchUp();
         }
         static int algorithm = 5;
         public void UpdateCollision()

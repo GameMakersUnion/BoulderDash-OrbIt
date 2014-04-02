@@ -27,7 +27,7 @@ namespace OrbItProcs
         private int _Width;
         public virtual int Width { get { return _Width; } set { _Width = value; if (backPanel != null) backPanel.Width = value; } }
         private int _Height = 150;
-        public int Height { get { return _Height; } set { _Height = value; if (backPanel != null) backPanel.Height = value; } }
+        public virtual int Height { get { return _Height; } set { _Height = value; if (backPanel != null) backPanel.Height = value; } }
         //public int Height { get { return (propertyEditPanel.grouppanel.Top + propertyEditPanel.grouppanel.Height); } }
         public int HeightCounter;
         public int LeftPadding = 5;

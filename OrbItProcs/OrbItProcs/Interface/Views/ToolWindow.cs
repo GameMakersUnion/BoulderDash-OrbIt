@@ -26,21 +26,14 @@ namespace OrbItProcs
             this.sidebar = sidebar;
             this.manager = sidebar.manager;
             toolBar = new SideBar(manager);
-
+            OrbIt.game.MainWindow.Add(toolBar);
             toolBar.MouseOver += delegate { UserInterface.tomShaneWasClicked = true; };
             toolBar.MouseOut += delegate { UserInterface.tomShaneWasClicked = false; };
-
+            toolBar.Anchor = Anchors.Top | Anchors.Right | Anchors.Bottom;
             toolBar.Init();
-            toolBar.Top = 0;
-            toolBar.Height = OrbIt.Height;
+            toolBar.Height = OrbIt.game.MainWindow.ClientArea.Height;
             toolBar.Width = 70;
-            toolBar.Left = OrbIt.Width - toolBar.Width;
-
-            //toolBar.CloseButtonVisible = false;
-
-            toolBar.Movable = false;
-            toolBar.Text = "Tools";
-            manager.Add(toolBar);
+            toolBar.Left = OrbIt.game.MainWindow.ClientArea.Width - toolBar.Width;
 
             buttonTextures["select"] = Assets.btnTextures[0, 0];
             buttonTextures["random"] = Assets.btnTextures[1, 0];
@@ -51,11 +44,6 @@ namespace OrbItProcs
             buttonTextures["control"] = Assets.btnTextures[0, 3];
             buttonTextures["static"] = Assets.btnTextures[1, 3];
             buttonTextures["remove"] = Assets.btnTextures[0, 4];
-
-
-
-            
-
 
         }
 

@@ -37,6 +37,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SkipNestedContentBuild>true</SkipNestedContentBuild>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -178,6 +179,7 @@
     <Compile Include="Framework\IndexArray.cs" />
     <Compile Include="Framework\Level.cs" />
     <Compile Include="Interface\Views\PlayerView.cs" />
+    <Compile Include="Interface\Views\RoomPanel.cs" />
     <Compile Include="Interface\Views\SidebarViews.cs" />
     <Compile Include="Interface\Toggle.cs" />
     <Compile Include="Interface\Views\TitlePanel.cs" />

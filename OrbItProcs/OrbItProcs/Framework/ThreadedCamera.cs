@@ -120,10 +120,10 @@ namespace OrbItProcs
         Queue<DrawCommand> removePerm = new Queue<DrawCommand>();
         public ManualResetEventSlim TomShaneWaiting = new ManualResetEventSlim(true);
 
-        private static int _CameraOffset = 0;
+        private int _CameraOffset = 0;
         public float backgroundHue = 180;
-        public static int CameraOffset { get { return _CameraOffset; } set { _CameraOffset = value; CameraOffsetVect = new Vector2(value, 0); } }
-        public static Vector2 CameraOffsetVect = new Vector2(0, 0);
+        public int CameraOffset { get { return _CameraOffset; } set { _CameraOffset = value; CameraOffsetVect = new Vector2(value, 0); } }
+        public Vector2 CameraOffsetVect = new Vector2(0, 0);
 
         public Room room;
         public float zoom;
