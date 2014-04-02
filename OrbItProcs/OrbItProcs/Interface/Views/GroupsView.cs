@@ -22,16 +22,17 @@ namespace OrbItProcs
         public GroupsView(Sidebar sidebar, Control parent, int Left, int Top, Group parentGroup)
             : base(sidebar, parent, Left, Top, false)
         {
+            Height += 50;
             this.parentGroup = parentGroup;
-            HeightCounter = Top + 23;
-            //lblGroupLabel = new Label(manager);
-            //lblGroupLabel.Init();
-            //lblGroupLabel.Parent = parent;
-            //lblGroupLabel.Left = LeftPadding;
-            //lblGroupLabel.Top = HeightCounter;
-            //lblGroupLabel.Width = sidebar.Width/2;
-            //lblGroupLabel.Text = "Groups";
-            //lblGroupLabel.TextColor = Color.Black;
+            HeightCounter = Top + 45;
+            lblGroupLabel = new Label(manager);
+            lblGroupLabel.Init();
+            lblGroupLabel.Parent = parent;
+            lblGroupLabel.Left = LeftPadding;
+            lblGroupLabel.Top = 10;// HeightCounter;
+            lblGroupLabel.Width = sidebar.Width / 2;
+            lblGroupLabel.Text = "Groups";
+            lblGroupLabel.TextColor = Color.Black;
             //HeightCounter += lblGroupLabel.Height + LeftPadding;
 
             ItemCreator += ItemCreatorDelegate;

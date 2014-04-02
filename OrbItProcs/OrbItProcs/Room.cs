@@ -77,6 +77,15 @@ namespace OrbItProcs {
             }
         }
         [Polenter.Serialization.ExcludeFromSerialization]
+        public Group presetGroups
+        {
+            get
+            {
+                if (masterGroup == null) return null;
+                return masterGroup.childGroups["Preset Groups"];
+            }
+        }
+        [Polenter.Serialization.ExcludeFromSerialization]
         public Group playerGroup
         {
             get
@@ -224,9 +233,10 @@ namespace OrbItProcs {
             masterGroup = new Group(this, defaultNode, null, defaultNode.name, false);
             if (Groups)
             {
+                Group generalGroup = new Group(this, defaultNode, masterGroup, "General Groups", false);
+                Group presetsGroup = new Group(this, defaultNode, masterGroup, "Preset Groups", false);
                 Group playerGroup = new Group(this, defaultNode.CreateClone(this), masterGroup, "Player Group", false);
                 Group itemGroup = new Group(this, defaultNode, masterGroup, "Item Group", false);
-                Group generalGroup = new Group(this, defaultNode, masterGroup, "General Groups", false);
                 Group linkGroup = new Group(this, defaultNode, masterGroup, "Link Groups", false);
                 Group wallGroup = new Group(this, defaultNode, masterGroup, "Walls", false);
                 Group firstGroup = new Group(this, firstdefault, generalGroup, "Group1");
@@ -239,7 +249,29 @@ namespace OrbItProcs {
             targetNodeGraphic.name = "TargetNodeGraphic";
 
             MakeWalls();
+
+            MakePresetGroups();
             MakeItemGroups();
+        }
+
+        public void MakePresetGroups()
+        {
+            var infos = Utils.compInfos;
+            int runenum = 0;
+            foreach(Type t in infos.Keys)
+            {
+                Info info = infos[t];
+                if ((info.compType & mtypes.essential) == mtypes.essential) continue;
+                if ((info.compType & mtypes.exclusiveLinker) == mtypes.exclusiveLinker) continue;
+                if (info.userLevel == UserLevel.Developer || info.userLevel == UserLevel.Advanced) continue;
+                if (t == typeof(Lifetime)) continue;
+                if (t == typeof(Rune)) continue;
+                Node nodeDef = defaultNode.CreateClone(this);
+                nodeDef.addComponent(t, true);
+                nodeDef.addComponent(typeof(Rune), true);
+                nodeDef.Comp<Rune>().runeTexture = (textures)runenum++;
+                Group presetgroup = new Group(this, nodeDef, presetGroups, t.ToString().LastWord('.') + " Group");
+            }
         }
 
         public void MakeItemGroups()
@@ -250,7 +282,6 @@ namespace OrbItProcs {
 
             Node gravDef = itemDef.CreateClone(this);
             Gravity grav = new Gravity(gravDef);
-            grav.mode = Gravity.Mode.Strong;
             gravDef.Comp<ItemPayload>().AddComponentItem(grav);
             Group gravItems = new Group(this, gravDef, itemGroup, "gravItem");
 

@@ -6,6 +6,10 @@ using Microsoft.Xna.Framework;
 
 namespace OrbItProcs
 {
+    /// <summary>
+    /// A payload of items or components to add to the node that picks up this payload.
+    /// </summary>
+    [Info(UserLevel.User, "A payload of items or components to add to the node that picks up this payload.", CompType)]
     public class ItemPayload : Component
     {
         public const mtypes CompType = mtypes.draw | mtypes.affectself;

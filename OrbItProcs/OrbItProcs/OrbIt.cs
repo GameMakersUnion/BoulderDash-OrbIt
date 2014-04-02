@@ -37,7 +37,7 @@ namespace OrbItProcs
         spring,
         colorgravity,
         orbiter,
-        randvelchange,
+        randommove,
         relativemotion,
         circler,
         modifier,
@@ -49,7 +49,7 @@ namespace OrbItProcs
         swap,
         shooter,
         //draw components
-        runer,
+        rune,
         waver,
         laser,
         wideray,

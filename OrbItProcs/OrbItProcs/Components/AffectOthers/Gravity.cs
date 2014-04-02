@@ -16,7 +16,7 @@ namespace OrbItProcs {
     /// <summary>
     /// Attracts or repels nodes that it affects.
     /// </summary>
-    [Info(UserLevel.User, "Attracts or repels nodes that it affects.", mtypes.affectother)]
+    [Info(UserLevel.User, "Attracts or repels nodes that it affects.", CompType)]
     public class Gravity : Component, ILinkable
     {
         public const mtypes CompType = mtypes.affectother | mtypes.minordraw;
@@ -99,7 +99,7 @@ namespace OrbItProcs {
             multiplier = 100f;
             radius = 800f;
             lowerbound = 20;
-            mode = Mode.Normal;
+            mode = Mode.Strong;
             Repulsive = false;
             deadZone = new Toggle<float>(100, true);
         }

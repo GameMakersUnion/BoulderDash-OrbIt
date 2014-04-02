@@ -11,35 +11,13 @@ using Microsoft.Xna.Framework;
 
 namespace OrbItProcs
 {
-    //first view page of sidebar
+    //views pages
     public partial class Sidebar
     {
-        //private bool _EditSelectedNode = false;
-        //public bool EditSelectedNode
-        //{
-        //    get { return _EditSelectedNode; }
-        //    set
-        //    {
-        //        if (componentView != null)
-        //        {
-        //            if (value)
-        //            {
-        //                if (room.targetNode != null)
-        //                    componentView.SwitchNode(room.targetNode, false);
-        //            }
-        //            else
-        //            {
-        //                componentView.SwitchGroup(ActiveGroup);
-        //            }
-        //        }
-        //        _EditSelectedNode = value;
-        //    }
-        //}
-
-        //public ComponentView componentView { get; set; }
         public DetailedView detailedView { get; set; }
         public InspectorView inspectorView { get; set; }
         public GroupsView groupsView { get; set; }
+        public GroupsView presetsView { get; set; }
 
         public TabControl tbcViews;
 
@@ -66,7 +44,7 @@ namespace OrbItProcs
         }
 
         public ToolWindow toolWindow;
-
+        public TabControl tbcGroups;
         public void InitializeGroupsPage()
         {
             tbcMain.Visible = false;
@@ -91,8 +69,30 @@ namespace OrbItProcs
 
             TitlePanel titlePanelGroups = new TitlePanel(this, groupsTab, "Groups", false);
 
-            groupsView = new GroupsView(this, groupsTab, 0, titlePanelGroups.Height, room.generalGroups);
+            tbcGroups = new TabControl(manager);
+            tbcGroups.Init();
+            tbcGroups.Parent = groupsTab;
+            tbcGroups.Top = titlePanelGroups.Height * 2;
+            tbcGroups.Height = 400;
+            tbcGroups.Width = groupsTab.Width;
+
+            tbcGroups.AddPage("Custom");
+            TabPage customPage = tbcGroups.TabPages[0];
+            groupsView = new GroupsView(this, customPage, 0, -20, room.generalGroups);
+            groupsView.btnCreateGroup.Text = "Create Custom Group";
+            groupsView.lblGroupLabel.Text = "Custom Groups";
             groupsView.UpdateGroups();
+
+            
+            tbcGroups.AddPage("Presets");
+            tbcGroups.SelectedIndex = 1;
+            TabPage presetsPage = tbcGroups.TabPages[1];
+            presetsView = new GroupsView(this, presetsPage, 0, -20, room.presetGroups);
+            presetsView.btnCreateGroup.Text = "Create Preset Group";
+            presetsView.lblGroupLabel.Text = "Preset Groups";
+            presetsView.UpdateGroups();
+            tbcGroups.SelectedIndex = 0;
+
             tbcViews.SelectedIndex = 0;
 
             toolWindow = new ToolWindow(this);

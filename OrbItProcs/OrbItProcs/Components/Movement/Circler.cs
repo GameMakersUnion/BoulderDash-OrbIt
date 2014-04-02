@@ -10,7 +10,7 @@ namespace OrbItProcs
     /// <summary>
     /// This node will now move in circles or spirals.
     /// </summary>
-    [Info(UserLevel.User, "This node will now move in circles or spirals.", mtypes.affectself)]
+    [Info(UserLevel.User, "This node will now move in circles or spirals.", CompType)]
     public class Circler : Component {
 
         public const mtypes CompType = mtypes.affectself;

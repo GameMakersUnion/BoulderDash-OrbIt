@@ -9,8 +9,8 @@ namespace OrbItProcs
     /// <summary>
     /// Draws a rune image after the node's basic draw.
     /// </summary>
-    [Info(UserLevel.User, "Draws a rune image after the node's basic draw.")]
-    public class Runer : Component
+    [Info(UserLevel.User, "Draws a rune image after the node's basic draw.", CompType)]
+    public class Rune : Component
     {
         public const mtypes CompType = mtypes.draw;
         public override mtypes compType { get { return CompType; } set { } }
@@ -26,8 +26,8 @@ namespace OrbItProcs
         [Info(UserLevel.User, "Toggles whether runes are randomly generated upon spawning.")]
         public bool randomRune { get; set; }
 
-        public Runer() : this(null) { }
-        public Runer(Node parent)
+        public Rune() : this(null) { }
+        public Rune(Node parent)
         {
             this.parent = parent;
             randomRune = false; 
@@ -39,9 +39,7 @@ namespace OrbItProcs
             if (!randomRune) return;
             int r = Utils.random.Next(16);
             runeTexture = (textures)r;
-            
         }
-
         public override void Draw()
         {
             int r = (parent.body.color.R + 128) % 255;

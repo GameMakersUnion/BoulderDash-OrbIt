@@ -93,31 +93,39 @@ namespace OrbItProcs
         {
             if (tbcViews.SelectedIndex == 0) //groups
             {
-                        if (groupsView == null || groupsView.selectedItem == null)
-                        {
-                            return room.generalGroups.childGroups.ElementAt(0).Value;
-                        }
-                        else
-                        {
-                            if (!(groupsView.selectedItem.obj is Group)) return null;
-                            return (Group)groupsView.selectedItem.obj;
-                        }
+                if (groupsView == null || presetsView == null)// groupsView.selectedItem == null)
+                {
+                    return room.generalGroups.childGroups.ElementAt(0).Value;
+                }
+                else
+                {
+                    if (tbcGroups.SelectedIndex == 0)
+                    {
+                        if (!(groupsView.selectedItem.obj is Group)) return null;
+                        return (Group)groupsView.selectedItem.obj;
                     }
+                    else if (tbcGroups.SelectedIndex == 1)
+                    {
+                        if (!(presetsView.selectedItem.obj is Group)) return null;
+                        return (Group)presetsView.selectedItem.obj;
+                    }
+                }
+            }
             else if (tbcViews.SelectedIndex == 1) //players
             {
                 return null;
-                }
+            }
             else if (tbcViews.SelectedIndex == 2) //items
             {
                 if (itemsView == null || itemsView.selectedItem == null)
                 {
                     return room.itemGroup.childGroups.ElementAt(0).Value;
-            }
+                }
                 else
                 {
                     if (!(itemsView.selectedItem.obj is Group)) return null;
                     return (Group)itemsView.selectedItem.obj;
-        }
+                }
             }
             else if (tbcViews.SelectedIndex == 3) //bullets
             {

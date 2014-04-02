@@ -16,7 +16,7 @@ namespace OrbItProcs
     /// <summary>
     /// Shoots out damaging lasers that are automatic, single fire or rapid firing.
     /// </summary>
-    [Info(UserLevel.User, "Shoots out damaging lasers that are automatic, single fire or rapid firing.")]
+    [Info(UserLevel.User, "Shoots out damaging lasers that are automatic, single fire or rapid firing.", CompType)]
     public class Shooter : Component
     {
         public static Node bulletNode;

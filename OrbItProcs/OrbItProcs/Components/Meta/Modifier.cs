@@ -14,7 +14,7 @@ namespace OrbItProcs
     /// <summary>
     /// Modifies the values of component fields by using arbitrary functions.
     /// </summary>
-    [Info(UserLevel.Developer, "Modifies the values of component fields by using arbitrary functions.")]
+    [Info(UserLevel.Developer, "Modifies the values of component fields by using arbitrary functions.", CompType)]
     public class Modifier : Component
     {
         public const mtypes CompType = mtypes.affectself;

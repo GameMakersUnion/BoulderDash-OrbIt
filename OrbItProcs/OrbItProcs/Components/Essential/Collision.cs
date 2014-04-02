@@ -10,7 +10,7 @@ namespace OrbItProcs
     /// <summary>
     /// Nodes with this component bounce away from each other upon contact
     /// </summary>
-    [Info(UserLevel.User, "Nodes with this component bounce away from each other upon contact", mtypes.minordraw | mtypes.affectself | mtypes.essential)]
+    [Info(UserLevel.User, "Nodes with this component bounce away from each other upon contact", CompType)]
     public class Collision : Component, ILinkable
     {
         public const mtypes CompType = mtypes.minordraw | mtypes.affectself | mtypes.essential;

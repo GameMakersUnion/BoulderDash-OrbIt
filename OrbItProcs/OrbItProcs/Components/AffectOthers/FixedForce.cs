@@ -10,7 +10,7 @@ namespace OrbItProcs
     /// <summary>
     /// Pushes all affected nodes in a globally set direction
     /// </summary>
-    [Info(UserLevel.User, "Pushes all affected nodes in a globally set direction", mtypes.affectother)]
+    [Info(UserLevel.User, "Pushes all affected nodes in a globally set direction", CompType)]
     public class FixedForce : Component, ILinkable
     {
         public const mtypes CompType = mtypes.affectother;

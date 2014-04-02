@@ -10,16 +10,16 @@ namespace OrbItProcs
     /// <summary>
     /// Node will move in a seemingly random pattern.
     /// </summary>
-    [Info(UserLevel.User, "Node will move in a seemingly random pattern.")]
-    public class RandVelChange : Component {
+    [Info(UserLevel.User, "Node will move in a seemingly random pattern.", CompType)]
+    public class RandomMove : Component {
 
         public const mtypes CompType = mtypes.affectself;
         public override mtypes compType { get { return CompType; } set { } }
-        public RandVelChange() : this(null) { }
-        public RandVelChange(Node parent = null)
+        public RandomMove() : this(null) { }
+        public RandomMove(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.randvelchange; 
+            com = comp.randommove; 
         }
 
         public override void AffectSelf()

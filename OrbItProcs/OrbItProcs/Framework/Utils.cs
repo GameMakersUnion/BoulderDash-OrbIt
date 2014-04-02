@@ -232,6 +232,7 @@ namespace OrbItProcs {
         }
         public static Dictionary<comp, Type> compTypes;
         public static Dictionary<Type, comp> compEnums;
+        public static Dictionary<Type, Info> compInfos;
 
         public static Type GetComponentTypeFromEnum(comp c)
         {
@@ -249,6 +250,7 @@ namespace OrbItProcs {
             if (pinfo == null || pinfo.FieldType != typeof(mtypes)) return mtypes.none;
             return (mtypes)pinfo.GetValue(null);
         }
+        
 
         public static Info GetInfoType(Type t)
         {
@@ -325,6 +327,13 @@ namespace OrbItProcs {
             foreach (comp key in Utils.compTypes.Keys.ToList())
             {
                 compEnums.Add(Utils.GetComponentTypeFromEnum(key), key);
+            }
+            compInfos = new Dictionary<Type, Info>();
+            foreach(Type t in compTypes.Values)
+            {
+                Info info = GetInfoType(t);
+                if (info == null) continue;
+                compInfos[t] = info;
             }
         }
 
