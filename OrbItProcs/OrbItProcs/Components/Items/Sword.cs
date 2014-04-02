@@ -7,12 +7,17 @@ using Microsoft.Xna.Framework.Input;
 namespace OrbItProcs
 {
     /// <summary>
-        /// This node has a nifty sword he can swing to attack enemies. 
-        /// </summary>
-        [Info(UserLevel.User, "This node has a nifty sword he can swing to attack enemies. ", CompType)]
+    /// This node has a nifty sword the node can swing to attack enemies. 
+    /// </summary>
+    [Info(UserLevel.User, "This node has a nifty sword the node can swing to attack enemies. ", CompType)]
     public class Sword : Component
     {
-        public Node sword;
+        /// <summary>
+        /// The sword node that will be held and swung.
+        /// </summary>
+        [Info(UserLevel.User, "The sword node that will be held and swung.")]
+        [CopyNodeProperty]
+        public Node swordNode { get; set; }
         public enum swordState
         {
             sheathed,
@@ -43,6 +48,7 @@ namespace OrbItProcs
         //bool enabled; 
         //public float length{get;set;}
         //public int speed { get; set; }
+        private bool movingStick = false;
 
         Vector2 target;
         public Sword() : this(null) { }
@@ -63,34 +69,35 @@ namespace OrbItProcs
                 //{comp.waver, true},
             };
 
-            sword = new Node(parent.room, props);
-            sword.name = "sword";
+            swordNode = new Node(parent.room, props);
+            swordNode.name = "sword";
         }
 
         public override void AfterCloning()
         {
-            if (sword == null) return;
-            sword = sword.CreateClone(parent.room);
+            if (swordNode == null) return;
+            swordNode = swordNode.CreateClone(parent.room);
             //sword = new Node(parent.room, props);
         }
 
         public override void OnSpawn()
         {
             //Node.cloneNode(parent.Game1.ui.sidebar.ActiveDefaultNode, sword);
-            parent.body.texture = textures.orientedcircle;
+            //parent.body.texture = textures.orientedcircle;
             Polygon poly = new Polygon();
-            poly.body = sword.body;
+            poly.body = swordNode.body;
             poly.SetBox(swordWidth, swordLength);
             
-            sword.body.shape = poly;
-            sword.body.pos = parent.body.pos;
-            sword.body.DrawCircle = false;
+            swordNode.body.shape = poly;
+            swordNode.body.pos = parent.body.pos;
+            swordNode.body.DrawCircle = false;
+            swordNode.basicdraw.active = false;
             ///parent.room.spawnNode(sword);
 
-
-            parent.room.itemGroup.IncludeEntity(sword);
-            sword.OnSpawn();
-            sword.body.AddExclusionCheck(parent.body);
+            parent.room.itemGroup.IncludeEntity(swordNode);
+            swordNode.OnSpawn();
+            swordNode.body.AddExclusionCheck(parent.body);
+            swordNode.body.ExclusionCheck += delegate(Collider p, Collider o) { return !movingStick; };
             //sword.body.exclusionList.Add(parent.body);
             //
             //parent.body.exclusionList.Add(sword.body);
@@ -103,30 +110,33 @@ namespace OrbItProcs
             if (controller is FullController)
             {
                 FullController fc = (FullController)controller;
-                sword.movement.active = false;
+                swordNode.movement.active = false;
                 //sword.body.velocity = Utils.AngleToVector(sword.body.orient + (float)Math.PI/2) * 100;
-                sword.body.velocity = sword.body.effvelocity * 500;
+                swordNode.body.velocity = swordNode.body.effvelocity * 500;
+
 
                 if (fc.newGamePadState.ThumbSticks.Right.LengthSquared() > 0.9 * 0.9)
                 {
+                    movingStick = true;
                     target = fc.newGamePadState.ThumbSticks.Right;
                     //enabled = true;
                     target.Normalize();
                     target *= distance;
                     target *= new Vector2(1, -1);
                     target += parent.body.pos;
-                    sword.body.pos = Vector2.Lerp(sword.body.pos, target, 0.1f);
+                    swordNode.body.pos = Vector2.Lerp(swordNode.body.pos, target, 0.1f);
                     //sword.body.pos = target + parent.body.pos;
-                    Vector2 result = sword.body.pos - parent.body.pos;
-                    sword.body.SetOrientV2(result);
+                    Vector2 result = swordNode.body.pos - parent.body.pos;
+                    swordNode.body.SetOrientV2(result);
                     
                 }
                 else
                 {
+                    movingStick = false;
                     //enabled = false;
                     Vector2 restPos = new Vector2(parent.body.radius, 0).Rotate(parent.body.orient) + parent.body.pos;
-                    sword.body.pos = Vector2.Lerp(sword.body.pos, restPos, 0.1f);
-                    sword.body.orient = Utils.AngleLerp(sword.body.orient, parent.body.orient, 0.1f);
+                    swordNode.body.pos = Vector2.Lerp(swordNode.body.pos, restPos, 0.1f);
+                    swordNode.body.orient = Utils.AngleLerp(swordNode.body.orient, parent.body.orient, 0.1f);
                 }
 
                 //sword.body.pos = position;
@@ -136,13 +146,13 @@ namespace OrbItProcs
 
         public override void Draw()
         {
-            Vector2 position = sword.body.pos;
+            Vector2 position = swordNode.body.pos;
             if (position == Vector2.Zero) position = parent.body.pos;
-            parent.room.camera.Draw(textures.sword, position, parent.body.color, sword.body.scale * 2, sword.body.orient);
+            parent.room.camera.Draw(textures.sword, position, parent.body.color, swordNode.body.scale * 2, swordNode.body.orient);
         }
         public override void Death(Node other)
         {
-            sword.OnDeath(other);
+            swordNode.OnDeath(other);
         }
     }
 }

@@ -312,7 +312,7 @@ namespace OrbItProcs {
 
         public Node() : this(null,ShapeType.eCircle) { }
 
-        public Node(Room room, bool createHash) : this(room, ShapeType.eCircle, createHash) { }
+        public Node(Room room, bool createHash = true) : this(room, ShapeType.eCircle, createHash) { }
 
         public Node(Room room, ShapeType shapetype, bool createHash = true)
         {
@@ -951,9 +951,10 @@ namespace OrbItProcs {
             OnDeath(null, false);
         }
 
-        public Node CreateClone(Room room, bool CloneHash = false)
+        public Node CreateClone(Room room = null, bool CloneHash = false)
         {
-            Node newNode = new Node(room, !CloneHash);
+            Room r = room ?? room;
+            Node newNode = new Node(r, !CloneHash);
             cloneNode(this, newNode, CloneHash);
             return newNode;
         }

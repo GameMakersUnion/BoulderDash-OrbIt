@@ -10,7 +10,7 @@ namespace OrbItProcs
     /// <summary>
     /// This node will only exist for a short time.
     /// </summary>
-    [Info(UserLevel.User, "This node will only exist for a short time.", mtypes.affectself)]
+    [Info(UserLevel.User, "This node will only exist for a short time.", CompType)]
     public class Lifetime : Component
     {
         public const mtypes CompType = mtypes.affectself;

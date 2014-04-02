@@ -379,7 +379,7 @@ namespace OrbItProcs {
 
                 if (collection.Count > 0) return true;
                 else return false;
-                //he tried..
+                //the node tried..
             }
             if (datatype == data_type.array)
             {
@@ -387,7 +387,7 @@ namespace OrbItProcs {
 
                 if (array.Length > 0) return true;
                 else return false;
-                //he tried..
+                //the node tried..
             }
             if (datatype == data_type.array)
             {

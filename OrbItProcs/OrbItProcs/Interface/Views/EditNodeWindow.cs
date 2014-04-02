@@ -10,21 +10,43 @@ using Poop = TomShane.Neoforce.Controls.SideBar;
 
 namespace OrbItProcs
 {
-    public class EditGroupWindow
+    public class EditNodeWindow
     {
         //public Game1 game;
         public Manager manager;
         public Sidebar sidebar;
         public Poop poop;
-        public ComponentView componentView;
+        public ComponentView componentView { get; set; }
         public int HeightCounter = 5;
         public int LeftPadding = 5;
-
-        public EditGroupWindow(Sidebar sidebar)
+        TextBox txtName;
+        Label lblName;
+        TitlePanel titlePanelEditNode;
+        public EditNodeWindow(Sidebar sidebar, Group group) 
+            : this(sidebar)
+        {
+            titlePanelEditNode.lblTitle.Text = "Edit Group";
+            lblName.Text = "Group Name:";
+            txtName.Text = group.Name;
+        }
+        public EditNodeWindow(Sidebar sidebar, Node node)
+            : this(sidebar)
+        {
+            titlePanelEditNode.lblTitle.Text = "Edit Node";
+            lblName.Text = "Node Name:";
+            txtName.Text = node.name;
+        }
+        public EditNodeWindow(Sidebar sidebar, string Type, string Name)
+            : this(sidebar)
+        {
+            titlePanelEditNode.lblTitle.Text = "Edit " + Type;
+            lblName.Text = Type + " Name:";
+            txtName.Text = Name;
+        }
+        public EditNodeWindow(Sidebar sidebar)
         {
             this.sidebar = sidebar;
             this.manager = sidebar.manager;
-
             poop = new Poop(manager);
             poop.Init();
             int tomtom = 5;
@@ -46,30 +68,32 @@ namespace OrbItProcs
             int width = 120;
             int offset = poop.Width - width - 20;
 
-            TitlePanel titlePanelEditGroup = new TitlePanel(sidebar, poop, "Edit Group", true);
-            titlePanelEditGroup.btnBack.Click += (s, e) =>
+            titlePanelEditNode = new TitlePanel(sidebar, poop, "Edit Group", true);
+            titlePanelEditNode.btnBack.Click += (s, e) =>
             {
                 sidebar.groupsView.UpdateGroups();
                 manager.Remove(poop);
             };
 
-            HeightCounter += titlePanelEditGroup.Height;
+            HeightCounter += titlePanelEditNode.Height;
 
-            Label lblName = new Label(manager);
+            lblName = new Label(manager);
             lblName.Init();
             lblName.Parent = poop;
             lblName.Left = LeftPadding;
             lblName.Top = HeightCounter;
             lblName.Width = width;
-            lblName.Text = "Group Name:";
+            
 
-            TextBox txtName = new TextBox(manager);
+            txtName = new TextBox(manager);
             txtName.Init();
             txtName.Parent = poop;
             txtName.Top = HeightCounter;
             txtName.Width = width;
             txtName.Left = offset;
             HeightCounter += txtName.Height + LeftPadding;
+            txtName.TextColor = Color.Black;
+            txtName.Enabled = false;
 
             componentView = new ComponentView(sidebar, poop, 0, HeightCounter);
             componentView.Width = poop.Width - 20;

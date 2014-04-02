@@ -468,7 +468,7 @@ namespace OrbItProcs
 
             Movement move = new Movement();
             Collision col = new Collision();
-            Node nod = new Node();
+            Node nod = new Node(OrbIt.game.room);
             move.active = true;
             col.active = true;
             nod.active = true;

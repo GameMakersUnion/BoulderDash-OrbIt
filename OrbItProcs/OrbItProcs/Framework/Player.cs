@@ -65,57 +65,6 @@ namespace OrbItProcs
             }
         }
         //
-        public static Node launchNode { get; set; }
-        public static int bulletlife { get; set; }
-        public static int firefreq { get; set; }
-        public static int firefreqCounter = 0;
-        static Dictionary<dynamic, dynamic> launchProps;
-        public static void InitLaunchNode(Room room)
-        {
-            launchProps = new Dictionary<dynamic, dynamic>()
-            {
-                { nodeE.texture, textures.whitecircle },
-                { comp.movement, true },
-                { comp.basicdraw, true },
-                { comp.laser, true },
-                { comp.gravity, true },
-            };
-
-            launchNode = new Node(room, launchProps);
-            //launchNode.comps[comp.laser].brightness = 0.5f;
-            launchNode.Comp<Laser>().thickness = 3f;
-            launchNode.Comp<Movement>().maxVelocity.value = 5;
-            firefreq = 1;
-        }
-        public void FireNode()
-        {
-            if (node == null) return;
-            Vector2 pos = UserInterface.WorldMousePos;
-            Node newNode = new Node();
-            Node.cloneNode(launchNode, newNode);
-            newNode.body.velocity = pos - body.pos;
-            newNode.body.pos = body.pos + body.velocity * 5;
-            room.spawnNode(newNode, lifetime: bulletlife);
-        }
-
-        public void FireNodes()
-        {
-            if (node == null) return;
-            if (firefreq != 0)
-            {
-                if (firefreqCounter++ % firefreq != 0)
-                    return;
-            }
-            //FireNode();
-
-            Vector2 pos = UserInterface.WorldMousePos;
-            Node newNode = new Node();
-            Node.cloneNode(launchNode, newNode);
-            newNode.body.velocity = pos - body.pos;
-            newNode.body.pos = body.pos + body.velocity * 5;
-
-            room.spawnNode(newNode, lifetime: bulletlife);
-        }
         public static void ResetPlayers(Room room)
         {
             room.playerGroup.EmptyGroup();

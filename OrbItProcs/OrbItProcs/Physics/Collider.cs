@@ -48,18 +48,19 @@ namespace OrbItProcs
             get { return _HandlersEnabled; }
             set
             {
-                if (parent != null && OrbIt.ui != null && parent.collision.active && parent.collision.AllHandlersEnabled)
-                {
-                    if (value && !parent.IsDefault)
-                    {
-                        parent.room.AddCollider(this);
-                    }
-                    else if (!value)
-                    {
-                        parent.room.RemoveCollider(this);
-                    }
-                }
                 _HandlersEnabled = value;
+                if (parent != null && OrbIt.ui != null && parent.collision.active)
+                {
+                    parent.collision.UpdateCollisionSet();
+                    //if (value && !parent.IsDefault)
+                    //{
+                    //    parent.room.AddCollider(this);
+                    //}
+                    //else if (!value)
+                    //{
+                    //    parent.room.RemoveCollider(this);
+                    //}
+                }
             }
         }
         [Info(UserLevel.Never)]

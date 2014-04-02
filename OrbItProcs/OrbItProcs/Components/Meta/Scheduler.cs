@@ -19,7 +19,7 @@ namespace OrbItProcs
     /// <summary>
     /// Component that keeps track of events occurring related to this node. Mostly for internal use.
     /// </summary>
-    [Info(UserLevel.Developer, "Component that keeps track of events occurring related to this node. Mostly for internal use.")]
+    [Info(UserLevel.Developer, "Component that keeps track of events occurring related to this node. Mostly for internal use.", CompType)]
     public class Scheduler : Component
     {
         public const mtypes CompType = mtypes.affectself |  mtypes.essential;

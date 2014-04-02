@@ -93,31 +93,39 @@ namespace OrbItProcs
         {
             if (tbcViews.SelectedIndex == 0) //groups
             {
-                        if (groupsView == null || groupsView.selectedItem == null)
-                        {
-                            return room.generalGroups.childGroups.ElementAt(0).Value;
-                        }
-                        else
-                        {
-                            if (!(groupsView.selectedItem.obj is Group)) return null;
-                            return (Group)groupsView.selectedItem.obj;
-                        }
+                if (groupsView == null || presetsView == null)// groupsView.selectedItem == null)
+                {
+                    return room.generalGroups.childGroups.ElementAt(0).Value;
+                }
+                else
+                {
+                    if (tbcGroups.SelectedIndex == 0)
+                    {
+                        if (!(groupsView.selectedItem.obj is Group)) return null;
+                        return (Group)groupsView.selectedItem.obj;
                     }
+                    else if (tbcGroups.SelectedIndex == 1)
+                    {
+                        if (!(presetsView.selectedItem.obj is Group)) return null;
+                        return (Group)presetsView.selectedItem.obj;
+                    }
+                }
+            }
             else if (tbcViews.SelectedIndex == 1) //players
             {
                 return null;
-                }
+            }
             else if (tbcViews.SelectedIndex == 2) //items
             {
                 if (itemsView == null || itemsView.selectedItem == null)
                 {
                     return room.itemGroup.childGroups.ElementAt(0).Value;
-            }
+                }
                 else
                 {
                     if (!(itemsView.selectedItem.obj is Group)) return null;
                     return (Group)itemsView.selectedItem.obj;
-        }
+                }
             }
             else if (tbcViews.SelectedIndex == 3) //bullets
             {
@@ -494,8 +502,7 @@ namespace OrbItProcs
         void PromoteToDefault_Click(object sender, EventArgs e)
         {
             Node n = (Node)lstMain.Items.ElementAt(lstMain.ItemIndex);
-            Node newdefault = new Node();
-            Node.cloneNode(n, newdefault);
+            Node newdefault = n.CreateClone(n.room);
             Group g = ActiveGroup;
             g.defaultNode = newdefault;
             g.fullSet.Remove(n);
@@ -510,8 +517,8 @@ namespace OrbItProcs
                 room.targetNode = null;
             }
 
-            Node newdefault = new Node();
-            Node.cloneNode(n, newdefault);
+            Node newdefault = n.CreateClone(n.room);
+            //Node.cloneNode(n, newdefault);
             newdefault.body.velocity = new Vector2(0, 0);
             Group g = new Group(room, newdefault, room.masterGroup.childGroups["General Groups"]);
             newdefault.name = g.Name;

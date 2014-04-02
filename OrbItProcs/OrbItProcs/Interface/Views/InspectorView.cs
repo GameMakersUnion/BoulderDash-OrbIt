@@ -82,7 +82,7 @@ namespace OrbItProcs
             {
                 top = (viewItems[0].itemHeight - 4) * viewItems.Count;
             }
-            DetailedItem detailedItem = new DetailedItem(manager, this, item, backPanel, top, LeftPadding, backPanel.Width - 4);
+            DetailedItem detailedItem = new DetailedItem(manager, this, item, backPanel, top, LeftPadding);
             if (item.ToolTip.Length > 0) detailedItem.panel.ToolTip.Text = item.ToolTip;
             viewItems.Add(detailedItem);
             SetupScroll(detailedItem);
@@ -175,6 +175,10 @@ namespace OrbItProcs
 
         private void ItemCreatorDelegate(DetailedItem item, object obj)
         {
+            //editGroupWindow = new EditNodeWindow(sidebar, "All Players", room.playerGroup.Name);
+            //editGroupWindow.componentView.SwitchGroup(room.playerGroup);
+            //editGroupWindow.componentView.SwitchNode(n, false);
+
             if (obj == null) return;
             if (obj is InspectorInfo)
             {
@@ -186,7 +190,29 @@ namespace OrbItProcs
                 {
                     if (o is Node)
                     {
-                        item.label.Text = "Root";
+                        //item.label.Text = "Root";
+                        Node n = (Node)o;
+                        Button btnEdit = new Button(manager);
+                        btnEdit.Init();
+                        btnEdit.Parent = item.panel;
+                        btnEdit.Width = 30;
+                        btnEdit.Left = item.panel.Width - btnEdit.Width - 10;
+                        btnEdit.Top = 2;
+                        btnEdit.Height = item.buttonHeight;
+
+                        EventHandler editnode = (s, e) =>
+                        {
+                            //item.isSelected = true;
+                            EditNodeWindow editNodeWindow = new EditNodeWindow(sidebar, inspectorItem.Name(), n.name);
+                            editNodeWindow.componentView.SwitchNode(n, false);
+
+                        };
+
+                        btnEdit.Text = "Edit";
+                        btnEdit.ToolTip.Text = "Edit";
+                        btnEdit.TextColor = UserInterface.TomShanePuke;
+
+                        btnEdit.Click += editnode;
                     }
                     else if (o is Body || o is Component)
                     {

@@ -17,7 +17,7 @@ namespace OrbItProcs
     /// <summary>
     /// The Meta component hold information about the node such as health, shields, and player/ai modes.
     /// </summary>
-    [Info(UserLevel.User, "The Meta component hold information about the node such as health, shields, and player/ai modes.")]
+    [Info(UserLevel.User, "The Meta component hold information about the node such as health, shields, and player/ai modes.", CompType)]
     public class Meta : Component
     {
         public enum DamageMode

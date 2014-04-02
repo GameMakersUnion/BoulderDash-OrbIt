@@ -15,6 +15,8 @@ namespace OrbItProcs
     [System.AttributeUsage(System.AttributeTargets.Method)]
     public class InspectMethod : System.Attribute { }
 
+    [System.AttributeUsage(System.AttributeTargets.Property)]
+    public class CopyNodeProperty : System.Attribute { }
     
     public enum UserLevel
     {

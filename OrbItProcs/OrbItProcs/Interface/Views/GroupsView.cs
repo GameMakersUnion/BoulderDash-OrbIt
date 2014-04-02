@@ -18,20 +18,21 @@ namespace OrbItProcs
         public Button btnCreateGroup;
         public Group parentGroup;
         public CreateGroupWindow createGroupWindow;
-        public EditGroupWindow editGroupWindow;
+        public EditNodeWindow editGroupWindow;
         public GroupsView(Sidebar sidebar, Control parent, int Left, int Top, Group parentGroup)
             : base(sidebar, parent, Left, Top, false)
         {
+            Height += 50;
             this.parentGroup = parentGroup;
-            HeightCounter = Top + 23;
-            //lblGroupLabel = new Label(manager);
-            //lblGroupLabel.Init();
-            //lblGroupLabel.Parent = parent;
-            //lblGroupLabel.Left = LeftPadding;
-            //lblGroupLabel.Top = HeightCounter;
-            //lblGroupLabel.Width = sidebar.Width/2;
-            //lblGroupLabel.Text = "Groups";
-            //lblGroupLabel.TextColor = Color.Black;
+            HeightCounter = Top + 45;
+            lblGroupLabel = new Label(manager);
+            lblGroupLabel.Init();
+            lblGroupLabel.Parent = parent;
+            lblGroupLabel.Left = LeftPadding;
+            lblGroupLabel.Top = 10;// HeightCounter;
+            lblGroupLabel.Width = sidebar.Width / 2;
+            lblGroupLabel.Text = "Groups";
+            lblGroupLabel.TextColor = Color.Black;
             //HeightCounter += lblGroupLabel.Height + LeftPadding;
 
             ItemCreator += ItemCreatorDelegate;
@@ -83,7 +84,7 @@ namespace OrbItProcs
             {
                 top = (viewItems[0].itemHeight - 4) * viewItems.Count;
             }
-            DetailedItem detailedItem = new DetailedItem(manager, this, g, backPanel, top, LeftPadding, backPanel.Width - 4);
+            DetailedItem detailedItem = new DetailedItem(manager, this, g, backPanel, top, LeftPadding);
             base.CreateItem(detailedItem);
         }
 
@@ -104,8 +105,16 @@ namespace OrbItProcs
                 EventHandler editgroup = (s, e) =>
                 {
                     item.isSelected = true;
-                    editGroupWindow = new EditGroupWindow(sidebar);
+                    if (parentGroup == room.itemGroup)
+                    {
+                        editGroupWindow = new EditNodeWindow(sidebar, "Item Group", g.Name);
+                    }
+                    else
+                    {
+                        editGroupWindow = new EditNodeWindow(sidebar, g);
+                    }
                     editGroupWindow.componentView.SwitchGroup(g);
+                    
                 };
                 
                 btnEdit.Text = "Edit";

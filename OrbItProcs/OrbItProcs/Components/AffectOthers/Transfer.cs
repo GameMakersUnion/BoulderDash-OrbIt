@@ -35,9 +35,9 @@ namespace OrbItProcs
             if (!active) return;
             if (exclusions.Contains(other)) return;
 
-            float distVects = Vector2.Distance(other.body.pos, parent.body.pos);
+            float distVects = Vector2.DistanceSquared(other.body.pos, parent.body.pos);
             float r = parent.body.radius * radiusScale;
-            if (distVects < r)
+            if (distVects < r * r)
             {
                 float newX = (parent.body.pos.X - other.body.pos.X) * 2.05f;
                 float newY = (parent.body.pos.Y - other.body.pos.Y) * 2.05f;

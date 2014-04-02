@@ -37,7 +37,7 @@ namespace OrbItProcs
         spring,
         colorgravity,
         orbiter,
-        randvelchange,
+        randommove,
         relativemotion,
         circler,
         modifier,
@@ -49,6 +49,7 @@ namespace OrbItProcs
         swap,
         shooter,
         //draw components
+        rune,
         waver,
         laser,
         wideray,
@@ -116,7 +117,7 @@ namespace OrbItProcs
         public static bool Debugging = false;
         public static bool bigTonyOn = false;
         private bool GraphicsReset;
-
+        
         public static Action onUpdate;
 
         private OrbIt() : base(true)
@@ -158,10 +159,7 @@ namespace OrbItProcs
             }
             Manager.Graphics.IsFullScreen = fullScreen;
             GraphicsReset = true;
-
         }
-
-
         protected override void Initialize()
         {
             //Load Stuff.
@@ -182,6 +180,11 @@ namespace OrbItProcs
             //UI
             ui = UserInterface.Start();
             ui.Initialize();
+            foreach (var tabpage in ui.sidebar.tbcViews.TabPages)
+            {
+                string whitespace = "  ";
+                tabpage.Text = whitespace + tabpage.Text + whitespace;
+            }
             //The only important stat in OrbIt.
             frameRateCounter = new FrameRateCounter(this);
 
@@ -217,7 +220,7 @@ namespace OrbItProcs
             };
             onUpdate += delegate { test.Refresh(); };
         }
-        
+       
         protected override void Update(GameTime gameTime)
         {
             //Do not write code above this.
@@ -233,13 +236,13 @@ namespace OrbItProcs
             }
             tempRoom.Update(gameTime);
             frameRateCounter.Draw(Assets.font);
-            
+
             base.Draw(gameTime);
             if (GraphicsReset)
             {
                 Manager.Graphics.ApplyChanges();
                 mainRoom.roomRenderTarget = new RenderTarget2D(GraphicsDevice, Width, Height);
-            }
+            }  
             onUpdate.Invoke();
         }
 

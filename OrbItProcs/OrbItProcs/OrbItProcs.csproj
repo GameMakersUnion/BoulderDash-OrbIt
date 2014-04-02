@@ -77,7 +77,7 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="C3.XNA.Primitives2D, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -147,25 +147,26 @@
     <Compile Include="Assets.cs" />
     <Compile Include="Components\AffectOthers\Displace.cs" />
     <Compile Include="Components\AffectOthers\FixedForce.cs" />
+    <Compile Include="Components\Drawers\Runer.cs" />
     <Compile Include="Components\Essential\Meta.cs" />
     <Compile Include="Components\Items\ItemPayload.cs" />
     <Compile Include="Components\Linkers\Orbiter.cs" />
     <Compile Include="Components\AffectOthers\Spring.cs" />
-    <Compile Include="Components\Delegator.cs" />
+    <Compile Include="Components\Meta\Delegator.cs" />
     <Compile Include="Components\Drawers\ColorChanger.cs" />
     <Compile Include="Components\Drawers\ColorGravity.cs" />
     <Compile Include="Components\Items\Sword.cs" />
     <Compile Include="Components\Items\Shooter.cs" />
     <Compile Include="Components\Meta\Swap.cs" />
-    <Compile Include="Components\Scheduler.cs" />
-    <Compile Include="Components\Shader.cs" />
+    <Compile Include="Components\Meta\Scheduler.cs" />
+    <Compile Include="Components\Drawers\Shader.cs" />
     <Compile Include="Framework\Gametypes\BigTony.cs" />
     <Compile Include="Framework\Gametypes\Gametype.cs" />
     <Compile Include="Interface\Views\AddComponentView.cs" />
     <Compile Include="Interface\Views\AddComponentWindow.cs" />
     <Compile Include="Interface\Views\CreateGroupWindow.cs" />
     <Compile Include="Framework\ThreadedCamera.cs" />
-    <Compile Include="Interface\Views\EditGroupWindow.cs" />
+    <Compile Include="Interface\Views\EditNodeWindow.cs" />
     <Compile Include="Interface\Views\OptionsWindow.cs" />
     <Compile Include="Interface\Views\ComponentView.cs" />
     <Compile Include="Interface\Views\DetailedView.cs" />
@@ -189,7 +190,7 @@
     <Compile Include="Processes\GraphData.cs" />
     <Compile Include="Physics\Body.cs" />
     <Compile Include="Components\Essential\BasicDraw.cs" />
-    <Compile Include="Components\ILinkable.cs" />
+    <Compile Include="Components\Linkers\ILinkable.cs" />
     <Compile Include="Components\Linkers\Flow.cs" />
     <Compile Include="Components\Essential\Collision.cs" />
     <Compile Include="Component.cs" />
@@ -197,7 +198,7 @@
     <Compile Include="Components\Movement\Circler.cs" />
     <Compile Include="Framework\Redirector.cs" />
     <Compile Include="Components\Linkers\Tether.cs" />
-    <Compile Include="Components\RelativeMotion.cs" />
+    <Compile Include="Components\Linkers\RelativeMotion.cs" />
     <Compile Include="Components\Tracers\Laser.cs" />
     <Compile Include="Components\Meta\Lifetime.cs" />
     <Compile Include="Components\Meta\Modifier.cs" />

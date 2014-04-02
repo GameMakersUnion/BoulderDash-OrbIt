@@ -47,7 +47,7 @@ namespace OrbItProcs
                 insView.AdjustWidth();
             }
         }
-        
+
        
         public ComponentView(Sidebar sidebar, Control parent, int Left, int Top)
             : base(sidebar, parent, Left, Top, false)

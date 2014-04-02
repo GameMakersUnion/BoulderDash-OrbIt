@@ -22,18 +22,19 @@ namespace OrbItProcs
             get { return _HandlersEnabled; }
             set
             {
-                if (parent != null && OrbIt.ui != null && parent.collision.active && parent.collision.AllHandlersEnabled)
-                {
-                    if (!_HandlersEnabled && value && !parent.IsDefault)
-                    {
-                        parent.room.AddCollider(this);
-                    }
-                    else if (_HandlersEnabled && !value && !_ResolveCollision)
-                    {
-                        parent.room.RemoveCollider(this);
-                    }
-                }
                 _HandlersEnabled = value;
+                if (parent != null && OrbIt.ui != null && parent.collision.active)
+                {
+                    parent.collision.UpdateCollisionSet();
+                    //if (!_HandlersEnabled && value && !parent.IsDefault)
+                    //{
+                    //    parent.room.AddCollider(this);
+                    //}
+                    //else if (_HandlersEnabled && !value && !_ResolveCollision)
+                    //{
+                    //    parent.room.RemoveCollider(this);
+                    //}
+                }
             }
         }
 
@@ -47,18 +48,19 @@ namespace OrbItProcs
             get { return _ResolveCollision; }
             set 
             {
+                _ResolveCollision = value;
                 if (parent != null && OrbIt.ui != null && parent.collision.active)
                 {
-                    if (value && !parent.IsDefault)
-                    {
-                        parent.room.AddCollider(this);
-                    }
-                    else if (!value && !_HandlersEnabled)
-                    {
-                        parent.room.RemoveCollider(this);
-                    }
+                    parent.collision.UpdateCollisionSet();
+                    //if (value && !parent.IsDefault)
+                    //{
+                    //    parent.room.AddCollider(this);
+                    //}
+                    //else if (!value && !_HandlersEnabled)
+                    //{
+                    //    parent.room.RemoveCollider(this);
+                    //}
                 }
-                _ResolveCollision = value; 
             }
         }
         /// <summary>
