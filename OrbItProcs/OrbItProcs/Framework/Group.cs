@@ -179,10 +179,11 @@ namespace OrbItProcs
         [Polenter.Serialization.ExcludeFromSerialization]
         public List<Group> groupPath { get; set; }
 
-        public Group() : this(null)
+        public Group()
+            : this(null)
         {
         }
-        public Group(Node defaultNode = null, Group parentGroup = null, GroupState groupState = GroupState.on, string Name = "", bool Spawnable = true, ObservableHashSet<Node> entities = null)
+        public Group(Node defaultNode = null, Group parentGroup = null, string Name = "", bool Spawnable = true, GroupState groupState = GroupState.on, ObservableHashSet<Node> entities = null)
         {
             if (parentGroup != null) room = parentGroup.room;
             else  room = OrbIt.game.room;

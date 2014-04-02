@@ -15,7 +15,7 @@ namespace OrbItProcs
         public InspectorArea insArea;
         public GroupPanel grouppanel;
         public Dictionary<string, Control> panelControls;
-        private InspectorItem activeInspectorItem;
+        private InspectorInfo activeInspectorItem;
         public Type editType;
 
         //private int HeightCounter = 0;
@@ -44,7 +44,7 @@ namespace OrbItProcs
             if (erase) grouppanel.Visible = false;
         }
 
-        public void UpdatePanel(InspectorItem inspectorItem)
+        public void UpdatePanel(InspectorInfo inspectorItem)
         {
             //if (activeInspectorItem == inspectorItem) return;
             if (inspectorItem.membertype == member_type.previouslevel) return;

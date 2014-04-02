@@ -19,7 +19,7 @@ namespace OrbItProcs
         public Room room { get { return sidebar.room; } }
         public UserInterface ui;
         public Sidebar sidebar;
-        public InspectorItem ActiveInspectorParent;
+        public InspectorInfo ActiveInspectorParent;
         public Node rootNode;
 
         public int Left;

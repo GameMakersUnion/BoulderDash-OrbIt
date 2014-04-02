@@ -14,8 +14,8 @@ namespace OrbItProcs
 {
     public class GroupsView : DetailedView
     {
-        Label groupLabel;
-        Button btnCreateGroup;
+        public Label lblGroupLabel;
+        public Button btnCreateGroup;
         public Group parentGroup;
         public CreateGroupWindow createGroupWindow;
         public EditGroupWindow editGroupWindow;
@@ -24,15 +24,15 @@ namespace OrbItProcs
         {
             this.parentGroup = parentGroup;
             HeightCounter = Top + 23;
-            groupLabel = new Label(manager);
-            groupLabel.Init();
-            groupLabel.Parent = parent;
-            groupLabel.Left = LeftPadding;
-            groupLabel.Top = HeightCounter;
-            groupLabel.Width = sidebar.Width/2;
-            groupLabel.Text = "Groups";
-            groupLabel.TextColor = Color.Black;
-            HeightCounter += groupLabel.Height + LeftPadding;
+            //lblGroupLabel = new Label(manager);
+            //lblGroupLabel.Init();
+            //lblGroupLabel.Parent = parent;
+            //lblGroupLabel.Left = LeftPadding;
+            //lblGroupLabel.Top = HeightCounter;
+            //lblGroupLabel.Width = sidebar.Width/2;
+            //lblGroupLabel.Text = "Groups";
+            //lblGroupLabel.TextColor = Color.Black;
+            //HeightCounter += lblGroupLabel.Height + LeftPadding;
 
             ItemCreator += ItemCreatorDelegate;
 
@@ -69,6 +69,10 @@ namespace OrbItProcs
             foreach (Group g in parentGroup.childGroups.Values)
             {
                 CreateNewItem(g);
+            }
+            if (viewItems.Count > 0)
+            {
+                SelectItem(viewItems.ElementAt(0));
             }
         }
         private bool showRemoveButton = false;

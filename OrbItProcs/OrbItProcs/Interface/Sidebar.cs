@@ -82,20 +82,50 @@ namespace OrbItProcs
                     }
                     else
                     {
-                        if (groupsView == null || groupsView.selectedItem == null)
-                        {
-                            return room.generalGroups.childGroups.ElementAt(0).Value;
-                        }
-                        else
-                        {
-                            if (!(groupsView.selectedItem.obj is Group)) return null;
-                            return (Group)groupsView.selectedItem.obj;
-                        }
+                        return GetActiveGroup();
                     }
                 }
                 return room.masterGroup;
             }
         }
+
+        public Group GetActiveGroup()
+        {
+            if (tbcViews.SelectedIndex == 0) //groups
+            {
+                if (groupsView == null || groupsView.selectedItem == null)
+                {
+                    return room.generalGroups.childGroups.ElementAt(0).Value;
+                }
+                else
+                {
+                    if (!(groupsView.selectedItem.obj is Group)) return null;
+                    return (Group)groupsView.selectedItem.obj;
+                }
+            }
+            else if (tbcViews.SelectedIndex == 1) //players
+            {
+                return null;
+            }
+            else if (tbcViews.SelectedIndex == 2) //items
+            {
+                if (itemsView == null || itemsView.selectedItem == null)
+                {
+                    return room.itemGroup.childGroups.ElementAt(0).Value;
+                }
+                else
+                {
+                    if (!(itemsView.selectedItem.obj is Group)) return null;
+                    return (Group)itemsView.selectedItem.obj;
+                }
+            }
+            else if (tbcViews.SelectedIndex == 3) //bullets
+            {
+                return null;
+            }
+            return null;
+        }
+
         public Node ActiveDefaultNode
         {
             get
@@ -106,7 +136,7 @@ namespace OrbItProcs
                 return null;
             }
         }
-        //public InspectorItem ActiveInspectorParent;
+        //public InspectorInfo ActiveInspectorParent;
         
         private int _Width = 250;
         public int Width
@@ -185,7 +215,7 @@ namespace OrbItProcs
             master.Movable = false;
             master.Anchor = Anchors.Top | Anchors.Right | Anchors.Bottom;
             //master.BorderVisible = false;
-            master.Alpha = 255; //TODO : check necesity
+            //master.Alpha = 255; //TODO : check necesity
             manager.Add(master);
             #endregion
 
@@ -208,6 +238,7 @@ namespace OrbItProcs
             tbcMain.AddPage();
             tbcMain.TabPages[0].Text = "First";
             TabPage first = tbcMain.TabPages[0];
+            tbcMain.SelectedIndex = 0;
 
             #region  /// Title ///
             title1 = new Label(manager);
@@ -236,6 +267,7 @@ namespace OrbItProcs
             lstMain.HideSelection = false;
             lstMain.ItemIndexChanged += lstMain_ItemIndexChanged;
             lstMain.Click += lstMain_Click;
+            lstMain.Refresh();
             //room.nodes.CollectionChanged += nodes_Sync;
 
             mainNodeContextMenu = new ContextMenu(manager);
@@ -400,7 +432,8 @@ namespace OrbItProcs
 
             InitializeSecondPage();
             InitializeThirdPage();
-            InitializeGroupsPage();
+
+            
             
         }
 
@@ -427,7 +460,7 @@ namespace OrbItProcs
                 if (g.fullSet.Contains(inspectorArea.editNode) && inspectorArea.editNode != g.defaultNode)
                 {
                     inspectorArea.InsBox.Items.Clear();
-                    inspectorArea.InsBox.rootitem = null;
+                    inspectorArea.rootitem = null;
                     inspectorArea.editNode = null;
                 }
                 g.DeleteGroup();
@@ -519,7 +552,7 @@ namespace OrbItProcs
 
         public void UpdateGroupComboBox(ComboBox cb, params string[] additionalItems)
         {
-            if (room == null) return;
+            if (room == null || cb == null) return;
             string tempName = "";
             if (cb.ItemIndex >= 0) tempName = cb.Items.ElementAt(cb.ItemIndex).ToString();
             cb.ItemIndex = 0;
@@ -615,8 +648,8 @@ namespace OrbItProcs
 
         void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
         {
-            List<InspectorItem> itemspath = new List<InspectorItem>();
-            InspectorItem item = (InspectorItem)inspectorArea.InsBox.Items.ElementAt(inspectorArea.InsBox.ItemIndex);
+            List<InspectorInfo> itemspath = new List<InspectorInfo>();
+            InspectorInfo item = (InspectorInfo)inspectorArea.InsBox.Items.ElementAt(inspectorArea.InsBox.ItemIndex);
             object value = item.GetValue();
 
             BuildItemsPath(item, itemspath);
@@ -626,9 +659,9 @@ namespace OrbItProcs
             {
                 Node n = (Node)o;
                 if (n == itemspath.ElementAt(0).obj) return;
-                InspectorItem temp = new InspectorItem(null, n, this);
+                InspectorInfo temp = new InspectorInfo(null, n, this);
                 int count = 0;
-                foreach (InspectorItem pathitem in itemspath)
+                foreach (InspectorInfo pathitem in itemspath)
                 {
                     if (temp.obj.GetType() != pathitem.obj.GetType())
                     {
@@ -665,13 +698,13 @@ namespace OrbItProcs
                     }
                     else
                     {
-                        InspectorItem next = itemspath.ElementAt(count + 1);
+                        InspectorInfo next = itemspath.ElementAt(count + 1);
                         if (next.membertype == member_type.dictentry)
                         {
                             dynamic dict = temp.obj;
                             dynamic key = next.key;
                             if (!dict.ContainsKey(key)) break;
-                            temp = new InspectorItem(null, temp, dict[key], key);
+                            temp = new InspectorInfo(null, temp, dict[key], key);
                         }
                         //else if (next.membertype == member_type.collectionentry)
                         //{
@@ -682,11 +715,11 @@ namespace OrbItProcs
                         {
                             if (next.fpinfo.propertyInfo == null)
                             {
-                                temp = new InspectorItem(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.fieldInfo);
+                                temp = new InspectorInfo(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.fieldInfo);
                             }
                             else
                             {
-                                temp = new InspectorItem(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.propertyInfo);
+                                temp = new InspectorInfo(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.propertyInfo);
                             }
                         }
                     }
@@ -695,9 +728,9 @@ namespace OrbItProcs
             });
         }
 
-        public void BuildItemsPath(InspectorItem item, List<InspectorItem> itemspath)
+        public void BuildItemsPath(InspectorInfo item, List<InspectorInfo> itemspath)
         {
-            InspectorItem temp = item;
+            InspectorInfo temp = item;
             itemspath.Insert(0, temp);
             while (temp.parentItem != null)
             {
@@ -1006,7 +1039,7 @@ namespace OrbItProcs
             if (g.fullSet.Contains(inspectorArea.editNode) && inspectorArea.editNode != g.defaultNode)
             {
                 inspectorArea.InsBox.Items.Clear();
-                inspectorArea.InsBox.rootitem = null;
+                inspectorArea.rootitem = null;
                 inspectorArea.editNode = null;
             }
             //int size = g.fullSet.Count, count = 0;
@@ -1030,7 +1063,7 @@ namespace OrbItProcs
             if (inspectorArea.editNode != ActiveDefaultNode && !lstPresets.Items.Contains(inspectorArea.editNode))
             {
                 inspectorArea.InsBox.Items.Clear();
-                inspectorArea.InsBox.rootitem = null;
+                inspectorArea.rootitem = null;
                 inspectorArea.editNode = null;
             }
             inspectorArea.propertyEditPanel.DisableControls();

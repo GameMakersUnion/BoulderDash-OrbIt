@@ -131,7 +131,7 @@ namespace OrbItProcs
             Room r = OrbIt.game.room;
             Shooter.MakeBullet();
             Node def = r.masterGroup.defaultNode.CreateClone();
-            def.addComponent(comp.shooter, true);
+            //def.addComponent(comp.shooter, true);
             r.playerGroup.defaultNode = def;
             for (int i = 1; i < 5; i++)
             {
@@ -147,9 +147,9 @@ namespace OrbItProcs
                 node.body.pos = spawnPos;
                 node.name = "player" + p.ColorName;
                 node.SetColor(p.pColor);
-                node.addComponent(comp.shooter, true);
-                node.addComponent(comp.sword, true);
-                node.Comp<Sword>().sword.collision.DrawRing = false;
+                //node.addComponent(comp.shooter, true);
+                //node.addComponent(comp.sword, true);
+                //node.Comp<Sword>().sword.collision.DrawRing = false;
                 p.node = node;
                 r.playerGroup.IncludeEntity(node);
                 node.OnSpawn();

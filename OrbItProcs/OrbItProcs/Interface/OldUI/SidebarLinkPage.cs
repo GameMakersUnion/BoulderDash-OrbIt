@@ -48,6 +48,7 @@ namespace OrbItProcs
             //backPanel.Width = second.Width + 20;
             backPanel.AutoScroll = true;
             backPanel.Init();
+            //backPanel.Color = master.BackColor;
             second.Add(backPanel);
 
             HeightCounter3 = 0;
@@ -55,20 +56,22 @@ namespace OrbItProcs
 
             SourceTarget = new CollapsePanel(manager, backPanel, "Source      |   Target"); stackview.AddPanel(SourceTarget);
             LinkPalette = new CollapsePanel(manager, backPanel, "Link Palette"); stackview.AddPanel(LinkPalette);
-            c3 = new CollapsePanel(manager, backPanel, "third", extended: false); stackview.AddPanel(c3);
-            c4 = new CollapsePanel(manager, backPanel, "fourth", extended: false); stackview.AddPanel(c4);
-            c5 = new CollapsePanel(manager, backPanel, "fifth", extended: false); stackview.AddPanel(c5);
-            c6 = new CollapsePanel(manager, backPanel, "sixth", extended: false); stackview.AddPanel(c6);
-            c7 = new CollapsePanel(manager, backPanel, "seventh", extended: false); stackview.AddPanel(c7);
-            c8 = new CollapsePanel(manager, backPanel, "eighth", extended: false); stackview.AddPanel(c8);
+            //c3 = new CollapsePanel(manager, backPanel, "third", extended: false); stackview.AddPanel(c3);
+            //c4 = new CollapsePanel(manager, backPanel, "fourth", extended: false); stackview.AddPanel(c4);
+            //c5 = new CollapsePanel(manager, backPanel, "fifth", extended: false); stackview.AddPanel(c5);
+            //c6 = new CollapsePanel(manager, backPanel, "sixth", extended: false); stackview.AddPanel(c6);
+            //c7 = new CollapsePanel(manager, backPanel, "seventh", extended: false); stackview.AddPanel(c7);
+            //c8 = new CollapsePanel(manager, backPanel, "eighth", extended: false); stackview.AddPanel(c8);
+
+            backPanel.Color = UserInterface.TomDark;
 
             tbcMain.SelectedPage = tbcMain.TabPages[1];
 
             #region /// Source | Target ///
 
             int left = backPanel.Left;
-            int middle = backPanel.Left + backPanel.Width / 2 - 7;
-            int right = backPanel.Width;
+            int middle = backPanel.Left + backPanel.Width / 2 - 15;
+            int right = backPanel.Width - 15;
 
             SourceTarget.ExpandedHeight += 60;
 
@@ -460,13 +463,14 @@ namespace OrbItProcs
 
         void btnCreateLink_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            InspectorBox box = insArea2.InsBox;
+            //InspectorBox box = insArea2.InsBox;
+            ListBox box = insArea2.InsBox;
             if (box.ItemIndex < 0 || box.ItemIndex > box.Items.Count) return;
             if (box.ItemIndex >= box.Items.Count) return;
 
             object i = box.Items.ElementAt(box.ItemIndex);
-            if (!(i is InspectorItem)) return;
-            InspectorItem item = (InspectorItem)i;
+            if (!(i is InspectorInfo)) return;
+            InspectorInfo item = (InspectorInfo)i;
             if (!(item.obj is Link)) return;
             Link link = (Link)item.obj;
 

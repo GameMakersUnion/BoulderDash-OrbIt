@@ -64,6 +64,13 @@ namespace OrbItProcs
             };
 
             sword = new Node(props);
+            sword.name = "sword";
+        }
+
+        public override void AfterCloning()
+        {
+            if (sword == null) return;
+            sword = sword.CreateClone();
         }
 
         public override void OnSpawn()
@@ -89,7 +96,6 @@ namespace OrbItProcs
         }
         public override void AffectSelf()
         {
-            base.AffectSelf();
         }
         public override void PlayerControl(Controller controller)
         {
@@ -129,8 +135,9 @@ namespace OrbItProcs
 
         public override void Draw()
         {
-            base.Draw();
-            parent.room.camera.Draw(textures.sword, sword.body.pos, parent.body.color,sword.body.scale*2, sword.body.orient);
+            Vector2 position = sword.body.pos;
+            if (position == Vector2.Zero) position = parent.body.pos;
+            parent.room.camera.Draw(textures.sword, position, parent.body.color, sword.body.scale * 2, sword.body.orient);
         }
         public override void Death(Node other)
         {

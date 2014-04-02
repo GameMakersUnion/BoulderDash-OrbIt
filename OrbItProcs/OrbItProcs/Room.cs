@@ -226,12 +226,12 @@ namespace OrbItProcs {
             masterGroup = new Group(defaultNode, Name: defaultNode.name, Spawnable: false);
             if (Groups)
             {
-                Group playerGroup = new Group(defaultNode, masterGroup, Name: "Player Group", Spawnable: false);
-                Group itemGroup = new Group(defaultNode, masterGroup, Name: "Item Group", Spawnable: false);
-                Group generalGroup = new Group(defaultNode, masterGroup, Name: "General Groups", Spawnable: false);
-                Group linkGroup = new Group(defaultNode, masterGroup, Name: "Link Groups", Spawnable: false);
-                Group wallGroup = new Group(defaultNode, masterGroup, Name: "Walls", Spawnable: false);
-                Group firstGroup = new Group(firstdefault, generalGroup, Name: "Group1");
+                Group playerGroup = new Group(defaultNode, masterGroup, "Player Group", false);
+                Group itemGroup = new Group(defaultNode, masterGroup, "Item Group", false);
+                Group generalGroup = new Group(defaultNode, masterGroup, "General Groups", false);
+                Group linkGroup = new Group(defaultNode, masterGroup, "Link Groups", false);
+                Group wallGroup = new Group(defaultNode, masterGroup, "Walls", false);
+                Group firstGroup = new Group(firstdefault, generalGroup, "Group1");
             }
 
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
@@ -241,6 +241,32 @@ namespace OrbItProcs {
             targetNodeGraphic.name = "TargetNodeGraphic";
 
             MakeWalls();
+            MakeItemGroups();
+        }
+
+        public void MakeItemGroups()
+        {
+            Node itemDef = defaultNode.CreateClone();
+            itemDef.addComponent(comp.itempayload, true);
+            itemDef.movement.active = false;
+
+            Node gravDef = itemDef.CreateClone();
+            Gravity grav = new Gravity(gravDef);
+            grav.mode = Gravity.Mode.Strong;
+            gravDef.Comp<ItemPayload>().AddComponentItem(grav);
+            Group gravItems = new Group(gravDef, itemGroup, "gravItem");
+
+            Node shooterDef = itemDef.CreateClone();
+            Shooter shoot = new Shooter(shooterDef);
+            //grav.mode = Gravity.Mode.Strong;
+            shooterDef.Comp<ItemPayload>().AddComponentItem(shoot);
+            Group shooterItems = new Group(shooterDef, itemGroup, "shooterItem");
+
+            Node swordDef = itemDef.CreateClone();
+            Sword sword = new Sword(swordDef);
+            //grav.mode = Gravity.Mode.Strong;
+            swordDef.Comp<ItemPayload>().AddComponentItem(sword);
+            Group swordItems = new Group(swordDef, itemGroup, "swordItem");
         }
         
         public void AddCollider(Collider collider)
@@ -323,7 +349,8 @@ namespace OrbItProcs {
                 }
             }
 
-            Testing.PrintTimer("insertion");
+            Testing.PrintTimer("insertion");//oh, mama.
+
             gridsystemCollision.alreadyVisited = new HashSet<Collider>();
 
             foreach (var c in CollisionSetPolygon.ToList())
@@ -660,7 +687,6 @@ namespace OrbItProcs {
         {
             Group activegroup = OrbIt.ui.sidebar.ActiveGroup;
             if (activegroup == null || !activegroup.Spawnable) return null;
-            if (OrbIt.game.room == OrbIt.game.mainRoom && OrbIt.ui.sidebar.activeTabControl == OrbIt.ui.sidebar.tbcViews && OrbIt.ui.sidebar.tbcViews.SelectedIndex != 0) return null;
 
             Node newNode = new Node();
             if (!blank)

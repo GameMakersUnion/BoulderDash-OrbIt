@@ -69,20 +69,6 @@ namespace OrbItProcs
         sword,
         itempayload,
     };
-    public enum textures
-    {
-        whitecircle,
-        orientedcircle,
-        blackorb,
-        whitesphere,
-        ring,
-        whiteorb,
-        blueorb,
-        colororb,
-        whitepixel,
-        whitepixeltrans,
-        sword
-    }
     public enum resolutions
     {
         FHD_1920x1080,
@@ -198,19 +184,25 @@ namespace OrbItProcs
             ui.sidebar.UpdateGroupComboBoxes();
             ui.sidebar.cbListPicker.ItemIndex = 0;
             ui.sidebar.cbListPicker.ItemIndex = 2;
+
             ui.sidebar.cbGroupS.ItemIndex = 2;
             ui.sidebar.cbGroupT.ItemIndex = 2;
+
+            
+
+            Player.CreatePlayers();
+
+            ui.sidebar.InitializeGroupsPage();
+            ui.sidebar.InitializePlayersPage();
+            ui.sidebar.InitializeItemsPage();
+
+            ui.sidebar.InitializeBulletsPage();
 
             processManager.SetProcessKeybinds();
             ui.keyManager.addProcessKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
             ui.keyManager.addProcessKeyAction("togglesidebar", KeyCodes.OemTilde, OnPress: ui.ToggleSidebar);
             ui.keyManager.addProcessKeyAction("switchview", KeyCodes.PageDown, OnPress: ui.SwitchView);
             ui.keyManager.addProcessKeyAction("removeall", KeyCodes.Delete, OnPress: () => ui.sidebar.btnRemoveAllNodes_Click(null, null));
-
-            Player.CreatePlayers();
-
-            ui.sidebar.InitializePlayersPage();
-            ui.sidebar.InitializeItemsPage();
         }
        
         protected override void Update(GameTime gameTime)

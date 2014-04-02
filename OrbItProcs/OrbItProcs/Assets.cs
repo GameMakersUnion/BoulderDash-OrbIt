@@ -10,6 +10,38 @@ using System.Text;
 
 namespace OrbItProcs
 {
+    public enum textures
+    {
+        r1,
+        r2,
+        r3,
+        r4,
+        r5,
+        r6,
+        r7,
+        r8,
+        r9,
+        r10,
+        r11,
+        r12,
+        r13,
+        r14,
+        r15,
+        r16,
+        whitecircle,
+        orientedcircle,
+        blackorb,
+        whitesphere,
+        ring,
+        whiteorb,
+        blueorb,
+        colororb,
+        whitepixel,
+        whitepixeltrans,
+        sword,
+        randompixels,
+    }
+
     static class Assets
     {
         public const string filepath = "Presets//Nodes/";
@@ -37,9 +69,17 @@ namespace OrbItProcs
             { textures.ring, content.Load<Texture2D>("Textures/ring"                        )},
             { textures.orientedcircle, content.Load<Texture2D>("Textures/orientedcircle"    )},
             { textures.sword, content.Load<Texture2D>("Textures/sword"                      )},
+            { textures.randompixels, content.Load<Texture2D>("Textures/randompixels"        )},
             };
 
-            textureCenters = new Dictionary<textures, Vector2>();
+            for (int i = 0; i < 16; i++)
+            {
+                textures rune = (textures)i;
+                string s = "Textures/Runes/" + (i + 1) + " symboli";
+                textureDict.Add(rune, content.Load<Texture2D>(s));
+            }
+
+                textureCenters = new Dictionary<textures, Vector2>();
             foreach (var tex in textureDict.Keys)
             {
                 Texture2D t = textureDict[tex];
@@ -49,7 +89,6 @@ namespace OrbItProcs
             font = content.Load<SpriteFont>("Courier New");
             shaderEffect = content.Load<Effect>("Effects/Shader");
             btnTextures = content.Load<Texture2D>("Textures/buttons").sliceSpriteSheet(2, 5);
-
         }
 
 

@@ -42,17 +42,15 @@ namespace OrbItProcs
             ConsolePanel = new CollapsePanel(manager, backPanel2, "Console"); stackview2.AddPanel(ConsolePanel);
             PresetsPanel = new CollapsePanel(manager, backPanel2, "Presets"); stackview2.AddPanel(PresetsPanel);
             CheckBoxes = new CollapsePanel(manager, backPanel2, "CheckBoxes", extended: false); stackview2.AddPanel(CheckBoxes);
-            c14 = new CollapsePanel(manager, backPanel2, "fourth", extended: false); stackview2.AddPanel(c14);
-            c15 = new CollapsePanel(manager, backPanel2, "fifth", extended: false); stackview2.AddPanel(c15);
-            c16 = new CollapsePanel(manager, backPanel2, "sixth", extended: false); stackview2.AddPanel(c16);
-            c17 = new CollapsePanel(manager, backPanel2, "seventh", extended: false); stackview2.AddPanel(c17);
-            c18 = new CollapsePanel(manager, backPanel2, "eighth", extended: false); stackview2.AddPanel(c18);
+            //c14 = new CollapsePanel(manager, backPanel2, "fourth", extended: false); stackview2.AddPanel(c14);
+            //c15 = new CollapsePanel(manager, backPanel2, "fifth", extended: false); stackview2.AddPanel(c15);
+            //c16 = new CollapsePanel(manager, backPanel2, "sixth", extended: false); stackview2.AddPanel(c16);
+            //c17 = new CollapsePanel(manager, backPanel2, "seventh", extended: false); stackview2.AddPanel(c17);
+            //c18 = new CollapsePanel(manager, backPanel2, "eighth", extended: false); stackview2.AddPanel(c18);
+
+            backPanel2.Color = UserInterface.TomDark;
 
             tbcMain.SelectedPage = tbcMain.TabPages[2];
-
-
-            
-
             #region  /// Page 3 ///
             GroupPanel parent;
             #region /// Console ///

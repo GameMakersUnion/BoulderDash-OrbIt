@@ -19,6 +19,7 @@ namespace OrbItProcs
 
         public InspectorView insView;
 
+
         public override int Width
         {
             get
@@ -38,6 +39,7 @@ namespace OrbItProcs
         public ComponentView(Sidebar sidebar, Control parent, int Left, int Top)
             : base(sidebar, parent, Left, Top, false)
         {
+            this.parent = parent;
             lblComponents = new Label(manager);
             lblComponents.Init();
             lblComponents.Parent = parent;
@@ -83,8 +85,8 @@ namespace OrbItProcs
         public void OnEvent2(Control control, DetailedItem item, EventArgs e)
         {
             if (control == null || item == null) return;
-            if (!(item.obj is InspectorItem)) return;
-            //InspectorItem ins = (InspectorItem)item.obj;
+            if (!(item.obj is InspectorInfo)) return;
+            //InspectorInfo ins = (InspectorInfo)item.obj;
             if (control.Text.Equals("component_button_remove"))
             {
                 RefreshComponents();
@@ -113,9 +115,9 @@ namespace OrbItProcs
 
             SetComponent(item.obj);
             lblCurrentComp.Text = item.label.Text;
-            if (item.obj is InspectorItem)
+            if (item.obj is InspectorInfo)
             {
-                InspectorItem i = (InspectorItem)item.obj;
+                InspectorInfo i = (InspectorInfo)item.obj;
                 if (i.obj is Component)
                 {
                     lblCurrentComp.TextColor = item.itemControls["component_button_enabled"].TextColor;
@@ -130,12 +132,12 @@ namespace OrbItProcs
         public void SetComponent(object obj)
         {
             if (insView == null) return;
-            if (obj == null || !(obj is InspectorItem)) return;
+            if (obj == null || !(obj is InspectorInfo)) return;
             if (obj.GetType().IsClass)
             {
                 insView.backPanel.Visible = true;
                 insView.backPanel.Refresh();
-                insView.SetRootInspectorItem((InspectorItem)obj);
+                insView.SetRootInspectorItem((InspectorInfo)obj);
             }
         }
 
@@ -194,7 +196,7 @@ namespace OrbItProcs
             int width = backPanel.Width - 4; //#magic number
             if (itemCount >= 10)
                 width -= 18;
-            InspectorItem rootItem = new InspectorItem(null, node, sidebar);
+            InspectorInfo rootItem = new InspectorInfo(null, node, sidebar);
             int height = 0;
             if (sidebar.userLevel == UserLevel.Debug)
             {
@@ -202,7 +204,7 @@ namespace OrbItProcs
                 height = (viewItems[0].itemHeight - 2);
                 heightCount += height;
             }
-            InspectorItem bodyItem = new InspectorItem(null, rootItem, node.body, node.GetType().GetProperty("body"));
+            InspectorInfo bodyItem = new InspectorInfo(null, rootItem, node.body, node.GetType().GetProperty("body"));
             CreateItem(new DetailedItem(manager, this, bodyItem, backPanel, heightCount, LeftPadding, width));
             Info inf = Utils.GetInfoClass(node.body);
             if (inf != null) viewItems[0].toolTip = inf.summary;
@@ -211,7 +213,7 @@ namespace OrbItProcs
 
             //heightCount += height;
 
-            InspectorItem dictItem = new InspectorItem(null, rootItem, node.comps, node.GetType().GetProperty("comps"));
+            InspectorInfo dictItem = new InspectorInfo(null, rootItem, node.comps, node.GetType().GetProperty("comps"));
             foreach (Type c in node.comps.Keys)
             {
                 string tooltip = "";
@@ -222,7 +224,7 @@ namespace OrbItProcs
                     tooltip = info.summary;
                 }
                 heightCount += height;
-                InspectorItem cItem = new InspectorItem(null, dictItem, node.comps[c], c);
+                InspectorInfo cItem = new InspectorInfo(null, dictItem, node.comps[c], c);
                 DetailedItem di = new DetailedItem(manager, this, cItem, backPanel, heightCount, LeftPadding, width);
                 di.toolTip = tooltip;
                 CreateItem(di);
@@ -235,7 +237,10 @@ namespace OrbItProcs
             SetVisible(false);
             backPanel.Refresh();
 
+            
+
             if (selected != 3) sidebar.tbcMain.SelectedIndex = selected;
+
         }
 
         
@@ -275,7 +280,7 @@ namespace OrbItProcs
                 PopUp.Toast("You haven't selected a Group.");
                 return;
             }
-            if (rootNode != null) new AddComponentWindow(sidebar, rootNode, this);
+            if (rootNode != null) new AddComponentWindow(sidebar, parent, rootNode, this);
 
             //ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !activeGroup.defaultNode.HasComponent(c))));
             //List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => activeGroup.defaultNode.HasComponent(c)));

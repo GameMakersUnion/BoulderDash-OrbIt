@@ -21,7 +21,7 @@ namespace OrbItProcs
     }
     public class InspectorView : DetailedView
     {
-        public InspectorItem rootItem;
+        public InspectorInfo rootItem;
         private Group _activeGroup;
         public Group activeGroup
         {
@@ -49,21 +49,21 @@ namespace OrbItProcs
                 rootItem = null;
                 return;
             }
-            if (obj is InspectorItem)
+            if (obj is InspectorInfo)
             {
-                SetRootInspectorItem((InspectorItem)obj);
+                SetRootInspectorItem((InspectorInfo)obj);
                 return;
             }
-            InspectorItem insItem = new InspectorItem(null, obj, sidebar);
+            InspectorInfo insItem = new InspectorInfo(null, obj, sidebar);
             SetRootInspectorItem(insItem);
         }
-        public void SetRootInspectorItem(InspectorItem insItem)
+        public void SetRootInspectorItem(InspectorInfo insItem)
         {
             rootItem = insItem;
             ClearView();
             if (insItem == null) return;
             insItem.GenerateChildren();
-            foreach (InspectorItem i in insItem.children)
+            foreach (InspectorInfo i in insItem.children)
             {
                 CreateNewItem(i);
             }
@@ -75,7 +75,7 @@ namespace OrbItProcs
                 SetRootInspectorItem(rootItem);
             }
         }
-        public void CreateNewItem(InspectorItem item)
+        public void CreateNewItem(InspectorInfo item)
         {
             int top = 0;
             if (viewItems.Count > 0)
@@ -91,8 +91,8 @@ namespace OrbItProcs
         public void OnEvent(Control control, DetailedItem item, EventArgs e)
         {
             if (item == null || control == null || item.obj == null) return;
-            if (!(item.obj is InspectorItem)) return;
-            InspectorItem ins = (InspectorItem)item.obj;
+            if (!(item.obj is InspectorInfo)) return;
+            InspectorInfo ins = (InspectorInfo)item.obj;
             if (e is KeyEventArgs && control.GetType() == typeof(TextBox))
             {
                 KeyEventArgs ke = (KeyEventArgs)e;
@@ -176,9 +176,9 @@ namespace OrbItProcs
         private void ItemCreatorDelegate(DetailedItem item, object obj)
         {
             if (obj == null) return;
-            if (obj is InspectorItem)
+            if (obj is InspectorInfo)
             {
-                InspectorItem inspectorItem = (InspectorItem)obj;
+                InspectorInfo inspectorItem = (InspectorInfo)obj;
                 if (inspectorItem.obj == null) return;
                 object o = inspectorItem.obj;
                 bool isToggle = Utils.isToggle(o);
@@ -438,9 +438,9 @@ namespace OrbItProcs
                 foreach (DetailedItem item in viewItems)
                 {
                     if (item.obj == null) continue;
-                    if (item.obj is InspectorItem)
+                    if (item.obj is InspectorInfo)
                     {
-                        InspectorItem insItem = (InspectorItem)item.obj;
+                        InspectorInfo insItem = (InspectorInfo)item.obj;
                         if (insItem.obj != null && (insItem.obj is Component || insItem.obj is Node || insItem.obj is Body))
                         {
                             continue;

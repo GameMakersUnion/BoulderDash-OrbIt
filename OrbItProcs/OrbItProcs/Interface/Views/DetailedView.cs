@@ -55,9 +55,9 @@ namespace OrbItProcs
                 foreach (DetailedItem item in viewItems)
                 {
                     if (item.obj == null) continue;
-                    if (item.obj is InspectorItem)
+                    if (item.obj is InspectorInfo)
                     {
-                        object o = (item.obj as InspectorItem).obj;
+                        object o = (item.obj as InspectorInfo).obj;
                         if (o != null && o is Component || o is Node || o is Body)
                         {
                             continue;

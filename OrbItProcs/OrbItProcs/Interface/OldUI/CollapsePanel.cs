@@ -67,7 +67,7 @@ namespace OrbItProcs
             this.panel = new GroupPanel(manager);
             panel.Init();
             panel.Height = expandedHeight;
-            panel.Width = 180;
+            panel.Width = parent.Width - 20;
             panel.Resizable = true;
             //panel.Text = "  " + Name.Trim();
             Text = Name;

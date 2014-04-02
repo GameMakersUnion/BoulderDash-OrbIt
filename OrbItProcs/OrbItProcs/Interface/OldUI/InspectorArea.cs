@@ -19,7 +19,7 @@ namespace OrbItProcs
         public Room room { get { return game.room; } }
         public UserInterface ui;
         public Sidebar sidebar;
-        public InspectorItem ActiveInspectorParent;
+        public InspectorInfo ActiveInspectorParent;
         public Node editNode;
 
         public UserLevel userLevel { get { return sidebar.userLevel; } set { sidebar.userLevel = value; } }
@@ -38,12 +38,14 @@ namespace OrbItProcs
 
         public Manager manager;
         public Control parent;
-
-        //public GroupBox backPanel;
         public Panel backPanel;
         public Label lblInspectorAddress;
-        //public Button btnToggleFields;
-        public InspectorBox InsBox;
+
+
+        //public InspectorBox InsBox;
+        public ListBox InsBox;
+        public InspectorInfo rootitem;
+
         public PropertyEditPanel propertyEditPanel;
         public ContextMenu contextMenuInsBox;
         public MenuItem applyToAllNodesMenuItem, toggleComponentMenuItem, removeComponentMenuItem, toggleBoolMenuItem;
@@ -117,7 +119,7 @@ namespace OrbItProcs
             #region /// GroupBox (back panel) ///
             backPanel = new Panel(manager);
             backPanel.Init();
-            backPanel.Left = Left;
+            //backPanel.Left = Left;//change
             backPanel.Top = Top;
             backPanel.Width = Width;
             backPanel.Parent = parent;
@@ -126,11 +128,12 @@ namespace OrbItProcs
             
             #endregion
 
-            int WidthReduction = 5;
+            int WidthReduction = 15; //change
 
             #region  /// Inspector Address Label ///
             lblInspectorAddress = new Label(manager);
             lblInspectorAddress.Init();
+            //lblInspectorAddress.Visible = false; //change
             lblInspectorAddress.Parent = backPanel;
             lblInspectorAddress.Top = HeightCounter; //HeightCounter += VertPadding + lblInspectorAddress.Height + 10;
             lblInspectorAddress.Width = Width - WidthReduction;
@@ -138,7 +141,7 @@ namespace OrbItProcs
             labelDoubleHeight = lblInspectorAddress.Height;
             //lblInspectorAddress.Left = LeftPadding;
             //lblInspectorAddress.Anchor = Anchors.Left;
-            lblInspectorAddress.Text = ">No Node Selected<\u2190";
+            lblInspectorAddress.Text = ">No Node Selected<";
             bool changed = false;
             lblInspectorAddress.TextChanged += delegate(object s, EventArgs e)
             {
@@ -170,12 +173,13 @@ namespace OrbItProcs
 
 
             #region  /// Component List ///
-            InsBox = new InspectorBox(manager);
+            InsBox = new ListBox(manager);
             InsBox.Init();
             //manager.Add(InsBox);
             InsBox.Parent = backPanel;
 
             InsBox.Top = HeightCounter;
+            InsBox.Left = 10;
             InsBox.Width = Width - WidthReduction;
             InsBox.Height = 140; HeightCounter += InsBox.Height;
 
@@ -183,6 +187,7 @@ namespace OrbItProcs
             InsBox.ItemIndexChanged += InsBox_ItemIndexChanged;
             InsBox.Click += InsBox_Click;
             InsBox.DoubleClick += InsBox_DoubleClick;
+            InsBox.Refresh();
 
             sidebar.ui.SetScrollableControl(InsBox, InsBox_ChangeScrollPosition);
 
@@ -215,12 +220,12 @@ namespace OrbItProcs
             GroupPanel groupPanel = new GroupPanel(manager);
             groupPanel.Init();
             groupPanel.Parent = backPanel;
-
+            //groupPanel.Visible = false;//change
             groupPanel.Anchor = Anchors.Left | Anchors.Top | Anchors.Right;
             groupPanel.Width = Width - WidthReduction;
             groupPanel.Top = HeightCounter;
             groupPanel.Height = 90; HeightCounter += VertPadding + groupPanel.Height;
-
+            groupPanel.Left = InsBox.Left;
             groupPanel.Text = "Inspector Property";
             #endregion
 
@@ -236,7 +241,7 @@ namespace OrbItProcs
         public void ClearInspectorBox()
         {
             InsBox.ItemIndex = 0;
-            InsBox.rootitem = null;
+            rootitem = null;
             ActiveInspectorParent = null;
             foreach (object o in InsBox.Items.ToList())
             {
@@ -255,17 +260,18 @@ namespace OrbItProcs
                 return;
             }
             InsBox.ItemIndex = 0;
-            InspectorItem rootitem = new InspectorItem(InsBox.Items, rootobj, sidebar);
-            InsBox.rootitem = rootitem;
-            rootitem.GenerateChildren(GenerateFields);
-            ActiveInspectorParent = rootitem;
+            InspectorInfo root = new InspectorInfo(InsBox.Items, rootobj, sidebar);
+            root.showValueToString = true;
+            this.rootitem = root;
+            root.GenerateChildren(GenerateFields, userLevel: UserLevel.Debug);
+            ActiveInspectorParent = root;
             
 
             foreach (object o in InsBox.Items.ToList())
             {
                 InsBox.Items.Remove(o);
             }
-            foreach (object o in rootitem.children.ToList())
+            foreach (object o in root.children.ToList())
             {
                 InsBox.Items.Add(o);
             }
@@ -292,9 +298,9 @@ namespace OrbItProcs
 
         }
 
-        public void BuildItemsPath(InspectorItem item, List<InspectorItem> itemspath)
+        public void BuildItemsPath(InspectorInfo item, List<InspectorInfo> itemspath)
         {
-            InspectorItem temp = item;
+            InspectorInfo temp = item;
             itemspath.Insert(0, temp);
             while (temp.parentItem != null)
             {
@@ -305,10 +311,10 @@ namespace OrbItProcs
 
         void InsBox_ItemIndexChanged(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            InspectorBox InsBox = (InspectorBox)sender;
+            ListBox InsBox = (ListBox)sender;
 
             if (InsBox.ItemIndex < 0 || InsBox.Items.Count == 0) return;
-            InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+            InspectorInfo item = (InspectorInfo)InsBox.Items.ElementAt(InsBox.ItemIndex);
             
             //UpdateGroupPanel(item, groupPanel);
         }
@@ -324,7 +330,7 @@ namespace OrbItProcs
                 if (InsBox.ItemIndex < 0 || InsBox.Items.Count == 0) return;
 
 
-                InspectorItem litem = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+                InspectorInfo litem = (InspectorInfo)InsBox.Items.ElementAt(InsBox.ItemIndex);
 
                 if (litem.obj is Component)
                 {
@@ -353,7 +359,7 @@ namespace OrbItProcs
             else if (mouseArgs.Button == MouseButton.Left)
             {
                 if (InsBox.ItemIndex < 0 || InsBox.Items.Count == 0 || InsBox.ItemIndex >= InsBox.Items.Count) return;
-                InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+                InspectorInfo item = (InspectorInfo)InsBox.Items.ElementAt(InsBox.ItemIndex);
                 if (item.obj == null) return;
                 //item.ClickItem(InsBox.ItemIndex);
                 Type t = item.obj.GetType();
@@ -370,9 +376,9 @@ namespace OrbItProcs
             if (mouseArgs.Button == MouseButton.Left)
             {
                 if (InsBox.ItemIndex < 0 || InsBox.Items.Count == 0 || InsBox.ItemIndex >= InsBox.Items.Count) return;
-                InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+                InspectorInfo item = (InspectorInfo)InsBox.Items.ElementAt(InsBox.ItemIndex);
                 item.DoubleClickItem(this);
-                InspectorItem temp = ActiveInspectorParent;
+                InspectorInfo temp = ActiveInspectorParent;
                 string lbltext = "/" + temp.Name();
                 while (temp.parentItem != null)
                 {
@@ -391,15 +397,6 @@ namespace OrbItProcs
             }
         }
 
-        //public void SetItemValue(InspectorItem item, object value)
-        //{
-        //    item.SetValue(value);
-        //    if (compView != null)
-        //    {
-        //        compView.ApplyToGroup(item.fpinfo, value);
-        //    }
-        //}
-
         void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
         {
             ApplyToAllNodes(sidebar.ActiveGroup);
@@ -408,8 +405,8 @@ namespace OrbItProcs
         public void ApplyToAllNodes(Group group)
         {
             if (group == null) return;
-            List<InspectorItem> itemspath = new List<InspectorItem>();
-            InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+            List<InspectorInfo> itemspath = new List<InspectorInfo>();
+            InspectorInfo item = (InspectorInfo)InsBox.Items.ElementAt(InsBox.ItemIndex);
             object value = item.GetValue();
 
             BuildItemsPath(item, itemspath);
@@ -417,9 +414,9 @@ namespace OrbItProcs
             group.ForEachAllSets(delegate(Node n)
             {
                 if (n == itemspath.ElementAt(0).obj) return;
-                InspectorItem temp = new InspectorItem(null, n, sidebar);
+                InspectorInfo temp = new InspectorInfo(null, n, sidebar);
                 int count = 0;
-                foreach (InspectorItem pathitem in itemspath)
+                foreach (InspectorInfo pathitem in itemspath)
                 {
                     if (temp.obj.GetType() != pathitem.obj.GetType())
                     {
@@ -456,17 +453,17 @@ namespace OrbItProcs
                     }
                     else
                     {
-                        InspectorItem next = itemspath.ElementAt(count + 1);
+                        InspectorInfo next = itemspath.ElementAt(count + 1);
                         if (next.membertype == member_type.dictentry)
                         {
                             dynamic dict = temp.obj;
                             dynamic key = next.key;
                             if (!dict.ContainsKey(key)) break;
-                            temp = new InspectorItem(null, temp, dict[key], key);
+                            temp = new InspectorInfo(null, temp, dict[key], key);
                         }
                         else
                         {
-                            temp = new InspectorItem(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.propertyInfo);
+                            temp = new InspectorInfo(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.propertyInfo);
                         }
                     }
                     count++;
@@ -476,7 +473,7 @@ namespace OrbItProcs
 
         void removeLinkMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+            InspectorInfo item = (InspectorInfo)InsBox.Items.ElementAt(InsBox.ItemIndex);
             if (!(item.obj is Link))
             {
                 Console.WriteLine("Error: The list item was not a link.");
@@ -499,7 +496,7 @@ namespace OrbItProcs
 
         void toggleLinkMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+            InspectorInfo item = (InspectorInfo)InsBox.Items.ElementAt(InsBox.ItemIndex);
             if (!(item.obj is Link))
             {
                 Console.WriteLine("Error: The list item was not a link.");
@@ -513,7 +510,7 @@ namespace OrbItProcs
 
         void toggleComponentMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+            InspectorInfo item = (InspectorInfo)InsBox.Items.ElementAt(InsBox.ItemIndex);
             if (!(item.obj is Component))
             {
                 Console.WriteLine("Error: The list item was not a component.");
@@ -526,7 +523,7 @@ namespace OrbItProcs
 
         void toggleBoolMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+            InspectorInfo item = (InspectorInfo)InsBox.Items.ElementAt(InsBox.ItemIndex);
             if (!(item.obj is bool))
             {
                 Console.WriteLine("Error: The list item was not a bool.");
@@ -540,7 +537,7 @@ namespace OrbItProcs
 
         void removeComponentMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+            InspectorInfo item = (InspectorInfo)InsBox.Items.ElementAt(InsBox.ItemIndex);
             if (!(item.obj is Component))
             {
                 Console.WriteLine("Error: The list item was not a component.");
@@ -581,7 +578,7 @@ namespace OrbItProcs
 
         void AddComponentToLinkMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            InspectorItem item = (InspectorItem)InsBox.Items.ElementAt(InsBox.ItemIndex);
+            InspectorInfo item = (InspectorInfo)InsBox.Items.ElementAt(InsBox.ItemIndex);
             if (!(item.obj is Link))
             {
                 //Console.WriteLine("Error: The list item was not a link.");

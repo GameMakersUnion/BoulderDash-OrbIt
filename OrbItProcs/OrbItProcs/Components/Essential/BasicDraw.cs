@@ -74,6 +74,9 @@ namespace OrbItProcs
         public override void OnSpawn()
         {
             Colorize();
+            int runenum = Utils.random.Next(16);
+            textures r = (textures)runenum;
+            parent.body.texture = r;
         }
 
         public void Colorize()

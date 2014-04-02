@@ -42,7 +42,7 @@ namespace OrbItProcs {
         str,
     };
 
-    public class InspectorItem {
+    public class InspectorInfo {
 
         public static List<Type> ValidTypes = new List<Type>()
         {
@@ -84,7 +84,7 @@ namespace OrbItProcs {
         public bool extended = false;
         public bool showValueToString = false;
         
-        public List<InspectorItem> children;
+        public List<InspectorInfo> children;
         
         //public int childCount = 0;
         public object key;
@@ -95,15 +95,15 @@ namespace OrbItProcs {
 
         public object obj;
         public object parentobj;
-        private InspectorItem _parentItem;
-        public InspectorItem parentItem { get { return _parentItem; } set { _parentItem = value; if (value != null) showValueToString = parentItem.showValueToString; } }
+        private InspectorInfo _parentItem;
+        public InspectorInfo parentItem { get { return _parentItem; } set { _parentItem = value; if (value != null) showValueToString = parentItem.showValueToString; } }
         public member_type membertype;
         public data_type datatype;
 
         public IList<object> masterList;
 
         //root item
-        public InspectorItem(IList<object> masterList, object obj, Sidebar sidebar, bool showValueToString = false)
+        public InspectorInfo(IList<object> masterList, object obj, Sidebar sidebar, bool showValueToString = false)
         {
             this.showValueToString = showValueToString;
             this.whitespace = "|";
@@ -111,7 +111,7 @@ namespace OrbItProcs {
             this.masterList = masterList; 
             //this.fpinfo = new FPInfo(propertyInfo);
             this.membertype = member_type.none;
-            this.children = new List<InspectorItem>();
+            this.children = new List<InspectorInfo>();
             //this.inspectorArea = insArea;
             this.sidebar = sidebar;
             CheckItemType();
@@ -121,27 +121,28 @@ namespace OrbItProcs {
             
         }
         //a property
-        public InspectorItem(IList<object> masterList, InspectorItem parentItem, object obj, PropertyInfo propertyInfo)
+        public InspectorInfo(IList<object> masterList, InspectorInfo parentItem, object obj, PropertyInfo propertyInfo)
         {
             this.membertype = member_type.property;
             this.fpinfo = new FPInfo(propertyInfo);
             FieldOrPropertyInitilize(masterList, parentItem, obj);
         }
         //a field
-        public InspectorItem(IList<object> masterList, InspectorItem parentItem, object obj, FieldInfo fieldInfo)
+        public InspectorInfo(IList<object> masterList, InspectorInfo parentItem, object obj, FieldInfo fieldInfo)
         {
             this.membertype = member_type.field;
             this.fpinfo = new FPInfo(fieldInfo);
             FieldOrPropertyInitilize(masterList, parentItem, obj);
         }
-        private void FieldOrPropertyInitilize(IList<object> masterList, InspectorItem parentItem, object obj)
+        private void FieldOrPropertyInitilize(IList<object> masterList, InspectorInfo parentItem, object obj)
         {
             this.whitespace = "|";
             if (parentItem != null) this.whitespace += parentItem.whitespace;
             this.obj = obj;
             this.parentItem = parentItem;
             this.masterList = masterList;
-            this.children = new List<InspectorItem>();
+            this.children = new List<InspectorInfo>();
+            this.showValueToString = parentItem.showValueToString;
             CheckItemType();
             prefix = "" + ((char)164);
             //this.inspectorArea = parentItem.inspectorArea;
@@ -149,7 +150,7 @@ namespace OrbItProcs {
         }
 
         //a dictionary entry
-        public InspectorItem(IList<object> masterList, InspectorItem parentItem, object obj, object key) //obj = null
+        public InspectorInfo(IList<object> masterList, InspectorInfo parentItem, object obj, object key) //obj = null
         {
             this.whitespace = "|";
             if (parentItem != null) this.whitespace += parentItem.whitespace;
@@ -157,10 +158,10 @@ namespace OrbItProcs {
             this.obj = obj;
             this.masterList = masterList;
             this.fpinfo = null;
-            this.children = new List<InspectorItem>();
+            this.children = new List<InspectorInfo>();
             //this.inspectorArea = parentItem.inspectorArea;
             this.sidebar = parentItem.sidebar;
-
+            this.showValueToString = parentItem.showValueToString;
             Type t = parentItem.obj.GetType();
             if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
             {
@@ -173,12 +174,12 @@ namespace OrbItProcs {
             }
             else
             {
-                System.Console.WriteLine("Unexpected: InspectorItem with no obj reference was not a dictionary entry");
+                System.Console.WriteLine("Unexpected: InspectorInfo with no obj reference was not a dictionary entry");
                 membertype = member_type.unimplemented;
             }
         }
         //a IEnumberable entry
-        public InspectorItem(IList<object> masterList, InspectorItem parentItem, object obj) //obj = null
+        public InspectorInfo(IList<object> masterList, InspectorInfo parentItem, object obj) //obj = null
         {
             this.whitespace = "|";
             if (parentItem != null) this.whitespace += parentItem.whitespace;
@@ -186,10 +187,10 @@ namespace OrbItProcs {
             this.obj = obj;
             this.masterList = masterList;
             this.fpinfo = null;
-            this.children = new List<InspectorItem>();
+            this.children = new List<InspectorInfo>();
             //this.inspectorArea = parentItem.inspectorArea;
             this.sidebar = parentItem.sidebar;
-
+            this.showValueToString = parentItem.showValueToString;
             Type t = parentItem.obj.GetType();
 
             if (t.GetInterfaces()
@@ -202,12 +203,12 @@ namespace OrbItProcs {
             }
             else
             {
-                System.Console.WriteLine("Unexpected: InspectorItem with no obj reference was not a collection entry");
+                System.Console.WriteLine("Unexpected: InspectorInfo with no obj reference was not a collection entry");
                 membertype = member_type.unimplemented;
             }
         }
 
-        public bool ReferenceExists(InspectorItem parent, object reference)
+        public bool ReferenceExists(InspectorInfo parent, object reference)
         {
             if (parent == null)
             {
@@ -220,9 +221,9 @@ namespace OrbItProcs {
             return ReferenceExists(parent.parentItem, reference);
         }
 
-        public void GenerateChildren(bool GenerateFields = false)
+        public void GenerateChildren(bool GenerateFields = false, UserLevel? userLevel = null)
         {
-            children = GenerateList(obj, this, GenerateFields);
+            children = GenerateList(obj, this, GenerateFields, userLevel: userLevel); // thing: thing
         }
 
         
@@ -231,7 +232,7 @@ namespace OrbItProcs {
         {
             foreach (object child in children.ToList())
             {
-                InspectorItem item = (InspectorItem)child;
+                InspectorInfo item = (InspectorInfo)child;
                 if (masterList != null) masterList.Add(child);
                 if (item.children.Count > 0 && item.extended)
                 {
@@ -241,9 +242,12 @@ namespace OrbItProcs {
 
         }
 
-        public static List<InspectorItem> GenerateList(object parent, InspectorItem parentItem = null, bool GenerateFields = false)
+        public static List<InspectorInfo> GenerateList(object parent, InspectorInfo parentItem = null, bool GenerateFields = false, UserLevel? userLevel = null)
         {
-            List<InspectorItem> list = new List<InspectorItem>();
+            UserLevel userlevel = OrbIt.ui.sidebar.userLevel;
+            if (userLevel != null) userlevel = (UserLevel)userLevel;
+
+            List<InspectorInfo> list = new List<InspectorInfo>();
             //char a = (char)164;
             //System.Console.WriteLine(a);
             //string space = "|";
@@ -257,7 +261,7 @@ namespace OrbItProcs {
                 dynamic collection = parent;
                 foreach (object o in collection)
                 {
-                    InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, o);
+                    InspectorInfo iitem = new InspectorInfo(parentItem.masterList, parentItem, o);
                     if (iitem.CheckForChildren()) iitem.prefix = "+";
                     InsertItemSorted(list, iitem);
                 }
@@ -268,7 +272,7 @@ namespace OrbItProcs {
                 dynamic array = parent;
                 foreach (object o in array)
                 {
-                    InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, o);
+                    InspectorInfo iitem = new InspectorInfo(parentItem.masterList, parentItem, o);
                     if (iitem.CheckForChildren()) iitem.prefix = "+";
                     InsertItemSorted(list, iitem);
                 }
@@ -281,7 +285,7 @@ namespace OrbItProcs {
                 foreach (dynamic key in dict.Keys)
                 {
                     //System.Console.WriteLine(key.ToString());
-                    InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, dict[key], key);
+                    InspectorInfo iitem = new InspectorInfo(parentItem.masterList, parentItem, dict[key], key);
                     //iitem.GenerateChildren();
                     //list.Add(iitem);
                     if (iitem.CheckForChildren()) iitem.prefix = "+";
@@ -302,7 +306,7 @@ namespace OrbItProcs {
                     propertyInfos = parent.GetType().GetProperties().ToList();
                 }
 
-                UserLevel userlevel = OrbIt.ui.sidebar.userLevel;
+                
 
                 foreach (PropertyInfo pinfo in propertyInfos)
                 {
@@ -321,7 +325,7 @@ namespace OrbItProcs {
                         continue;
                     }
                     //if (pinfo.Name.Equals("Item")) continue;
-                    InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, pinfo.GetValue(parent, null), pinfo);
+                    InspectorInfo iitem = new InspectorInfo(parentItem.masterList, parentItem, pinfo.GetValue(parent, null), pinfo);
                     if (tooltip.Length > 0) iitem.ToolTip = tooltip;
                     if (iitem.CheckForChildren()) iitem.prefix = "+";
                     InsertItemSorted(list, iitem);
@@ -350,7 +354,7 @@ namespace OrbItProcs {
                         {
                             continue;
                         }
-                        InspectorItem iitem = new InspectorItem(parentItem.masterList, parentItem, finfo.GetValue(parent), finfo);
+                        InspectorInfo iitem = new InspectorInfo(parentItem.masterList, parentItem, finfo.GetValue(parent), finfo);
                         if (iitem.CheckForChildren()) iitem.prefix = "+";
                         InsertItemSorted(list, iitem);
                     }
@@ -401,7 +405,7 @@ namespace OrbItProcs {
             return false;
         }
 
-        public static void InsertItemSorted(List<InspectorItem> itemList, InspectorItem item)
+        public static void InsertItemSorted(List<InspectorInfo> itemList, InspectorInfo item)
         {
             int length = itemList.Count;
             int weight = (int)item.datatype;
@@ -413,7 +417,7 @@ namespace OrbItProcs {
             }
             for (int i = 0; i < length; i++)
             {
-                int itemweight = (int)((InspectorItem)itemList.ElementAt(i)).datatype;
+                int itemweight = (int)((InspectorInfo)itemList.ElementAt(i)).datatype;
                 if (weight < itemweight)
                 {
                     itemList.Insert(i, item);
@@ -566,10 +570,10 @@ namespace OrbItProcs {
         public void RemoveChildren()
         {
             if (masterList == null) return;
-            foreach (InspectorItem subitem in children.ToList())
+            foreach (InspectorInfo subitem in children.ToList())
             {
                 masterList.Remove(subitem);
-                foreach (InspectorItem subsub in subitem.children.ToList())
+                foreach (InspectorInfo subsub in subitem.children.ToList())
                 {
                     if (masterList.Contains(subsub))
                     {
@@ -587,7 +591,7 @@ namespace OrbItProcs {
         }
         public void DoubleClickItem(InspectorArea inspectorArea)
         {
-            if (inspectorArea.sidebar.userLevel == UserLevel.User || inspectorArea.sidebar.userLevel == UserLevel.Advanced) return;
+            //if (inspectorArea.sidebar.userLevel == UserLevel.User || inspectorArea.sidebar.userLevel == UserLevel.Advanced) return;
 
             bool haschildren = hasChildren();
             if (haschildren)
@@ -599,7 +603,7 @@ namespace OrbItProcs {
                 }
                 else
                 {
-                    GenerateChildren();
+                    GenerateChildren(GenerateFields:inspectorArea.GenerateFields, userLevel: UserLevel.Debug);
                     prefix = "-";
                     
                     if (masterList != null)
@@ -611,12 +615,12 @@ namespace OrbItProcs {
                         }
                         if (parentItem != null)
                         {
-                            InspectorItem uplevel = new InspectorItem(masterList, "...", sidebar);
+                            InspectorInfo uplevel = new InspectorInfo(masterList, "...", sidebar);
                             uplevel.parentItem = this;
                             uplevel.membertype = member_type.previouslevel;
                             masterList.Add(uplevel);
                         }
-                        foreach (InspectorItem subitem in children)
+                        foreach (InspectorInfo subitem in children)
                         {
                             //masterList.Insert(position + i++, subitem);
                             masterList.Add(subitem);
@@ -636,7 +640,7 @@ namespace OrbItProcs {
             {
                 if (masterList != null)
                 {
-                foreach (InspectorItem subitem in children)
+                foreach (InspectorInfo subitem in children)
                 {
                     //masterList.Insert(position + i++, subitem);
                     masterList.Remove(subitem);
@@ -663,7 +667,7 @@ namespace OrbItProcs {
                     int i = 1;
                     if (masterList != null)
                     {
-                        foreach (InspectorItem subitem in children)
+                        foreach (InspectorInfo subitem in children)
                         {
                             masterList.Insert(position + i++, subitem);
                         }
@@ -858,7 +862,7 @@ namespace OrbItProcs {
             }
             else
             {
-                System.Console.WriteLine("Error while SetValue() in InspectorItem.");
+                System.Console.WriteLine("Error while SetValue() in InspectorInfo.");
             }
         }
         public void SetValueSafe(object value)
@@ -898,9 +902,9 @@ namespace OrbItProcs {
             return value;
         }
 
-        public void BuildItemsPath(InspectorItem item, List<InspectorItem> itemspath)
+        public void BuildItemsPath(InspectorInfo item, List<InspectorInfo> itemspath)
         {
-            InspectorItem temp = item;
+            InspectorInfo temp = item;
             itemspath.Insert(0, temp);
             while (temp.parentItem != null)
             {
@@ -912,8 +916,8 @@ namespace OrbItProcs {
         public void ApplyToAllNodes(Group group)
         {
             if (group == null) return;
-            List<InspectorItem> itemspath = new List<InspectorItem>();
-            InspectorItem item = this;
+            List<InspectorInfo> itemspath = new List<InspectorInfo>();
+            InspectorInfo item = this;
             object value = item.GetValue();
 
             BuildItemsPath(item, itemspath);
@@ -921,9 +925,9 @@ namespace OrbItProcs {
             group.ForEachAllSets(delegate(Node n)
             {
                 if (n == itemspath.ElementAt(0).obj) return;
-                InspectorItem temp = new InspectorItem(null, n, sidebar);
+                InspectorInfo temp = new InspectorInfo(null, n, sidebar);
                 int count = 0;
-                foreach (InspectorItem pathitem in itemspath)
+                foreach (InspectorInfo pathitem in itemspath)
                 {
                     if (temp.obj.GetType() != pathitem.obj.GetType())
                     {
@@ -960,23 +964,23 @@ namespace OrbItProcs {
                     }
                     else
                     {
-                        InspectorItem next = itemspath.ElementAt(count + 1);
+                        InspectorInfo next = itemspath.ElementAt(count + 1);
                         if (next.membertype == member_type.dictentry)
                         {
                             dynamic dict = temp.obj;
                             dynamic key = next.key;
                             if (!dict.ContainsKey(key)) break;
-                            temp = new InspectorItem(null, temp, dict[key], key);
+                            temp = new InspectorInfo(null, temp, dict[key], key);
                         }
                         else
                         {
                             if (next.fpinfo.propertyInfo == null)
                             {
-                                temp = new InspectorItem(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.fieldInfo);
+                                temp = new InspectorInfo(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.fieldInfo);
                             }
                             else
                             {
-                                temp = new InspectorItem(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.propertyInfo);
+                                temp = new InspectorInfo(null, temp, next.fpinfo.GetValue(temp.obj), next.fpinfo.propertyInfo);
                             }
                         }
                     }
@@ -989,7 +993,7 @@ namespace OrbItProcs {
         {
             if (obj == null)
             {
-                Console.WriteLine("object was null when checking if InspectorItem HasPanelElements()");
+                Console.WriteLine("object was null when checking if InspectorInfo HasPanelElements()");
                 return false;
             }
 

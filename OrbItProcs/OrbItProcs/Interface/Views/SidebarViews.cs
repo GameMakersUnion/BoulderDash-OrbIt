@@ -14,7 +14,7 @@ namespace OrbItProcs
     //first view page of sidebar
     public partial class Sidebar
     {
-        private bool _EditSelectedNode = false;
+        //private bool _EditSelectedNode = false;
         //public bool EditSelectedNode
         //{
         //    get { return _EditSelectedNode; }
@@ -84,15 +84,17 @@ namespace OrbItProcs
             tbcViews.AddPage();
             tbcViews.AddPage();
             tbcViews.AddPage();
+            tbcViews.AddPage();
 
             TabPage groupsTab = tbcViews.TabPages[0];
             //tbcViews.Color = Color.Transparent;
             groupsTab.Text = "Groups";
             tbcViews.SelectedIndex = 0;
             activeTabControl = tbcViews;
-            //detailedView = new DetailedView(this, testTab, 0, 0);
-            //inspectorView = new InspectorView(this, groupsTab, 0, 0);
-            groupsView = new GroupsView(this, groupsTab, 0, 0, room.generalGroups);
+
+            TitlePanel titlePanelGroups = new TitlePanel(this, groupsTab, "Groups", false);
+
+            groupsView = new GroupsView(this, groupsTab, 0, titlePanelGroups.Height, room.generalGroups);
             groupsView.UpdateGroups();
             tbcViews.SelectedIndex = 0;
 
@@ -107,9 +109,9 @@ namespace OrbItProcs
             tbcViews.SelectedIndex = 1;
             activeTabControl = tbcViews;
 
-            //componentView = new ComponentView(this, editTab, 0, 0);
-            //componentView.SwitchGroup(room.masterGroup.childGroups["General Groups"].childGroups.ElementAt(0).Value);
-            playerView = new PlayerView(this, playersTab, LeftPadding, 80);
+            TitlePanel titlePanelPlayers = new TitlePanel(this, playersTab, "Players", false);
+
+            playerView = new PlayerView(this, playersTab, LeftPadding, titlePanelPlayers.Height);
 
 
             btnOptions = new Button(manager);
@@ -124,14 +126,36 @@ namespace OrbItProcs
                 new OptionsWindow(this);
             };
         }
+        GroupsView itemsView;
         public void InitializeItemsPage()
         {
             TabPage itemsTab = tbcViews.TabPages[2];
             itemsTab.Text = "Items";
             tbcViews.SelectedIndex = 2;
             activeTabControl = tbcViews;
-            groupsView = new GroupsView(this, itemsTab, 0, 0, room.itemGroup);
-            groupsView.UpdateGroups();
+
+            TitlePanel titlePanelItems = new TitlePanel(this, itemsTab, "Items", false);
+
+            itemsView = new GroupsView(this, itemsTab, 0, titlePanelItems.Height, room.itemGroup);
+            
+            itemsView.UpdateGroups();
+
+            tbcViews.SelectedIndex = 0;
+        }
+
+        public void InitializeBulletsPage()
+        {
+            TabPage bulletsTab = tbcViews.TabPages[3];
+            bulletsTab.Text = "Bullets";
+            tbcViews.SelectedIndex = 3;
+            activeTabControl = tbcViews;
+
+            TitlePanel titlePanelBullets = new TitlePanel(this, bulletsTab, "Bullets", false);
+
+            //itemsView = new GroupsView(this, testingTab, 0, 0, room.itemGroup);
+            //itemsView.lblGroupLabel.Text = "Testing";
+            //itemsView.UpdateGroups();
+
 
             tbcViews.SelectedIndex = 0;
         }

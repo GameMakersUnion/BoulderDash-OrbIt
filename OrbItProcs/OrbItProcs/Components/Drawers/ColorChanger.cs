@@ -106,7 +106,7 @@ namespace OrbItProcs
             //smartshifting = true;
             if (parent != null) this.parent = parent;
             com = comp.colorchanger;
-            colormode = ColorMode.velocity;
+            colormode = ColorMode.hueShifter;
             inc = 1;
             phaseSpeed = 10;
             phasePercent = 100;

@@ -56,38 +56,10 @@ namespace OrbItProcs
             int width = 120;
             int offset = poop.Width - width - 20;
 
-            Panel topPanel = new Panel(manager);
-            topPanel.Init();
-            topPanel.Parent = poop;
-            topPanel.Left = LeftPadding;
-            topPanel.Top = LeftPadding;
-            topPanel.Width = poop.Width - LeftPadding * 4;
-            int col = 30;
-            topPanel.Color = new Color(col, col, col);
-            topPanel.BevelBorder = BevelBorder.All;
-            topPanel.BevelStyle = BevelStyle.Flat;
-            topPanel.BevelColor = Color.Black;
+            TitlePanel titlePanelCreateGroup = new TitlePanel(sidebar, poop, "Create Group", true);
+            titlePanelCreateGroup.btnBack.Click += (s, e) => Close();
 
-            btnBack = new Button(manager);
-            btnBack.Init();
-            btnBack.Parent = topPanel;
-            btnBack.Top = HeightCounter;
-            btnBack.Text = "Back";
-            btnBack.Width = 40;
-            btnBack.Left = LeftPadding;
-            btnBack.Click += (s, e) => Close();
-
-            topPanel.Height = btnBack.Height + LeftPadding * 3;
-
-            Label lblTitle = new Label(manager);
-            lblTitle.Init();
-            lblTitle.Parent = topPanel;
-            lblTitle.Top = HeightCounter + LeftPadding;
-            lblTitle.Width = 120;
-            lblTitle.Left = poop.Width / 2 - lblTitle.Width / 4;
-            lblTitle.Text = "Create Group";
-
-            HeightCounter += lblTitle.Height + LeftPadding * 6;
+            HeightCounter += titlePanelCreateGroup.Height;
 
             btnCreateGroup = new Button(manager);
             btnCreateGroup.Init();
@@ -229,7 +201,7 @@ namespace OrbItProcs
                     OrbIt.game.room = sidebar.game.mainRoom;
                     newNode.body.color = ColorChanger.randomColorHue();
                     newNode.basicdraw.UpdateColor();
-                    Group newGroup = new Group(newNode, sidebar.game.mainRoom.generalGroups, Name: txtName.Text.Trim());
+                    Group newGroup = new Group(newNode, sidebar.game.mainRoom.generalGroups, txtName.Text.Trim());
                     newNode.name = txtName.Text.Trim();
                     newNode.group = newGroup;
                     sidebar.groupsView.UpdateGroups();

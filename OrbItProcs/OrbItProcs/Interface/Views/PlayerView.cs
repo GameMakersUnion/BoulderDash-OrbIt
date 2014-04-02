@@ -72,9 +72,9 @@ namespace OrbItProcs
         }
         private void ItemCreatorDelegate(DetailedItem item, object obj)
         {
-            if (item.obj is InspectorItem)
+            if (item.obj is InspectorInfo)
             {
-                InspectorItem ii = (InspectorItem)item.obj;
+                InspectorInfo ii = (InspectorInfo)item.obj;
                 if (!(ii.obj is Node)) return;
                 Node n = (Node)ii.obj;
                 item.label.Text = n.name;
@@ -125,8 +125,8 @@ namespace OrbItProcs
         public void OnEvent2(Control control, DetailedItem item, EventArgs e)
         {
             if (control == null || item == null) return;
-            if (!(item.obj is InspectorItem)) return;
-            //InspectorItem ins = (InspectorItem)item.obj;
+            if (!(item.obj is InspectorInfo)) return;
+            //InspectorInfo ins = (InspectorInfo)item.obj;
             if (control.Text.Equals("component_button_remove"))
             {
                 
@@ -171,11 +171,11 @@ namespace OrbItProcs
 
         public override void SelectItem(DetailedItem item)
         {
-            InspectorItem ii;
-            if (item.obj is InspectorItem && (ii = (InspectorItem)item.obj).obj is Node)
+            InspectorInfo ii;
+            if (item.obj is InspectorInfo && (ii = (InspectorInfo)item.obj).obj is Node)
             {
                 Node n = (Node)ii.obj;
-                InspectorItem metaitem = new InspectorItem(null, n.meta, sidebar);
+                InspectorInfo metaitem = new InspectorInfo(null, n.meta, sidebar);
                 insView.SetRootInspectorItem(metaitem);
                 base.SelectItem(item);
             }
@@ -205,7 +205,7 @@ namespace OrbItProcs
                 width -= 18;
             foreach (Node p in playerGroup.entities)
             {
-                InspectorItem cItem = new InspectorItem(null, p, sidebar);
+                InspectorInfo cItem = new InspectorInfo(null, p, sidebar);
                 DetailedItem di = new DetailedItem(manager, this, cItem, backPanel, heightCount, LeftPadding, width);
                 CreateItem(di);
                 di.label.Text = p.name;
