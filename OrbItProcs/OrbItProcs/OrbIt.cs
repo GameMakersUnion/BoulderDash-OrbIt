@@ -49,6 +49,7 @@ namespace OrbItProcs
         swap,
         shooter,
         //draw components
+        runer,
         waver,
         laser,
         wideray,

@@ -12,22 +12,22 @@ namespace OrbItProcs
 {
     public enum textures
     {
-        r1,
-        r2,
-        r3,
-        r4,
-        r5,
-        r6,
-        r7,
-        r8,
-        r9,
-        r10,
-        r11,
-        r12,
-        r13,
-        r14,
-        r15,
-        r16,
+        rune1,
+        rune2,
+        rune3,
+        rune4,
+        rune5,
+        rune6,
+        rune7,
+        rune8,
+        rune9,
+        rune10,
+        rune11,
+        rune12,
+        rune13,
+        rune14,
+        rune15,
+        rune16,
         whitecircle,
         orientedcircle,
         blackorb,
@@ -79,7 +79,7 @@ namespace OrbItProcs
                 textureDict.Add(rune, content.Load<Texture2D>(s));
             }
 
-                textureCenters = new Dictionary<textures, Vector2>();
+            textureCenters = new Dictionary<textures, Vector2>();
             foreach (var tex in textureDict.Keys)
             {
                 Texture2D t = textureDict[tex];

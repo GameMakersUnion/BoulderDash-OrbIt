@@ -38,19 +38,12 @@ namespace OrbItProcs
         public Control parent;
 
         public Panel backPanel;
-
-
-
         public List<T> viewItems { get; protected set; }
         public T selectedItem { get; set; }
-        
 
         public Color backColor, textColor;
 
         protected bool isVisible = false;
-
-        
-
         public ListView(Sidebar sidebar, Control parent, int Left, int Top, bool Init = true, int? Height = null)
         {
             this.game = sidebar.game;
@@ -65,7 +58,7 @@ namespace OrbItProcs
 
             HeightCounter = Top;
             Width = parent.Width - LeftPadding * 2;
-            backColor = new Color(80, 80, 80);//new Color(92, 92, 92);
+            backColor = UserInterface.TomDark;//new Color(80, 80, 80);//new Color(92, 92, 92);
             textColor = Color.Black;
 
             if (Init)

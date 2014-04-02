@@ -24,7 +24,7 @@ namespace OrbItProcs
     /// <summary>
     /// Applies a shader to the nodes
     /// </summary>
-    [Info(UserLevel.User, "Applies a shader to the nodes", CompType)]
+    [Info(UserLevel.Developer, "Applies a shader to the nodes", CompType)]
     public class Shader : Component
     {
         public const mtypes CompType = mtypes.draw;

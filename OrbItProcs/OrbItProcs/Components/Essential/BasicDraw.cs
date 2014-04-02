@@ -74,9 +74,9 @@ namespace OrbItProcs
         public override void OnSpawn()
         {
             Colorize();
-            int runenum = Utils.random.Next(16);
-            textures r = (textures)runenum;
-            parent.body.texture = r;
+            //int runenum = Utils.random.Next(16);
+            //textures r = (textures)runenum;
+            //parent.body.texture = r;
         }
 
         public void Colorize()
@@ -119,15 +119,10 @@ namespace OrbItProcs
                 if (!parent.body.DrawCircle) return;
             }
 
-            Room room = parent.room;
-            float mapzoom = room.zoom;
-
-            Texture2D tex = parent.getTexture();
-
             if (parent.HasComp(comp.shader))
-                room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale, parent.body.orient, parent.Comp<Shader>().shaderPack);
+                parent.room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale, parent.body.orient, parent.Comp<Shader>().shaderPack);
             else
-                room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale, parent.body.orient);
+                parent.room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale, parent.body.orient);
 
             /*Rectangle? sourceRect = null;
             int minx = 0, miny = 0, maxx = tex.Width, maxy = tex.Height;
