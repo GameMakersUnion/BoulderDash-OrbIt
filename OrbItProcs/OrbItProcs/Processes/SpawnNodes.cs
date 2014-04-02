@@ -165,7 +165,7 @@ namespace OrbItProcs
 
             foreach (Node n in ents)
             {
-                Node newNode = n.CreateClone(true);
+                Node newNode = n.CreateClone(room, true);
                 g.IncludeEntity(newNode);
             }
         }

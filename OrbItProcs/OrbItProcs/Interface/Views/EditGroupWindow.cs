@@ -19,7 +19,6 @@ namespace OrbItProcs
         public ComponentView componentView;
         public int HeightCounter = 5;
         public int LeftPadding = 5;
-        public Button btnBack;
 
         public EditGroupWindow(Sidebar sidebar)
         {
@@ -59,14 +58,18 @@ namespace OrbItProcs
             topPanel.BevelStyle = BevelStyle.Flat;
             topPanel.BevelColor = Color.Black;
 
-            btnBack = new Button(manager);
+            Button btnBack = new Button(manager);
             btnBack.Init();
             btnBack.Parent = topPanel;
             btnBack.Top = HeightCounter;
             btnBack.Text = "Back";
             btnBack.Width = 40;
             btnBack.Left = LeftPadding;
-
+            btnBack.Click += (s, e) =>
+            {
+                sidebar.groupsView.UpdateGroups();
+                manager.Remove(poop);
+            };
             topPanel.Height = btnBack.Height + LeftPadding * 3;
 
 
@@ -103,11 +106,7 @@ namespace OrbItProcs
             poop.Width += 100;
             poop.Width -= 100;
 
-            btnBack.Click += (s, e) =>
-            {
-                    sidebar.groupsView.UpdateGroups();
-                    manager.Remove(poop);
-            };
+            
         }
     }
 }

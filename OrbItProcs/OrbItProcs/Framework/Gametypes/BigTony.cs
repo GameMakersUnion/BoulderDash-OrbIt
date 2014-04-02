@@ -118,7 +118,7 @@ namespace OrbItProcs
                 //{ comp.laser, true },
                 //{ comp.gravity, true },
             };
-            Node tony = new Node(tonyProps);
+            Node tony = new Node(room, tonyProps);
             room.scheduler.doEveryXMilliseconds(delegate
             {
                 if (OrbIt.soundEnabled) Scheduler.end.Play(0.3f, -0.5f, 0f);

@@ -40,8 +40,9 @@ namespace OrbItProcs
         {
             
             if (verts.Count < 3) return;
+            
             Vector2[] vertices = verts.ToArray();
-            Node newNode = new Node(ShapeType.ePolygon);
+            Node newNode = new Node(room, ShapeType.ePolygon);
             //Node.cloneNode(Game1.ui.sidebar.ActiveDefaultNode, newNode);
             //Polygon poly = new Polygon();
             //poly.body = newNode.body;

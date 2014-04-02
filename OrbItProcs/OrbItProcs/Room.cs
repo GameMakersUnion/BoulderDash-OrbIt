@@ -24,7 +24,7 @@ namespace OrbItProcs {
         public int colIterations { get; set; }
 
         #region // References // --------------------------------------------
-        public OrbIt game;
+        public OrbIt game { get { return OrbIt.game; } }
         public event EventHandler AfterIteration;
         #endregion
 
@@ -132,8 +132,6 @@ namespace OrbItProcs {
 
         public Room()
         {
-            game = OrbIt.game;
-            game.room = this;
             groupHashes = new ObservableHashSet<string>();
             nodeHashes = new ObservableHashSet<string>();
             CollisionSetCircle = new HashSet<Collider>();
@@ -208,7 +206,7 @@ namespace OrbItProcs {
             #endregion
 
 
-            defaultNode = new Node(userPr);
+            defaultNode = new Node(this, userPr);
             defaultNode.name = "master";
             //defaultNode.IsDefault = true;
 
@@ -217,26 +215,27 @@ namespace OrbItProcs {
                 defaultNode.comps[c].AfterCloning();
             });
 
-            Node firstdefault = new Node();
+            Node firstdefault = new Node(this, ShapeType.eCircle);
+            //firstdefault.addComponent(comp.itempayload, true);
             Node.cloneNode(defaultNode, firstdefault);
             firstdefault.name = "[G0]0";
             //firstdefault.IsDefault = true;
 
-            masterGroup = new Group(defaultNode, Name: defaultNode.name, Spawnable: false);
+            masterGroup = new Group(this, defaultNode, Name: defaultNode.name, Spawnable: false);
             if (Groups)
             {
-                Group playerGroup = new Group(defaultNode, masterGroup, Name: "Player Group", Spawnable: false);
-                Group itemGroup = new Group(defaultNode, masterGroup, Name: "Item Group", Spawnable: false);
-                Group generalGroup = new Group(defaultNode, masterGroup, Name: "General Groups", Spawnable: false);
-                Group linkGroup = new Group(defaultNode, masterGroup, Name: "Link Groups", Spawnable: false);
-                Group wallGroup = new Group(defaultNode, masterGroup, Name: "Walls", Spawnable: false);
-                Group firstGroup = new Group(firstdefault, generalGroup, Name: "Group1");
+                Group playerGroup = new Group(this, defaultNode, masterGroup, Name: "Player Group", Spawnable: false);
+                Group itemGroup = new Group(this, defaultNode, masterGroup, Name: "Item Group", Spawnable: false);
+                Group generalGroup = new Group(this, defaultNode, masterGroup, Name: "General Groups", Spawnable: false);
+                Group linkGroup = new Group(this, defaultNode, masterGroup, Name: "Link Groups", Spawnable: false);
+                Group wallGroup = new Group(this, defaultNode, masterGroup, Name: "Walls", Spawnable: false);
+                Group firstGroup = new Group(this, firstdefault, generalGroup, Name: "Group1");
             }
 
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
                     { comp.basicdraw, true }, { nodeE.texture, textures.whitecircle } };
 
-            targetNodeGraphic = new Node(userPropsTarget);
+            targetNodeGraphic = new Node(this,userPropsTarget);
             targetNodeGraphic.name = "TargetNodeGraphic";
 
             MakeWalls();
@@ -317,7 +316,6 @@ namespace OrbItProcs {
                 gridsystemCollision.clearBuckets();
                 foreach (var n in CollisionSetCircle) //.ToList()
                 {
-                    //Console.WriteLine(CollisionSet.Count);
                     gridsystemCollision.insertToBuckets(n);
                 }
             }
@@ -526,7 +524,7 @@ namespace OrbItProcs {
 
         public Node ConstructWallPoly(Dictionary<dynamic, dynamic> props, int hw, int hh, Vector2 pos)
         {
-            Node n = new Node(props);
+            Node n = new Node(this, props);
             n[comp.basicdraw].active = false;
             Polygon poly = new Polygon();
             poly.body = n.body;
@@ -661,7 +659,7 @@ namespace OrbItProcs {
             if (activegroup == null || !activegroup.Spawnable) return null;
             if (OrbIt.game.room == OrbIt.game.mainRoom && OrbIt.ui.sidebar.activeTabControl == OrbIt.ui.sidebar.tbcViews && OrbIt.ui.sidebar.tbcViews.SelectedIndex != 0) return null;
 
-            Node newNode = new Node();
+            Node newNode = new Node(this, ShapeType.eCircle);
             if (!blank)
             {
                 Node.cloneNode(OrbIt.ui.sidebar.ActiveDefaultNode, newNode);
@@ -676,6 +674,7 @@ namespace OrbItProcs {
 
         private Node SpawnNodeHelper(Node newNode, Action<Node> afterSpawnAction = null, Group g = null, int lifetime = -1)
         {
+            //newNode.addComponent(comp.itempayload, true);
             newNode.OnSpawn();
             if (afterSpawnAction != null) afterSpawnAction(newNode);
             if (lifetime != -1)
@@ -684,6 +683,7 @@ namespace OrbItProcs {
                 newNode.Comp<Lifetime>().timeUntilDeath.value = lifetime;
                 newNode.Comp<Lifetime>().timeUntilDeath.enabled = true;
             }
+            
             g.IncludeEntity(newNode);
             return newNode;
         }

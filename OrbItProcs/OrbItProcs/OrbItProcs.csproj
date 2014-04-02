@@ -147,14 +147,14 @@
     <Compile Include="Components\AffectOthers\Displace.cs" />
     <Compile Include="Components\AffectOthers\FixedForce.cs" />
     <Compile Include="Components\Essential\Meta.cs" />
-    <Compile Include="Components\Items\ItemPickup.cs" />
+    <Compile Include="Components\Items\ItemPayload.cs" />
     <Compile Include="Components\Linkers\Orbiter.cs" />
     <Compile Include="Components\AffectOthers\Spring.cs" />
     <Compile Include="Components\Delegator.cs" />
     <Compile Include="Components\Drawers\ColorChanger.cs" />
     <Compile Include="Components\Drawers\ColorGravity.cs" />
-    <Compile Include="Components\Meta\Sword.cs" />
-    <Compile Include="Components\Meta\Shooter.cs" />
+    <Compile Include="Components\Items\Sword.cs" />
+    <Compile Include="Components\Items\Shooter.cs" />
     <Compile Include="Components\Meta\Swap.cs" />
     <Compile Include="Components\Scheduler.cs" />
     <Compile Include="Components\Shader.cs" />
@@ -189,7 +189,7 @@
     <Compile Include="Components\ILinkable.cs" />
     <Compile Include="Components\Linkers\Flow.cs" />
     <Compile Include="Components\Essential\Collision.cs" />
-    <Compile Include="Components\Component.cs" />
+    <Compile Include="Component.cs" />
     <Compile Include="Components\AffectOthers\Gravity.cs" />
     <Compile Include="Components\Movement\Circler.cs" />
     <Compile Include="Framework\Redirector.cs" />

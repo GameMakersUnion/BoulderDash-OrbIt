@@ -67,6 +67,7 @@ namespace OrbItProcs
         //chrono,
         //weird,
         sword,
+        itempayload,
     };
     public enum textures
     {
@@ -128,23 +129,22 @@ namespace OrbItProcs
         public bool IsOldUI { get { return ui != null && ui.sidebar != null && ui.sidebar.activeTabControl == ui.sidebar.tbcMain; } }
         public static bool Debugging = false;
         public static bool bigTonyOn = false;
-        public static bool EnablePlayers = true;
+        private bool GraphicsReset;
 
 
-        private OrbIt() : base()
+
+        private OrbIt() : base(false)
         {
             game = this;
-            Utils.PopulateComponentTypesDictionary();
+
             Content.RootDirectory = "Content";
-            //IsMouseVisible = true;
             Graphics.SynchronizeWithVerticalRetrace = true;
             ExitConfirmation = false;
-            //IsFixedTimeStep = false;
             Manager.Input.InputMethods = InputMethods.Mouse | InputMethods.Keyboard;
             Manager.AutoCreateRenderTarget = false;
             Graphics.PreferMultiSampling = false;
         }
-        public void setResolution(resolutions r, bool fullScreen)
+        public void setResolution(resolutions r, bool fullScreen, bool resizeRoom = false)
         {
             switch (r)
             {
@@ -170,45 +170,45 @@ namespace OrbItProcs
                     Width = 1024; Height = 768; break;
             }
             Manager.Graphics.IsFullScreen = fullScreen;
-            Manager.Graphics.ApplyChanges();
+            GraphicsReset = true;
             
         }
 
 
         protected override void Initialize()
         {
-            setResolution(resolutions.HD_1366x768, false);
+            //Load Stuff.
+            Utils.PopulateComponentTypesDictionary();
             Assets.LoadAssets(Content);
             DelegatorMethods.InitializeDelegateMethods();
-            room = new Room(this, 1880, 1175);
-            room.name = "main";
-            mainRoom = room;
-            tempRoom = new Room(this, 1880, 1175);
-            room.name = "temp";
+            //Sup Tom.
+            base.Initialize();
+            //Get Roomy
+            mainRoom = new Room(this, Width, Height);
+            tempRoom = new Room(this, Width, Height);
             tempRoom.borderColor = Color.Red;
             room = mainRoom;
+            //Hi-Definition Orbs:
+            setResolution(resolutions.HD_1366x768, false);
+            //UI
             ui = UserInterface.Start();
-            processManager = new ProcessManager(this);
-            ui.Initialize(room);
-            frameRateCounter = new FrameRateCounter(this);
-            base.Initialize();          
-            ui.sidebar.UpdateGroupComboBoxes();
-            ui.sidebar.cbListPicker.ItemIndex = 0;
-            ui.sidebar.cbListPicker.ItemIndex = 2;
-            ui.sidebar.cbGroupS.ItemIndex = 2;
-            ui.sidebar.cbGroupT.ItemIndex = 2;
-
-            processManager.SetProcessKeybinds();
+            ui.Initialize();
+            //KeyBinds
             ui.keyManager.addProcessKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
             ui.keyManager.addProcessKeyAction("togglesidebar", KeyCodes.OemTilde, OnPress: ui.ToggleSidebar);
             ui.keyManager.addProcessKeyAction("switchview", KeyCodes.PageDown, OnPress: ui.SwitchView);
             ui.keyManager.addProcessKeyAction("removeall", KeyCodes.Delete, OnPress: () => ui.sidebar.btnRemoveAllNodes_Click(null, null));
 
-            if (EnablePlayers)
-            {
-                Player.CreatePlayers();
-            }
-            ui.sidebar.InitializeFifthPage();
+            //We put the Procs In OrbItProcs
+            processManager = new ProcessManager(this);
+            processManager.SetProcessKeybinds();
+            //A game need players, no?
+            Player.CreatePlayers(mainRoom);
+            ui.sidebar.InitializePlayersPage();
+            ui.sidebar.InitializeItemsPage();
+            //The only important stat in OrbIt.
+            frameRateCounter = new FrameRateCounter(this);
+
         }
        
         protected override void Update(GameTime gameTime)
@@ -220,20 +220,21 @@ namespace OrbItProcs
             gametime = gameTime;
             frameRateCounter.Update(gameTime);
             if (IsActive) ui.Update(gameTime);
+
             if (!ui.IsPaused)
             {
                 if (room != null) room.Update(gameTime);
-            }
-            else
-            {
-                if (room != null) room.gridSystemLines = new List<Microsoft.Xna.Framework.Rectangle>();
             }
 
             room.Draw();
             frameRateCounter.Draw(Assets.font);
             room.camera.CatchUp();
             base.Draw(gameTime);
-            
+            if (GraphicsReset)
+            {
+                Manager.Graphics.ApplyChanges();
+                mainRoom.roomRenderTarget = new RenderTarget2D(GraphicsDevice, Width, Height);
+            }  
         }
 
 
@@ -264,7 +265,15 @@ namespace OrbItProcs
         {
             if (game != null) throw new SystemException("Game was already Started");
             game = new OrbIt();
-            game.Run();
+            //try
+            //{
+                game.Run();
+            //}
+            //catch(Exception e)
+            //{
+            //    game.mainRoom.camera.AbortThread();
+            //    throw new SystemException("???", e);
+            //}
         }
     }
 }

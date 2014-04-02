@@ -18,27 +18,50 @@ namespace OrbItProcs
         public static Node bulletNode;
         public const mtypes CompType = mtypes.playercontrol;// | mtypes.affectself;
         public override mtypes compType { get { return CompType; } set { } }
+        /// <summary>
+        /// The mode in which to fire nodes. This will change the way input is handled.
+        /// </summary>
+        [Info(UserLevel.User, "The mode in which to fire nodes. This will change the way input is handled.")]
         public ShootMode shootMode { get; set; }
+        /// <summary>
+        /// The amount of time the bullet will live before disappearing.
+        /// </summary>
+        [Info(UserLevel.User, "The amount of time the bullet will live before disappearing.")]
         public int bulletLife { get; set; }
-        
-        
-        public int shootingRate { get; set; }
+
+        /// <summary>
+        /// The higher the delay, the slower you will shoot.
+        /// </summary>
+        [Info(UserLevel.User, "The higher the delay, the slower you will shoot.")]
+        public int shootingDelay { get; set; }
         private int shootingRateCount = 0;
+        /// <summary>
+        /// The speed at which bullets will travel.
+        /// </summary>
+        [Info(UserLevel.User, "The speed at which bullets will travel.")]
         public float speed { get; set; }
+        /// <summary>
+        /// The amount of damage each bullet will inflict on the node it collides with.
+        /// </summary>
+        [Info(UserLevel.User, "The amount of damage each bullet will inflict on the node it collides with.")]
         public float damage { get; set; }
+        /// <summary>
+        /// If enabled, the bullet's velocity will be determined by the controller stick's distance from the center of the stick.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, the bullet's velocity will be determined by the controller stick's distance from the center of the stick.")]
         public bool useStickVelocity { get; set; }
         public Shooter() : this(null) { }
         public Shooter(Node parent)
         {
             this.parent = parent;
             bulletLife = 700;
-            shootingRate = 50;
+            shootingDelay = 50;
             speed = 15f;
             damage = 10f;
             shootMode = ShootMode.Auto;
             useStickVelocity = false;
         }
-        public static void MakeBullet()
+        public static void MakeBullet(Room room)
         {
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>()
             {
@@ -51,9 +74,10 @@ namespace OrbItProcs
                 {comp.lifetime, true},
                 //{comp.waver, true},
             };
-            bulletNode = new Node(props);
+            bulletNode = new Node(room, props);
             bulletNode.Comp<Collision>().isSolid = false;
-            bulletNode.body.isSolid = false;
+            bulletNode.body.isSolid = true;
+            bulletNode.body.restitution = 1f;
             bulletNode.Comp<ColorChanger>().colormode = ColorChanger.ColorMode.hueShifter;
             bulletNode.Comp<Lifetime>().timeUntilDeath.enabled = true;
             bulletNode.Comp<Laser>().thickness = 5f;
@@ -70,7 +94,7 @@ namespace OrbItProcs
                 {
                     if (fc.newGamePadState.IsButtonDown(Buttons.RightTrigger))
                     {
-                        if (shootingRateCount++ % shootingRate == 0)
+                        if (shootingRateCount++ % shootingDelay == 0)
                         {
                             FireNode(fc.newGamePadState.ThumbSticks.Right);
                         }
@@ -85,7 +109,7 @@ namespace OrbItProcs
                     //if (fc.newGamePadState.IsButtonDown(Buttons.RightTrigger) && fc.oldGamePadState.IsButtonUp(Buttons.RightTrigger))
                     if (fc.newGamePadState.Triggers.Right > 0.5 && fc.oldGamePadState.Triggers.Right < 0.5)
                     {
-                        if (shootingRateCount++ % shootingRate == 0)
+                        if (shootingRateCount++ % shootingDelay == 0)
                         {
                             FireNode(fc.newGamePadState.ThumbSticks.Right);
                         }
@@ -100,7 +124,7 @@ namespace OrbItProcs
                     //if (fc.newGamePadState.IsButtonDown(Buttons.RightTrigger) && fc.oldGamePadState.IsButtonUp(Buttons.RightTrigger))
                     if (fc.newGamePadState.ThumbSticks.Right != Vector2.Zero)
                     {
-                        if (shootingRateCount++ % shootingRate == 0)
+                        if (shootingRateCount++ % shootingDelay == 0)
                         {
                             FireNode(fc.newGamePadState.ThumbSticks.Right);
                         }
@@ -115,7 +139,7 @@ namespace OrbItProcs
         public void FireNode(Vector2 dir)
         {
             if (!useStickVelocity) VMath.NormalizeSafe(ref dir);
-            Node n = bulletNode.CreateClone();
+            Node n = bulletNode.CreateClone(parent.room);
             n.Comp<Lifetime>().timeUntilDeath.value = bulletLife;
             dir.Y *= -1;
             n.body.velocity = dir * speed;
@@ -166,6 +190,7 @@ namespace OrbItProcs
                 bullet.OnDeath(null);
             };
             n.body.OnCollisionEnter += bulletHit;
+            //n.body.isSolid = false;
         }
 
     }

@@ -76,7 +76,6 @@ namespace OrbItProcs
 
         public void Initialize()
         {
-            
             #region /// Components List (back panel) ///
             backPanel = new Panel(manager);
             
