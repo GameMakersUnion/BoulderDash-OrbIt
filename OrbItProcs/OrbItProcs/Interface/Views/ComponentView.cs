@@ -178,6 +178,7 @@ namespace OrbItProcs
                 //activeGroup = null;
                 GroupSync = false;
                 insView.GroupSync = false;
+                this.activeGroup = null;
             }
             int selected = sidebar.tbcMain.SelectedIndex;
             if (selected != 3) sidebar.tbcMain.SelectedIndex = 3;
@@ -193,19 +194,16 @@ namespace OrbItProcs
 
             viewItems = new List<DetailedItem>();
             int itemCount = node.comps.Count + 2;
-            int width = backPanel.Width - 4; //#magic number
-            if (itemCount >= 10)
-                width -= 18;
             InspectorInfo rootItem = new InspectorInfo(null, node, sidebar);
             int height = 0;
             if (sidebar.userLevel == UserLevel.Debug)
             {
-                CreateItem(new DetailedItem(manager, this, rootItem, backPanel, heightCount, LeftPadding, width));
+                CreateItem(new DetailedItem(manager, this, rootItem, backPanel, heightCount, LeftPadding));
                 height = (viewItems[0].itemHeight - 2);
                 heightCount += height;
             }
             InspectorInfo bodyItem = new InspectorInfo(null, rootItem, node.body, node.GetType().GetProperty("body"));
-            CreateItem(new DetailedItem(manager, this, bodyItem, backPanel, heightCount, LeftPadding, width));
+            CreateItem(new DetailedItem(manager, this, bodyItem, backPanel, heightCount, LeftPadding));
             Info inf = Utils.GetInfoClass(node.body);
             if (inf != null) viewItems[0].toolTip = inf.summary;
 
@@ -225,7 +223,7 @@ namespace OrbItProcs
                 }
                 heightCount += height;
                 InspectorInfo cItem = new InspectorInfo(null, dictItem, node.comps[c], c);
-                DetailedItem di = new DetailedItem(manager, this, cItem, backPanel, heightCount, LeftPadding, width);
+                DetailedItem di = new DetailedItem(manager, this, cItem, backPanel, heightCount, LeftPadding);
                 di.toolTip = tooltip;
                 CreateItem(di);
 

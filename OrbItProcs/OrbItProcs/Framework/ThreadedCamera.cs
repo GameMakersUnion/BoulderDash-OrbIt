@@ -131,6 +131,7 @@ namespace OrbItProcs
         public SpriteBatch batch;
 
         static double x = 0;
+        static bool phaseBackgroundColor = false;
 
         public ThreadedCamera(Room room, float zoom = 0.5f, Vector2? pos = null)
         {
@@ -189,10 +190,13 @@ namespace OrbItProcs
         {
             while (true)
             {
-                
-                x += Math.PI / 360.0;
-                backgroundHue = (backgroundHue + ((float)Math.Sin(x) + 1) / 10f) % 360;
-                Color bg = ColorChanger.getColorFromHSV(backgroundHue, value: 0.2f);
+                Color bg = Color.Black;
+                if (phaseBackgroundColor)
+                {
+                    x += Math.PI / 360.0;
+                    backgroundHue = (backgroundHue + ((float)Math.Sin(x) + 1) / 10f) % 360;
+                    bg = ColorChanger.getColorFromHSV(backgroundHue, value: 0.2f);
+                }
 
                 CameraWaiting.Reset();
                 lock (_locker)

@@ -160,11 +160,11 @@ namespace OrbItProcs
             }
         }
 
-        public DetailedItem(Manager manager, DetailedView detailedView, object obj, Control parent, int Top, int Left, int Width)
-            : base(manager, obj, parent, Top, Left, Width)
+        public DetailedItem(Manager manager, DetailedView detailedView, object obj, Control parent, int Top, int Left)
+            : base(manager, obj, parent, Top, Left)
         {
             this.detailedView = detailedView;
-            panel.Width = Width - 4;
+            //panel.Width = Width - 4;
             textColor = detailedView.textColor;
             backColor = detailedView.backColor;
             RefreshColor();

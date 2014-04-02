@@ -17,7 +17,7 @@ namespace OrbItProcs
         public Label lblPlayers;
         public InspectorView insView;
         public Group playerGroup;
-
+        public Button btnEditAllPlayers;
         public override int Width
         {
             get
@@ -40,12 +40,29 @@ namespace OrbItProcs
         //public ComboBox cbActiveGroup;
 
         //public InspectorArea insArea;
-        public EditGroupWindow editGroupWindow;
+        public EditNodeWindow editGroupWindow;
 
         public PlayerView(Sidebar sidebar, Control parent, int Left, int Top)
             : base(sidebar, parent, Left, Top, false)
         {
             playerGroup = sidebar.room.playerGroup;
+
+            btnEditAllPlayers = new Button(manager);
+            btnEditAllPlayers.Init();
+            btnEditAllPlayers.Parent = parent;
+            btnEditAllPlayers.Text = "Edit All Players";
+            btnEditAllPlayers.Width = 150;
+            btnEditAllPlayers.Left = parent.Width / 2 - btnEditAllPlayers.Width / 2;
+            btnEditAllPlayers.Top = Top + VertPadding * 2;
+            HeightCounter +=  btnEditAllPlayers.Height * 2;
+            btnEditAllPlayers.Click += (s, e) =>
+            {
+                editGroupWindow = new EditNodeWindow(sidebar, "All Players", room.playerGroup.Name);
+                editGroupWindow.componentView.SwitchGroup(room.playerGroup);
+                //editGroupWindow.componentView.SwitchNode(n, false);
+
+            };
+
             lblPlayers = new Label(manager);
             lblPlayers.Init();
             lblPlayers.Parent = parent;
@@ -95,10 +112,9 @@ namespace OrbItProcs
                     item.isSelected = true;
                     //editGroupWindow = new EditGroupWindow(sidebar);
                     //editGroupWindow.componentView.SwitchGroup(g);
-                    editGroupWindow = new EditGroupWindow(sidebar);
+                    editGroupWindow = new EditNodeWindow(sidebar, "Player", n.name);
                     //editGroupWindow.componentView.SwitchGroup(g);
                     editGroupWindow.componentView.SwitchNode(n, false);
-
                 };
 
                 Button btnEnabled = new Button(manager);
@@ -206,7 +222,7 @@ namespace OrbItProcs
             foreach (Node p in playerGroup.entities)
             {
                 InspectorInfo cItem = new InspectorInfo(null, p, sidebar);
-                DetailedItem di = new DetailedItem(manager, this, cItem, backPanel, heightCount, LeftPadding, width);
+                DetailedItem di = new DetailedItem(manager, this, cItem, backPanel, heightCount, LeftPadding);
                 CreateItem(di);
                 di.label.Text = p.name;
                 heightCount += (viewItems[0].itemHeight - 2);

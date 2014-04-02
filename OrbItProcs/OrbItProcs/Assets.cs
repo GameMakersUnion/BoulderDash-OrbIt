@@ -118,7 +118,7 @@ namespace OrbItProcs
             Action completeSave = delegate
             {
                 OrbIt.ui.sidebar.inspectorArea.editNode.name = name;
-                Node serializenode = new Node();
+                Node serializenode = new Node(node.room);
                 Node.cloneNode(OrbIt.ui.sidebar.inspectorArea.editNode, serializenode);
                 OrbIt.game.serializer.Serialize(serializenode, filename);
                 Assets.NodePresets.Add(serializenode);

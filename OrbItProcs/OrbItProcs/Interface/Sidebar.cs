@@ -493,8 +493,7 @@ namespace OrbItProcs
         void PromoteToDefault_Click(object sender, EventArgs e)
         {
             Node n = (Node)lstMain.Items.ElementAt(lstMain.ItemIndex);
-            Node newdefault = new Node();
-            Node.cloneNode(n, newdefault);
+            Node newdefault = n.CreateClone(n.room);
             Group g = ActiveGroup;
             g.defaultNode = newdefault;
             g.fullSet.Remove(n);
@@ -509,8 +508,8 @@ namespace OrbItProcs
                 room.targetNode = null;
             }
 
-            Node newdefault = new Node();
-            Node.cloneNode(n, newdefault);
+            Node newdefault = n.CreateClone(n.room);
+            //Node.cloneNode(n, newdefault);
             newdefault.body.velocity = new Vector2(0, 0);
             Group g = new Group(room, newdefault, room.masterGroup.childGroups["General Groups"]);
             newdefault.name = g.Name;

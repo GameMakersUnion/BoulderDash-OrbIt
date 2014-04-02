@@ -5,9 +5,6 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Reflection;
-
-
-
 using Component = OrbItProcs.Component;
 
 namespace OrbItProcs
@@ -88,7 +85,7 @@ namespace OrbItProcs
         public virtual void Initialize(Node parent) { this.parent = parent; }
         public virtual void AfterCloning() { }
         public virtual void OnSpawn() { }
-        public virtual void AffectOther(Node other) { }
+        public virtual void AffectOther(Node other) {  }
         public virtual void AffectSelf() { }
         public virtual void Draw() { }
         public virtual void PlayerControl(Controller controller) { }
@@ -129,7 +126,18 @@ namespace OrbItProcs
            foreach (PropertyInfo property in properties)
            {
                if (property.PropertyType == typeof(ModifierInfo)) continue;
-               if (property.PropertyType == typeof(Node)) continue;
+               if (property.PropertyType == typeof(Node))
+               {
+                   var cust = property.GetCustomAttributes(typeof(CopyNodeProperty), false);
+                   if (cust.Length > 0)
+                   {
+                       Node n = (Node)property.GetValue(sourceComp, null);
+                       Node nclone = n.CreateClone(sourceComp.parent.room);
+                       property.SetValue(destComp, nclone, null);
+                       //Console.WriteLine("CLONING : " + property.Name);
+                   }
+                   continue;
+               }
 
                 property.SetValue(destComp, property.GetValue(sourceComp, null), null);
            }

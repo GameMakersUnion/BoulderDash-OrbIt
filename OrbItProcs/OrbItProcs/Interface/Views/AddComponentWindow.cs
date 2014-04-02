@@ -65,7 +65,8 @@ namespace OrbItProcs
             NewLabel("AS", left + 20, false);
             NewLabel("DR", left + 40, false);
 
-            addCompView = new AddComponentView(sidebar, poop, LeftPadding, 80, par.Height);
+            addCompView = new AddComponentView(sidebar, poop, LeftPadding, 80, par.Height - 260);
+            
             //addCompView.Height += 210;
             addCompView.InitNode(n);
 

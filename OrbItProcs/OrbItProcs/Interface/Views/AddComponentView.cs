@@ -22,7 +22,7 @@ namespace OrbItProcs
             base.Initialize();
             ItemCreator = Creator;
             ColorChangeOnSelect = false;
-            Width = parent.Width;
+            Width = parent.Width - 15;
             sidebar.ui.detailedViews.Remove(this);
 
             lblCompName = new Label(manager);
@@ -57,7 +57,7 @@ namespace OrbItProcs
                 if (info == null || (int)sidebar.userLevel < (int)info.userLevel) continue;
                 if (node.HasComp(c)) continue;
                 if ((Utils.GetCompTypes(ctype) & mtypes.exclusiveLinker) == mtypes.exclusiveLinker) continue;
-                DetailedItem ditem = new DetailedItem(manager, this, ctype, backPanel, heightcounter, 0, backPanel.Width - 20);
+                DetailedItem ditem = new DetailedItem(manager, this, ctype, backPanel, heightcounter, 0);
                 SetupScroll(ditem);
                 ditem.label.Text = ditem.label.Text;
                 ditem.label.Left += 30;

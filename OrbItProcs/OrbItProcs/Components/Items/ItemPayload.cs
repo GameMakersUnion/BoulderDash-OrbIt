@@ -11,18 +11,37 @@ namespace OrbItProcs
         public const mtypes CompType = mtypes.draw | mtypes.affectself;
         public override mtypes compType { get { return CompType; } set { } }
 
-        public Dictionary<Type, Component> payload { get; set; }
+        //public Dictionary<Type, Component> payload { get; set; }
+        /// <summary>
+        /// The payload node contains all the components that will be picked up by the colliding player/node.
+        /// </summary>
+        [Info(UserLevel.User, "The payload node contains all the components that will be picked up by the colliding player/node.")]
+        [CopyNodeProperty]
+        public Node payloadNode { get; set; }
         public CollisionDelegate OnCollision;
+        /// <summary>
+        /// If enabled, components picked up will overwrite existing components.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, components picked up will overwrite existing components.")]
         public bool OverwriteComponents { get; set; }
+        /// <summary>
+        /// If enabled, the payload node will be erased after it is picked up.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, the payload node will be erased after it is picked up.")]
         public bool DieOnDelivery { get; set; }
         public HashSet<Node> AlreadyDelivered;
         public List<ParticlePack> particlePacks;
+        /// <summary>
+        /// The amount of particle packs to draw beneath the payload.
+        /// </summary>
+        [Info(UserLevel.User, "The amount of particle packs to draw beneath the payload.")]
         public int packCount = 1;
         public ItemPayload() : this(null) { }
         public ItemPayload(Node parent)
         {
             this.parent = parent;
-            payload = new Dictionary<Type, Component>();
+            //payload = new Dictionary<Type, Component>();
+            
             AlreadyDelivered = new HashSet<Node>();
             OverwriteComponents = false;
             DieOnDelivery = true;
@@ -30,12 +49,13 @@ namespace OrbItProcs
             {
                 if (o.player == null) return;
                 if (AlreadyDelivered.Contains(o)) return;
-                foreach(Type t in payload.Keys)
+                foreach (Type t in payloadNode.comps.Keys)
                 {
                     if (o.HasComp(t) && !OverwriteComponents) continue;
-                    Component comp = payload[t];
+                    Component comp = payloadNode.comps[t];
                     Component clone = comp.CreateClone(o);
                     o.addComponent(clone, true, true);
+                    clone.OnSpawn();
                 }
                 if (DieOnDelivery)
                 {
@@ -44,6 +64,13 @@ namespace OrbItProcs
                 }
                 AlreadyDelivered.Add(o);
             };
+
+            if (parent == null) return;
+            payloadNode = new Node(parent.room);
+            payloadNode.comps.Remove(typeof(Movement));
+            payloadNode.comps.Remove(typeof(Collision));
+            payloadNode.comps.Remove(typeof(BasicDraw));
+            payloadNode.comps.Remove(typeof(Meta));
             //testing
             //Gravity grav = new Gravity();
             //grav.mode = Gravity.Mode.Strong;
@@ -52,20 +79,20 @@ namespace OrbItProcs
         public override void AfterCloning()
         {
             Dictionary<Type, Component> newPayload = new Dictionary<Type, Component>();
-            foreach (Type t in payload.Keys.ToList())
+            foreach (Type t in payloadNode.comps.Keys.ToList())
             {
-                Component comp = payload[t];
+                Component comp = payloadNode.comps[t];
                 Component clone = comp.CreateClone(parent);
                 newPayload[t] = clone;
             }
-            payload = newPayload;
+            payloadNode.comps = newPayload;
         }
         public void AddComponentItem(Component component, bool overwrite = true)
         {
             Type t = component.GetType();
-            if (payload.ContainsKey(t) && !overwrite) return;
+            if (payloadNode.comps.ContainsKey(t) && !overwrite) return;
             Component clone = component.CreateClone(parent);
-            payload[t] = clone;
+            payloadNode.comps[t] = clone;
         }
 
         public override void OnSpawn()
@@ -92,7 +119,7 @@ namespace OrbItProcs
             {
                 pack.Draw(parent.room, parent.body.pos, parent.body.color);
             }
-            foreach(Component c in payload.Values)
+            foreach (Component c in payloadNode.comps.Values)
             {
                 c.Draw();
             }

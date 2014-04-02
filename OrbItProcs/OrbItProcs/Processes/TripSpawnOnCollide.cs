@@ -33,10 +33,10 @@ namespace OrbItProcs
                 me.body.OnCollisionStay -= OnCollision;
                 Console.WriteLine("yes");
             }
-            Node n1 = new Node(), n2 = new Node(), n3 = new Node();
-            Node.cloneNode(me, n1); // take params (...)
-            Node.cloneNode(me, n2);
-            Node.cloneNode(me, n3);
+            Node n1 = me.CreateClone(), n2 = me.CreateClone(), n3 = me.CreateClone();
+            //Node.cloneNode(me, n1); // take params (...)
+            //Node.cloneNode(me, n2);
+            //Node.cloneNode(me, n3);
             //CollisionArgs["trigger"].Collided -= Collision;
             n1.body.OnCollisionStay -= OnCollision;
             n2.body.OnCollisionStay -= OnCollision;

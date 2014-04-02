@@ -82,9 +82,6 @@ namespace OrbItProcs
             tbcViews.Color = UserInterface.TomLight;
 
             tbcViews.AddPage();
-            tbcViews.AddPage();
-            tbcViews.AddPage();
-            tbcViews.AddPage();
 
             TabPage groupsTab = tbcViews.TabPages[0];
             //tbcViews.Color = Color.Transparent;
@@ -104,6 +101,7 @@ namespace OrbItProcs
         public PlayerView playerView;
         public void InitializePlayersPage()
         {
+            tbcViews.AddPage();
             TabPage playersTab = tbcViews.TabPages[1];
             playersTab.Text = "Players";
             tbcViews.SelectedIndex = 1;
@@ -129,6 +127,7 @@ namespace OrbItProcs
         GroupsView itemsView;
         public void InitializeItemsPage()
         {
+            tbcViews.AddPage();
             TabPage itemsTab = tbcViews.TabPages[2];
             itemsTab.Text = "Items";
             tbcViews.SelectedIndex = 2;
@@ -145,6 +144,7 @@ namespace OrbItProcs
 
         public void InitializeBulletsPage()
         {
+            tbcViews.AddPage();
             TabPage bulletsTab = tbcViews.TabPages[3];
             bulletsTab.Text = "Bullets";
             tbcViews.SelectedIndex = 3;

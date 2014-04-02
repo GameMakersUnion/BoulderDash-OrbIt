@@ -158,7 +158,7 @@ namespace OrbItProcs
                     //userP[node.velocity] = childvel;
                     //userP[node.name] = "node" + Node.nodeCounter;
 
-                    Node newNode = new Node();
+                    Node newNode = new Node(parent.room);
                     Node.cloneNode(parent, newNode);
                     newNode.body.velocity = childvel;
                     newNode.name = "node" + Node.nodeCounter;

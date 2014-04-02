@@ -124,11 +124,7 @@ namespace OrbItProcs
             backPanel.ScrollTo(backPanel.ScrollBarValue.Horizontal, value);
             ScrollPosition = backPanel.ScrollBarValue.Vertical;
         }
-
-        
     }
-
-
     public class ViewItem
     {
         protected bool _isSelected = false;
@@ -137,17 +133,8 @@ namespace OrbItProcs
             get { return _isSelected; }
             set
             {
-                //if (value)
-                //{
-                //    foreach (var item in listView.viewItems)
-                //    {
-                //        if (item == this) continue;
-                //        if (item.isSelected) item.isSelected = false;
-                //    }
-                //}
                 _isSelected = value;
                 RefreshColor();
-
             }
         }
 
@@ -180,7 +167,7 @@ namespace OrbItProcs
         public Action OnSelect;
 
 
-        public ViewItem(Manager manager, object obj, Control parent, int Top, int Left, int Width)
+        public ViewItem(Manager manager, object obj, Control parent, int Top, int Left)
         {
             //this.listView = listView;
             this.obj = obj;
@@ -197,7 +184,7 @@ namespace OrbItProcs
             panel.BevelColor = new Color(0, 0, 0);
             panel.BevelBorder = BevelBorder.All;
             panel.BevelStyle = BevelStyle.Raised;
-            panel.Width = Width;
+            panel.Width = parent.Width - 25;
 
             //listView.sidebar.ui.SetScrollableControl(textPanel, listView.ComponentsList_ChangeScrollPosition);
 
@@ -205,7 +192,7 @@ namespace OrbItProcs
             label.Init();
             label.Parent = panel;
             label.Left = Left;
-            label.Width = Width - 10;
+            label.Width = panel.Width - 10;
             label.Top = 1;
 
             if (obj != null)

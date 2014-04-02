@@ -224,7 +224,7 @@ namespace OrbItProcs {
             masterGroup = new Group(this, defaultNode, null, defaultNode.name, false);
             if (Groups)
             {
-                Group playerGroup = new Group(this, defaultNode, masterGroup, "Player Group", false);
+                Group playerGroup = new Group(this, defaultNode.CreateClone(this), masterGroup, "Player Group", false);
                 Group itemGroup = new Group(this, defaultNode, masterGroup, "Item Group", false);
                 Group generalGroup = new Group(this, defaultNode, masterGroup, "General Groups", false);
                 Group linkGroup = new Group(this, defaultNode, masterGroup, "Link Groups", false);

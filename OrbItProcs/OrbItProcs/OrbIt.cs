@@ -157,10 +157,7 @@ namespace OrbItProcs
             }
             Manager.Graphics.IsFullScreen = fullScreen;
             GraphicsReset = true;
-
         }
-
-
         protected override void Initialize()
         {
             //Load Stuff.
@@ -187,7 +184,13 @@ namespace OrbItProcs
             ui.sidebar.InitializeGroupsPage();
             ui.sidebar.InitializePlayersPage();
             ui.sidebar.InitializeItemsPage();
-            ui.sidebar.InitializeBulletsPage();
+            //ui.sidebar.InitializeBulletsPage();
+            foreach(var tabpage in ui.sidebar.tbcViews.TabPages)
+            {
+                string whitespace = "  ";
+                tabpage.Text = whitespace + tabpage.Text + whitespace;
+            }
+
             //The only important stat in OrbIt.
             frameRateCounter = new FrameRateCounter(this);
 

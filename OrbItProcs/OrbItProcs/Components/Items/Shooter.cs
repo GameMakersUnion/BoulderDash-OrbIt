@@ -13,10 +13,14 @@ namespace OrbItProcs
         Burst,
         Auto,
     }
+    /// <summary>
+    /// Shoots out damaging lasers that are automatic, single fire or rapid firing.
+    /// </summary>
+    [Info(UserLevel.User, "Shoots out damaging lasers that are automatic, single fire or rapid firing.")]
     public class Shooter : Component
     {
         public static Node bulletNode;
-        public const mtypes CompType = mtypes.playercontrol;// | mtypes.affectself;
+        public const mtypes CompType = mtypes.playercontrol | mtypes.minordraw;// | mtypes.affectself;
         public override mtypes compType { get { return CompType; } set { } }
         /// <summary>
         /// The mode in which to fire nodes. This will change the way input is handled.
@@ -136,6 +140,10 @@ namespace OrbItProcs
                 }
             }
         }
+        public override void Draw()
+        {
+            //todo:draw shooter
+        }
         public void FireNode(Vector2 dir)
         {
             if (!useStickVelocity) VMath.NormalizeSafe(ref dir);
@@ -148,7 +156,7 @@ namespace OrbItProcs
             //n.body.AddExclusion(parent.body);
             if (parent.HasComp<Sword>())
             {
-                n.body.AddExclusionCheck(parent.Comp<Sword>().sword.body);
+                n.body.AddExclusionCheck(parent.Comp<Sword>().swordNode.body);
                 //n.body.AddExclusion(parent.Comp<Sword>().sword.body);
             }
             if (parent.player != null)

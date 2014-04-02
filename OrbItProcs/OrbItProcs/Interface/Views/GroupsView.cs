@@ -18,7 +18,7 @@ namespace OrbItProcs
         public Button btnCreateGroup;
         public Group parentGroup;
         public CreateGroupWindow createGroupWindow;
-        public EditGroupWindow editGroupWindow;
+        public EditNodeWindow editGroupWindow;
         public GroupsView(Sidebar sidebar, Control parent, int Left, int Top, Group parentGroup)
             : base(sidebar, parent, Left, Top, false)
         {
@@ -83,7 +83,7 @@ namespace OrbItProcs
             {
                 top = (viewItems[0].itemHeight - 4) * viewItems.Count;
             }
-            DetailedItem detailedItem = new DetailedItem(manager, this, g, backPanel, top, LeftPadding, backPanel.Width - 4);
+            DetailedItem detailedItem = new DetailedItem(manager, this, g, backPanel, top, LeftPadding);
             base.CreateItem(detailedItem);
         }
 
@@ -104,8 +104,16 @@ namespace OrbItProcs
                 EventHandler editgroup = (s, e) =>
                 {
                     item.isSelected = true;
-                    editGroupWindow = new EditGroupWindow(sidebar);
+                    if (parentGroup == room.itemGroup)
+                    {
+                        editGroupWindow = new EditNodeWindow(sidebar, "Item Group", g.Name);
+                    }
+                    else
+                    {
+                        editGroupWindow = new EditNodeWindow(sidebar, g);
+                    }
                     editGroupWindow.componentView.SwitchGroup(g);
+                    
                 };
                 
                 btnEdit.Text = "Edit";

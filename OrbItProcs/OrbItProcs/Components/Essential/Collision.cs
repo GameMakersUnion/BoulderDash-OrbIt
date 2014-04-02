@@ -104,29 +104,30 @@ namespace OrbItProcs
             get { return _AllHandlersEnabled; }
             set
             {
-                if (_active && parent != null && parent.active && !parent.IsDefault)
-                {
-                    if (value)
-                    {
-                        if (parent.body.HandlersEnabled) 
-                            parent.room.AddCollider(parent.body);
-                        foreach (Collider col in colliders.Values)
-                        {
-                            if (col.HandlersEnabled) parent.room.AddCollider(col);
-                        }
-                    }
-                    else
-                    {
-                        if (!parent.body.isSolid) 
-                            parent.room.RemoveCollider(parent.body);
-                        foreach (Collider col in colliders.Values)
-                        {
-                            parent.room.RemoveCollider(col);
-                        }
-                    }
-                }
+                //if (_active && parent != null && parent.active && !parent.IsDefault)
+                //{
+                //    if (value)
+                //    {
+                //        if (parent.body.HandlersEnabled) 
+                //            parent.room.AddCollider(parent.body);
+                //        foreach (Collider col in colliders.Values)
+                //        {
+                //            if (col.HandlersEnabled) parent.room.AddCollider(col);
+                //        }
+                //    }
+                //    else
+                //    {
+                //        if (!parent.body.isSolid) 
+                //            parent.room.RemoveCollider(parent.body);
+                //        foreach (Collider col in colliders.Values)
+                //        {
+                //            parent.room.RemoveCollider(col);
+                //        }
+                //    }
+                //}
 
                 _AllHandlersEnabled = value;
+                UpdateCollisionSet();
             }
         }
         [Info(UserLevel.Developer)]
@@ -135,23 +136,25 @@ namespace OrbItProcs
             get { return _active; }
             set
             {
-                if (parent != null && OrbIt.ui != null && !parent.IsDefault)
-                {
-                    if (value)
-                    {
-                        if (parent.body.isSolid || parent.body.HandlersEnabled) 
-                            parent.room.AddCollider(parent.body);
-                        foreach (Collider col in colliders.Values)
-                        {
-                            if (col.HandlersEnabled) parent.room.AddCollider(col);
-                        }
-                    }
-                    else
-                    {
-                        RemoveCollidersFromSet();
-                    }
-                }
+                //if (parent != null && OrbIt.ui != null && !parent.IsDefault)
+                //{
+                //    if (value)
+                //    {
+                //        if (parent.body.isSolid || parent.body.HandlersEnabled) 
+                //            parent.room.AddCollider(parent.body);
+                //        foreach (Collider col in colliders.Values)
+                //        {
+                //            if (col.HandlersEnabled) parent.room.AddCollider(col);
+                //        }
+                //    }
+                //    else
+                //    {
+                //        RemoveCollidersFromSet();
+                //    }
+                //}
                 _active = value;
+                if (OrbIt.ui != null)
+                    UpdateCollisionSet();
             }
         }
 
@@ -159,13 +162,18 @@ namespace OrbItProcs
         {
             if (parent != null && !parent.IsDefault)
             {
-                if (active)
+                if (parent.room.masterGroup == null || !parent.room.masterGroup.fullSet.Contains(parent)) return;
+                if (active && AllHandlersEnabled)
                 {
                     if (parent.body.isSolid || parent.body.HandlersEnabled)
                         parent.room.AddCollider(parent.body);
+                    else
+                        parent.room.RemoveCollider(parent.body);
+
                     foreach (Collider col in colliders.Values)
                     {
                         if (col.HandlersEnabled) parent.room.AddCollider(col);
+                        else parent.room.RemoveCollider(col);
                     }
                 }
                 else
@@ -190,6 +198,11 @@ namespace OrbItProcs
             if (parent != null) this.parent = parent;
             com = comp.collision; 
             _AllHandlersEnabled = true;
+            UpdateCollisionSet();
+        }
+
+        public override void OnSpawn()
+        {
             UpdateCollisionSet();
         }
 
