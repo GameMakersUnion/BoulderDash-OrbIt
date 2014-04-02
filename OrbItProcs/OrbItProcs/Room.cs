@@ -263,6 +263,7 @@ namespace OrbItProcs {
                 Info info = infos[t];
                 if ((info.compType & mtypes.essential) == mtypes.essential) continue;
                 if ((info.compType & mtypes.exclusiveLinker) == mtypes.exclusiveLinker) continue;
+                //if ((info.compType & mtypes.it) == mtypes.exclusiveLinker) continue;
                 if (info.userLevel == UserLevel.Developer || info.userLevel == UserLevel.Advanced) continue;
                 if (t == typeof(Lifetime)) continue;
                 if (t == typeof(Rune)) continue;

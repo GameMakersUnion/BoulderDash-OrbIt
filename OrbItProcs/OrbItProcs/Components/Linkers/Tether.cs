@@ -15,7 +15,7 @@ namespace OrbItProcs
     [Info(UserLevel.User, "The position of linked nodes is controlled to stay at a particular distance from the source node.", CompType)]
     public class Tether : Component, ILinkable
     {
-        public const mtypes CompType = mtypes.minordraw | mtypes.affectself;// | mtypes.exclusiveLinker;
+        public const mtypes CompType = mtypes.minordraw | mtypes.affectself | mtypes.exclusiveLinker;
         public override mtypes compType { get { return CompType; } set { } }
         [Info(UserLevel.Developer)]
         public Link link { get; set ; }
