@@ -92,7 +92,7 @@ namespace OrbItProcs
             bottomArea.Left = 0;
             bottomArea.Top = HeightCounter;
             bottomArea.Width = sidebar.Width - 5;
-            bottomArea.Height = 300;
+            bottomArea.Height = 100;
             bottomArea.Height = parent.Height - 40;
 
 
@@ -101,18 +101,17 @@ namespace OrbItProcs
             TabPage editTab = bottomArea.TabPages[0];
             editTab.Margins = new Margins(0, 0, 0, 0);
 
-
             insView = new InspectorView(sidebar, editTab, Left, 0);
             insView.GroupSync = true;
             insView.Height = 120;
             OnItemEvent += OnEvent2;
-            //editTab.Height = 300;
+            //editTab.Height = 100;
             editTab.Margins = new Margins(0, 0, 0, 0);
 
             bottomArea.AddPage();
             bottomArea.TabPages[1].Text = "Preview";
             TabPage previewTab = bottomArea.TabPages[1];
-            //previewTab.Height = 300;
+            //previewTab.Height = 100;
             previewTab.Margins = new Margins(0, 0, 0, 0);
             roomPanel = new RoomPanel(sidebar, previewTab, OrbIt.game.tempRoom, true, 0, 5);
 
@@ -216,6 +215,7 @@ namespace OrbItProcs
                 //activeGroup = null;
                 GroupSync = false;
                 insView.GroupSync = false;
+                this.activeGroup = null;
             }
             int selected = sidebar.tbcMain.SelectedIndex;
             if (selected != 3) sidebar.tbcMain.SelectedIndex = 3;
@@ -231,19 +231,16 @@ namespace OrbItProcs
 
             viewItems = new List<DetailedItem>();
             int itemCount = node.comps.Count + 2;
-            int width = backPanel.Width - 4; //#magic number
-            if (itemCount >= 10)
-                width -= 18;
             InspectorInfo rootItem = new InspectorInfo(null, node, sidebar);
             int height = 0;
             if (sidebar.userLevel == UserLevel.Debug)
             {
-                CreateItem(new DetailedItem(manager, this, rootItem, backPanel, heightCount, LeftPadding, width));
+                CreateItem(new DetailedItem(manager, this, rootItem, backPanel, heightCount, LeftPadding));
                 height = (viewItems[0].itemHeight - 2);
                 heightCount += height;
             }
             InspectorInfo bodyItem = new InspectorInfo(null, rootItem, node.body, node.GetType().GetProperty("body"));
-            CreateItem(new DetailedItem(manager, this, bodyItem, backPanel, heightCount, LeftPadding, width));
+            CreateItem(new DetailedItem(manager, this, bodyItem, backPanel, heightCount, LeftPadding));
             Info inf = Utils.GetInfoClass(node.body);
             if (inf != null) viewItems[0].toolTip = inf.summary;
 
@@ -263,7 +260,7 @@ namespace OrbItProcs
                 }
                 heightCount += height;
                 InspectorInfo cItem = new InspectorInfo(null, dictItem, node.comps[c], c);
-                DetailedItem di = new DetailedItem(manager, this, cItem, backPanel, heightCount, LeftPadding, width);
+                DetailedItem di = new DetailedItem(manager, this, cItem, backPanel, heightCount, LeftPadding);
                 di.toolTip = tooltip;
                 CreateItem(di);
 
