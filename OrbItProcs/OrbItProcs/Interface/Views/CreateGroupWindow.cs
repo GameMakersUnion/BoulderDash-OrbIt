@@ -155,6 +155,7 @@ namespace OrbItProcs
             HeightCounter += cbTemplate.Height + LeftPadding;
 
             componentView = new ComponentView(sidebar, poop, 0, HeightCounter);
+            componentView.Height = 150;
             componentView.Width = poop.Width - LeftPadding * 4;
 
             poop.Width += 100;

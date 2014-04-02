@@ -147,7 +147,7 @@ namespace OrbItProcs
                 _Width = value;
                 if (ui.SidebarActive)
                 {
-                    ThreadedCamera.CameraOffset = value;
+                    OrbIt.game.room.camera.CameraOffset = value;
                 }
             }
         }
@@ -203,10 +203,11 @@ namespace OrbItProcs
             master.Init();
             master.Name = "Sidebar";
             master.Width = Width;
-            master.Height = OrbIt.Height;
+            master.Height = OrbIt.game.MainWindow.ClientArea.Height;
             master.Visible = true;
             master.Anchor = Anchors.Top | Anchors.Left | Anchors.Bottom;
-            manager.Add(master);
+
+            ui.game.MainWindow.Add(master);
             #endregion
 
             #region  /// tabcontrol ///

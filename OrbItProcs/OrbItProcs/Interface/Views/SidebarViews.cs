@@ -73,11 +73,11 @@ namespace OrbItProcs
 
             tbcViews = new TabControl(manager);
             tbcViews.Init();
-            tbcViews.Parent = master;
+            master.Add(tbcViews);
             tbcViews.Left = 0;
             tbcViews.Top = 0;
             tbcViews.Width = master.Width - 5;
-            tbcViews.Height = OrbIt.Width - 40;
+            tbcViews.Height = master.Height - 40;
             tbcViews.Anchor = Anchors.All;
             tbcViews.Color = UserInterface.TomLight;
 

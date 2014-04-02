@@ -956,7 +956,7 @@ namespace OrbItProcs
             }
             else
             {
-                MouseInGameBox = newMouseState.X > ThreadedCamera.CameraOffset;
+                MouseInGameBox = newMouseState.X > OrbIt.game.room.camera.CameraOffset;
             }
             
             if (newMouseState.X >= 0 && newMouseState.Y >= 0) //todo:check that the game window is active
