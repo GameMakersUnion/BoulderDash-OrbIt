@@ -49,6 +49,7 @@ namespace OrbItProcs
             }
         }
         //*
+        
         [Polenter.Serialization.ExcludeFromSerialization]
         public virtual Node parent { get; set; }
         //*/

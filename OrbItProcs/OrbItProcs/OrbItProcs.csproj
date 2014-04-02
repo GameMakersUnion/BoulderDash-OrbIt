@@ -190,7 +190,7 @@
     <Compile Include="Components\ILinkable.cs" />
     <Compile Include="Components\Linkers\Flow.cs" />
     <Compile Include="Components\Essential\Collision.cs" />
-    <Compile Include="Components\Component.cs" />
+    <Compile Include="Component.cs" />
     <Compile Include="Components\AffectOthers\Gravity.cs" />
     <Compile Include="Components\Movement\Circler.cs" />
     <Compile Include="Framework\Redirector.cs" />

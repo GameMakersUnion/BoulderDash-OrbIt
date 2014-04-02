@@ -118,8 +118,13 @@ namespace OrbItProcs {
             sb.End();
 
             graphics.SetRenderTarget(null); // set back to main window
+            Texture2D ret2 = new Texture2D(graphics, source.Width, source.Height);
+            Color[] q = new Color[source.Width * source.Height]; 
+            ret.GetData(q);
 
-            return (Texture2D)ret;
+            ret2.SetData<Color>(q);
+
+            return (Texture2D)ret2;
         }
         public static Texture2D[,] sliceSpriteSheet(this Texture2D spritesheet, int columnsX, int rowsY)
         {

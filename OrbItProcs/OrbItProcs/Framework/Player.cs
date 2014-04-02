@@ -70,7 +70,7 @@ namespace OrbItProcs
         public static int firefreq { get; set; }
         public static int firefreqCounter = 0;
         static Dictionary<dynamic, dynamic> launchProps;
-        public static void InitLaunchNode()
+        public static void InitLaunchNode(Room room)
         {
             launchProps = new Dictionary<dynamic, dynamic>()
             {
@@ -81,7 +81,7 @@ namespace OrbItProcs
                 { comp.gravity, true },
             };
 
-            launchNode = new Node(launchProps);
+            launchNode = new Node(room, launchProps);
             //launchNode.comps[comp.laser].brightness = 0.5f;
             launchNode.Comp<Laser>().thickness = 3f;
             launchNode.Comp<Movement>().maxVelocity.value = 5;
@@ -116,23 +116,21 @@ namespace OrbItProcs
 
             room.spawnNode(newNode, lifetime: bulletlife);
         }
-        public static void ResetPlayers()
+        public static void ResetPlayers(Room room)
         {
-            Room r = OrbIt.game.room;
-            r.playerGroup.EmptyGroup();
+            room.playerGroup.EmptyGroup();
             Controller.ResetControllers();
-            CreatePlayers();
+            CreatePlayers(room);
             OrbIt.ui.sidebar.playerView.InitializePlayers();
         }
         public static bool EnablePlayers = true;
-        public static void CreatePlayers()
+        public static void CreatePlayers(Room room)
         {
             if (!EnablePlayers) return;
-            Room r = OrbIt.game.room;
-            Shooter.MakeBullet();
-            Node def = r.masterGroup.defaultNode.CreateClone();
+            Shooter.MakeBullet(room);
+            Node def = room.masterGroup.defaultNode.CreateClone(room);
             //def.addComponent(comp.shooter, true);
-            r.playerGroup.defaultNode = def;
+            room.playerGroup.defaultNode = def;
             for (int i = 1; i < 5; i++)
             {
                 Player p = Player.GetNew(i);
@@ -142,8 +140,8 @@ namespace OrbItProcs
                 float dist = 200;
                 float x = dist * (float)Math.Cos(angle);
                 float y = dist * (float)Math.Sin(angle);
-                Vector2 spawnPos = new Vector2(r.worldWidth / 2, r.worldHeight / 2) - new Vector2(x, y);
-                Node node = def.CreateClone();
+                Vector2 spawnPos = new Vector2(room.worldWidth / 2, room.worldHeight / 2) - new Vector2(x, y);
+                Node node = def.CreateClone(room);
                 node.body.pos = spawnPos;
                 node.name = "player" + p.ColorName;
                 node.SetColor(p.pColor);
@@ -151,7 +149,7 @@ namespace OrbItProcs
                 //node.addComponent(comp.sword, true);
                 //node.Comp<Sword>().sword.collision.DrawRing = false;
                 p.node = node;
-                r.playerGroup.IncludeEntity(node);
+                room.playerGroup.IncludeEntity(node);
                 node.OnSpawn();
             }
         }

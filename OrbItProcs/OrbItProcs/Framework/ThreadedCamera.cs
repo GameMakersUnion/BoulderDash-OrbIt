@@ -311,5 +311,11 @@ namespace OrbItProcs
             TomShaneWaiting.Wait();
             TomShaneWaiting.Reset();
         }
+
+        internal void AbortThread()
+        {
+            try { _worker.Abort(); }
+            finally { }
+        }
     }
 }

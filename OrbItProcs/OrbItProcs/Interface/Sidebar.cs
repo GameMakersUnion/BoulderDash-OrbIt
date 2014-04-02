@@ -93,31 +93,31 @@ namespace OrbItProcs
         {
             if (tbcViews.SelectedIndex == 0) //groups
             {
-                if (groupsView == null || groupsView.selectedItem == null)
-                {
-                    return room.generalGroups.childGroups.ElementAt(0).Value;
-                }
-                else
-                {
-                    if (!(groupsView.selectedItem.obj is Group)) return null;
-                    return (Group)groupsView.selectedItem.obj;
-                }
-            }
+                        if (groupsView == null || groupsView.selectedItem == null)
+                        {
+                            return room.generalGroups.childGroups.ElementAt(0).Value;
+                        }
+                        else
+                        {
+                            if (!(groupsView.selectedItem.obj is Group)) return null;
+                            return (Group)groupsView.selectedItem.obj;
+                        }
+                    }
             else if (tbcViews.SelectedIndex == 1) //players
             {
                 return null;
-            }
+                }
             else if (tbcViews.SelectedIndex == 2) //items
             {
                 if (itemsView == null || itemsView.selectedItem == null)
                 {
                     return room.itemGroup.childGroups.ElementAt(0).Value;
-                }
+            }
                 else
                 {
                     if (!(itemsView.selectedItem.obj is Group)) return null;
                     return (Group)itemsView.selectedItem.obj;
-                }
+        }
             }
             else if (tbcViews.SelectedIndex == 3) //bullets
             {
@@ -194,7 +194,7 @@ namespace OrbItProcs
             manager.SetSkin("Green");
         }
 
-        public void Initialize(Room room)
+        public void Initialize()
         {
             manager.Initialize();
 
@@ -205,17 +205,7 @@ namespace OrbItProcs
             master.Width = Width;
             master.Height = OrbIt.Height;
             master.Visible = true;
-            //SkinControl sc = new SkinControl(manager.Skin.Controls["SideBar"]);
-            //master.Skin = sc;
-            master.Resizable = false; // If true, uncomment below
-            //master.MaximumHeight = Game1.sHeight; 
-            //master.MinimumHeight = Game1.sHeight;
-            //master.MaximumWidth = 300;
-            //master.MinimumWidth = 200;
-            master.Movable = false;
-            master.Anchor = Anchors.Top | Anchors.Right | Anchors.Bottom;
-            //master.BorderVisible = false;
-            //master.Alpha = 255; //TODO : check necesity
+            master.Anchor = Anchors.Top | Anchors.Left | Anchors.Bottom;
             manager.Add(master);
             #endregion
 
@@ -522,7 +512,7 @@ namespace OrbItProcs
             Node newdefault = new Node();
             Node.cloneNode(n, newdefault);
             newdefault.body.velocity = new Vector2(0, 0);
-            Group g = new Group(newdefault, room.masterGroup.childGroups["General Groups"]);
+            Group g = new Group(room, newdefault, room.masterGroup.childGroups["General Groups"]);
             newdefault.name = g.Name;
             //room.masterGroup.childGroups["General Groups"].AddGroup(g.Name, g);
             //room.masterGroup.UpdateComboBox();
@@ -1045,7 +1035,6 @@ namespace OrbItProcs
             //int size = g.fullSet.Count, count = 0;
             g.EmptyGroup();
             
-            //Console.WriteLine("Size:"+  g.fullSet.Count);
             lstMain.ItemIndex = -1;
         }
 
@@ -1071,8 +1060,6 @@ namespace OrbItProcs
 
         public void Update()
         {
-            //Console.WriteLine(inspectorArea.InsBox.Text);
-
         }
     }
 }

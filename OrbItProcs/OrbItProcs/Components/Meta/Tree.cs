@@ -133,7 +133,6 @@ namespace OrbItProcs
             //branchdeath
             if (lifeleft > randlife)
             {
-                //Console.WriteLine("{0} {1} > {2}",parent.name, lifeleft, randlife);
                 lifeleft = -1;
                 
                 int velLength = (int)parent.body.velocity.Length();
@@ -143,7 +142,6 @@ namespace OrbItProcs
                 //if (parent.comps.ContainsKey(comp.gravity)) parent.comps[comp.gravity].active = false;
 
                 int childcount = Utils.random.Next(maxchilds+1) + 1;
-                //Console.WriteLine(childcount);
                 for(int i = 0; i < childcount; i++)
                 {
                     float childscale = parent.body.scale * scaledown;
@@ -208,7 +206,6 @@ namespace OrbItProcs
             a = b = c = 0;
 
             //Vector2 screenPos = parent.transform.position / mapzoom;
-            //Console.WriteLine(parent.transform.scale);
             int count = 0;
             foreach (Vector2 pos in positions)
             {

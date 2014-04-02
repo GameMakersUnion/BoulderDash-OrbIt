@@ -793,6 +793,7 @@ namespace OrbItProcs
         public Process TemporaryProcess = null;
 
         public Dictionary<KeyBundle, KeyAction> _Keybinds = new Dictionary<KeyBundle, KeyAction>();
+        //20 references
         public Dictionary<KeyBundle, KeyAction> Keybinds { get { return _Keybinds; } set { _Keybinds = value; } }
 
         public Stack<KeyCodes> PressedKeysS = new Stack<KeyCodes>(); //max of three KeyMouse detected at a time

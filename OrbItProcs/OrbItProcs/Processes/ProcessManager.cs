@@ -63,7 +63,7 @@ namespace OrbItProcs
             processDict.Add(proc.directedspawn, new DirectedSpawn());
 
             activeInputProcess = processDict[proc.spawnnodes];
-
+            OrbIt.ui.groupSelectSet = (processDict[proc.groupselect] as GroupSelect).groupSelectSet;
         }
 
         Action enableKeyBinds(proc p)
@@ -99,7 +99,7 @@ namespace OrbItProcs
             toolbar.AddButton("control", Utils.notImplementedException,"Take a hike.");
             toolbar.AddButton("static", Utils.notImplementedException,"Take a hike.");
 
-            Keybindset.Add("resetplayers", new KeyBundle(KeyCodes.Home), Player.ResetPlayers);
+            Keybindset.Add("resetplayers", new KeyBundle(KeyCodes.Home), delegate { Player.ResetPlayers(OrbIt.game.mainRoom); });
 
 
             Keybindset.Add("graphdata", new KeyBundle(KeyCodes.D6, KeyCodes.LeftShift), enableKeyBinds(proc.graphdata)); 

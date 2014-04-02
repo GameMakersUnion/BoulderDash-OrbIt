@@ -120,7 +120,7 @@ namespace OrbItProcs
             {
                 savedDicts.Enqueue(userP);
                 Group p = room.masterGroup.childGroups["Link Groups"];
-                Group g = new Group(n, p, n.name);
+                Group g = new Group(room, n, p, n.name);
                 //p.AddGroup(g.Name, g);
                 OrbIt.ui.sidebar.UpdateGroupComboBoxes();
                 savedGroups.Enqueue(g);

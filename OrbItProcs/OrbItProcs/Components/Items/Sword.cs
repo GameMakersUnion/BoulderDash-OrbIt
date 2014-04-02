@@ -63,14 +63,15 @@ namespace OrbItProcs
                 //{comp.waver, true},
             };
 
-            sword = new Node(props);
+            sword = new Node(parent.room, props);
             sword.name = "sword";
         }
 
         public override void AfterCloning()
         {
             if (sword == null) return;
-            sword = sword.CreateClone();
+            sword = sword.CreateClone(parent.room);
+            //sword = new Node(parent.room, props);
         }
 
         public override void OnSpawn()

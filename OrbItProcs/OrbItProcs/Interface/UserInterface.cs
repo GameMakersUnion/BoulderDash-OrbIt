@@ -31,9 +31,10 @@ namespace OrbItProcs {
             groupSelection,
             randomNode,
         }
-
+        public static int SidebarWidth { get; set; }
         public static Vector2 MousePos;
         public static Vector2 WorldMousePos;
+        
 
         #region /// Fields ///
 
@@ -101,10 +102,14 @@ namespace OrbItProcs {
             SidebarActive = true;
         }
 
-        public void Initialize(Room room)
+        public void Initialize()
         {
-            sidebar.Initialize(room);
-            groupSelectSet = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
+            sidebar.Initialize();
+            ui.sidebar.UpdateGroupComboBoxes();
+            ui.sidebar.cbListPicker.ItemIndex = 0;
+            ui.sidebar.cbListPicker.ItemIndex = 2;
+            ui.sidebar.cbGroupS.ItemIndex = 2;
+            ui.sidebar.cbGroupT.ItemIndex = 2;
         }
 
         public void SetSidebarActive(bool active)

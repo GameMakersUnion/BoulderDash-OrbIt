@@ -68,7 +68,7 @@ namespace OrbItProcs
                 foreach (Node n in value.ToList()) // another coke -dante
                 {
                     room.nodeHashes.Remove(n.nodeHash);
-                    Node newNode = n.CreateClone(true);
+                    Node newNode = n.CreateClone(room, true);
                     //entities.Add(newNode);
                     IncludeEntity(newNode);
                 }
@@ -183,10 +183,10 @@ namespace OrbItProcs
             : this(null)
         {
         }
-        public Group(Node defaultNode = null, Group parentGroup = null, string Name = "", bool Spawnable = true, GroupState groupState = GroupState.on, ObservableHashSet<Node> entities = null)
+        public Group(Room room, Node defaultNode = null, Group parentGroup = null, string Name = "", bool Spawnable = true, GroupState groupState = GroupState.on, ObservableHashSet<Node> entities = null)
         {
             if (parentGroup != null) room = parentGroup.room;
-            else  room = OrbIt.game.room;
+            this.room = room;
 
             GroupId = -1;
             groupHash = Utils.uniqueString(room.groupHashes);

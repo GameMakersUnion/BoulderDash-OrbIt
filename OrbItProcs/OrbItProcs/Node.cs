@@ -111,8 +111,7 @@ namespace OrbItProcs {
                     Console.WriteLine("Group115");
             } 
         }
-
-        public Room room = OrbIt.game.room;
+        public Room room;
 
         private Dictionary<Type, Component> _comps = new Dictionary<Type, Component>();
         public Dictionary<Type, Component> comps { get { return _comps; } set { _comps = value; } }
@@ -226,8 +225,6 @@ namespace OrbItProcs {
             get { return _group; }
             set
             {
-                //if (value == null)
-                //Console.WriteLine("FUCKLE");
                 _group = value;
             }
         }
@@ -313,15 +310,17 @@ namespace OrbItProcs {
             if (val == nodeE.color) body.color = dict[val];
         }
 
-        public Node() : this(ShapeType.eCircle) { }
+        public Node() : this(null,ShapeType.eCircle) { }
 
-        public Node(bool createHash) : this(ShapeType.eCircle, createHash) { }
+        public Node(Room room, bool createHash) : this(room, ShapeType.eCircle, createHash) { }
 
-        public Node(ShapeType shapetype, bool createHash = true)
+        public Node(Room room, ShapeType shapetype, bool createHash = true)
         {
+            this.room = room;
+            if (room == null) throw new NotImplementedException
+                ("Polenter is benched for now. Everyone else must use the Parameterized constructor and pass a room reference.");
             //if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0, 5);
             name = name + nodeCounter;
-            room = OrbIt.game.room;
             if (createHash)
             {
                 nodeHash = Utils.uniqueString(room.nodeHashes);
@@ -357,8 +356,8 @@ namespace OrbItProcs {
             
         }
 
-        public Node(Dictionary<dynamic, dynamic> userProps, ShapeType shapetype = ShapeType.eCircle, bool createHash = true)
-            : this(shapetype, createHash)
+        public Node(Room room, Dictionary<dynamic, dynamic> userProps, ShapeType shapetype = ShapeType.eCircle, bool createHash = true)
+            : this(room, shapetype, createHash)
         {
             // add the userProps to the props
             foreach (dynamic p in userProps.Keys)
@@ -726,7 +725,7 @@ namespace OrbItProcs {
             Type t = Utils.compTypes[c];
             if (!comps.ContainsKey(t))
             {
-                //Console.WriteLine("Component already removed or doesn't exist.");
+                Console.WriteLine("Component already removed or doesn't exist.");
                 return;
             }
             comps[t].active = false;
@@ -937,9 +936,6 @@ namespace OrbItProcs {
 
         public void OnDelete()
         {
-            //Console.WriteLine("{0} - deleting:      {1}", name, nodeHash);
-            //if (room.nodeHashes.Contains(nodeHash)) Console.WriteLine("Total Hashes:{0} , removed hash:{1}", room.nodeHashes.Count, _nodeHash);
-            //Console.WriteLine("---------------");
             room.nodeHashes.Remove(nodeHash);
 
             //active = false;
@@ -955,16 +951,15 @@ namespace OrbItProcs {
             OnDeath(null, false);
         }
 
-        public Node CreateClone(bool CloneHash = false)
+        public Node CreateClone(Room room, bool CloneHash = false)
         {
-            Node newNode = new Node(!CloneHash);
+            Node newNode = new Node(room, !CloneHash);
             cloneNode(this, newNode, CloneHash);
             return newNode;
         }
 
         public static void cloneNode(Node sourceNode, Node destNode, bool CloneHash = false) //they must be the same type
         {
-            destNode.room = OrbIt.game.room;
             //dynamic returnval;
             List<FieldInfo> fields = sourceNode.GetType().GetFields().ToList();
             fields.AddRange(sourceNode.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance).ToList());

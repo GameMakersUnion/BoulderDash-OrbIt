@@ -61,7 +61,7 @@ namespace OrbItProcs
             shootMode = ShootMode.Auto;
             useStickVelocity = false;
         }
-        public static void MakeBullet()
+        public static void MakeBullet(Room room)
         {
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>()
             {
@@ -74,7 +74,7 @@ namespace OrbItProcs
                 {comp.lifetime, true},
                 //{comp.waver, true},
             };
-            bulletNode = new Node(props);
+            bulletNode = new Node(room, props);
             bulletNode.Comp<Collision>().isSolid = false;
             bulletNode.body.isSolid = true;
             bulletNode.body.restitution = 1f;
@@ -139,7 +139,7 @@ namespace OrbItProcs
         public void FireNode(Vector2 dir)
         {
             if (!useStickVelocity) VMath.NormalizeSafe(ref dir);
-            Node n = bulletNode.CreateClone();
+            Node n = bulletNode.CreateClone(parent.room);
             n.Comp<Lifetime>().timeUntilDeath.value = bulletLife;
             dir.Y *= -1;
             n.body.velocity = dir * speed;

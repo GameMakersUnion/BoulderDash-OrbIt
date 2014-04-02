@@ -161,7 +161,8 @@ namespace OrbItProcs
 
             Dictionary<string, EventHandler> checkBoxHandlers = new Dictionary<string, EventHandler>(){
                 { "FullScreen", (o,e) => {
-                    game.ToggleFullScreen((o as CheckBox).Checked);
+                    if ((o as CheckBox).Checked) game.setResolution(resolutions.AutoFullScreen, true);
+                    else game.setResolution(resolutions.WSXGA_1680x1050, false);
                 } },
                 { "Hide Links", (o,e) => {
                     game.room.DrawLinks = !(o as CheckBox).Checked;
