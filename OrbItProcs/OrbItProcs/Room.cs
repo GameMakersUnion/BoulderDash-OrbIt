@@ -103,7 +103,15 @@ namespace OrbItProcs {
                 return masterGroup.childGroups["Item Group"];
             }
         }
-
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public Group bulletGroup
+        {
+            get
+            {
+                if (masterGroup == null) return null;
+                return masterGroup.childGroups["Bullet Group"];
+            }
+        }
         [Polenter.Serialization.ExcludeFromSerialization]
         public Node defaultNode { get; set; }
         public string defaultNodeHash
@@ -238,6 +246,7 @@ namespace OrbItProcs {
                 Group playerGroup = new Group(this, defaultNode.CreateClone(this), masterGroup, "Player Group", false);
                 Group itemGroup = new Group(this, defaultNode, masterGroup, "Item Group", false);
                 Group linkGroup = new Group(this, defaultNode, masterGroup, "Link Groups", false);
+                Group bulletGroup = new Group(this, defaultNode.CreateClone(this), masterGroup, "Bullet Group", true);
                 Group wallGroup = new Group(this, defaultNode, masterGroup, "Walls", false);
                 Group firstGroup = new Group(this, firstdefault, generalGroup, "Group1");
             }
@@ -263,7 +272,7 @@ namespace OrbItProcs {
                 Info info = infos[t];
                 if ((info.compType & mtypes.essential) == mtypes.essential) continue;
                 if ((info.compType & mtypes.exclusiveLinker) == mtypes.exclusiveLinker) continue;
-                //if ((info.compType & mtypes.it) == mtypes.exclusiveLinker) continue;
+                if ((info.compType & mtypes.item) == mtypes.item) continue;
                 if (info.userLevel == UserLevel.Developer || info.userLevel == UserLevel.Advanced) continue;
                 if (t == typeof(Lifetime)) continue;
                 if (t == typeof(Rune)) continue;
@@ -328,8 +337,10 @@ namespace OrbItProcs {
 
             HashSet<Node> toDelete = new HashSet<Node>();
             //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
-            foreach (var n in masterGroup.childGroups["General Groups"].fullSet)
+            //foreach (var n in masterGroup.childGroups["General Groups"].fullSet)
+            foreach (var n in masterGroup.fullSet)
             {
+                if (masterGroup.childGroups["Walls"].fullSet.Contains(n)) continue;
                 gridsystemAffect.insert(n.body);
             }
             Testing.OldStopTimer("gridsystem insert");
@@ -706,8 +717,8 @@ namespace OrbItProcs {
 
         public Node spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)
         {
-            Group spawngroup = OrbIt.ui.sidebar.ActiveGroup;
-            if (g == null && !spawngroup.Spawnable) return null;
+            Group spawngroup = g ?? OrbIt.ui.sidebar.ActiveGroup;
+            if (spawngroup == null || !spawngroup.Spawnable) return null;
             if (g != null)
             {
                 spawngroup = g;

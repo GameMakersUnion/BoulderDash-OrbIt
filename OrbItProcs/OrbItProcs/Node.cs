@@ -474,7 +474,6 @@ namespace OrbItProcs {
                 }
                 returnObjectsFinal = room.gridsystemAffect.retrieve(body, reach);
                 returnObjectsFinal.Remove(body);
-
                 foreach (Collider other in returnObjectsFinal)
                 {
                     if (other.parent.active)
@@ -486,12 +485,10 @@ namespace OrbItProcs {
                         }
                     }
                 }
-                
                 foreach(Component component in comps.Values)
                 {
                     component.AffectSelf();
                 }
-
                 /*
                 var buckets = room.gridsystem.retrieveBuckets(this, 115);
                 if (buckets != null)

@@ -24,9 +24,9 @@ namespace OrbItProcs
             {  
                 int offset = base.Height - value;
                 if (bottomArea!= null) bottomArea.Top -= offset;
-                if (lblCurrentComp != null) lblCurrentComp.Top -= offset;
+                //if (lblCurrentComp != null) lblCurrentComp.Top -= offset;
                 if (btnAddComponent != null) btnAddComponent.Top -= offset;
-                if (bottomArea != null) bottomArea.Height -= offset;
+                //if (bottomArea != null) bottomArea.Height -= offset;
 
 
                 base.Height = value;
@@ -75,15 +75,7 @@ namespace OrbItProcs
             btnAddComponent.Click += btnAddComponent_Click;
             HeightCounter += btnAddComponent.Height + VertPadding;
 
-            lblCurrentComp = new Label(manager);
-            lblCurrentComp.Init();
-            lblCurrentComp.Parent = parent;
-            lblCurrentComp.Width = 150;
-            lblCurrentComp.Top = HeightCounter + VertPadding;
-            lblCurrentComp.Left = LeftPadding;
-            lblCurrentComp.Text = "";
-            lblCurrentComp.TextColor = Color.Black;
-            HeightCounter += lblCurrentComp.Height ;
+            
 
 
             bottomArea = new TabControl(manager);
@@ -92,28 +84,34 @@ namespace OrbItProcs
             bottomArea.Left = 0;
             bottomArea.Top = HeightCounter;
             bottomArea.Width = sidebar.Width - 5;
-            bottomArea.Height = 100;
-            bottomArea.Height = parent.Height - 40;
-
+            bottomArea.Height = OrbIt.game.tempRoom.worldHeight + 40;
 
             bottomArea.AddPage();
             bottomArea.TabPages[0].Text = "Edit";
             TabPage editTab = bottomArea.TabPages[0];
             editTab.Margins = new Margins(0, 0, 0, 0);
 
-            insView = new InspectorView(sidebar, editTab, Left, 0);
+            lblCurrentComp = new Label(manager);
+            lblCurrentComp.Init();
+            lblCurrentComp.Parent = editTab;
+            lblCurrentComp.Width = 150;
+            lblCurrentComp.Top = 5;// HeightCounter + VertPadding;
+            lblCurrentComp.Left = LeftPadding;
+            lblCurrentComp.Text = "";
+            lblCurrentComp.TextColor = Color.Black;
+            //HeightCounter += lblCurrentComp.Height;
+
+            insView = new InspectorView(sidebar, editTab, Left, lblComponents.Height + 10);
             insView.GroupSync = true;
             insView.Height = 120;
             OnItemEvent += OnEvent2;
-            //editTab.Height = 100;
             editTab.Margins = new Margins(0, 0, 0, 0);
 
             bottomArea.AddPage();
             bottomArea.TabPages[1].Text = "Preview";
             TabPage previewTab = bottomArea.TabPages[1];
-            //previewTab.Height = 100;
             previewTab.Margins = new Margins(0, 0, 0, 0);
-            roomPanel = new RoomPanel(sidebar, previewTab, OrbIt.game.tempRoom, true, 0, 5);
+            roomPanel = new RoomPanel(sidebar, previewTab, OrbIt.game.tempRoom, true, 10, 15);
 
             //UpdateGroupComboBox();
             //cbActiveGroup.ItemIndex = 0;
@@ -152,6 +150,7 @@ namespace OrbItProcs
 
             SetComponent(item.obj);
             lblCurrentComp.Text = item.label.Text;
+            bottomArea.Refresh();
             if (item.obj is InspectorInfo)
             {
                 InspectorInfo i = (InspectorInfo)item.obj;

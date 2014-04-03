@@ -26,7 +26,7 @@ namespace OrbItProcs
             cooldown
         }
 
-        public const mtypes CompType = mtypes.playercontrol|mtypes.minordraw;// | mtypes.affectself;
+        public const mtypes CompType = mtypes.playercontrol | mtypes.minordraw | mtypes.item;// | mtypes.affectself;
         public override mtypes compType { get { return CompType; } set { } }
         /// <summary>
         /// The distance from the player the sword will swing at.

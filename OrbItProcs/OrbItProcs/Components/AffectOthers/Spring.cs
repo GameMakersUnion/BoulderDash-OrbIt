@@ -55,8 +55,6 @@ namespace OrbItProcs
             }
             com = comp.spring;
         }
-
-
         public override void AffectOther(Node other) // called when used as a link
         {
             if (!active) { return; }
@@ -65,7 +63,7 @@ namespace OrbItProcs
                 if (lowerBound.enabled && dist < lowerBound.value) dist = lowerBound.value;
 
                 float stretch = dist - restdist;
-                float strength = -stretch * multiplier;
+                float strength = -stretch * multiplier / 10000f;
                 Vector2 force = other.body.pos - parent.body.pos;
                 VMath.NormalizeSafe(ref force);
                 force *= strength;

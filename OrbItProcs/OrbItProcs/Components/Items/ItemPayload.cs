@@ -12,7 +12,7 @@ namespace OrbItProcs
     [Info(UserLevel.User, "A payload of items or components to add to the node that picks up this payload.", CompType)]
     public class ItemPayload : Component
     {
-        public const mtypes CompType = mtypes.draw | mtypes.affectself;
+        public const mtypes CompType = mtypes.draw | mtypes.affectself | mtypes.item;
         public override mtypes compType { get { return CompType; } set { } }
 
         //public Dictionary<Type, Component> payload { get; set; }
