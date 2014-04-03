@@ -149,6 +149,7 @@
     <Compile Include="Components\AffectOthers\FixedForce.cs" />
     <Compile Include="Components\Drawers\Runer.cs" />
     <Compile Include="Components\Essential\Meta.cs" />
+    <Compile Include="Components\Items\Fist.cs" />
     <Compile Include="Components\Items\ItemPayload.cs" />
     <Compile Include="Components\Linkers\Orbiter.cs" />
     <Compile Include="Components\AffectOthers\Spring.cs" />

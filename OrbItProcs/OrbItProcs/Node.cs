@@ -705,7 +705,7 @@ namespace OrbItProcs {
             return true;
         }
 
-        public Component MakeComponent(Type t, bool active, Node parent)
+        public static Component MakeComponent(Type t, bool active, Node parent)
         {
             Component component;
 

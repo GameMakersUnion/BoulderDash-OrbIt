@@ -69,6 +69,11 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "If the node is deadly, this node will kill other nodes on contact.")]
         public bool deadly { get; set; }
+        /// <summary>
+        /// This affects the amount of damage this node will do when attacking other nodes.
+        /// </summary>
+        [Info(UserLevel.User, "This affects the amount of damage this node will do when attacking other nodes.")]
+        public float damageMultiplier { get; set; }
 
         /// <summary>
         /// The radius of the node.
@@ -91,16 +96,18 @@ namespace OrbItProcs
             AImode = AIMode.None;
             deadly = false;
             active = true;
+            damageMultiplier = 1f;
         }
         public override void AffectSelf()
         {
             
         }
-        public void TakeDamage(Node other, float damage)
+        public void CalculateDamage(Node other, float damage)
         {
             if (maxHealth.enabled)
             {
-                currentHealth = (float)Math.Max(currentHealth - damage, 0);
+                float resultingDamage = damage * damageMultiplier;
+                currentHealth = (float)Math.Max(currentHealth - resultingDamage, 0);
                 currentHealth = (float)Math.Min(currentHealth, maxHealth.value);
                 float percent = 0.65f;
                 parent.body.color = parent.body.permaColor * ((currentHealth / maxHealth.value) * percent + (1f - percent));
