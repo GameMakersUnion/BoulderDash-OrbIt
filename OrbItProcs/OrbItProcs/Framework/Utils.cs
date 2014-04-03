@@ -23,6 +23,11 @@ namespace OrbItProcs {
         public const float rootOfTwo = 1.41421356237f;
         public const float invRootOfTwo = 0.70710678118f;
 
+        public static Vector2 ToVector2(this Point point)
+        {
+            return new Vector2(point.X, point.Y);
+        }
+
         public static string RandomName(int tries = 0)
         {
             var dict = Utils.compTypes;

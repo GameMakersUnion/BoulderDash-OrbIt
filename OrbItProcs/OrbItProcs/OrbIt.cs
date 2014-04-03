@@ -119,6 +119,7 @@ namespace OrbItProcs
         private bool GraphicsReset;
         
         public static Action onUpdate;
+        public static bool updateTemp = false;
 
         private OrbIt() : base(true)
         {
@@ -204,6 +205,7 @@ namespace OrbItProcs
  
         }
         Window test;
+        
         private void RoomPanel(Room room)
         {
             test = new Window(Manager);
@@ -284,5 +286,6 @@ namespace OrbItProcs
             //    throw new SystemException("???", e);
             //}
         }
+
     }
 }

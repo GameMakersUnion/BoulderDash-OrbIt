@@ -12,6 +12,14 @@ namespace OrbItProcs
         public Panel roomPanel;
         private int Padding;
         public int Height { get { return roomPanel.Height + Padding; } }
+        public Action refreshAction;
+
+        private void refresh()
+        {
+ 	        roomPanel.Refresh();
+            OrbIt.updateTemp = true;
+        } 
+
         public RoomPanel(Sidebar sidebar, Control parent, Room room, bool interactive, int Top = 0, int Padding = 5)
         {
 
@@ -34,7 +42,24 @@ namespace OrbItProcs
             {
                 e.Renderer.Draw(room.roomRenderTarget, e.Rectangle, Color.White);
             };
-            OrbIt.onUpdate += delegate { roomPanel.Refresh(); };
+
+            refreshAction = refresh;
+
+            parent.VisibleChanged += (s, e) => {
+                if (parent.Visible)
+                    OrbIt.onUpdate += refreshAction;
+                else 
+                    OrbIt.onUpdate -= refreshAction;
+            };
+
+            roomPanel.Click += (s, e) =>
+            {
+                Point innerpos = (e as MouseEventArgs).Position;
+                room.spawnNode(innerpos.X, innerpos.Y);
+            };
+
+
+
         }
     }
 }
