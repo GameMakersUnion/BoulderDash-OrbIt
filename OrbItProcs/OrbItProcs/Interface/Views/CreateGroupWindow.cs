@@ -31,7 +31,7 @@ namespace OrbItProcs
             this.sidebar = sidebar;
             this.manager = sidebar.manager;
             sidebar.CreatingGroup = true;
-            sidebar.ui.game.SwitchToTempRoom();
+            //sidebar.ui.game.SwitchToTempRoom();
             temproom = sidebar.ui.game.tempRoom;
             tempgroup = sidebar.ActiveGroup;//temproom.generalGroups.childGroups.ElementAt(0).Value;
 
@@ -217,7 +217,7 @@ namespace OrbItProcs
         {
             UserInterface.GameInputDisabled = false;
             sidebar.CreatingGroup = false;
-            sidebar.ui.game.SwitchToMainRoom();
+            //sidebar.ui.game.SwitchToMainRoom();
             sidebar.groupsView.createGroupWindow = null;
             manager.Remove(poop);
         }

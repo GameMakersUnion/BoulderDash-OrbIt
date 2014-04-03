@@ -181,7 +181,7 @@ namespace OrbItProcs
         {
             Vector2 position = swordNode.body.pos;
             if (position == Vector2.Zero) position = parent.body.pos;
-            parent.room.camera.Draw(textures.sword, position, parent.body.color, swordNode.body.scale * 2, swordNode.body.orient);
+            parent.room.camera.Draw(textures.sword, position, parent.body.color, swordNode.body.scale * 2, swordNode.body.orient, Layers.Over3);
         }
         public override void Death(Node other)
         {

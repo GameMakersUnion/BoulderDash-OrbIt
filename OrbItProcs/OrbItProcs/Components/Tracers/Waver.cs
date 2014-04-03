@@ -190,24 +190,6 @@ namespace OrbItProcs
             }
         }
 
-        public void DrawOld()
-        {
-            Room room = parent.room;
-            //float mapzoom = room.zoom;
-
-            foreach (Vector2 metapos in metapositions)
-            {
-                room.camera.Draw(parent.texture, metapos, parent.body.color, parent.body.scale * waveScale);
-            }
-            if (reflective)
-            {
-                foreach (Vector2 relectpos in reflectpositions)
-                {
-                    room.camera.Draw(parent.texture, relectpos, parent.body.color, parent.body.scale * waveScale);
-                }
-            }
-        }
-
         public void onCollision(Dictionary<dynamic, dynamic> args)
         {
         }

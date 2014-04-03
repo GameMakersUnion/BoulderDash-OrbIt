@@ -9,6 +9,20 @@ using System.Threading;
 
 namespace OrbItProcs
 {
+    public enum Layers
+    {
+        Under5 = 0,
+        Under4 = 1,
+        Under3 = 2,
+        Under2 = 3,
+        Under1 = 4,
+        Player = 5,
+        Over1 = 6,
+        Over2 = 7,
+        Over3 = 8,
+        Over4 = 9,
+        Over5 = 10
+    }
 
     public class DrawCommand
     {
@@ -204,41 +218,43 @@ namespace OrbItProcs
                     batch.GraphicsDevice.SetRenderTarget(room.roomRenderTarget);
                     batch.GraphicsDevice.Clear(bg);
                     //batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, Game1.shaderEffect); //tran
-                    batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-
-                    int count = thisFrame.Count;
-                    for (int i = 0; i < count; i++)
+                    batch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
+                    for (int i = 0; i < 5; i++)
                     {
-                        DrawCommand gg = thisFrame.Dequeue();
-
-                        // ----- Shader Set Parameter Code ---------
-                        float[] f;
-                        f = new float[2];
-                        f[0] = OrbIt.game.GraphicsDevice.Viewport.Width;
-                        f[1] = OrbIt.game.GraphicsDevice.Viewport.Height;
-
-                        Assets.shaderEffect.Parameters["Viewport"].SetValue(f);
-                        Assets.shaderEffect.Parameters["colour"].SetValue(gg.shaderPack.colour);
-                        Assets.shaderEffect.Parameters["enabled"].SetValue(gg.shaderPack.enabled);
-
-                        // ----- End Shader Set Parameter Code ---------
-
-                        gg.Draw(batch);
-                    }
-                    int permCount = permanents.Count;
-                    //Console.WriteLine("1: " + permCount);
-                    for (int i = 0; i < permCount; i++)//todo:proper queue iteration/remove logic
-                    {
-                        DrawCommand command = permanents.ElementAt(i);
-                        if (command.life-- < 0)
+                        int count = thisFrame.Count;
+                        for (int j = 0; j < count; j++)
                         {
-                            permanents.Remove(command);
-                            i--;
-                            permCount--;
+                            DrawCommand gg = thisFrame.Dequeue();
+
+                            // ----- Shader Set Parameter Code ---------
+                            float[] f;
+                            f = new float[2];
+                            f[0] = OrbIt.game.GraphicsDevice.Viewport.Width;
+                            f[1] = OrbIt.game.GraphicsDevice.Viewport.Height;
+
+                            Assets.shaderEffect.Parameters["Viewport"].SetValue(f);
+                            Assets.shaderEffect.Parameters["colour"].SetValue(gg.shaderPack.colour);
+                            Assets.shaderEffect.Parameters["enabled"].SetValue(gg.shaderPack.enabled);
+
+                            // ----- End Shader Set Parameter Code ---------
+
+                            gg.Draw(batch);
                         }
-                        else
+                        int permCount = permanents.Count;
+                        //Console.WriteLine("1: " + permCount);
+                        for (int j = 0; j < permCount; j++)//todo:proper queue iteration/remove logic
                         {
-                            command.Draw(batch);
+                            DrawCommand command = permanents.ElementAt(j);
+                            if (command.life-- < 0)
+                            {
+                                permanents.Remove(command);
+                                j--;
+                                permCount--;
+                            }
+                            else
+                            {
+                                command.Draw(batch);
+                            }
                         }
                     }
                     //Console.WriteLine("2: " + permCount);
@@ -254,27 +270,27 @@ namespace OrbItProcs
                 CameraWaiting.Wait();         // No more tasks - wait for a signal
             }
         }
-        public void Draw(textures texture, Vector2 position, Color color, float scale, ShaderPack? shaderPack = null)
+        public void Draw(textures texture, Vector2 position, Color color, float scale, Layers Layer, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, 0, -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
-        public void Draw(textures texture, Vector2 position, Color color, float scale, float rotation, ShaderPack? shaderPack = null)
+        public void Draw(textures texture, Vector2 position, Color color, float scale, float rotation, Layers Layer, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, 0, -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
-        public void Draw(textures texture, Vector2 position, Color color, Vector2 scalevect, float rotation, ShaderPack? shaderPack = null)
+        public void Draw(textures texture, Vector2 position, Color color, Vector2 scalevect, float rotation, Layers Layer, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scalevect * zoom, SpriteEffects.None, 0, -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scalevect * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
-        public void Draw(textures texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0, ShaderPack? shaderPack = null)
+        public void Draw(textures texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, Layers Layer, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, sourceRect, color, rotation, origin, scale * zoom, effects, layerDepth, -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, sourceRect, color, rotation, origin, scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
-        public void Draw(textures texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, Vector2 scalevect, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0, ShaderPack? shaderPack = null)
+        public void Draw(textures texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, Vector2 scalevect, Layers Layer, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, sourceRect, color, rotation, origin, scalevect * zoom, effects, layerDepth, -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, sourceRect, color, rotation, origin, scalevect * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
-        public void DrawStringWorld(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true)
+        public void DrawStringWorld(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true, Layers Layer = Layers.Over5)
         {
             Color c2 = Color.White;
             if (color2 != null) c2 = (Color)color2;
@@ -283,7 +299,7 @@ namespace OrbItProcs
             nextFrame.Enqueue(new DrawCommand(text, position * zoom + CameraOffsetVect, c2, scale));
             nextFrame.Enqueue(new DrawCommand(text, position * zoom + CameraOffsetVect + new Vector2(1, -1), color, scale));
         }
-        public void DrawStringScreen(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true)
+        public void DrawStringScreen(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true, Layers Layer = Layers.Over5)
         {
             Color c2 = Color.White;
             if (color2 != null) c2 = (Color)color2;

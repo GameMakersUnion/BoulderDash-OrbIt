@@ -195,7 +195,7 @@ namespace OrbItProcs {
             };
         }
         Action<Collider, Collider> collideAction;
-        public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true) : this()
+        public Room(OrbIt game, int worldWidth, int worldHeight,bool gridSystem =true, bool Groups = true) : this()
         {
             //this.mapzoom = 2f;
             this.worldWidth = worldWidth;
@@ -578,7 +578,7 @@ namespace OrbItProcs {
                 //float scale = 1 / mapzoom;
                 Rectangle maprect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
                 //spritebatch.DrawLine((new Vector2(maprect.X, maprect.Y) - camera.pos) * zoom, (new Vector2(maprect.Width, maprect.Height) - camera.pos) * zoom, Color.Green, 2);
-                Utils.DrawLine(this, new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), 2, borderColor);
+                Utils.DrawLine(this, new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), 2, borderColor, Layers.Under5);
                 linecount++;
             }
 

@@ -235,14 +235,14 @@ namespace OrbItProcs
         {
             if (!DrawRing) return;
             //Console.WriteLine(Utils.random.Next(10));
-            parent.room.camera.Draw(textures.ring, parent.body.pos, Color.Red, parent.body.scale);
+            parent.room.camera.Draw(textures.ring, parent.body.pos, Color.Red, parent.body.scale, Layers.Under2);
 
             foreach (Collider cc in colliders.Values)
             {
                 if (cc.HandlersEnabled)
                 {
                     float scale = cc.radius / parent.getTexture().Width * 2;
-                    parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color, scale);
+                    parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color, scale, Layers.Under2);
                 }
             }
         }

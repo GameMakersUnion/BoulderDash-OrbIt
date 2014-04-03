@@ -77,11 +77,11 @@ namespace OrbItProcs
             Texture2D tx = Assets.textureDict[textures.whitecircle];
             Vector2 cen = new Vector2(tx.Width / 2f, tx.Height / 2f);//store this in another textureDict to avoid recalculating
 
-            room.camera.Draw(textures.whitecircle, vert, null, Color.White, 0f, cen, 0.3f, SpriteEffects.None, 0);
+            room.camera.Draw(textures.whitecircle, vert, null, Color.White, 0f, cen, 0.3f, Layers.Over5);
 
             foreach(Vector2 v in verts)
             {
-                room.camera.Draw(textures.whitecircle, v, null, Color.Red, 0f, cen, 0.3f, SpriteEffects.None, 0);
+                room.camera.Draw(textures.whitecircle, v, null, Color.Red, 0f, cen, 0.3f, Layers.Over5);
             }
         }
 

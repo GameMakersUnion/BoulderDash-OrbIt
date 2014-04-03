@@ -250,7 +250,7 @@ namespace OrbItProcs
                 Color col = ColorChanger.getColorFromHSV((float)i);
                 Room room = OrbIt.game.room;
                 float thickness = (float)room.worldWidth / 360f;
-                Utils.DrawLine(room, new Vector2(thickness * i, 0), new Vector2(thickness * i, room.worldHeight), thickness, col);
+                Utils.DrawLine(room, new Vector2(thickness * i, 0), new Vector2(thickness * i, room.worldHeight), thickness, col, Layers.Over5);
             }
         }
 

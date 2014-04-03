@@ -119,10 +119,12 @@ namespace OrbItProcs
                 if (!parent.body.DrawCircle) return;
             }
 
+            Layers layer = parent.player != null ? Layers.Player : Layers.Under1;
+
             if (parent.HasComp(comp.shader))
-                parent.room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale, parent.body.orient, parent.Comp<Shader>().shaderPack);
+                parent.room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale, parent.body.orient,layer, parent.Comp<Shader>().shaderPack);
             else
-                parent.room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale, parent.body.orient);
+                parent.room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale, parent.body.orient, layer);
 
             /*Rectangle? sourceRect = null;
             int minx = 0, miny = 0, maxx = tex.Width, maxy = tex.Height;

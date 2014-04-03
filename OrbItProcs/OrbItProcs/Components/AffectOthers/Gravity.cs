@@ -185,13 +185,13 @@ namespace OrbItProcs {
             //return;
             if (!Repulsive)
             {
-                parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.5f, drawscale / 50f);
+                parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.5f, drawscale / 50f, Layers.Under2);
                 drawscale -= 2f;
                 if (drawscale < 10) drawscale = radius / 10;
             }
             else
             {
-                parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.5f, drawscale / 50f);
+                parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.5f, drawscale / 50f, Layers.Under2);
                 drawscale += 2f;
                 if (drawscale > radius / 10) drawscale = 5f;
             }

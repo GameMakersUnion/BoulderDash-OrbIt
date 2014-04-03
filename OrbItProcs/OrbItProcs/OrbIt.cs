@@ -120,6 +120,7 @@ namespace OrbItProcs
         private bool GraphicsReset;
         
         public static Action onUpdate;
+        public static bool updateTemp = false;
 
         private OrbIt() : base(true)
         {
@@ -203,7 +204,17 @@ namespace OrbItProcs
 
  
         }
-       
+        Window test;
+
+        private void RoomPanel(Room room)
+        {
+            test = new Window(Manager);
+            test.Init();
+            test.SetPosition(Width / 2, Height / 2);
+            test.Width = 200;
+            test.Height = 300;
+        }
+
         protected override void Update(GameTime gameTime)
         {
             //Do not write code above this.
@@ -226,6 +237,8 @@ namespace OrbItProcs
                 Manager.Graphics.ApplyChanges();
                 mainRoom.roomRenderTarget = new RenderTarget2D(GraphicsDevice, Width, Height);
             }
+            if (onUpdate!= null)
+                onUpdate.Invoke();
         }
 
 
@@ -266,5 +279,6 @@ namespace OrbItProcs
             //    throw new SystemException("???", e);
             //}
         }
+
     }
 }

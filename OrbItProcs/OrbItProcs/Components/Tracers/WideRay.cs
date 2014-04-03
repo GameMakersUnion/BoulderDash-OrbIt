@@ -71,37 +71,6 @@ namespace OrbItProcs
             parent.room.camera.AddPermanentDraw(textures.whitepixel, pos, parent.body.color, scalevect, angle, rayLength);
         }
 
-        public void DrawOld()
-        {
-            Room room = parent.room;
-            float mapzoom = room.zoom;
-
-            Queue<float> scales = parent.Comp<Queuer>().scales;
-            Queue<float> angles = parent.Comp<Queuer>().angles;
-            Queue<Vector2> positions = ((Queue<Vector2>)(parent.Comp<Queuer>().positions));
-
-
-            Vector2 screenPos = parent.body.pos * mapzoom;
-            Vector2 centerTexture = new Vector2(0.5f, 0.5f);
-
-            int count = 0;
-            Vector2 scalevect = new Vector2(rayscale, width);
-            int min = Math.Min(Math.Min(positions.Count, scales.Count), angles.Count);
-            for (int i = 0; i < min; i++)
-            {
-                scalevect.X = scales.ElementAt(i) * 50;
-                //spritebatch.Draw(parent.getTexture(textures.whitepixel), positions.ElementAt(i) * mapzoom, null, parent.body.color, angles.ElementAt(i), centerTexture, scalevect, SpriteEffects.None, 0);
-                room.camera.Draw(textures.whitepixel, positions.ElementAt(i), null, parent.body.color, angles.ElementAt(i), centerTexture, scalevect, SpriteEffects.None, 0);
-                count++;
-            }
-
-            float testangle = (float)(Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + (Math.PI / 2));
-            scalevect.X = parent.body.scale * 50;
-            //spritebatch.Draw(parent.getTexture(textures.whitepixel), parent.body.pos * mapzoom, null, parent.body.color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
-            room.camera.Draw(textures.whitepixel, parent.body.pos, null, parent.body.color, testangle, centerTexture, scalevect, SpriteEffects.None, 0);
-            
-        }
-
         public void onCollision(Dictionary<dynamic, dynamic> args)
         {
         }

@@ -23,6 +23,11 @@ namespace OrbItProcs {
         public const float rootOfTwo = 1.41421356237f;
         public const float invRootOfTwo = 0.70710678118f;
 
+        public static Vector2 ToVector2(this Point point)
+        {
+            return new Vector2(point.X, point.Y);
+        }
+
         public static string RandomName(int tries = 0)
         {
             var dict = Utils.compTypes;
@@ -490,7 +495,7 @@ namespace OrbItProcs {
             }
         }
         public static Vector2 CENTER_TEXTURE = new Vector2(0.5f, 0.5f);
-        public static void DrawLine(Room room, Vector2 start, Vector2 end, float thickness, Color color)
+        public static void DrawLine(Room room, Vector2 start, Vector2 end, float thickness, Color color, Layers Layer)
         {
             if (thickness * room.zoom < 1) thickness = 1 / room.zoom;
             Vector2 diff = (end - start);// *mapzoom;
@@ -500,7 +505,7 @@ namespace OrbItProcs {
             //thickness *= 2f * mapzoom;
             Vector2 scalevect = new Vector2(len, thickness);
             float angle = (float)(Math.Atan2(diff.Y, diff.X));
-            room.camera.Draw(textures.whitepixel, centerpoint, null, color, angle, Assets.textureCenters[textures.whitepixel], scalevect, SpriteEffects.None, 0);
+            room.camera.Draw(textures.whitepixel, centerpoint, null, color, angle, Assets.textureCenters[textures.whitepixel], scalevect, Layer);
         }
 
         public static bool checkCollision(Node o1, Node o2)
