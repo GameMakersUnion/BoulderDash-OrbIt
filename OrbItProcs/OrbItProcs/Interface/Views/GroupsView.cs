@@ -31,7 +31,7 @@ namespace OrbItProcs
             lblGroupLabel.Left = LeftPadding;
             lblGroupLabel.Top = 10;// HeightCounter;
             lblGroupLabel.Width = sidebar.Width / 2;
-            lblGroupLabel.Text = "Groups";
+            lblGroupLabel.Text = "";
             lblGroupLabel.TextColor = Color.Black;
             //HeightCounter += lblGroupLabel.Height + LeftPadding;
 

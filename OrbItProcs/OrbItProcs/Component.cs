@@ -23,6 +23,7 @@ namespace OrbItProcs
         tracer = 128,
         playercontrol = 256,
         aicontrol = 512,
+        item = 1024,
     };
 
     public abstract class Component {

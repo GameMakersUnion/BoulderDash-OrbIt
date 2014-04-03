@@ -20,7 +20,7 @@ namespace OrbItProcs
     public class Shooter : Component
     {
         public static Node bulletNode;
-        public const mtypes CompType = mtypes.playercontrol | mtypes.minordraw;// | mtypes.affectself;
+        public const mtypes CompType = mtypes.playercontrol | mtypes.minordraw | mtypes.item;// | mtypes.affectself;
         public override mtypes compType { get { return CompType; } set { } }
         /// <summary>
         /// The mode in which to fire nodes. This will change the way input is handled.
@@ -87,6 +87,7 @@ namespace OrbItProcs
             bulletNode.Comp<Laser>().thickness = 5f;
             bulletNode.Comp<Laser>().laserLength = 20;
             bulletNode.Comp<Movement>().randInitialVel.enabled = false;
+            bulletNode.group = room.bulletGroup;
             
         }
         public override void PlayerControl(Controller controller)
@@ -164,7 +165,7 @@ namespace OrbItProcs
                 n.Comp<ColorChanger>().colormode = ColorChanger.ColorMode.none;
                 n.SetColor(parent.player.pColor);
             }
-            parent.room.spawnNode(n);
+            parent.room.spawnNode(n, g: parent.room.bulletGroup);
             CollisionDelegate bulletHit = (n1, n2) =>
             {
                 Node bullet, them;

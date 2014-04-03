@@ -728,7 +728,7 @@ namespace OrbItProcs
                     VMath.NormalizeSafe(ref perp);
                     perp *= 2;
 
-                    Utils.DrawLine(room, source.body.pos, target.body.pos, 2f, color1);
+                    Utils.DrawLine(room, source.body.pos, target.body.pos, 2f, color1, Layers.Under3);
 
                     //Utils.DrawLine(spritebatch, source.transform.position + perp, target.transform.position + perp, 2f, col, room);
                     //Utils.DrawLine(spritebatch, source.transform.position - perp, target.transform.position - perp, 2f, col, room);
@@ -739,8 +739,8 @@ namespace OrbItProcs
                     Vector2 center = (target.body.pos + source.body.pos) / 2;
 
                     Vector2 point = target.body.pos - (diff / 5);
-                    Utils.DrawLine(room, point + perp, target.body.pos, 2f, color1);
-                    Utils.DrawLine(room, point - perp, target.body.pos, 2f, color1);
+                    Utils.DrawLine(room, point + perp, target.body.pos, 2f, color1, Layers.Under3);
+                    Utils.DrawLine(room, point - perp, target.body.pos, 2f, color1, Layers.Under3);
                 }
             }
 

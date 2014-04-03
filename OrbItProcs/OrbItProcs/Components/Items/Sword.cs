@@ -26,7 +26,7 @@ namespace OrbItProcs
             cooldown
         }
 
-        public const mtypes CompType = mtypes.playercontrol|mtypes.minordraw;// | mtypes.affectself;
+        public const mtypes CompType = mtypes.playercontrol | mtypes.minordraw | mtypes.item;// | mtypes.affectself;
         public override mtypes compType { get { return CompType; } set { } }
         /// <summary>
         /// The distance from the player the sword will swing at.
@@ -148,7 +148,7 @@ namespace OrbItProcs
         {
             Vector2 position = swordNode.body.pos;
             if (position == Vector2.Zero) position = parent.body.pos;
-            parent.room.camera.Draw(textures.sword, position, parent.body.color, swordNode.body.scale * 2, swordNode.body.orient);
+            parent.room.camera.Draw(textures.sword, position, parent.body.color, swordNode.body.scale * 2, swordNode.body.orient, Layers.Over3);
         }
         public override void Death(Node other)
         {

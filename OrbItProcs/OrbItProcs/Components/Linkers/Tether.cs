@@ -15,7 +15,7 @@ namespace OrbItProcs
     [Info(UserLevel.User, "The position of linked nodes is controlled to stay at a particular distance from the source node.", CompType)]
     public class Tether : Component, ILinkable
     {
-        public const mtypes CompType = mtypes.minordraw | mtypes.affectself;// | mtypes.exclusiveLinker;
+        public const mtypes CompType = mtypes.minordraw | mtypes.affectself | mtypes.exclusiveLinker;
         public override mtypes compType { get { return CompType; } set { } }
         [Info(UserLevel.Developer)]
         public Link link { get; set ; }
@@ -289,7 +289,7 @@ namespace OrbItProcs
                 col = Color.Blue;
             else
                 col = Color.White;
-            room.camera.Draw(parent.body.texture, parent.body.pos, col, parent.body.scale * 1.2f);
+            room.camera.Draw(parent.body.texture, parent.body.pos, col, parent.body.scale * 1.2f, Layers.Under2);
 
             foreach (Node receiver in outgoing)
             {
@@ -298,10 +298,10 @@ namespace OrbItProcs
                 VMath.NormalizeSafe(ref perp);
                 perp *= 2;
 
-                Utils.DrawLine(room, parent.body.pos, receiver.body.pos, 2f, col);
+                Utils.DrawLine(room, parent.body.pos, receiver.body.pos, 2f, col, Layers.Under3);
 
-                Utils.DrawLine(room, parent.body.pos + perp, receiver.body.pos + perp, 2f, Color.Red);
-                Utils.DrawLine(room, parent.body.pos - perp, receiver.body.pos - perp, 2f, Color.Green);
+                Utils.DrawLine(room, parent.body.pos + perp, receiver.body.pos + perp, 2f, Color.Red, Layers.Under3);
+                Utils.DrawLine(room, parent.body.pos - perp, receiver.body.pos - perp, 2f, Color.Green, Layers.Under3);
                 
                 perp *= 20;
 
@@ -311,8 +311,8 @@ namespace OrbItProcs
                 //Utils.DrawLine(spritebatch, center - perp, receiver.transform.position, 1f, col, room);
 
                 Vector2 point = receiver.body.pos - (diff / 5);
-                Utils.DrawLine(room, point + perp, receiver.body.pos, 2f, col);
-                Utils.DrawLine(room, point - perp, receiver.body.pos, 2f, col);
+                Utils.DrawLine(room, point + perp, receiver.body.pos, 2f, col, Layers.Under3);
+                Utils.DrawLine(room, point - perp, receiver.body.pos, 2f, col, Layers.Under3);
             }
 
             //spritebatch.DrawString(room.game.font, gatestring, parent.transform.position / mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);

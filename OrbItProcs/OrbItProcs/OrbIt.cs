@@ -171,7 +171,7 @@ namespace OrbItProcs
             base.Initialize();
             //Get Roomy
             mainRoom = new Room(this, Width, Height);
-            tempRoom = new Room(this, 200, 300);
+            tempRoom = new Room(this, 200, 200);
             tempRoom.borderColor = Color.Red;
             room = mainRoom;
             //Hi-Definition Orbs:
@@ -201,11 +201,10 @@ namespace OrbItProcs
 
             MainWindow.TransparentClientArea = true;
 
-            RoomPanel(tempRoom);
  
         }
         Window test;
-        
+
         private void RoomPanel(Room room)
         {
             test = new Window(Manager);
@@ -213,16 +212,8 @@ namespace OrbItProcs
             test.SetPosition(Width / 2, Height / 2);
             test.Width = 200;
             test.Height = 300;
-
-            //test.ShowModal();
-            Manager.Add(test);
-            test.ClientArea.Draw += (s, e) =>
-            {
-                Manager.Renderer.Draw(room.roomRenderTarget, e.Rectangle, Color.White);
-            };
-            onUpdate += delegate { test.Refresh(); };
         }
-       
+
         protected override void Update(GameTime gameTime)
         {
             //Do not write code above this.
@@ -244,8 +235,9 @@ namespace OrbItProcs
             {
                 Manager.Graphics.ApplyChanges();
                 mainRoom.roomRenderTarget = new RenderTarget2D(GraphicsDevice, Width, Height);
-            }  
-            onUpdate.Invoke();
+            }
+            if (onUpdate!= null)
+                onUpdate.Invoke();
         }
 
 
