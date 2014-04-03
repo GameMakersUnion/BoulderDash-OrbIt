@@ -290,22 +290,36 @@ namespace OrbItProcs {
             itemDef.addComponent(comp.itempayload, true);
             itemDef.movement.active = false;
 
-            Node gravDef = itemDef.CreateClone(this);
-            Gravity grav = new Gravity(gravDef);
-            gravDef.Comp<ItemPayload>().AddComponentItem(grav);
-            Group gravItems = new Group(this, gravDef, itemGroup, "gravItem");
+            var infos = Utils.compInfos;
+            foreach (Type t in infos.Keys)
+            {
+                Info info = infos[t];
+                if ((info.compType & mtypes.item) != mtypes.item) continue;
+                if (t == typeof(ItemPayload)) continue;
+                //if (info.userLevel == UserLevel.Developer || info.userLevel == UserLevel.Advanced) continue;
+                Node nodeDef = itemDef.CreateClone(this); ///
+                //nodeDef.addComponent(t, true);
+                Component c = Node.MakeComponent(t, true, nodeDef);
+                nodeDef.Comp<ItemPayload>().AddComponentItem(c);
+                Group itemgroup = new Group(this, nodeDef, itemGroup, t.ToString().LastWord('.') + " Item");
+            }
 
-            Node shooterDef = itemDef.CreateClone(this);
-            Shooter shoot = new Shooter(shooterDef);
-            //grav.mode = Gravity.Mode.Strong;
-            shooterDef.Comp<ItemPayload>().AddComponentItem(shoot);
-            Group shooterItems = new Group(this, shooterDef, itemGroup, "shooterItem");
-
-            Node swordDef = itemDef.CreateClone(this);
-            Sword sword = new Sword(swordDef);
-            //grav.mode = Gravity.Mode.Strong;
-            swordDef.Comp<ItemPayload>().AddComponentItem(sword);
-            Group swordItems = new Group(this, swordDef, itemGroup, "swordItem");
+            //Node gravDef = itemDef.CreateClone(this);
+            //Gravity grav = new Gravity(gravDef);
+            //gravDef.Comp<ItemPayload>().AddComponentItem(grav);
+            //Group gravItems = new Group(this, gravDef, itemGroup, "gravItem");
+            //
+            //Node shooterDef = itemDef.CreateClone(this);
+            //Shooter shoot = new Shooter(shooterDef);
+            ////grav.mode = Gravity.Mode.Strong;
+            //shooterDef.Comp<ItemPayload>().AddComponentItem(shoot);
+            //Group shooterItems = new Group(this, shooterDef, itemGroup, "shooterItem");
+            //
+            //Node swordDef = itemDef.CreateClone(this);
+            //Sword sword = new Sword(swordDef);
+            ////grav.mode = Gravity.Mode.Strong;
+            //swordDef.Comp<ItemPayload>().AddComponentItem(sword);
+            //Group swordItems = new Group(this, swordDef, itemGroup, "swordItem");
         }
         
         public void AddCollider(Collider collider)

@@ -195,7 +195,7 @@ namespace OrbItProcs
                 {
                     return;
                 }
-                them.meta.TakeDamage(parent, damage);
+                them.meta.CalculateDamage(parent, damage);
                 bullet.OnDeath(null);
             };
             n.body.OnCollisionEnter += bulletHit;

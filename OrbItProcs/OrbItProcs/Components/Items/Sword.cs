@@ -43,6 +43,21 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.Advanced, "The width of the sword that is used when the sword is initialized.")]
         public float swordWidth { get; set; }
+        /// <summary>
+        /// The strength of the sword, which affects the amount of damage it does.
+        /// </summary>
+        [Info(UserLevel.User, "The strength of the sword, which affects the amount of damage it does.")]
+        public float damageMultiplier { get; set; }
+        /// <summary>
+        /// The force at which to push the other node back when clashing swords.
+        /// </summary>
+        [Info(UserLevel.User, "The force at which to push the other node back when clashing swords.")]
+        public float parryKnockback { get; set; }
+        /// <summary>
+        /// The force at which to push the other node back after a direct hit to the other node.
+        /// </summary>
+        [Info(UserLevel.User, "The force at which to push the other node back after a direct hit to the other node.")]
+        public float nodeKnockback { get; set; }
         //public int swingRate { get; set; }
         //int swingRateCount = 0;
         //bool enabled; 
@@ -60,6 +75,9 @@ namespace OrbItProcs
             swordWidth = 5;
             //swingRate = 5;
             //speed = 3;
+            damageMultiplier = 10f;
+            nodeKnockback = 500f;
+            parryKnockback = 20f;
 
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>()
             {
@@ -84,6 +102,7 @@ namespace OrbItProcs
         {
             //Node.cloneNode(parent.Game1.ui.sidebar.ActiveDefaultNode, sword);
             //parent.body.texture = textures.orientedcircle;
+            swordNode.Kawasaki["swordnodeparent"] = parent;
             Polygon poly = new Polygon();
             poly.body = swordNode.body;
             poly.SetBox(swordWidth, swordLength);
@@ -98,6 +117,21 @@ namespace OrbItProcs
             swordNode.OnSpawn();
             swordNode.body.AddExclusionCheck(parent.body);
             swordNode.body.ExclusionCheck += delegate(Collider p, Collider o) { return !movingStick; };
+            swordNode.body.OnCollisionEnter += (p, o) =>
+            {
+                if (o.Kawasaki.ContainsKey("swordnodeparent"))
+                {
+                    Node otherparent = o.Kawasaki["swordnodeparent"];
+                    Vector2 f = otherparent.body.pos - parent.body.pos;
+                    VMath.NormalizeSafe(ref f);
+                    f *= parryKnockback;
+                    otherparent.body.ApplyForce(f);
+                }
+                else if (o.player != null)
+                {
+                    o.player.node.meta.CalculateDamage(parent, damageMultiplier);
+                }
+            };
             //sword.body.exclusionList.Add(parent.body);
             //
             //parent.body.exclusionList.Add(sword.body);
@@ -112,8 +146,7 @@ namespace OrbItProcs
                 FullController fc = (FullController)controller;
                 swordNode.movement.active = false;
                 //sword.body.velocity = Utils.AngleToVector(sword.body.orient + (float)Math.PI/2) * 100;
-                swordNode.body.velocity = swordNode.body.effvelocity * 500;
-
+                swordNode.body.velocity = swordNode.body.effvelocity * nodeKnockback;
 
                 if (fc.newGamePadState.ThumbSticks.Right.LengthSquared() > 0.9 * 0.9)
                 {

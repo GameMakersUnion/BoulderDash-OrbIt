@@ -68,6 +68,7 @@ namespace OrbItProcs
         //chrono,
         //weird,
         sword,
+        fist,
         itempayload,
     };
     public enum resolutions
