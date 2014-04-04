@@ -62,6 +62,7 @@ namespace OrbItProcs
         basicdraw,
         meta,
         shader,
+        light,
         //middle,
         //slow,
         //siphon,

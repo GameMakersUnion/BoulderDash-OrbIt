@@ -37,7 +37,7 @@ namespace OrbItProcs
             {ItemSlots.X_Blue, null},
             
         };
-        public ItemSlots _currentItem = ItemSlots.None;
+        public ItemSlots _currentItem = ItemSlots.Y_Yellow;
         public ItemSlots currentItem { 
             get { return _currentItem; } 
             set 

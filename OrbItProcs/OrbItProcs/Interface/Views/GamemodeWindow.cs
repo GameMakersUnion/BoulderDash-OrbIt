@@ -141,6 +141,8 @@ namespace OrbItProcs
         public ScoringModes scoringMode { get; set; }
         public Dictionary<Player, HashSet<Player>> playerTeammates;
 
+        public Color globalColor { get; set; }
+
         
 
         public GlobalGameMode(OrbIt game)
@@ -153,6 +155,7 @@ namespace OrbItProcs
             scoringMode = ScoringModes.playerKills;
             _gameMode = GameModes.FreeForAll;
             SetUpTeams();
+            globalColor = Color.Purple;
         }
 
         public void Draw()
