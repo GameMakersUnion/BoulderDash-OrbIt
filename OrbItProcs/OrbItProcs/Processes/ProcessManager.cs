@@ -20,6 +20,8 @@ namespace OrbItProcs
         graphdata,
         cameracontrol,
         directedspawn,
+        removenodes,
+        gridspawn,
     }
     public struct MouseArgs
     {
@@ -61,6 +63,8 @@ namespace OrbItProcs
             processDict.Add(proc.graphdata, new GraphData());
             processDict.Add(proc.cameracontrol, new CameraControl(game.room.camera));
             processDict.Add(proc.directedspawn, new DirectedSpawn());
+            processDict.Add(proc.removenodes, new RemoveNodes());
+            processDict.Add(proc.gridspawn, new GridSpawn());
 
             activeInputProcess = processDict[proc.spawnnodes];
             OrbIt.ui.groupSelectSet = (processDict[proc.groupselect] as GroupSelect).groupSelectSet;
@@ -82,7 +86,7 @@ namespace OrbItProcs
 
             Keybindset.Add("spawnnodes", new KeyBundle(KeyCodes.D1, KeyCodes.LeftShift), enableKeyBinds(proc.spawnnodes));
             toolbar.AddButton("spawn",enableKeyBinds(proc.spawnnodes), "Spawn node of selected group. RightClick to spawn many" );
-            toolbar.AddButton("remove", Utils.notImplementedException, "Take a hike.");
+            toolbar.AddButton("remove", enableKeyBinds(proc.removenodes), "Remove nodes: leftclick single, rightclick drag, middleclick remove all.");
             
             Keybindset.Add("groupselect", new KeyBundle(KeyCodes.D3, KeyCodes.LeftShift), enableKeyBinds(proc.groupselect));
             Keybindset.Add("singleselect", new KeyBundle(KeyCodes.D4, KeyCodes.LeftShift), enableKeyBinds(proc.singleselect));
@@ -97,7 +101,7 @@ namespace OrbItProcs
             toolbar.AddButton("forceSpawn", enableKeyBinds(proc.directedspawn), "Spawn nodes in a direction using left and right click.");
             toolbar.AddButton("forcePush", Utils.notImplementedException,"Take a hike.");
             toolbar.AddButton("control", Utils.notImplementedException,"Take a hike.");
-            toolbar.AddButton("static", Utils.notImplementedException,"Take a hike.");
+            toolbar.AddButton("static", enableKeyBinds(proc.gridspawn), "Spawn nodes statically to the grid.");
 
             Keybindset.Add("resetplayers", new KeyBundle(KeyCodes.Home), delegate { Player.ResetPlayers(OrbIt.game.mainRoom); });
 
@@ -105,7 +109,7 @@ namespace OrbItProcs
             Keybindset.Add("graphdata", new KeyBundle(KeyCodes.D6, KeyCodes.LeftShift), enableKeyBinds(proc.graphdata)); 
 
             Keybindset.Add("polygonspawner", new KeyBundle(KeyCodes.D9, KeyCodes.LeftShift), enableKeyBinds(proc.polygonspawner));
-
+            
 
             Keybindset.AddProcess(processDict[proc.cameracontrol], false);
             Keybindset.AddProcess(processDict[proc.spawnnodes]);

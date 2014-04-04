@@ -91,7 +91,7 @@ namespace OrbItProcs
         {
             Vector2 MousePos = UserInterface.WorldMousePos;
 
-            Console.WriteLine(room.worldWidth + " : " + room.worldHeight + "  :::  " + MousePos.X + " : " + MousePos.Y);
+            //Console.WriteLine(room.worldWidth + " : " + room.worldHeight + "  :::  " + MousePos.X + " : " + MousePos.Y);
             double dx = MousePos.X / (double)room.level.cellWidth;
             double dy = MousePos.Y / (double)room.level.cellHeight;
 

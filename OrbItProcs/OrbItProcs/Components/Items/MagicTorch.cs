@@ -74,6 +74,13 @@ namespace OrbItProcs
             {MagicType.spring, typeof(Spring)},
             {MagicType.transfer, typeof(Transfer)},
         };
+        private static Dictionary<MagicType, textures> MagicToRune = new Dictionary<MagicType, textures>()
+        {
+            {MagicType.gravity, textures.rune12},
+            {MagicType.displace, textures.rune13},
+            {MagicType.spring, textures.rune6},
+            {MagicType.transfer, textures.rune10},
+        };
         
         public MagicTorch() : this(null) { }
         public MagicTorch(Node parent)
@@ -203,7 +210,7 @@ namespace OrbItProcs
             
             torchNode.body.color = col;
             parent.room.camera.Draw(textures.ring, position, Color.Black, torchNode.body.scale, torchNode.body.orient, Layers.Over4);
-            parent.room.camera.Draw(textures.whitecircle, position, col, torchNode.body.scale, torchNode.body.orient, Layers.Over3);
+            parent.room.camera.Draw(MagicToRune[magicType], position, col, torchNode.body.scale, Utils.VectorToAngle(position - parent.body.pos) + VMath.PIbyTwo, Layers.Over3);
         }
 
 

@@ -22,7 +22,7 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "Distance at which the node is teleported, based on a scale of the node's radius.")]
         public float radiusScale { get; set; }
-        public float multiplier { get { return radiusScale; } set { radiusScale = value; } }
+        public float multiplier { get { return radiusScale * 10f; } set { radiusScale = value / 10f; } }
 
         public Transfer() : this(null) { }
         public Transfer(Node parent = null)

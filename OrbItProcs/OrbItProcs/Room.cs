@@ -257,7 +257,7 @@ namespace OrbItProcs {
             targetNodeGraphic = new Node(this,userPropsTarget);
             targetNodeGraphic.name = "TargetNodeGraphic";
 
-            MakeWalls();
+            //MakeWalls();
 
             MakePresetGroups();
             MakeItemGroups();
@@ -597,7 +597,6 @@ namespace OrbItProcs {
 
         public void MakeWalls()
         {
-            return;
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>() {
                     { nodeE.position, new Vector2(0, 0) },
                     { comp.basicdraw, true },

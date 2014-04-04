@@ -450,7 +450,11 @@ namespace OrbItProcs {
         public Func<Node, bool> ExclusionCheck = null;
         public virtual void Update(GameTime gametime)
         {
-            if (!movement.pushable && tempPosition != new Vector2(0, 0)) body.pos = tempPosition;
+            if (!movement.pushable && tempPosition != new Vector2(0, 0))
+            {
+                body.pos = tempPosition;
+                body.velocity = Vector2.Zero;
+            }
             body.effvelocity = body.pos - tempPosition;
             tempPosition = body.pos;
             
@@ -938,12 +942,12 @@ namespace OrbItProcs {
             foreach (Type key in comps.Keys.ToList())
             {
                 Component component = comps[key];
-                MethodInfo mInfo = component.GetType().GetMethod("OnSpawn");
-                if (mInfo != null
-                    && mInfo.DeclaringType == component.GetType())
-                {
+                //MethodInfo mInfo = component.GetType().GetMethod("OnSpawn");
+                //if (mInfo != null
+                //    && mInfo.DeclaringType == component.GetType())
+                //{
                     component.OnSpawn();
-                }
+                //}
             }
         }
 

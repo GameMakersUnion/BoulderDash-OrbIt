@@ -15,7 +15,7 @@ namespace OrbItProcs
 
         public SpawnNodes() : base()
         {
-            batchSpawnNum = 5;
+            batchSpawnNum = 2;
 
             addProcessKeyAction("SpawnNode", KeyCodes.LeftClick, OnPress: SpawnNode);
             //addProcessKeyAction("SetSpawnPosition", KeyCodes.LeftShift, OnPress: SetSpawnPosition);

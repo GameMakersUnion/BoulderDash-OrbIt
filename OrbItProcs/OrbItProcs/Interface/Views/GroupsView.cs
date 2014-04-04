@@ -15,7 +15,7 @@ namespace OrbItProcs
     public class GroupsView : DetailedView
     {
         public Label lblGroupLabel;
-        public Button btnCreateGroup;
+        public Button btnCreateGroup, btnEmptyGroup;
         public Group parentGroup;
         public CreateGroupWindow createGroupWindow;
         public EditNodeWindow editGroupWindow;
@@ -44,12 +44,25 @@ namespace OrbItProcs
             btnCreateGroup.Parent = parent;
             btnCreateGroup.Top = HeightCounter;
             btnCreateGroup.Text = "Create Group";
-            btnCreateGroup.Width = 160;
-            btnCreateGroup.Left = parent.Width / 2 - btnCreateGroup.Width / 2;
+            btnCreateGroup.Width = (parent.Width - LeftPadding * 2) / 2;
+            btnCreateGroup.Left = LeftPadding;//parent.Width / 2 - btnCreateGroup.Width / 2;
             btnCreateGroup.Click += (s, e) =>
             {
                 createGroupWindow = new CreateGroupWindow(sidebar);
             };
+
+            btnEmptyGroup = new Button(manager);
+            btnEmptyGroup.Init();
+            btnEmptyGroup.Parent = parent;
+            btnEmptyGroup.Top = HeightCounter;
+            btnEmptyGroup.Text = "Empty Group";
+            btnEmptyGroup.Width = btnCreateGroup.Width;
+            btnEmptyGroup.Left = parent.Width - LeftPadding * 2 - btnEmptyGroup.Width;//parent.Width / 2 - btnCreateGroup.Width / 2;
+            btnEmptyGroup.Click += (s, e) =>
+            {
+                sidebar.btnRemoveAllNodes_Click(null, null);
+            };
+
             HeightCounter += btnCreateGroup.Height + LeftPadding;
         }
 

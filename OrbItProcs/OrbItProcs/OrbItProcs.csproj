@@ -242,6 +242,7 @@
     <Compile Include="Physics\Shape.cs" />
     <Compile Include="Framework\Player.cs" />
     <Compile Include="Processes\AxisMovement.cs" />
+    <Compile Include="Processes\GridSpawn.cs" />
     <Compile Include="Processes\GroupSelect.cs" />
     <Compile Include="Processes\MapEditor.cs" />
     <Compile Include="Processes\PolygonSpawner.cs" />
@@ -249,6 +250,7 @@
     <Compile Include="Processes\ProcessManager.cs" />
     <Compile Include="Framework\QueueInfo.cs" />
     <Compile Include="Processes\Randomizer.cs" />
+    <Compile Include="Processes\RemoveNodes.cs" />
     <Compile Include="Processes\SingleSelect.cs" />
     <Compile Include="Processes\SpawnNodes.cs" />
     <Compile Include="Processes\TripSpawnOnCollide.cs" />
