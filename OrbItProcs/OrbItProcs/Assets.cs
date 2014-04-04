@@ -40,6 +40,14 @@ namespace OrbItProcs
         whitepixeltrans,
         sword,
         randompixels,
+        innerL,
+        innerR,
+        outerL,
+        outerR,
+        pointer,
+        itemLight,
+        itemWhisper,
+        cage,
     }
 
     static class Assets
@@ -70,6 +78,14 @@ namespace OrbItProcs
             { textures.orientedcircle, content.Load<Texture2D>("Textures/orientedcircle"    )},
             { textures.sword, content.Load<Texture2D>("Textures/sword"                      )},
             { textures.randompixels, content.Load<Texture2D>("Textures/randompixels"        )},
+            { textures.innerL, content.Load<Texture2D>("Textures/innerL"                    )},
+            { textures.innerR, content.Load<Texture2D>("Textures/innerR"                    )},
+            { textures.outerL, content.Load<Texture2D>("Textures/outerL"                    )},
+            { textures.outerR, content.Load<Texture2D>("Textures/outerR"                    )},
+            { textures.pointer, content.Load<Texture2D>("Textures/pointer"                  )},
+            { textures.itemLight, content.Load<Texture2D>("Textures/itemLight"                 )},
+            { textures.itemWhisper, content.Load<Texture2D>("Textures/itemWhisper"               )},
+            { textures.cage, content.Load<Texture2D>("Textures/cage"                        )},            
             };
 
             for (int i = 0; i < 16; i++)

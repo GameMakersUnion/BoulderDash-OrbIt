@@ -145,7 +145,7 @@ namespace OrbItProcs
         public SpriteBatch batch;
 
         static double x = 0;
-        static bool phaseBackgroundColor = false;
+        static bool phaseBackgroundColor = true;
 
         public ThreadedCamera(Room room, float zoom = 0.5f, Vector2? pos = null)
         {
