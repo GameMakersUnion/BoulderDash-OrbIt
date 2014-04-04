@@ -233,7 +233,7 @@ namespace OrbItProcs
 
                 Vector2 v1 = position + a1;
                 Vector2 v2 = position + a2;
-                Utils.DrawLine(body.parent.room, v1, v2, LineThickness, color, Layers.Under1);
+                Utils.DrawLine(body.parent.room, v1, v2, LineThickness, color, Layers.Over2);
 
                 if (RecurseDrawEnabled)
                 {

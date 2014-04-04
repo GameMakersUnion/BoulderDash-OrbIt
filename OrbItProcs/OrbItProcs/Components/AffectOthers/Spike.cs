@@ -108,7 +108,7 @@ namespace OrbItProcs
                     }
                 }
             };
-            parent.body.OnCollisionEnter += collisionAction;
+            
 
             Polygon poly = new Polygon();
             poly.body = parent.body;
@@ -121,6 +121,13 @@ namespace OrbItProcs
             parent.body.shape = poly;
             poly.Set(verts, 3);
             parent.body.DrawCircle = true;
+            parent.body.orient = parent.body.orient; //todo:set this every init of polys
+            parent.body.OnCollisionEnter += collisionAction;
+
+            parent.body.ExclusionCheck += (s, t) =>
+            {
+                return Vector2.Distance(s.pos, t.pos) > dist;
+            };
         }
 
     }
