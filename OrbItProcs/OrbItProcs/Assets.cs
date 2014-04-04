@@ -47,6 +47,7 @@ namespace OrbItProcs
         pointer,
         itemLight,
         itemWhisper,
+        fist,
         cage,
     }
 
@@ -85,7 +86,8 @@ namespace OrbItProcs
             { textures.pointer, content.Load<Texture2D>("Textures/pointer"                  )},
             { textures.itemLight, content.Load<Texture2D>("Textures/itemLight"                 )},
             { textures.itemWhisper, content.Load<Texture2D>("Textures/itemWhisper"               )},
-            { textures.cage, content.Load<Texture2D>("Textures/cage"                        )},            
+            { textures.cage, content.Load<Texture2D>("Textures/cage"                        )},
+            { textures.fist, content.Load<Texture2D>("Textures/fist"                        )},
             };
 
             for (int i = 0; i < 16; i++)

@@ -27,7 +27,10 @@ namespace OrbItProcs {
         {
             return new Vector2(point.X, point.Y);
         }
+        public static Rectangle contract(this Rectangle source, int amount){
 
+            return new Rectangle(source.X + amount / 2, source.Y + amount / 2, source.Width - amount, source.Height - amount);
+        }
         public static string RandomName(int tries = 0)
         {
             var dict = Utils.compTypes;
