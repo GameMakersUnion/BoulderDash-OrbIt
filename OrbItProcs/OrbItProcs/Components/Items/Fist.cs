@@ -12,6 +12,21 @@ namespace OrbItProcs
     [Info(UserLevel.User, "The fist allows you to punch other players and nodes.", CompType)]
     public class Fist : Component
     {
+        public override bool active
+        {
+            get
+            {
+                return base.active;
+            }
+            set
+            {
+                base.active = value;
+                if (fistNode != null)
+                {
+                    fistNode.active = value;
+                }
+            }
+        }
         /// <summary>
         /// The fist node that will be held and swung.
         /// </summary>

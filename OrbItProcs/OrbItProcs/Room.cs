@@ -283,6 +283,7 @@ namespace OrbItProcs {
                 if (t == typeof(Lifetime)) continue;
                 if (t == typeof(Rune)) continue;
                 Node nodeDef = defaultNode.CreateClone(this);
+                nodeDef.SetColor(Utils.randomColor());
                 nodeDef.addComponent(t, true);
                 nodeDef.addComponent(typeof(Rune), true);
                 nodeDef.Comp<Rune>().runeTexture = (textures)runenum++;
@@ -821,7 +822,7 @@ namespace OrbItProcs {
             int newCellsX = worldWidth / gridsystemCollision.cellWidth;
             gridsystemAffect = new GridSystem(this, newCellsX, 5);
             level = new Level(this, newCellsX, newCellsX, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
-            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
+            //roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
             gridsystemCollision = new GridSystem(this, newCellsX, 20);
         }
 

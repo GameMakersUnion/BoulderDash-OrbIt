@@ -1033,7 +1033,8 @@ namespace OrbItProcs
                 (sender as Button).Focused = false;
 
             Group g = ActiveGroup;
-            if (g.fullSet.Contains(room.targetNode)) room.targetNode = null;
+            if (room.targetNode != null)
+                if (g.fullSet.Contains(room.targetNode)) room.targetNode = null;
             if (g.fullSet.Contains(inspectorArea.editNode) && inspectorArea.editNode != g.defaultNode)
             {
                 inspectorArea.InsBox.Items.Clear();

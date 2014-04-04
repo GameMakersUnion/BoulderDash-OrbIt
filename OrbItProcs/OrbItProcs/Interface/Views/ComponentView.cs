@@ -309,13 +309,17 @@ namespace OrbItProcs
 
         void btnAddComponent_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            if (activeGroup == null)
+            if (GroupSync)
             {
-                PopUp.Toast("You haven't selected a Group.");
-                return;
+                if (activeGroup == null)
+                {
+
+                    PopUp.Toast("You haven't selected a Group.");
+                    return;
+                }
             }
             if (rootNode != null) new AddComponentWindow(sidebar, parent, rootNode, this);
-
+            
             //ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !activeGroup.defaultNode.HasComponent(c))));
             //List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => activeGroup.defaultNode.HasComponent(c)));
             //

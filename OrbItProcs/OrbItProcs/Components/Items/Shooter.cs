@@ -19,6 +19,21 @@ namespace OrbItProcs
     [Info(UserLevel.User, "Shoots out damaging lasers that are automatic, single fire or rapid firing.", CompType)]
     public class Shooter : Component
     {
+        public override bool active
+        {
+            get
+            {
+                return base.active;
+            }
+            set
+            {
+                base.active = value;
+                if (bulletNode != null)
+                {
+                    bulletNode.active = value;
+                }
+            }
+        }
         public static Node bulletNode;
         public const mtypes CompType = mtypes.playercontrol | mtypes.minordraw | mtypes.item | mtypes.aicontrol;// | mtypes.affectself;
         public override mtypes compType { get { return CompType; } set { } }
@@ -55,6 +70,10 @@ namespace OrbItProcs
         [Info(UserLevel.User, "If enabled, the bullet's velocity will be determined by the controller stick's distance from the center of the stick.")]
         public bool useStickVelocity { get; set; }
         private Toggle<int> _maxAmmo;
+        /// <summary>
+        /// Max ammo
+        /// </summary>
+        [Info(UserLevel.User, "Max ammo")]
         public Toggle<int> maxAmmo { get { return _maxAmmo; } set { _maxAmmo = value; ammo = value; } }
         private int ammo;
         /// <summary>
@@ -95,6 +114,16 @@ namespace OrbItProcs
             shootMode = ShootMode.Auto;
             useStickVelocity = false;
             maxAmmo = new Toggle<int>(50, true);
+            TurretTimerSeconds = 1;
+            
+        }
+        public override void OnSpawn()
+        {
+            AppointmentDelegate ap = (n,d) => 
+                {
+                    if (ammo < maxAmmo) ammo++;
+                };
+            parent.scheduler.AddAppointment(new Appointment(ap, 5000, infinite: true));
         }
         public static void MakeBullet(Room room)
         {
@@ -119,6 +148,7 @@ namespace OrbItProcs
             bulletNode.Comp<Laser>().laserLength = 20;
             bulletNode.Comp<Movement>().randInitialVel.enabled = false;
             bulletNode.group = room.bulletGroup;
+            
             
         }
         public override void PlayerControl(Controller controller)
@@ -194,8 +224,9 @@ namespace OrbItProcs
                 if (nearNode != null)
                 {
                     Vector2 dir = nearNode.body.pos - parent.body.pos;
+                    VMath.NormalizeSafe(ref dir);
                     FireNode(dir);
-                    tempTurretTimer = TurretTimerSeconds * 0.7f;
+                    tempTurretTimer = 0;
                 }
             }
         }

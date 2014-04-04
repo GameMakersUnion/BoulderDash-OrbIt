@@ -12,6 +12,21 @@ namespace OrbItProcs
     [Info(UserLevel.User, "This node has a nifty sword the node can swing to attack enemies. ", CompType)]
     public class Sword : Component
     {
+        public override bool active
+        {
+            get
+            {
+                return base.active;
+            }
+            set
+            {
+                base.active = value;
+                if (swordNode != null)
+                {
+                    swordNode.active = value;
+                }
+            }
+        }
         /// <summary>
         /// The sword node that will be held and swung.
         /// </summary>

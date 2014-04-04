@@ -70,6 +70,28 @@ namespace OrbItProcs
             btnEmptyGroup.ClientMargins = new Margins(m2.Left, 1, m2.Right, 1);
 
             HeightCounter += btnCreateGroup.Height + LeftPadding;
+
+            Button btnEmptyAll = new Button(manager);
+            btnEmptyAll.Init();
+            btnEmptyAll.Parent = parent;
+            btnEmptyAll.Top = HeightCounter;
+            btnEmptyAll.Text = "Empty All Groups";
+            //btnEmptyAll.Height = (int)(btnEmptyGroup.Height * 1.5);
+            btnEmptyAll.Width = parent.Width / 2;
+            btnEmptyAll.Left = parent.Width / 2 - btnEmptyAll.Width / 2;//parent.Width / 2 - btnCreateGroup.Width / 2;
+            btnEmptyAll.Click += (s, e) =>
+            {
+                EmptyAllGroups();
+            };
+        }
+
+        public void EmptyAllGroups()
+        {
+            foreach(Group g in room.masterGroup.childGroups.Values)
+            {
+                if (g == room.playerGroup) continue;
+                g.EmptyGroup();
+            }
         }
 
         public override void SelectItem(DetailedItem item)

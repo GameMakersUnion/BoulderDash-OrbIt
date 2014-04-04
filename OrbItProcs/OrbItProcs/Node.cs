@@ -452,6 +452,11 @@ namespace OrbItProcs {
         public Func<Node, bool> ExclusionCheck = null;
         public virtual void Update(GameTime gametime)
         {
+            if (player != null)
+            {
+                body.angularVelocity = 0;
+            }
+
             if (!movement.pushable && tempPosition != new Vector2(0, 0))
             {
                 body.pos = tempPosition;

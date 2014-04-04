@@ -12,6 +12,21 @@ namespace OrbItProcs
     [Info(UserLevel.User, "The magic torch lets you hold a torch that can have any affect others component attached to it.", CompType)]
     public class MagicTorch : Component
     {
+        public override bool active
+        {
+            get
+            {
+                return base.active;
+            }
+            set
+            {
+                base.active = value;
+                if (torchNode != null)
+                {
+                    torchNode.active = value;
+                }
+            }
+        }
         /// <summary>
         /// The torch node that will be held and swung.
         /// </summary>

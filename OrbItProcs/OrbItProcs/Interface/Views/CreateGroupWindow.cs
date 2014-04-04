@@ -32,8 +32,8 @@ namespace OrbItProcs
             this.manager = sidebar.manager;
             sidebar.CreatingGroup = true;
             //sidebar.ui.game.SwitchToTempRoom();
-            temproom = sidebar.ui.game.tempRoom;
-            tempgroup = sidebar.ActiveGroup;//temproom.generalGroups.childGroups.ElementAt(0).Value;
+            //temproom = sidebar.ui.game.tempRoom;
+            //tempgroup = g;// sidebar.ActiveGroup;//temproom.generalGroups.childGroups.ElementAt(0).Value;
 
             poop = new Poop(manager);
             poop.Init();
@@ -117,9 +117,9 @@ namespace OrbItProcs
             cbExisting.Top = HeightCounter;
             cbExisting.Width = width;
             cbExisting.Left = offset;
-            foreach(Group g in sidebar.game.mainRoom.generalGroups.childGroups.Values)
+            foreach(Group gg in sidebar.game.mainRoom.generalGroups.childGroups.Values)
             {
-                cbExisting.Items.Add(g);
+                cbExisting.Items.Add(gg);
             }
             cbExisting.ItemIndex = 0;
             cbExisting.Enabled = false;
@@ -154,9 +154,9 @@ namespace OrbItProcs
 
             poop.Width += 100;
             poop.Width -= 100;
+            tempgroup = new Group(sidebar.room, sidebar.room.defaultNode.CreateClone(sidebar.room), null, "tempgroup", false);
 
-            SetGroup(temproom.defaultNode);
-
+            SetGroup(sidebar.room.defaultNode);
 
             rdEmpty.Click += (s, e) =>
             {
