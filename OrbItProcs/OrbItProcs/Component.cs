@@ -60,6 +60,25 @@ namespace OrbItProcs
 
         public HashSet<Node> exclusions = new HashSet<Node>();
 
+        protected float timePassed = 0;
+        protected float maxTime = -1;
+        protected bool IsDecaying = false;
+
+
+        public void SetDecayMaxTime(int seconds, bool isDecaying = true)
+        {
+            IsDecaying = isDecaying;
+            maxTime = seconds * 1000;
+        }
+        public void CaluclateDecay()
+        {
+            if (!IsDecaying) return;
+            timePassed += OrbIt.gametime.ElapsedGameTime.Milliseconds;
+            if (timePassed > maxTime)
+            {
+                parent.RemoveComponent(com);
+            }
+        }
         public bool isEssential()
         {
             return (compType & mtypes.essential) == mtypes.essential;
@@ -91,11 +110,11 @@ namespace OrbItProcs
         public virtual void Draw() { }
         public virtual void PlayerControl(Controller controller) { }
         public virtual void AIControl(AIMode aiMode) { }
-
         public virtual void OnRemove(Node other) { }
-
-        public virtual void InitializeLists()
+        public virtual void InitializeLists() { }
+        public bool IsItem()
         {
+            return (compType & mtypes.item) == mtypes.item;
         }
 
         public virtual Texture2D getTexture()

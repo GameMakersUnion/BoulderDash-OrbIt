@@ -120,7 +120,7 @@ namespace OrbItProcs
         public static bool bigTonyOn = false;
         private bool GraphicsReset;
         
-        public static Action onUpdate;
+        public static Action OnUpdate;
         public static bool updateTemp = false;
 
         private OrbIt() : base(true)
@@ -238,8 +238,8 @@ namespace OrbItProcs
                 Manager.Graphics.ApplyChanges();
                 mainRoom.roomRenderTarget = new RenderTarget2D(GraphicsDevice, Width, Height);
             }
-            if (onUpdate!= null)
-                onUpdate.Invoke();
+            if (OnUpdate!= null)
+                OnUpdate.Invoke();
         }
 
 

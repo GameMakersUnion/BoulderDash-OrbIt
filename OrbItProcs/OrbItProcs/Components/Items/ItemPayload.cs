@@ -40,12 +40,17 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "The amount of particle packs to draw beneath the payload.")]
         public int packCount = 1;
+        /// <summary>
+        /// The amount of time in seconds until the items in the payload disappear.
+        /// </summary>
+        [Info(UserLevel.User, "The amount of time in seconds until the items in the payload disappear.")]
+        public Toggle<int> timeLimit { get; set; }
         public ItemPayload() : this(null) { }
         public ItemPayload(Node parent)
         {
             this.parent = parent;
             //payload = new Dictionary<Type, Component>();
-            
+            timeLimit = new Toggle<int>(5, false);
             AlreadyDelivered = new HashSet<Node>();
             OverwriteComponents = false;
             DieOnDelivery = true;
@@ -88,6 +93,9 @@ namespace OrbItProcs
                 Component comp = payloadNode.comps[t];
                 Component clone = comp.CreateClone(parent);
                 newPayload[t] = clone;
+                if (timeLimit.enabled)
+                    clone.SetDecayMaxTime(timeLimit.value);
+                
             }
             payloadNode.comps = newPayload;
         }

@@ -384,6 +384,7 @@ namespace OrbItProcs {
             GuidString = GuidString.Replace("+", "");
             return GuidString;
         }
+        ///dontdelete. sorry
         public static bool IsFucked(this Vector2 v)
         {
             if (float.IsInfinity(v.X) || float.IsNaN(v.X) || float.IsInfinity(v.Y) || float.IsNaN(v.Y)) return true;

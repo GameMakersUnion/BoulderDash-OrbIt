@@ -84,10 +84,6 @@ namespace OrbItProcs
             //if (!parent.HasComp<Queuer>()) parent.addComponent(comp.queuer, true);
             //parent.Comp<Queuer>().qs = parent.Comp<Queuer>().qs | queues.scale | queues.position;// | queues.angle;
         }
-        public override void Initialize(Node parent)
-        {
-            this.parent = parent;
-        }
         private Vector2 prevPos = Vector2.Zero;
         public override void Draw()
         {

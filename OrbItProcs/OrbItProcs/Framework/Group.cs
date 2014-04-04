@@ -249,7 +249,7 @@ namespace OrbItProcs
                 bool ui = OrbIt.ui != null && OrbIt.ui.sidebar.cbListPicker != null;
                 foreach (Node n in e.NewItems)
                 {
-                    if (parentGroup != null && !parentGroup.entities.Contains(n) && !Disabled)
+                    if (parentGroup != null && !parentGroup.entities.Contains(n))
                     {
                         parentGroup.inherited.Add(n);
                     }

@@ -60,28 +60,6 @@ namespace OrbItProcs
             
         }
 
-        public override void OnSpawn()
-        {
-            //if (parent.HasComp<Waver>())
-            //{
-            //    positions = parent.Comp<Waver>().metapositions;
-            //}
-        }
-
-        public override void InitializeLists()
-        {
-            //positions = new Queue<Vector2>();
-            //angles = new Queue<float>();
-            //scales = new Queue<float>();
-        }
-
-        public override void Initialize(Node parent)
-        {
-            //this.parent = parent;
-            //if (customqueues.Count > 0) qs = qs | queues.customs;
-        }
-
-
         public override void AffectSelf()
         {
             //if (++timer % timerMax == 0)

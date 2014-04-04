@@ -14,6 +14,16 @@ namespace OrbItProcs
         Player,
         None,
     }
+    [Flags]
+    public enum ItemSlots
+    {
+        None = 0,
+        A_Green = 1,
+        B_Red = 2,
+        X_Blue = 4,
+        Y_Yellow = 8,
+        All = 15,
+    }
     /// <summary>
     /// The Meta component hold information about the node such as health, shields, and player/ai modes.
     /// </summary>
@@ -32,17 +42,6 @@ namespace OrbItProcs
             Fade,
             Bar,
             none,
-        }
-        [Flags]
-        public enum ItemSlots
-        {
-            None = 0,
-            A_Green = 1,
-            B_Red = 2,
-            X_Blue = 4,
-            Y_Yellow = 8,
-            All = 15,
-
         }
         public const mtypes CompType = mtypes.affectself | mtypes.essential | mtypes.minordraw;//mtypes.affectother 
         public override mtypes compType { get { return CompType; } set { } }
@@ -81,8 +80,8 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "Select how to indicate health")]
         public HealthBarMode healthBar { get; set; }
-        [Info(UserLevel.Developer)]
-        public ItemSlots itemSlots { get; set; }
+        //[Info(UserLevel.Developer)]
+        //public ItemSlots itemSlots { get; set; }
         /// <summary>
         /// If enabled, the health bar will rotate.
         /// </summary>
@@ -171,7 +170,7 @@ namespace OrbItProcs
             if (parent.player != null)
             {
                 parent.room.camera.Draw(textures.pointer, parent.body.pos, Color.Gold, parent.body.scale, parent.body.orient, Layers.Over4);
-
+                ItemSlots itemSlots = parent.player.occupiedSlots;
                 textures A, B, X, Y;
                 A = (itemSlots & ItemSlots.A_Green) == ItemSlots.A_Green ? textures.itemLight : textures.itemWhisper;
                 B = (itemSlots & ItemSlots.B_Red) == ItemSlots.B_Red ? textures.itemLight : textures.itemWhisper;

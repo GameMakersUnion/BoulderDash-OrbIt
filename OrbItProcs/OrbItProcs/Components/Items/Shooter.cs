@@ -54,6 +54,9 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "If enabled, the bullet's velocity will be determined by the controller stick's distance from the center of the stick.")]
         public bool useStickVelocity { get; set; }
+        private Toggle<int> _maxAmmo;
+        public Toggle<int> maxAmmo { get { return _maxAmmo; } set { _maxAmmo = value; ammo = value; } }
+        private int ammo;
         public Shooter() : this(null) { }
         public Shooter(Node parent)
         {
@@ -64,6 +67,7 @@ namespace OrbItProcs
             damage = 10f;
             shootMode = ShootMode.Auto;
             useStickVelocity = false;
+            maxAmmo = new Toggle<int>(50, true);
         }
         public static void MakeBullet(Room room)
         {
@@ -147,6 +151,7 @@ namespace OrbItProcs
         }
         public void FireNode(Vector2 dir)
         {
+            ammo--;
             if (!useStickVelocity) VMath.NormalizeSafe(ref dir);
             Node n = bulletNode.CreateClone(parent.room);
             n.Comp<Lifetime>().timeUntilDeath.value = bulletLife;
@@ -200,6 +205,10 @@ namespace OrbItProcs
             };
             n.body.OnCollisionEnter += bulletHit;
             //n.body.isSolid = false;
+            if (ammo <= 0)
+            {
+                parent.RemoveComponent(com);
+            }
         }
 
     }

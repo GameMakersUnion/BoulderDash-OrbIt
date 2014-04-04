@@ -49,9 +49,9 @@ namespace OrbItProcs
 
             parent.VisibleChanged += (s, e) => {
                 if (parent.Visible)
-                    OrbIt.onUpdate += refreshAction;
+                    OrbIt.OnUpdate += refreshAction;
                 else 
-                    OrbIt.onUpdate -= refreshAction;
+                    OrbIt.OnUpdate -= refreshAction;
             };
 
             panel.Click += (s, e) =>

@@ -503,10 +503,11 @@ namespace OrbItProcs {
                         }
                     }
                 }
-                foreach(Component component in comps.Values)
-                {
-                    component.AffectSelf();
-                }
+                // God's Tomb
+                //foreach(Component component in comps.Values)
+                //{
+                //    component.AffectSelf();
+                //}
                 /*
                 var buckets = room.gridsystem.retrieveBuckets(this, 115);
                 if (buckets != null)
@@ -530,9 +531,12 @@ namespace OrbItProcs {
             }
             if (OnAffectOthers != null) OnAffectOthers.Invoke(this, null);
 
-            foreach (Type c in aSelfProps)
+            foreach (Component component in comps.Values)
             {
-                comps[c].AffectSelf();
+                component.CaluclateDecay();
+                Type t = component.GetType();
+                if (aSelfProps.Contains(t))
+                    component.AffectSelf();
             }
 
             if (player != null)
@@ -657,16 +661,6 @@ namespace OrbItProcs {
             bool fetch = fetchComponent(typeof(T), active, overwrite);
             if (fetch) SortComponentLists();
         }
-
-        public void addComponentSafe(Type c)
-        {
-            if (comps.ContainsKey(c)) { Console.WriteLine("AddComponentSafe didn't perform: key already exists."); return; }
-
-            compsToAdd.Add(c);
-            triggerRemoveComponent = true;
-
-        }
-
         public void addComponent(Component component, bool active, bool overwrite = false)
         {
             component.parent = this;
@@ -676,13 +670,17 @@ namespace OrbItProcs {
 
             component.Initialize(this);
             SortComponentLists();
+            if (player != null && component.IsItem())
+            {
+                player.AddItem(component);
+            }
         }
 
 
 
         public bool fetchComponent(Type t, bool active, bool overwrite = false)
         {
-            if (t == typeof(Movement))
+            if (t == typeof(Movement))//todo: add more essentials here
             {
                 movement.active = active;
                 return false;
@@ -697,6 +695,11 @@ namespace OrbItProcs {
                 basicdraw.active = active;
                 return false;
             }
+            else if (t == typeof(Meta))
+            {
+                meta.active = active;
+                return false;
+            }
             
             if (overwrite)
             {
@@ -707,6 +710,11 @@ namespace OrbItProcs {
                     comps.Remove(t);
                 }
                 comps.Add(t, component);
+                if (player != null && component.IsItem())
+                {
+                    player.AddItem(component);
+                }
+
             }
             else
             {
@@ -714,6 +722,10 @@ namespace OrbItProcs {
                 {
                     Component component = MakeComponent(t, active, this);
                     comps.Add(t, component);
+                    if (player != null && component.IsItem())
+                    {
+                        player.AddItem(component);
+                    }
                 }
                 else
                 {
@@ -721,6 +733,7 @@ namespace OrbItProcs {
                 }
             }
             return true;
+            
         }
 
         public static Component MakeComponent(Type t, bool active, Node parent)
@@ -745,7 +758,7 @@ namespace OrbItProcs {
             }
             comps[t].active = false;
             compsToRemove.Add(t);
-            if (!room.masterGroup.entities.Contains(this))
+            if (!room.masterGroup.fullSet.Contains(this))
             {
                 SortComponentLists();
                 RemoveComponentTriggered();
@@ -768,6 +781,10 @@ namespace OrbItProcs {
                     if (!drawProps.Contains(c) && !aSelfProps.Contains(c) && !aOtherProps.Contains(c))
                     {
                         //we should call a 'destroy component' method here, instead of just hoping it gets garabage collected
+                        if (player != null)
+                        {
+                            player.RemoveItem(comps[c]);
+                        }
                         comps[c].OnRemove(null);
                         comps.Remove(c);
                         toremove.Add(c);

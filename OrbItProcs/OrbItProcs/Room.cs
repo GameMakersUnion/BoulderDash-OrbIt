@@ -540,7 +540,6 @@ namespace OrbItProcs {
         public void Draw()
         {
             //spritebatch.Draw(game.textureDict[textures.whitepixel], new Vector2(300, 300), null, Color.Black, 0f, Vector2.Zero, 100f, SpriteEffects.None, 0);
-            
             if (targetNode != null)
             {
                 updateTargetNodeGraphic();
@@ -557,7 +556,7 @@ namespace OrbItProcs {
                     targetNodeGraphic.Draw();
                 }
             }
-            foreach(var n in masterGroup.fullSet)
+            foreach(var n in masterGroup.fullSet.ToList()) //todo:wtfuck threading?
             {
                 //Node n = (Node)o;
                 n.Draw();

@@ -28,6 +28,57 @@ namespace OrbItProcs
         public Controller controller;
 
         public Dictionary<Type, PlayerData> playerDatas = new Dictionary<Type, PlayerData>();
+
+        public Dictionary<ItemSlots, Component> itemSlots = new Dictionary<ItemSlots, Component>()
+        {
+            {ItemSlots.A_Green, null},
+            {ItemSlots.B_Red, null},
+            {ItemSlots.X_Blue, null},
+            {ItemSlots.Y_Yellow, null},
+        };
+
+        public ItemSlots currentItem = ItemSlots.Y_Yellow;
+        public ItemSlots occupiedSlots = ItemSlots.None;
+
+        public void AddItem(Component comp)
+        {
+            int count = 0;
+            foreach(var slot in itemSlots.Keys.ToList())
+            {
+                if (itemSlots[slot] != null)
+                {
+                    count++;
+                    if (itemSlots[slot].GetType() == comp.GetType())
+                    {
+                        itemSlots[slot] = comp;
+                        return;
+                    }
+                }
+            }
+            if (count == 4) return;
+            foreach (var slot in itemSlots.Keys.ToList())
+            {
+                if (itemSlots[slot] == null)
+                {
+                    itemSlots[slot] = comp;
+                    occupiedSlots |= slot;
+                    return;
+                }
+            }
+        }
+        public void RemoveItem(Component comp)
+        {
+            foreach(var slot in itemSlots.Keys.ToList())
+            {
+                if (comp == itemSlots[slot])
+                {
+                    occupiedSlots = occupiedSlots ^ slot;
+                    itemSlots[slot] = null;
+                    return;
+                }
+            }
+        }
+
         public T Data<T>() where T : PlayerData
         {
             Type t = typeof(T);
