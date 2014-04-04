@@ -15,6 +15,7 @@ namespace OrbItProcs
     {
         public enum Initial
         {
+            Deviant,
             Random,
             Managed,
         }
@@ -26,7 +27,7 @@ namespace OrbItProcs
         [Info(UserLevel.Advanced, "WARNING: THIS FLAG IS ONLY OBSERVED BY POLYGONS: Determines when to draw the center of mass as a circle")]
         public bool DrawCircle { get; set; }
 
-        public Initial _InitialColor = Initial.Managed;
+        public Initial _InitialColor = Initial.Deviant;
         /// <summary>
         /// Determines whether the color will be random or set by the Red, Green and Blue properties initially.
         /// </summary>
@@ -89,6 +90,10 @@ namespace OrbItProcs
             {
                 SetColor();
             }
+            else if (InitialColor == Initial.Deviant)
+            {
+                Deviate();
+            }
         }
 
         public void SetColor()
@@ -107,6 +112,20 @@ namespace OrbItProcs
                 parent.body.color = Utils.randomColor();
                 parent.body.permaColor = parent.body.color;
             }
+        }
+        public void Deviate()
+        {
+            if (parent != null)
+            {
+                if (OrbIt.globalGameMode != null)
+                {
+                    parent.body.color = Color.Lerp(OrbIt.globalGameMode.globalColor, Utils.randomColor(), 0.1f);
+                    parent.body.permaColor = parent.body.color;
+                    OrbIt.globalGameMode.globalColor = parent.body.color;
+                }
+            }
+            else SetColor();
+            
         }
 
         public override void Draw()

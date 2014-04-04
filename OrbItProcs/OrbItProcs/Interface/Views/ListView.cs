@@ -14,7 +14,6 @@ namespace OrbItProcs
 {
     public class ListView<T> where T : ViewItem
     {
-
         public OrbIt game;
         public Room room { get { return sidebar.room; } }
         public UserInterface ui;
