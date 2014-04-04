@@ -225,6 +225,7 @@ namespace OrbItProcs
                 {
                     Vector2 dir = nearNode.body.pos - parent.body.pos;
                     VMath.NormalizeSafe(ref dir);
+                    dir.Y *= -1;
                     FireNode(dir);
                     tempTurretTimer = 0;
                 }

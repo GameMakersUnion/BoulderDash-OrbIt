@@ -46,10 +46,10 @@ namespace OrbItProcs
         public Light(Node parent = null) 
         {
             if (parent != null) this.parent = parent;
-            scaleRange = 25f;
-            scaleMiddle = 50f;
-            scaleRate = 0.1f;
-            transparencyPercent = 30f;
+            scaleRange = 0.1f;
+            scaleMiddle = 1f;
+            scaleRate = 0.01f;
+            transparencyPercent = 25f;
             scaleRateTemp = scaleRate;
             randomColor = true;
         }

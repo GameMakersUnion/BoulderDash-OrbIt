@@ -96,7 +96,7 @@ namespace OrbItProcs {
         {
             if (parent != null) this.parent = parent;
             com = comp.gravity; 
-            multiplier = 100f;
+            multiplier = 40f;
             radius = 800f;
             lowerbound = 20;
             mode = Mode.Strong;
