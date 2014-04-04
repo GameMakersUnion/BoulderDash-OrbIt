@@ -570,6 +570,7 @@ namespace OrbItProcs {
                     link.GenericDraw();
                 }
             }
+            OrbIt.globalGameMode.Draw();
             //if (linkTest != null) linkTest.GenericDraw(spritebatch);
 
             foreach (Rectangle rect in gridSystemLines)

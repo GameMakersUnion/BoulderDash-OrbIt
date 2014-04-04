@@ -114,7 +114,7 @@ namespace OrbItProcs {
             ui.sidebar.InitializeGroupsPage();
             ui.sidebar.InitializePlayersPage();
             ui.sidebar.InitializeItemsPage();
-            ui.sidebar.InitializeBulletsPage();
+            //ui.sidebar.InitializeBulletsPage();
         }
 
         public void SetSidebarActive(bool active)

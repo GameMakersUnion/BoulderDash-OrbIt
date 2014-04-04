@@ -182,24 +182,25 @@ namespace OrbItProcs {
 
         public override void Draw()
         {
+            float deadzone = 5f;
             if (!Repulsive)
             {
-                if (multiplier > 0)
+                if (multiplier > deadzone)
                 {
                     DrawOutwards();
                 }
-                else
+                else if (multiplier < -deadzone)
                 {
                     DrawInwards();
                 }
             }
             else
             {
-                if (multiplier > 0)
+                if (multiplier > -deadzone)
                 {
                     DrawInwards();
                 }
-                else
+                else if (multiplier < deadzone)
                 {
                     DrawOutwards();
                 }

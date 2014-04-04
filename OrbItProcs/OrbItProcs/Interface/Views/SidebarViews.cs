@@ -96,8 +96,22 @@ namespace OrbItProcs
             tbcViews.SelectedIndex = 0;
 
             toolWindow = new ToolWindow(this);
+            gamemodeWindow = new GamemodeWindow(this);
+            gamemodeWindow.window.Visible = false;
+
+            Button btnGameMode = new Button(manager);
+            btnGameMode.Init();
+            btnGameMode.Top = tbcViews.Top + tbcViews.Height;
+            btnGameMode.Left = 10;
+            btnGameMode.Text = "Mode";
+            master.Add(btnGameMode);
+            btnGameMode.Click += (s, e) =>
+            {
+                gamemodeWindow.window.Visible = !gamemodeWindow.window.Visible;
+            };
 
         }
+        GamemodeWindow gamemodeWindow;
         public PlayerView playerView;
         public void InitializePlayersPage()
         {

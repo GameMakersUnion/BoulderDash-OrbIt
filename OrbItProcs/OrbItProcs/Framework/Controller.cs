@@ -319,7 +319,7 @@ namespace OrbItProcs
             for (int i = 1; i <= 4; i++)
                 if (!GamePad.GetState(intToPlayerIndex[i]).IsConnected)
                     return i - 1;
-            return 0;
+            return 4;
         }
         protected void assign(ControllerCodes controller)
         {
@@ -349,7 +349,8 @@ namespace OrbItProcs
             fullControllers.Add(this);
             
             this.playerNum = player;
-            if (player > connectedControllers())
+            int c = connectedControllers();
+            if (player > c)
             {
                 success = false;
                 return;

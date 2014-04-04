@@ -61,13 +61,7 @@ namespace OrbItProcs
 
             HeightCounter += titlePanelCreateGroup.Height;
 
-            btnCreateGroup = new Button(manager);
-            btnCreateGroup.Init();
-            btnCreateGroup.Parent = poop;
-            btnCreateGroup.Top = poop.Height - (int)(btnCreateGroup.Height * 2);
-            btnCreateGroup.Text = "Create Group";
-            btnCreateGroup.Width = width;
-            btnCreateGroup.Left = poop.Width / 2 - btnCreateGroup.Width / 2;
+            
 
             Label lblName = new Label(manager);
             lblName.Init();
@@ -190,7 +184,15 @@ namespace OrbItProcs
             {
                 ComboUpdate(cbTemplate);
             };
-            
+
+            btnCreateGroup = new Button(manager);
+            btnCreateGroup.Init();
+            btnCreateGroup.Parent = poop;
+            btnCreateGroup.Top = componentView.bottomArea.Top + componentView.bottomArea.Height + LeftPadding * 2;
+            btnCreateGroup.Text = "Create Group";
+            btnCreateGroup.Width = width;
+            btnCreateGroup.Left = poop.Width / 2 - btnCreateGroup.Width / 2;
+
             btnCreateGroup.Click += (s, e) =>
             {
                 if (String.IsNullOrWhiteSpace(txtName.Text))
