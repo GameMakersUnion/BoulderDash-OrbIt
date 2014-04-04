@@ -112,7 +112,9 @@ namespace OrbItProcs
                 }
                 else if (o.player != null)
                 {
+
                     o.player.node.meta.CalculateDamage(parent, damageMultiplier);
+
                 }
             };
             //sword.body.exclusionList.Add(parent.body);
