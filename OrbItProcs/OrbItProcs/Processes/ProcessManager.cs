@@ -66,6 +66,7 @@ namespace OrbItProcs
             processDict.Add(proc.directedspawn, new DirectedSpawn());
             processDict.Add(proc.removenodes, new RemoveNodes());
             processDict.Add(proc.gridspawn, new GridSpawn());
+            processDict.Add(proc.roomResize, new ResizeRoom());
 
             activeInputProcess = processDict[proc.spawnnodes];
             OrbIt.ui.groupSelectSet = (processDict[proc.groupselect] as GroupSelect).groupSelectSet;

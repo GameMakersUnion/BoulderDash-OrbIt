@@ -147,6 +147,8 @@ namespace OrbItProcs {
         public ObservableHashSet<Link> AllInactiveLinks { get { return _AllInactiveLinks; } set { _AllInactiveLinks = value; } }
         #endregion
 
+        private bool resizeRoomSignal = false;
+
         public Room()
         {
             groupHashes = new ObservableHashSet<string>();
@@ -252,9 +254,13 @@ namespace OrbItProcs {
             }
 
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
-                    { comp.basicdraw, true }, { nodeE.texture, textures.whitecircle } };
+                    { comp.basicdraw, true }, 
+                    { comp.colorchanger, true }, 
+                    { nodeE.texture, textures.ring } 
+            };
 
             targetNodeGraphic = new Node(this,userPropsTarget);
+            
             targetNodeGraphic.name = "TargetNodeGraphic";
 
             //MakeWalls();
@@ -382,9 +388,19 @@ namespace OrbItProcs {
 
             scheduler.AffectSelf();
 
+            
+            if (resizeRoomSignal)
+            {
+                triggerResizeRoom();
+                resizeRoomSignal = false;
+            }
+
             Draw();
             camera.CatchUp();
         }
+
+        
+
         static int algorithm = 5;
         public void UpdateCollision()
         {
@@ -634,7 +650,7 @@ namespace OrbItProcs {
         {
             if (targetNode != null)
             {
-                targetNodeGraphic.body.color = Color.White;
+                targetNodeGraphic.Comp<ColorChanger>().AffectSelf();
                 targetNodeGraphic.body.pos = targetNode.body.pos;
                 //if (game.targetNode.comps.ContainsKey(comp.gravity))
                 //{
@@ -642,6 +658,7 @@ namespace OrbItProcs {
                 //    targetNodeGraphic.transform.radius = rad;
                 //}
                 targetNodeGraphic.body.scale = targetNode.body.scale * 1.5f;
+
             }
             
         }
@@ -794,7 +811,20 @@ namespace OrbItProcs {
 
         internal void resize(Vector2 vector2)
         {
-            throw new NotImplementedException();
+            resizeVect = vector2;
+            resizeRoomSignal = true;
         }
+        private void triggerResizeRoom()
+        {
+            worldWidth = (int)resizeVect.X;
+            worldHeight = (int)resizeVect.Y;
+            int newCellsX = worldWidth / gridsystemCollision.cellWidth;
+            gridsystemAffect = new GridSystem(this, newCellsX, 5);
+            level = new Level(this, newCellsX, newCellsX, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
+            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
+            gridsystemCollision = new GridSystem(this, newCellsX, 20);
+        }
+
+        private Vector2 resizeVect; //in the land down under
     }
 }

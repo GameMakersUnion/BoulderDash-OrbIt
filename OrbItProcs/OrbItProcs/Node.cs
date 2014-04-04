@@ -57,6 +57,7 @@ namespace OrbItProcs {
 
         private state _nodeState = state.on;
         public state nodeState { get { return _nodeState; } set { _nodeState = value; } }
+        public bool IsAI { get; set; }
 
         private bool _active = true;
         public bool active
@@ -348,6 +349,7 @@ namespace OrbItProcs {
             collision = new Collision(this);
             basicdraw = new BasicDraw(this);
             movement.active = true; collision.active = true; basicdraw.active = true;
+            IsAI = false;
             //name = "blankname";
 
             //comps.Add(comp.body, body);
@@ -553,10 +555,13 @@ namespace OrbItProcs {
                 player.controller.UpdateOldState();
             }
             //AI execution
-            //foreach (Type c in aiProps)
-            //{
-            //    comps[c].AIControl(meta.aimode);
-            //}
+            if (IsAI)
+            {
+                foreach (Type c in aiProps)
+                {
+                    comps[c].AIControl(AIMode.Agro);
+                }
+            }
 
             if (movement.active) movement.AffectSelf(); //temporary until make movement list to update at the correct time
 
@@ -866,8 +871,8 @@ namespace OrbItProcs {
                     }
                 }
             }
-            if (meta.AImode != AIMode.None && meta.AImode != AIMode.Player)
-            {
+            //if (meta.AImode != AIMode.None && meta.AImode != AIMode.Player)
+            //{
                 foreach (Type c in clist)
                 {
                     if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].compType & mtypes.aicontrol) == mtypes.aicontrol))
@@ -875,7 +880,7 @@ namespace OrbItProcs {
                         aiProps.Add(c);
                     }
                 }
-            }
+            //}
         }
 
         public void SortComponentListsDraw()

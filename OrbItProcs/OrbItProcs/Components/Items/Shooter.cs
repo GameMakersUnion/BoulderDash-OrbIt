@@ -20,7 +20,7 @@ namespace OrbItProcs
     public class Shooter : Component
     {
         public static Node bulletNode;
-        public const mtypes CompType = mtypes.playercontrol | mtypes.minordraw | mtypes.item;// | mtypes.affectself;
+        public const mtypes CompType = mtypes.playercontrol | mtypes.minordraw | mtypes.item | mtypes.aicontrol;// | mtypes.affectself;
         public override mtypes compType { get { return CompType; } set { } }
         /// <summary>
         /// The mode in which to fire nodes. This will change the way input is handled.
@@ -57,6 +57,33 @@ namespace OrbItProcs
         private Toggle<int> _maxAmmo;
         public Toggle<int> maxAmmo { get { return _maxAmmo; } set { _maxAmmo = value; ammo = value; } }
         private int ammo;
+        /// <summary>
+        /// If the shooter is a turret, it will fire at players.
+        /// </summary>
+        [Info(UserLevel.User, "If the shooter is a turret, it will fire at players.")]
+        public bool isTurret
+        {
+            get { return _isTurret; }
+            set
+            {
+                _isTurret = value;
+                if (value)
+                {
+                    parent.IsAI = true;
+                }
+                else
+                {
+                    parent.IsAI = false;
+                }
+            }
+        }
+        private bool _isTurret = false;
+        /// <summary>
+        /// The time interval between which the AI will shoot a bullet from the turret.
+        /// </summary>
+        [Info(UserLevel.User, "The time interval between which the AI will shoot a bullet from the turret.")]
+        public float TurretTimerSeconds { get; set; }
+        private float tempTurretTimer = 0;
         public Shooter() : this(null) { }
         public Shooter(Node parent)
         {
@@ -142,6 +169,33 @@ namespace OrbItProcs
                     {
                         shootingRateCount = 0;
                     }
+                }
+            }
+        }
+        
+        public override void AIControl(AIMode aiMode)
+        {
+            //if (aiMode == AIMode.)
+            tempTurretTimer += OrbIt.gametime.ElapsedGameTime.Milliseconds;
+            if (tempTurretTimer > TurretTimerSeconds * 1000)
+            {
+                
+                float nearest = float.MaxValue;
+                Node nearNode = null;
+                foreach (Node n in parent.room.playerGroup.entities)
+                {
+                    float dist = Vector2.Distance(parent.body.pos, n.body.pos);
+                    if (dist < nearest)
+                    {
+                        nearNode = n;
+                        nearest = dist;
+                    }
+                }
+                if (nearNode != null)
+                {
+                    Vector2 dir = nearNode.body.pos - parent.body.pos;
+                    FireNode(dir);
+                    tempTurretTimer = TurretTimerSeconds * 0.7f;
                 }
             }
         }

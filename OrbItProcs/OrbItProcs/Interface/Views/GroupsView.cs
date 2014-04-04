@@ -44,24 +44,30 @@ namespace OrbItProcs
             btnCreateGroup.Parent = parent;
             btnCreateGroup.Top = HeightCounter;
             btnCreateGroup.Text = "Create Group";
+            btnCreateGroup.Height = (int)(btnCreateGroup.Height * 1.5);
             btnCreateGroup.Width = (parent.Width - LeftPadding * 2) / 2;
             btnCreateGroup.Left = LeftPadding;//parent.Width / 2 - btnCreateGroup.Width / 2;
             btnCreateGroup.Click += (s, e) =>
             {
                 createGroupWindow = new CreateGroupWindow(sidebar);
             };
+            Margins m = btnCreateGroup.ClientMargins;
+            btnCreateGroup.ClientMargins = new Margins(m.Left, 1, m.Right, 1);
 
             btnEmptyGroup = new Button(manager);
             btnEmptyGroup.Init();
             btnEmptyGroup.Parent = parent;
             btnEmptyGroup.Top = HeightCounter;
             btnEmptyGroup.Text = "Empty Group";
+            btnEmptyGroup.Height = (int)(btnEmptyGroup.Height * 1.5);
             btnEmptyGroup.Width = btnCreateGroup.Width;
             btnEmptyGroup.Left = parent.Width - LeftPadding * 2 - btnEmptyGroup.Width;//parent.Width / 2 - btnCreateGroup.Width / 2;
             btnEmptyGroup.Click += (s, e) =>
             {
                 sidebar.btnRemoveAllNodes_Click(null, null);
             };
+            Margins m2 = btnEmptyGroup.ClientMargins;
+            btnEmptyGroup.ClientMargins = new Margins(m2.Left, 1, m2.Right, 1);
 
             HeightCounter += btnCreateGroup.Height + LeftPadding;
         }

@@ -73,13 +73,13 @@ namespace OrbItProcs
             tbcGroups.Init();
             tbcGroups.Parent = groupsTab;
             tbcGroups.Top = titlePanelGroups.Height * 2;
-            tbcGroups.Height = 400;
+            tbcGroups.Height = 460;
             tbcGroups.Width = groupsTab.Width;
 
             tbcGroups.AddPage("Custom");
             TabPage customPage = tbcGroups.TabPages[0];
             groupsView = new GroupsView(this, customPage, 0, -20, room.generalGroups);
-            groupsView.btnCreateGroup.Text = "Create Custom Group";
+            groupsView.btnCreateGroup.Text = "     Create \nCustom  Group";
             groupsView.lblGroupLabel.Text = "Custom Groups";
             groupsView.UpdateGroups();
 
@@ -88,7 +88,7 @@ namespace OrbItProcs
             tbcGroups.SelectedIndex = 1;
             TabPage presetsPage = tbcGroups.TabPages[1];
             presetsView = new GroupsView(this, presetsPage, 0, -20, room.presetGroups);
-            presetsView.btnCreateGroup.Text = "Create Preset Group";
+            presetsView.btnCreateGroup.Text = "     Create \nPreset  Group";
             presetsView.lblGroupLabel.Text = "Preset Groups";
             presetsView.UpdateGroups();
             tbcGroups.SelectedIndex = 0;
