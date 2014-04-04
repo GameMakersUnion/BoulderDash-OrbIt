@@ -183,7 +183,7 @@ namespace OrbItProcs
             if (position == Vector2.Zero) position = parent.body.pos;
             parent.room.camera.Draw(textures.sword, position, parent.body.color, swordNode.body.scale * 2, swordNode.body.orient, Layers.Over3);
         }
-        public override void Death(Node other)
+        public override void OnRemove(Node other)
         {
             swordNode.OnDeath(other);
         }

@@ -161,9 +161,12 @@ namespace OrbItProcs
                     {
                         Component component = (Component)ins.obj;
                         component.parent.RemoveComponent(component.com);
-                        foreach (Node n in activeGroup.fullSet)
+                        if (GroupSync)
                         {
-                            n.RemoveComponent(component.com);
+                            foreach (Node n in activeGroup.fullSet)
+                            {
+                                n.RemoveComponent(component.com);
+                            }
                         }
                     }
                     if (this is ComponentView) (this as ComponentView).RefreshComponents();

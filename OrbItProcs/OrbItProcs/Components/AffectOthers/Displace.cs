@@ -11,7 +11,7 @@ namespace OrbItProcs
     /// When another node enters this radius, it is displaced in the direction of the angle without affecting its velocity.
     /// </summary>
     [Info(UserLevel.User, "When another node enters this radius, it is displaced in the direction of the angle without affecting its velocity.", CompType)]
-    public class Displace : Component, ILinkable
+    public class Displace : Component, ILinkable, IMultipliable
     {
         public const mtypes CompType = mtypes.affectother;
         public override mtypes compType { get { return CompType; } set { } }
@@ -33,7 +33,7 @@ namespace OrbItProcs
         /// The strength with which the other node will be moved away.
         /// </summary>
         [Info(UserLevel.User, "The strength with which the other node will be moved away.")]
-        public float pushfactor { get; set; }
+        public float multiplier { get; set; }
 
         /// <summary>
         /// Changes the angle at which the node displaces the incoming node:
@@ -53,7 +53,7 @@ namespace OrbItProcs
         {
             if (parent != null) this.parent = parent;
             com = comp.displace;
-            pushfactor = 10f;
+            multiplier = 100f;
             lowerbound = 20;
             radius = 800f;
 
@@ -79,8 +79,8 @@ namespace OrbItProcs
 
                 //float gravForce = (multiplier * parent.transform.mass * other.transform.mass) / (distVects * distVects * counterforce);
                 float gravForce;
-                if (!ConstantPush) gravForce = pushfactor;// * 10;
-                else gravForce = (pushfactor * parent.body.mass * other.body.mass) / (distVects);
+                if (!ConstantPush) gravForce = multiplier / 10f;// * 10;
+                else gravForce = (multiplier / 10f * parent.body.mass * other.body.mass) / (distVects);
 
                 if (angle != 0)
                     aa = (aa + Math.PI + (Math.PI * (float)(angle / 180.0f)) % (Math.PI * 2)) - Math.PI;

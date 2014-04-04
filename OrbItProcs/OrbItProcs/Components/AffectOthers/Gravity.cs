@@ -17,7 +17,7 @@ namespace OrbItProcs {
     /// Attracts or repels nodes that it affects.
     /// </summary>
     [Info(UserLevel.User, "Attracts or repels nodes that it affects.", CompType)]
-    public class Gravity : Component, ILinkable
+    public class Gravity : Component, ILinkable, IMultipliable
     {
         public const mtypes CompType = mtypes.affectother | mtypes.minordraw;
         public override mtypes compType { get { return CompType; } set { } }
@@ -101,7 +101,7 @@ namespace OrbItProcs {
             lowerbound = 20;
             mode = Mode.Strong;
             Repulsive = false;
-            deadZone = new Toggle<float>(100, true);
+            deadZone = new Toggle<float>(10, true);
         }
 
         //public bool EveryOther = false;
@@ -124,7 +124,7 @@ namespace OrbItProcs {
                 affector = other;
                 affected = parent;
             }
-
+            
             if (distVects < radius * radius)
             {
                 distVects = (float)Math.Sqrt(distVects);
@@ -182,19 +182,40 @@ namespace OrbItProcs {
 
         public override void Draw()
         {
-            //return;
             if (!Repulsive)
             {
-                parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.5f, drawscale / 50f, Layers.Under2);
-                drawscale -= 2f;
-                if (drawscale < 10) drawscale = radius / 10;
+                if (multiplier > 0)
+                {
+                    DrawOutwards();
+                }
+                else
+                {
+                    DrawInwards();
+                }
             }
             else
             {
-                parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.5f, drawscale / 50f, Layers.Under2);
-                drawscale += 2f;
-                if (drawscale > radius / 10) drawscale = 5f;
+                if (multiplier > 0)
+                {
+                    DrawInwards();
+                }
+                else
+                {
+                    DrawOutwards();
+                }
             }
+        }
+        public void DrawOutwards()
+        {
+            parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.5f, drawscale / 50f, Layers.Under2);
+            drawscale -= 2f;
+            if (drawscale < 10) drawscale = radius / 10;
+        }
+        public void DrawInwards()
+        {
+            parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.5f, drawscale / 50f, Layers.Under2);
+            drawscale += 2f;
+            if (drawscale > radius / 10) drawscale = 5f;
         }
     }
 }

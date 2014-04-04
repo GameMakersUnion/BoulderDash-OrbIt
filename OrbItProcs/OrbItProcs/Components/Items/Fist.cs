@@ -7,9 +7,9 @@ using Microsoft.Xna.Framework.Input;
 namespace OrbItProcs
 {
     /// <summary>
-    /// The fist allows you to punch other players and nodes, sometimes with magical properties.
+    /// The fist allows you to punch other players and nodes.
     /// </summary>
-    [Info(UserLevel.User, "The fist allows you to punch other players and nodes, sometimes with magical properties.", CompType)]
+    [Info(UserLevel.User, "The fist allows you to punch other players and nodes.", CompType)]
     public class Fist : Component
     {
         /// <summary>
@@ -46,6 +46,7 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "The force at which to push the other node back after a direct hit to the other node.")]
         public float nodeKnockback { get; set; }
+
         private bool movingStick = false;
 
         Vector2 target;
@@ -63,7 +64,7 @@ namespace OrbItProcs
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>()
             {
                 {comp.movement, true},
-                {comp.basicdraw, true},
+                {comp.basicdraw, false},
                 {comp.collision, true},
                 //{comp.waver, true},
             };
@@ -121,10 +122,100 @@ namespace OrbItProcs
             //
             //parent.body.exclusionList.Add(sword.body);
         }
-        public override void AffectSelf()
+
+        public enum fistmode
         {
+            ready,
+            punching,
+            retracting,
         }
+        fistmode state = fistmode.ready;
+        Vector2 oldstickpos = Vector2.Zero;
         public override void PlayerControl(Controller controller)
+        {
+            if (controller is FullController)
+            {
+                FullController fc = (FullController)controller;
+
+                //fistNode.movement.active = false;
+                //fistNode.body.velocity = fistNode.body.effvelocity * nodeKnockback;
+                Vector2 newstickpos = fc.newGamePadState.ThumbSticks.Right;
+                newstickpos.Y *= -1;
+                Vector2 relVel = newstickpos - oldstickpos;
+                if (state == fistmode.ready)
+                {
+                    fistNode.body.pos = parent.body.pos;
+                    //if stick is moving away from center of stick
+                    if (newstickpos.LengthSquared() > oldstickpos.LengthSquared())
+                    {
+                        //if stick is moving fast enough
+                        float len = relVel.Length();
+                        if (relVel.Length() > 0.2f) //deadzone
+                        {
+                            state = fistmode.punching;
+                            float power = (float)Math.Log((double)len + 2.0, 2.0) / 2f;
+                            //Console.WriteLine(power);
+                            VMath.NormalizeSafe(ref relVel);
+                            relVel *= power;
+                            //Console.WriteLine(relVel.X + " : " + relVel.Y);
+                            //fistNode.body.ApplyForce(relVel);
+                            fistNode.body.velocity = relVel * 10f;
+                        }
+                    }
+                }
+                else if (state == fistmode.punching)
+                {
+                    //check if fully punched.
+                    if (Vector2.Distance(fistNode.body.pos, parent.body.pos) > fistReach)
+                    {
+                        state = fistmode.retracting;
+                    }
+                }
+                else if (state == fistmode.retracting)
+                {
+                    //fistNode.body.pos = Vector2.Lerp(fistNode.body.pos, parent.body.pos, 0.1f);
+
+                    //Vector2 vel = (parent.body.pos - fistNode.body.pos);
+                    //VMath.NormalizeSafe(ref vel);
+                    //vel *= 1;
+                    //fistNode.body.velocity = vel;
+
+                    Vector2 vel = (parent.body.pos - fistNode.body.pos);
+                    //if (vel.Length() < 5)
+                    //{
+                        VMath.NormalizeSafe(ref vel);
+                        vel *= 20;
+                    //}
+                    fistNode.body.velocity = vel;
+                    if (Vector2.DistanceSquared(fistNode.body.pos, parent.body.pos) < 50 * 50)
+                    {
+                        state = fistmode.ready;
+                    }
+                }
+                //if (state != fistmode.ready)
+                //    Console.WriteLine(state);
+                oldstickpos = newstickpos;
+            }
+        }
+        public override void Draw()
+        {
+            Vector2 position = fistNode.body.pos;
+            if (position == Vector2.Zero) position = parent.body.pos;
+            else
+            {
+                //Utils.DrawLine(parent.room, position, parent.body.pos, 2f, parent.body.color, Layers.Under2);
+                //Utils.DrawLine(parent.room, target, parent.body.pos, 2f, Color.Red, Layers.Under2);
+            }
+
+            parent.room.camera.Draw(textures.ring, position, Color.White, fistNode.body.scale, fistNode.body.orient, Layers.Over5);//layers don't work
+
+
+        }
+        public override void OnRemove(Node other)
+        {
+            fistNode.OnDeath(other);
+        }
+        public void PlayerControlOld(Controller controller)
         {
             if (controller is FullController)
             {
@@ -156,7 +247,6 @@ namespace OrbItProcs
                     //fistNode.body.pos = Vector2.Lerp(fistNode.body.pos, restPos, 0.1f);
                     //fistNode.body.orient = Utils.AngleLerp(fistNode.body.orient, parent.body.orient, 0.1f);
                 }
-
                 if (atReach)
                 {
                     Vector2 direction = fistNode.body.pos - parent.body.pos;
@@ -167,19 +257,7 @@ namespace OrbItProcs
             }
         }
 
-        public override void Draw()
-        {
-            Vector2 position = fistNode.body.pos;
-            if (position == Vector2.Zero) position = parent.body.pos;
-            Utils.DrawLine(parent.room, position, parent.body.pos, 2f, parent.body.color);
-            Utils.DrawLine(parent.room, target, parent.body.pos, 2f, Color.Red);
-            parent.room.camera.Draw(textures.ring, position, parent.body.color, fistNode.body.scale, fistNode.body.orient);
-
-            
-        }
-        public override void Death(Node other)
-        {
-            fistNode.OnDeath(other);
-        }
+        
+        
     }
 }

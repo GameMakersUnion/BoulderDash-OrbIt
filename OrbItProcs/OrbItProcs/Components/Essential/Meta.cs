@@ -118,7 +118,7 @@ namespace OrbItProcs
                 }
             }
         }
-        public override void Death(Node other)
+        public override void OnRemove(Node other)
         {
             if (OnDeath != null) OnDeath(parent, other);
         }

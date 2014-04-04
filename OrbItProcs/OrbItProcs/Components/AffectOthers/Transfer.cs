@@ -5,13 +5,14 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.Serialization;
+
 namespace OrbItProcs
 {
     /// <summary>
     /// When another node enters the radius of this node, it gets teleported to the opposite side of this node, relative to this node's origin. 
     /// </summary>
     [Info(UserLevel.User, "When another node enters the radius of this node, it gets teleported to the opposite side of this node, relative to this node's origin. ", CompType)]
-    public class Transfer : Component, ILinkable
+    public class Transfer : Component, ILinkable, IMultipliable
     {
         public const mtypes CompType = mtypes.affectother;
         public override mtypes compType { get { return CompType; } set { } }
@@ -21,6 +22,7 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "Distance at which the node is teleported, based on a scale of the node's radius.")]
         public float radiusScale { get; set; }
+        public float multiplier { get { return radiusScale; } set { radiusScale = value; } }
 
         public Transfer() : this(null) { }
         public Transfer(Node parent = null)

@@ -69,6 +69,7 @@ namespace OrbItProcs
         //weird,
         sword,
         fist,
+        magictorch,
         itempayload,
     };
     public enum resolutions

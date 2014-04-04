@@ -92,7 +92,7 @@ namespace OrbItProcs
         public virtual void PlayerControl(Controller controller) { }
         public virtual void AIControl(AIMode aiMode) { }
 
-        public virtual void Death(Node other) { }
+        public virtual void OnRemove(Node other) { }
 
         public virtual void InitializeLists()
         {

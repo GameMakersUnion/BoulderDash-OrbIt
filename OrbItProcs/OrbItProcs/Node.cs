@@ -447,7 +447,7 @@ namespace OrbItProcs {
         {
             tags.Remove(tag);
         }
-
+        public Func<Node, bool> ExclusionCheck = null;
         public virtual void Update(GameTime gametime)
         {
             if (!movement.pushable && tempPosition != new Vector2(0, 0)) body.pos = tempPosition;
@@ -474,14 +474,32 @@ namespace OrbItProcs {
                 }
                 returnObjectsFinal = room.gridsystemAffect.retrieve(body, reach);
                 returnObjectsFinal.Remove(body);
-                foreach (Collider other in returnObjectsFinal)
+                if (ExclusionCheck == null)
                 {
-                    if (other.parent.active)
+                    foreach (Collider other in returnObjectsFinal)
                     {
-                        foreach (Type t in aOtherProps)
+                        if (other.parent.active)
                         {
-                            if (!comps[t].active) continue;
-                            comps[t].AffectOther(other.parent);
+                            foreach (Type t in aOtherProps)
+                            {
+                                if (!comps[t].active) continue;
+                                comps[t].AffectOther(other.parent);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (Collider other in returnObjectsFinal)
+                    {
+                        if (other.parent.active)
+                        {
+                            if (ExclusionCheck(other.parent)) continue; //todo: extend to check for every component for finer control if necessary
+                            foreach (Type t in aOtherProps)
+                            {
+                                if (!comps[t].active) continue;
+                                comps[t].AffectOther(other.parent);
+                            }
                         }
                     }
                 }
@@ -750,6 +768,7 @@ namespace OrbItProcs {
                     if (!drawProps.Contains(c) && !aSelfProps.Contains(c) && !aOtherProps.Contains(c))
                     {
                         //we should call a 'destroy component' method here, instead of just hoping it gets garabage collected
+                        comps[c].OnRemove(null);
                         comps.Remove(c);
                         toremove.Add(c);
                         triggerRemoveComponent = false;
@@ -790,6 +809,8 @@ namespace OrbItProcs {
         {
             aOtherProps = new List<Type>();
             aSelfProps = new List<Type>();
+            playerProps = new List<Type>();
+            aiProps = new List<Type>();
 
             var clist = comps.Keys.ToList();
             Comparison<Type> typeComparer = delegate(Type t1, Type t2)
@@ -921,10 +942,10 @@ namespace OrbItProcs {
                 if (mInfo != null
                     && mInfo.DeclaringType == component.GetType())
                 {
-                    component.Death(other);
+                    component.OnRemove(other);
                 }
             }
-            meta.Death(other);
+            meta.OnRemove(other);
             if (group != null && delete)
             {
                 group.DeleteEntity(this);

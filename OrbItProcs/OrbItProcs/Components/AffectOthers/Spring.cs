@@ -13,7 +13,7 @@ namespace OrbItProcs
     /// Pushes away nodes that are within the radius, can also pull in nodes that beyond the radius. 
     /// </summary>
     [Info(UserLevel.User, "Pushes away nodes that are within the radius, can also pull in nodes that beyond the radius. ", CompType)]
-    public class Spring : Component, ILinkable
+    public class Spring : Component, ILinkable, IMultipliable
     {
         public const mtypes CompType = mtypes.affectself | mtypes.affectother;
         public override mtypes compType { get { return CompType; } set { } }
