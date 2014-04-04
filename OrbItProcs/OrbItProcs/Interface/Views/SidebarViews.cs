@@ -102,13 +102,74 @@ namespace OrbItProcs
             Button btnGameMode = new Button(manager);
             btnGameMode.Init();
             btnGameMode.Top = tbcViews.Top + tbcViews.Height;
-            btnGameMode.Left = 10;
+            btnGameMode.Left = 15;
             btnGameMode.Text = "Mode";
+            btnGameMode.Width = (int)manager.Skin.Fonts[0].Resource.MeasureString(btnGameMode.Text).X+10;
+            btnGameMode.ClientMargins = new Margins(0, btnGameMode.ClientMargins.Top, 0, btnGameMode.ClientMargins.Bottom);
+            btnGameMode.Anchor = Anchors.Bottom;
             master.Add(btnGameMode);
             btnGameMode.Click += (s, e) =>
             {
                 gamemodeWindow.window.Visible = !gamemodeWindow.window.Visible;
             };
+
+            btnOptions = new Button(manager);
+            btnOptions.Init();
+            master.Add(btnOptions);
+            btnOptions.Left = btnGameMode.Left+btnGameMode.Width;
+            btnOptions.Top = tbcViews.Top + tbcViews.Height;
+            btnOptions.Text = "Options";
+            btnOptions.Width = (int)manager.Skin.Fonts[0].Resource.MeasureString(btnOptions.Text).X + 10;
+            btnOptions.ClientMargins = new Margins(0, btnOptions.ClientMargins.Top, 0, btnOptions.ClientMargins.Bottom);
+            btnOptions.Anchor = Anchors.Bottom;
+
+            btnOptions.Click += (s, e) =>
+            {
+                new OptionsWindow(this);
+            };
+
+            btnFullScreen = new Button(manager);
+            btnFullScreen.Init();
+            master.Add(btnFullScreen);
+            btnFullScreen.Left = btnOptions.Left + btnOptions.Width;
+            btnFullScreen.Top = tbcViews.Top + tbcViews.Height;
+            btnFullScreen.Text = "FullScreen";
+            btnFullScreen.Width = (int)manager.Skin.Fonts[0].Resource.MeasureString(btnFullScreen.Text).X + 10;
+            btnFullScreen.ClientMargins = new Margins(0, btnFullScreen.ClientMargins.Top, 0, btnFullScreen.ClientMargins.Bottom);
+            btnFullScreen.Anchor = Anchors.Bottom;
+
+            btnFullScreen.Click += (s, e) =>
+            {
+                if (btnFullScreen.Text == "FullScreen")
+                {
+                    btnFullScreen.Text = "Windowed";
+                    game.setResolution(game.preferredFullScreen ?? resolutions.AutoFullScreen, true);
+                }
+                else
+                {
+                    game.setResolution(game.preferredFullScreen ?? resolutions.WSXGA_1680x1050, false);
+                    btnFullScreen.Text = "FullScreen";
+                }
+            };
+
+            btnPause = new Button(manager);
+            btnPause.Init();
+            master.Add(btnPause);
+            btnPause.Left = btnFullScreen.Left + btnFullScreen.Width;
+            btnPause.Top = tbcViews.Top + tbcViews.Height;
+            btnPause.Text = "Pause";
+            btnPause.Width = (int)manager.Skin.Fonts[0].Resource.MeasureString("Resume").X + 10;
+            btnPause.ClientMargins = new Margins(0, btnPause.ClientMargins.Top, 0, btnPause.ClientMargins.Bottom);
+            btnPause.Anchor = Anchors.Bottom;
+
+            btnPause.Click += (s, e) =>
+            {
+
+                ui.IsPaused = !ui.IsPaused;
+                btnPause.Text = ui.IsPaused ? "Resume" : "Pause";
+
+            };
+
 
         }
         GamemodeWindow gamemodeWindow;
@@ -126,19 +187,11 @@ namespace OrbItProcs
             playerView = new PlayerView(this, playersTab, LeftPadding, titlePanelPlayers.Height);
 
 
-            btnOptions = new Button(manager);
-            btnOptions.Init();
-            btnOptions.Parent = playersTab;
-            btnOptions.Left = LeftPadding;
-            btnOptions.Top = playersTab.Height - btnOptions.Height - LeftPadding;
-            btnOptions.Text = "Options";
 
-            btnOptions.Click += (s, e) =>
-            {
-                new OptionsWindow(this);
-            };
         }
         GroupsView itemsView;
+        private Button btnFullScreen;
+        private Button btnPause;
         public void InitializeItemsPage()
         {
             tbcViews.AddPage();

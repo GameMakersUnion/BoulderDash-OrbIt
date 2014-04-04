@@ -22,6 +22,7 @@ namespace OrbItProcs
         directedspawn,
         removenodes,
         gridspawn,
+        roomResize,
     }
     public struct MouseArgs
     {
@@ -102,6 +103,7 @@ namespace OrbItProcs
             toolbar.AddButton("forcePush", Utils.notImplementedException,"Take a hike.");
             toolbar.AddButton("control", Utils.notImplementedException,"Take a hike.");
             toolbar.AddButton("static", enableKeyBinds(proc.gridspawn), "Spawn nodes statically to the grid.");
+            toolbar.AddButton("resize", enableKeyBinds(proc.roomResize), "Change the size of the Room");
 
             Keybindset.Add("resetplayers", new KeyBundle(KeyCodes.Home), delegate { Player.ResetPlayers(OrbIt.game.mainRoom); });
 
