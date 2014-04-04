@@ -99,6 +99,7 @@ namespace OrbItProcs
                 //node.Comp<Sword>().sword.collision.DrawRing = false;
                 p.node = node;
                 room.playerGroup.IncludeEntity(node);
+                node.meta.healthBar = Meta.HealthBarMode.Bar;
                 node.OnSpawn();
             }
         }

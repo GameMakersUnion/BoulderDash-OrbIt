@@ -169,9 +169,9 @@ namespace OrbItProcs
         {
             Vector2 position = fistNode.body.pos;
             if (position == Vector2.Zero) position = parent.body.pos;
-            Utils.DrawLine(parent.room, position, parent.body.pos, 2f, parent.body.color);
-            Utils.DrawLine(parent.room, target, parent.body.pos, 2f, Color.Red);
-            parent.room.camera.Draw(textures.ring, position, parent.body.color, fistNode.body.scale, fistNode.body.orient);
+            Utils.DrawLine(parent.room, position, parent.body.pos, 2f, parent.body.color, Layers.Over2);
+            Utils.DrawLine(parent.room, target, parent.body.pos, 2f, Color.Red, Layers.Over2);
+            parent.room.camera.Draw(textures.ring, position, parent.body.color, fistNode.body.scale, fistNode.body.orient, Layers.Over3);
 
             
         }

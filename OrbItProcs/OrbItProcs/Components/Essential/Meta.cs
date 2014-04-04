@@ -27,7 +27,24 @@ namespace OrbItProcs
             Everything,
             Nothing,
         }
-        public const mtypes CompType = mtypes.affectself | mtypes.essential;//mtypes.affectother | mtypes.minordraw;
+        public enum HealthBarMode
+        {
+            Fade,
+            Bar,
+            none,
+        }
+        [Flags]
+        public enum ItemSlots
+        {
+            None = 0,
+            A_Green = 1,
+            B_Red = 2,
+            X_Blue = 4,
+            Y_Yellow = 8,
+            All = 15,
+
+        }
+        public const mtypes CompType = mtypes.affectself | mtypes.essential | mtypes.minordraw;//mtypes.affectother 
         public override mtypes compType { get { return CompType; } set { } }
         /// <summary>
         /// The score of the player. If enabled and the player reaches the max score, the game ends.
@@ -60,6 +77,18 @@ namespace OrbItProcs
         [Info(UserLevel.User, "The damageMode describes who this node can hurt.")]
         public DamageMode damageMode { get; set; }
         /// <summary>
+        /// Select how to indicate health
+        /// </summary>
+        [Info(UserLevel.User, "Select how to indicate health")]
+        public HealthBarMode healthBar { get; set; }
+        [Info(UserLevel.Developer)]
+        public ItemSlots itemSlots { get; set; }
+        /// <summary>
+        /// If enabled, the health bar will rotate.
+        /// </summary>
+        [Info(UserLevel.Advanced, "If enabled, the health bar will rotate.")]
+        public bool rotateHealthBar { get; set; }
+        /// <summary>
         /// If this node is controlled by an AI, this will determine it's behaviour.
         /// </summary>
         [Info(UserLevel.User, "If this node is controlled by an AI, this will determine it's behaviour.")]
@@ -80,7 +109,7 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "The radius of the node.")]
         public float radius { get { return parent != null ? parent.body.radius : 25; } set { if (parent != null) parent.body.radius = value; } }
-
+        private float lightRotation = 0f;
         public Action<Node, Node> OnDeath { get; set; }
         public Action<Node, Node, int> OnTakeDamage { get; set; }
         public Meta() : this(null) { }
@@ -110,7 +139,7 @@ namespace OrbItProcs
                 currentHealth = (float)Math.Max(currentHealth - resultingDamage, 0);
                 currentHealth = (float)Math.Min(currentHealth, maxHealth.value);
                 float percent = 0.65f;
-                parent.body.color = parent.body.permaColor * ((currentHealth / maxHealth.value) * percent + (1f - percent));
+                if (healthBar == HealthBarMode.Fade) parent.body.color = parent.body.permaColor * ((currentHealth / maxHealth.value) * percent + (1f - percent));
                 if (currentHealth <= 0)
                 {
                     //Die(other);
@@ -118,10 +147,52 @@ namespace OrbItProcs
                 }
             }
         }
+        public override void Draw()
+        {
+            if (healthBar == HealthBarMode.Bar) {
+                
+                float healthRatio = (float)currentHealth / (float)maxHealth;
+                float baseRotation = rotateHealthBar ? parent.body.orient : 0f;
+                float rotation = baseRotation + (1f - healthRatio) * VMath.twoPI;
+                float rotation2 = baseRotation;
+                Color c; 
+                Layers hideLayer = Layers.Over1;
+                if (healthRatio > 0.75f) c = Color.Lime;
+                else if (healthRatio > 0.5f) c = Color.GreenYellow;
+                else if (healthRatio > 0.25f) { c = Color.Orange; hideLayer = Layers.Over3; rotation2 = rotation - VMath.PI; }
+                else { c = Color.Red; hideLayer = Layers.Over3; rotation2 = rotation - VMath.PI; }
+
+                parent.room.camera.Draw(textures.outerL, parent.body.pos, Color.Black, parent.body.scale, baseRotation, hideLayer);
+                parent.room.camera.Draw(textures.outerR, parent.body.pos, Color.Black, parent.body.scale, baseRotation, Layers.Over1);
+                parent.room.camera.Draw(textures.innerL, parent.body.pos, c, parent.body.scale, rotation, Layers.Over2);
+                parent.room.camera.Draw(textures.innerR, parent.body.pos, c, parent.body.scale,rotation2, Layers.Over2);
+
+            }
+            if (parent.player != null)
+            {
+                parent.room.camera.Draw(textures.pointer, parent.body.pos, Color.Gold, parent.body.scale, parent.body.orient, Layers.Over4);
+
+                textures A, B, X, Y;
+                A = (itemSlots & ItemSlots.A_Green) == ItemSlots.A_Green ? textures.itemLight : textures.itemWhisper;
+                B = (itemSlots & ItemSlots.B_Red) == ItemSlots.B_Red ? textures.itemLight : textures.itemWhisper;
+                X = (itemSlots & ItemSlots.X_Blue) == ItemSlots.X_Blue ? textures.itemLight : textures.itemWhisper;
+                Y = (itemSlots & ItemSlots.Y_Yellow) == ItemSlots.Y_Yellow ? textures.itemLight : textures.itemWhisper;
+
+                parent.room.camera.Draw(A, parent.body.pos, Color.Green, parent.body.scale * 1.7f, lightRotation, Layers.Under2);
+                parent.room.camera.Draw(B, parent.body.pos, Color.Red, parent.body.scale * 1.7f, lightRotation + VMath.PIbyTwo, Layers.Under2);
+                parent.room.camera.Draw(X, parent.body.pos, Color.Blue, parent.body.scale * 1.7f, lightRotation + VMath.PI, Layers.Under2);
+                parent.room.camera.Draw(Y, parent.body.pos, Color.Yellow, parent.body.scale * 1.7f, lightRotation + VMath.PI + VMath.PIbyTwo, Layers.Under2);
+
+                lightRotation += 0.1f;
+            }
+
+        }
         public override void Death(Node other)
         {
             if (OnDeath != null) OnDeath(parent, other);
         }
+
+
     }
 }
 

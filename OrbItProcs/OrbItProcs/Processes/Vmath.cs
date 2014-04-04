@@ -10,6 +10,8 @@ namespace OrbItProcs
     {
         public static float EPSILON = 0.0001f;
         public const float PI = (float)Math.PI;
+        public const float twoPI = (float)(Math.PI *2);
+        public const float PIbyTwo = (float)(Math.PI / 2);
         #region /// Existing Classes ///
         public static void Test()
         {
