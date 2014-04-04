@@ -252,9 +252,13 @@ namespace OrbItProcs {
             }
 
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
-                    { comp.basicdraw, true }, { nodeE.texture, textures.whitecircle } };
+                    { comp.basicdraw, true }, 
+                    { comp.colorchanger, true }, 
+                    { nodeE.texture, textures.ring } 
+            };
 
             targetNodeGraphic = new Node(this,userPropsTarget);
+            
             targetNodeGraphic.name = "TargetNodeGraphic";
 
             //MakeWalls();
@@ -381,6 +385,8 @@ namespace OrbItProcs {
             updateTargetNodeGraphic();
 
             scheduler.AffectSelf();
+
+            
 
             Draw();
             camera.CatchUp();
@@ -634,7 +640,7 @@ namespace OrbItProcs {
         {
             if (targetNode != null)
             {
-                targetNodeGraphic.body.color = Color.White;
+                targetNodeGraphic.Comp<ColorChanger>().AffectSelf();
                 targetNodeGraphic.body.pos = targetNode.body.pos;
                 //if (game.targetNode.comps.ContainsKey(comp.gravity))
                 //{
@@ -642,6 +648,7 @@ namespace OrbItProcs {
                 //    targetNodeGraphic.transform.radius = rad;
                 //}
                 targetNodeGraphic.body.scale = targetNode.body.scale * 1.5f;
+
             }
             
         }

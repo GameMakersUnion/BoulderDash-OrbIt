@@ -58,6 +58,7 @@ namespace OrbItProcs
         tether,
         tree,
         collision,
+        spike,
         basicdraw,
         meta,
         shader,
