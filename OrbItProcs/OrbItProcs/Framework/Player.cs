@@ -31,13 +31,28 @@ namespace OrbItProcs
 
         public Dictionary<ItemSlots, Component> itemSlots = new Dictionary<ItemSlots, Component>()
         {
+            {ItemSlots.Y_Yellow, null},
             {ItemSlots.A_Green, null},
             {ItemSlots.B_Red, null},
             {ItemSlots.X_Blue, null},
-            {ItemSlots.Y_Yellow, null},
+            
         };
-
-        public ItemSlots currentItem = ItemSlots.Y_Yellow;
+        public ItemSlots _currentItem = ItemSlots.None;
+        public ItemSlots currentItem { 
+            get { return _currentItem; } 
+            set 
+            {
+                foreach (var item in itemSlots.Keys) 
+                {
+                    if (itemSlots[item] != null)
+                    {
+                        if (item != value) itemSlots[item].active = false;
+                        else itemSlots[item].active = true;
+                    }
+                }
+                _currentItem = value; 
+            } 
+        }
         public ItemSlots occupiedSlots = ItemSlots.None;
 
         public void AddItem(Component comp)
@@ -51,6 +66,8 @@ namespace OrbItProcs
                     if (itemSlots[slot].GetType() == comp.GetType())
                     {
                         itemSlots[slot] = comp;
+                        if (slot != currentItem) comp.active = false;
+                        if (count == 0) currentItem = slot;
                         return;
                     }
                 }
@@ -62,6 +79,7 @@ namespace OrbItProcs
                 {
                     itemSlots[slot] = comp;
                     occupiedSlots |= slot;
+                    if (slot != currentItem) comp.active = false;
                     return;
                 }
             }
@@ -154,5 +172,7 @@ namespace OrbItProcs
                 node.OnSpawn();
             }
         }
+
+        
     }
 }

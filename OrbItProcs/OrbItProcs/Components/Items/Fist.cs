@@ -140,9 +140,11 @@ namespace OrbItProcs
                 Vector2 newstickpos = fc.newGamePadState.ThumbSticks.Right;
                 newstickpos.Y *= -1;
                 Vector2 relVel = newstickpos - oldstickpos;
+                
                 if (state == fistmode.ready)
                 {
                     fistNode.body.pos = parent.body.pos;
+                    fistNode.body.orient = parent.body.orient;
                     //if stick is moving away from center of stick
                     if (newstickpos.LengthSquared() > oldstickpos.LengthSquared())
                     {
@@ -158,6 +160,7 @@ namespace OrbItProcs
                             //Console.WriteLine(relVel.X + " : " + relVel.Y);
                             //fistNode.body.ApplyForce(relVel);
                             fistNode.body.velocity = relVel * 10f;
+                            fistNode.body.orient = Utils.VectorToAngle(relVel);
                         }
                     }
                 }
@@ -205,7 +208,7 @@ namespace OrbItProcs
                 //Utils.DrawLine(parent.room, target, parent.body.pos, 2f, Color.Red, Layers.Under2);
             }
 
-            parent.room.camera.Draw(textures.ring, position, Color.White, fistNode.body.scale, fistNode.body.orient, Layers.Over5);//layers don't work
+            parent.room.camera.Draw(textures.fist, position, Color.White, fistNode.body.scale, fistNode.body.orient, Layers.Over2);//layers don't work
 
 
         }

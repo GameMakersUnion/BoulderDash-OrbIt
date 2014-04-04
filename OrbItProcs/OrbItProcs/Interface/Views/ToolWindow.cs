@@ -20,7 +20,7 @@ namespace OrbItProcs
         public Dictionary<string, Texture2D> buttonTextures = new Dictionary<string,Texture2D>();
   //      Texture2D[,] textures;
         public Dictionary<string, Button> buttons = new Dictionary<string, Button>();
-
+        
         public ToolWindow(Sidebar sidebar)
         {
             this.sidebar = sidebar;
@@ -46,6 +46,10 @@ namespace OrbItProcs
             buttonTextures["remove"] = Assets.btnTextures[0, 4];
 
         }
+        public void reset()
+        {
+            foreach (Button b in buttons.Values) b.Enabled = true;
+        }
 
         public void AddButton(string s, Action action, string tooltip = null)
         {
@@ -66,6 +70,8 @@ namespace OrbItProcs
             {
                 foreach(Button bb in buttons.Values)
                 {
+                    reset();
+                    button.Enabled = false;
                     bb.TextColor = Color.White;
                     bb.Refresh();
                 }
@@ -83,7 +89,7 @@ namespace OrbItProcs
 
             button.Draw += (se, e) =>
             {
-                
+                if (!(se as Button).Enabled) e.Renderer.Draw(Assets.textureDict[textures.whitepixel], e.Rectangle.contract(5), Color.Goldenrod);
                 e.Renderer.Draw(tt, e.Rectangle, Color.White);
             };
 

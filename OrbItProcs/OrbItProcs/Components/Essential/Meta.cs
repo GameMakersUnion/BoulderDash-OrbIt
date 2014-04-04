@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace OrbItProcs
 {
@@ -43,7 +44,7 @@ namespace OrbItProcs
             Bar,
             none,
         }
-        public const mtypes CompType = mtypes.affectself | mtypes.essential | mtypes.minordraw;//mtypes.affectother 
+        public const mtypes CompType = mtypes.affectself | mtypes.essential | mtypes.minordraw | mtypes.playercontrol;
         public override mtypes compType { get { return CompType; } set { } }
         /// <summary>
         /// The score of the player. If enabled and the player reaches the max score, the game ends.
@@ -130,6 +131,18 @@ namespace OrbItProcs
         {
             
         }
+        public override void PlayerControl(Controller controller)
+        {
+            if (controller is HalfController) return;
+            GamePadState nps = ((FullController)controller).newGamePadState;
+            GamePadState ops = ((FullController)controller).oldGamePadState;
+            if (nps.Buttons.A == ButtonState.Pressed && ops.Buttons.A == ButtonState.Released) parent.player.currentItem = ItemSlots.A_Green;
+            if (nps.Buttons.B == ButtonState.Pressed && ops.Buttons.B == ButtonState.Released) parent.player.currentItem = ItemSlots.B_Red;
+            if (nps.Buttons.X == ButtonState.Pressed && ops.Buttons.X == ButtonState.Released) parent.player.currentItem = ItemSlots.X_Blue;
+            if (nps.Buttons.Y == ButtonState.Pressed && ops.Buttons.Y == ButtonState.Released) parent.player.currentItem = ItemSlots.Y_Yellow;
+            
+
+        }
         public void CalculateDamage(Node other, float damage)
         {
             if (maxHealth.enabled)
@@ -149,27 +162,23 @@ namespace OrbItProcs
         public override void Draw()
         {
             if (healthBar == HealthBarMode.Bar) {
-                
                 float healthRatio = (float)currentHealth / (float)maxHealth;
-                float baseRotation = rotateHealthBar ? parent.body.orient : 0f;
-                float rotation = baseRotation + (1f - healthRatio) * VMath.twoPI;
-                float rotation2 = baseRotation;
-                Color c; 
-                Layers hideLayer = Layers.Over1;
-                if (healthRatio > 0.75f) c = Color.Lime;
-                else if (healthRatio > 0.5f) c = Color.GreenYellow;
-                else if (healthRatio > 0.25f) { c = Color.Orange; hideLayer = Layers.Over3; rotation2 = rotation - VMath.PI; }
-                else { c = Color.Red; hideLayer = Layers.Over3; rotation2 = rotation - VMath.PI; }
-
-                parent.room.camera.Draw(textures.outerL, parent.body.pos, Color.Black, parent.body.scale, baseRotation, hideLayer);
-                parent.room.camera.Draw(textures.outerR, parent.body.pos, Color.Black, parent.body.scale, baseRotation, Layers.Over1);
-                parent.room.camera.Draw(textures.innerL, parent.body.pos, c, parent.body.scale, rotation, Layers.Over2);
-                parent.room.camera.Draw(textures.innerR, parent.body.pos, c, parent.body.scale,rotation2, Layers.Over2);
+                drawBar(parent, 1, healthRatio, rotateHealthBar, Color.Lime, Color.YellowGreen, Color.Orange, Color.Red);
 
             }
             if (parent.player != null)
             {
-                parent.room.camera.Draw(textures.pointer, parent.body.pos, Color.Gold, parent.body.scale, parent.body.orient, Layers.Over4);
+                Color Q;
+                switch (parent.player.currentItem)
+                {
+                    case ItemSlots.A_Green: Q = Color.ForestGreen; break;
+                    case ItemSlots.B_Red: Q = Color.Crimson; break;
+                    case ItemSlots.X_Blue: Q = Color.CornflowerBlue; break;
+                    case ItemSlots.Y_Yellow: Q = Color.Gold; break;
+                    default: Q = Color.Black; break;
+                }
+                
+                parent.room.camera.Draw(textures.pointer, parent.body.pos, Q, parent.body.scale, parent.body.orient, Layers.Over4);
                 ItemSlots itemSlots = parent.player.occupiedSlots;
                 textures A, B, X, Y;
                 A = (itemSlots & ItemSlots.A_Green) == ItemSlots.A_Green ? textures.itemLight : textures.itemWhisper;
@@ -177,14 +186,43 @@ namespace OrbItProcs
                 X = (itemSlots & ItemSlots.X_Blue) == ItemSlots.X_Blue ? textures.itemLight : textures.itemWhisper;
                 Y = (itemSlots & ItemSlots.Y_Yellow) == ItemSlots.Y_Yellow ? textures.itemLight : textures.itemWhisper;
 
-                parent.room.camera.Draw(A, parent.body.pos, Color.Green, parent.body.scale * 1.7f, lightRotation, Layers.Under2);
-                parent.room.camera.Draw(B, parent.body.pos, Color.Red, parent.body.scale * 1.7f, lightRotation + VMath.PIbyTwo, Layers.Under2);
-                parent.room.camera.Draw(X, parent.body.pos, Color.Blue, parent.body.scale * 1.7f, lightRotation + VMath.PI, Layers.Under2);
-                parent.room.camera.Draw(Y, parent.body.pos, Color.Yellow, parent.body.scale * 1.7f, lightRotation + VMath.PI + VMath.PIbyTwo, Layers.Under2);
+                parent.room.camera.Draw(A, parent.body.pos, Color.ForestGreen, parent.body.scale * 1.7f, lightRotation, Layers.Under2);
+                parent.room.camera.Draw(B, parent.body.pos, Color.Crimson, parent.body.scale * 1.7f, lightRotation + VMath.PIbyTwo, Layers.Under2);
+                parent.room.camera.Draw(X, parent.body.pos, Color.CornflowerBlue, parent.body.scale * 1.7f, lightRotation + VMath.PI, Layers.Under2);
+                parent.room.camera.Draw(Y, parent.body.pos, Color.Gold, parent.body.scale * 1.7f, lightRotation + VMath.PI + VMath.PIbyTwo, Layers.Under2);
 
                 lightRotation += 0.1f;
             }
 
+        }
+
+        public static void drawBar(Node node, float scale, float Ratio, bool Rotate, Color full, Color? threeQuarters = null, Color? half = null, Color? oneQuarter = null)
+        {
+            float baseRotation = Rotate ? node.body.orient : 0f;
+            float rotation = baseRotation + (1f - Ratio) * VMath.twoPI;
+            float rotation2 = baseRotation;
+            Color c;
+            Layers hideLayer = Layers.Over1;
+            if (Ratio > 0.75f) 
+                c = full;
+            else if (Ratio > 0.5f) 
+                c = threeQuarters ?? full;
+            else if (Ratio > 0.25f) 
+            {
+                c = half ?? threeQuarters ?? full;
+                hideLayer = Layers.Over3;
+                rotation2 = rotation - VMath.PI; 
+            }
+            else 
+            {
+                c = oneQuarter ?? half ?? threeQuarters ?? full;
+                hideLayer = Layers.Over3;
+                rotation2 = rotation - VMath.PI;
+            }
+            node.room.camera.Draw(textures.outerL, node.body.pos, Color.Black, node.body.scale*scale, baseRotation, hideLayer);
+            node.room.camera.Draw(textures.outerR, node.body.pos, Color.Black, node.body.scale * scale, baseRotation, Layers.Over1);
+            node.room.camera.Draw(textures.innerL, node.body.pos, c, node.body.scale * scale, rotation, Layers.Over2);
+            node.room.camera.Draw(textures.innerR, node.body.pos, c, node.body.scale * scale, rotation2, Layers.Over2);
         }
         public override void OnRemove(Node other)
         {

@@ -147,7 +147,7 @@ namespace OrbItProcs
         }
         public override void Draw()
         {
-            //todo:draw shooter
+            Meta.drawBar(parent, 0.5f, (float)ammo / (float)maxAmmo, true, Color.Goldenrod);
         }
         public void FireNode(Vector2 dir)
         {
