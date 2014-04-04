@@ -249,7 +249,7 @@ namespace OrbItProcs {
                 Group itemGroup = new Group(this, defaultNode, masterGroup, "Item Group", false);
                 Group linkGroup = new Group(this, defaultNode, masterGroup, "Link Groups", false);
                 Group bulletGroup = new Group(this, defaultNode.CreateClone(this), masterGroup, "Bullet Group", true);
-                Group wallGroup = new Group(this, defaultNode, masterGroup, "Walls", false);
+                Group wallGroup = new Group(this, defaultNode, masterGroup, "Walls", true);
                 Group firstGroup = new Group(this, firstdefault, generalGroup, "Group1");
             }
 

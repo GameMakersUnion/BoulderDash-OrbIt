@@ -138,6 +138,10 @@ namespace OrbItProcs
             RecurseCount = 1;
             RecurseScaleReduction = 0.2f;
             FillEnabled = false;
+            if (body != null)
+            {
+                body.orient = body.orient;
+            }
         }
         
         public override void Initialize()

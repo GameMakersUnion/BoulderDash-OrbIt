@@ -135,6 +135,10 @@ namespace OrbItProcs {
         public void SwitchView()
         {
             sidebar.activeTabControl = (sidebar.activeTabControl == sidebar.tbcViews) ? sidebar.tbcMain : sidebar.tbcViews;
+            if (sidebar.activeTabControl == sidebar.tbcMain)
+            {
+                OrbIt.ui.sidebar.UpdateGroupComboBoxes();
+            }
         }
 
         public void ToggleSidebar()

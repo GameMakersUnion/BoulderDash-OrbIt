@@ -27,7 +27,7 @@ namespace OrbItProcs
         [Info(UserLevel.Advanced, "WARNING: THIS FLAG IS ONLY OBSERVED BY POLYGONS: Determines when to draw the center of mass as a circle")]
         public bool DrawCircle { get; set; }
 
-        public Initial _InitialColor = Initial.Deviant;
+        public Initial _InitialColor = Initial.Managed;
         /// <summary>
         /// Determines whether the color will be random or set by the Red, Green and Blue properties initially.
         /// </summary>

@@ -100,6 +100,7 @@ namespace OrbItProcs
             cbGroupS.Width = middle;
             cbGroupS.Parent = SourceTarget.panel;
             cbGroupS.ItemIndexChanged += cbGroupS_ItemIndexChanged;
+            cbGroupS.MaxItems = 100;
 
             lblNodeS = new Label(manager);
             lblNodeS.Init();
@@ -180,6 +181,7 @@ namespace OrbItProcs
             cbGroupT.Width = middle;
             cbGroupT.Parent = SourceTarget.panel;
             cbGroupT.ItemIndexChanged += cbGroupT_ItemIndexChanged;
+            cbGroupT.MaxItems = 100;
 
             lblNodeT = new Label(manager);
             lblNodeT.Init();
