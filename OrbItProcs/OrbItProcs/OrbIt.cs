@@ -112,7 +112,7 @@ namespace OrbItProcs
 
         public static GameTime gametime;
         public FrameRateCounter frameRateCounter;
-
+        public resolutions? preferredFullScreen;
         public static bool soundEnabled = false;
         public static bool isFullScreen = false;
         public static int Width { get { return game.Graphics.PreferredBackBufferWidth; } set { game.Graphics.PreferredBackBufferWidth = value; } }
@@ -210,6 +210,7 @@ namespace OrbItProcs
  
         }
         Window test;
+        public resolutions preferredWindowed;
 
         private void RoomPanel(Room room)
         {
@@ -241,6 +242,7 @@ namespace OrbItProcs
             {
                 Manager.Graphics.ApplyChanges();
                 mainRoom.roomRenderTarget = new RenderTarget2D(GraphicsDevice, Width, Height);
+                GraphicsReset = false;
             }
             if (OnUpdate!= null)
                 OnUpdate.Invoke();
@@ -285,5 +287,7 @@ namespace OrbItProcs
             //}
         }
 
+
+        
     }
 }

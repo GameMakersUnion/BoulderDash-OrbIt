@@ -251,6 +251,7 @@
     <Compile Include="Processes\ProcessManager.cs" />
     <Compile Include="Framework\QueueInfo.cs" />
     <Compile Include="Processes\Randomizer.cs" />
+    <Compile Include="Processes\RemoveNodes - Copy.cs" />
     <Compile Include="Processes\RemoveNodes.cs" />
     <Compile Include="Processes\SingleSelect.cs" />
     <Compile Include="Processes\SpawnNodes.cs" />

@@ -80,6 +80,37 @@ namespace OrbItProcs
                 }
                 count++;
             }
+            //
+
+            Label lblRes = new Label(manager);
+            lblRes.Init();
+            lblRes.Parent = window;
+            lblRes.Left = LeftPadding;
+            lblRes.Top = HeightCounter;
+            lblRes.Text = "Resolution";
+            lblRes.Width += 10;
+
+            ComboBox cbResolutions = new ComboBox(manager);
+            cbResolutions.Init();
+            cbResolutions.Parent = window;
+            cbResolutions.Top = HeightCounter;
+            cbResolutions.Left = lblUserLevel.Width;
+            cbResolutions.Width = 150;
+            HeightCounter += cbResolutions.Height;
+            cbUserLevel.TextColor = Color.Black;
+            foreach (resolutions r in Enum.GetValues(typeof(resolutions)))
+            {
+                cbResolutions.Items.Add(r);
+            }
+            cbResolutions.ItemIndexChanged += (s, e) =>
+            {
+                OrbIt.game.setResolution((resolutions)cbResolutions.ItemIndex, OrbIt.game.Graphics.IsFullScreen);
+                if (OrbIt.game.Graphics.IsFullScreen)
+                    OrbIt.game.preferredFullScreen = (resolutions)cbResolutions.ItemIndex;
+                else OrbIt.game.preferredWindowed = (resolutions)cbResolutions.ItemIndex;
+
+            };
+
 
             CreateCheckBox("FullScreen", OrbIt.isFullScreen, (o, e) =>
             {

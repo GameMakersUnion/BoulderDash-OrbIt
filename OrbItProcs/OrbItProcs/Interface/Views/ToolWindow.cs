@@ -44,6 +44,7 @@ namespace OrbItProcs
             buttonTextures["control"] = Assets.btnTextures[0, 3];
             buttonTextures["static"] = Assets.btnTextures[1, 3];
             buttonTextures["remove"] = Assets.btnTextures[0, 4];
+            buttonTextures["resize"] = Assets.btnTextures[1, 4];
 
         }
         public void reset()
@@ -62,7 +63,8 @@ namespace OrbItProcs
             button.Left = 5;
             button.Top = HeightCounter;
             button.Height = button.Width;
-
+            button.MouseOver += delegate { UserInterface.tomShaneWasClicked = true; };
+            button.MouseOut += delegate { UserInterface.tomShaneWasClicked = false; };
                 HeightCounter += button.Height + 5;
 
             
