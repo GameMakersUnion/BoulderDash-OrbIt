@@ -94,6 +94,7 @@ namespace OrbItProcs
 
         public SharpSerializer serializer = new SharpSerializer();
 
+        public static GlobalGameMode globalGameMode { get; set; }
         public Room room
         {
             get { return _activeRoom; }
@@ -182,6 +183,7 @@ namespace OrbItProcs
             Player.CreatePlayers(mainRoom);
             //UI
             ui = UserInterface.Start();
+            globalGameMode = new GlobalGameMode(this);
             ui.Initialize();
             foreach (var tabpage in ui.sidebar.tbcViews.TabPages)
             {
@@ -203,6 +205,7 @@ namespace OrbItProcs
 
             MainWindow.TransparentClientArea = true;
 
+            
  
         }
         Window test;

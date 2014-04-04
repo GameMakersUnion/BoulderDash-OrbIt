@@ -138,98 +138,111 @@ namespace OrbItProcs
             CloneComponent(this, comp);
             return comp;
         }
-       public static void CloneComponent(Component sourceComp, Component destComp)
-       {
-           List<FieldInfo> fields = sourceComp.GetType().GetFields().ToList();
-           fields.AddRange(sourceComp.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance).ToList());
-           List<PropertyInfo> properties = sourceComp.GetType().GetProperties().ToList();
-           foreach (PropertyInfo property in properties)
-           {
-               if (property.PropertyType == typeof(ModifierInfo)) continue;
-               if (property.PropertyType == typeof(Node))
-               {
-                   var cust = property.GetCustomAttributes(typeof(CopyNodeProperty), false);
-                   if (cust.Length > 0)
-                   {
-                       Node n = (Node)property.GetValue(sourceComp, null);
-                       Node nclone = n.CreateClone(sourceComp.parent.room);
-                       property.SetValue(destComp, nclone, null);
-                       //Console.WriteLine("CLONING : " + property.Name);
-                   }
-                   continue;
-               }
-
+        public static void CloneComponent(Component sourceComp, Component destComp)
+        {
+            List<FieldInfo> fields = sourceComp.GetType().GetFields().ToList();
+            fields.AddRange(sourceComp.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance).ToList());
+            List<PropertyInfo> properties = sourceComp.GetType().GetProperties().ToList();
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.PropertyType == typeof(ModifierInfo)) continue;
+                if (property.PropertyType == typeof(Node))
+                {
+                    var cust = property.GetCustomAttributes(typeof(CopyNodeProperty), false);
+                    if (cust.Length > 0)
+                    {
+                        Node n = (Node)property.GetValue(sourceComp, null);
+                        Node nclone = n.CreateClone(sourceComp.parent.room);
+                        property.SetValue(destComp, nclone, null);
+                        //Console.WriteLine("CLONING : " + property.Name);
+                    }
+                    continue;
+                }
+                if (Utils.isToggle(property.PropertyType))
+                {
+                    dynamic tog = property.GetValue(sourceComp, null);
+                    dynamic newtog = tog.Clone();
+                    property.SetValue(destComp, newtog, null);
+                    continue;
+                }
+                if (property.PropertyType.IsClass)
+                {
+                    if (!typeof(Delegate).IsAssignableFrom(property.PropertyType) && !(property.PropertyType == typeof(Link)))
+                    {
+                        Console.WriteLine("We should be aware of this.");
+                    }
+                }
                 property.SetValue(destComp, property.GetValue(sourceComp, null), null);
-           }
-           foreach (FieldInfo field in fields)
-           {
-               if (field.Name.Equals("shape")) continue;
-               if (field.FieldType == typeof(Dictionary<string,ModifierInfo>))
-               {
-                   Modifier mod = (Modifier) sourceComp;
+            }
+            foreach (FieldInfo field in fields)
+            {
+                if (field.Name.Equals("shape")) continue;
+                if (field.FieldType == typeof(Dictionary<string,ModifierInfo>))
+                {
+                    Modifier mod = (Modifier) sourceComp;
                    
-                   Dictionary<string, ModifierInfo> newmodinfos = new Dictionary<string, ModifierInfo>();
-                   foreach (KeyValuePair<string, ModifierInfo> kvp in mod.modifierInfos)
-                   {
-                       string key = kvp.Key;
-                       ModifierInfo modifierInfo = kvp.Value;
-                       Dictionary<string, FPInfo> newFpInfos = new Dictionary<string, FPInfo>();
-                       Dictionary<string, object> newFpInfosObj = new Dictionary<string, object>();
-                       foreach (string key2 in modifierInfo.fpInfos.Keys)
-                       {
-                           FPInfo fpinfo = new FPInfo(modifierInfo.fpInfos[key2]);
+                    Dictionary<string, ModifierInfo> newmodinfos = new Dictionary<string, ModifierInfo>();
+                    foreach (KeyValuePair<string, ModifierInfo> kvp in mod.modifierInfos)
+                    {
+                        string key = kvp.Key;
+                        ModifierInfo modifierInfo = kvp.Value;
+                        Dictionary<string, FPInfo> newFpInfos = new Dictionary<string, FPInfo>();
+                        Dictionary<string, object> newFpInfosObj = new Dictionary<string, object>();
+                        foreach (string key2 in modifierInfo.fpInfos.Keys)
+                        {
+                            FPInfo fpinfo = new FPInfo(modifierInfo.fpInfos[key2]);
 
-                           newFpInfos.Add(key2, fpinfo);
-                           newFpInfosObj.Add(key2, null);
-                       }
-                       Dictionary<string, dynamic> newargs = new Dictionary<string, dynamic>();
-                       foreach (string key2 in modifierInfo.args.Keys)
-                       {
-                           newargs.Add(key2, modifierInfo.args[key2]); //by reference (for now)
-                       }
+                            newFpInfos.Add(key2, fpinfo);
+                            newFpInfosObj.Add(key2, null);
+                        }
+                        Dictionary<string, dynamic> newargs = new Dictionary<string, dynamic>();
+                        foreach (string key2 in modifierInfo.args.Keys)
+                        {
+                            newargs.Add(key2, modifierInfo.args[key2]); //by reference (for now)
+                        }
 
-                       ModifierInfo modInfo = new ModifierInfo(newFpInfos, newFpInfosObj, newargs, modifierInfo.modifierDelegate);
-                       modInfo.delegateName = modifierInfo.delegateName;
-                       newmodinfos.Add(key, modInfo);
-                   }
-                   field.SetValue(destComp, newmodinfos);
+                        ModifierInfo modInfo = new ModifierInfo(newFpInfos, newFpInfosObj, newargs, modifierInfo.modifierDelegate);
+                        modInfo.delegateName = modifierInfo.delegateName;
+                        newmodinfos.Add(key, modInfo);
+                    }
+                    field.SetValue(destComp, newmodinfos);
 
-               }
-               //no longer checking for dictionaries, parent(Node)
-               if ((field.FieldType == typeof(int))
-                   || (field.FieldType == typeof(Single))
-                   || (field.FieldType == typeof(bool))
-                   || (field.FieldType == typeof(string)))
-               {
-                   field.SetValue(destComp, field.GetValue(sourceComp));
-               }
-               else if (field.FieldType == typeof(Vector2))
-               {
-                   Vector2 vect = (Vector2)field.GetValue(sourceComp);
-                   Vector2 newvect = new Vector2(vect.X, vect.Y);
-                   field.SetValue(destComp, newvect);
-               }
-               else if (field.FieldType == typeof(Color))
-               {
-                   Color col = (Color)field.GetValue(sourceComp);
-                   Color newcol = new Color(col.R, col.G, col.B, col.A);
-                   field.SetValue(destComp, newcol);
-               }
-               else
-               {
-                   //this would be an object field
-                   if (field.Name.Equals("room"))
-                   {
-                       field.SetValue(destComp, field.GetValue(sourceComp));
-                   }
-               }
-               //field.SetValue(newobj, field.GetValue(obj));
-           }
-           destComp.InitializeLists();
-           destComp.AfterCloning();
-       }
+                }
+                //no longer checking for dictionaries, parent(Node)
+                if ((field.FieldType == typeof(int))
+                    || (field.FieldType == typeof(Single))
+                    || (field.FieldType == typeof(bool))
+                    || (field.FieldType == typeof(string)))
+                {
+                    field.SetValue(destComp, field.GetValue(sourceComp));
+                }
+                else if (field.FieldType == typeof(Vector2))
+                {
+                    Vector2 vect = (Vector2)field.GetValue(sourceComp);
+                    Vector2 newvect = new Vector2(vect.X, vect.Y);
+                    field.SetValue(destComp, newvect);
+                }
+                else if (field.FieldType == typeof(Color))
+                {
+                    Color col = (Color)field.GetValue(sourceComp);
+                    Color newcol = new Color(col.R, col.G, col.B, col.A);
+                    field.SetValue(destComp, newcol);
+                }
+                else
+                {
+                    //this would be an object field
+                    if (field.Name.Equals("room"))
+                    {
+                        field.SetValue(destComp, field.GetValue(sourceComp));
+                    }
+                }
+                //field.SetValue(newobj, field.GetValue(obj));
+            }
+            destComp.InitializeLists();
+            destComp.AfterCloning();
+        }
 
-
+        //this is NOT clone component
        public static void CloneObject(object sourceObject, object destObject)
        {
            List<FieldInfo> fields = sourceObject.GetType().GetFields().ToList();

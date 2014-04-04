@@ -676,8 +676,6 @@ namespace OrbItProcs {
             }
         }
 
-
-
         public bool fetchComponent(Type t, bool active, bool overwrite = false)
         {
             if (t == typeof(Movement))//todo: add more essentials here
@@ -955,12 +953,12 @@ namespace OrbItProcs {
             {
                 if (key == typeof(Meta)) continue;
                 Component component = comps[key];
-                MethodInfo mInfo = component.GetType().GetMethod("Death");
-                if (mInfo != null
-                    && mInfo.DeclaringType == component.GetType())
-                {
+                //MethodInfo mInfo = component.GetType().GetMethod("OnRemove");
+                //if (mInfo != null
+                //    && mInfo.DeclaringType == component.GetType())
+                //{
                     component.OnRemove(other);
-                }
+                //}
             }
             meta.OnRemove(other);
             if (group != null && delete)

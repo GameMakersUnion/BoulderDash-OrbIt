@@ -24,6 +24,11 @@ namespace OrbItProcs
             return value.ToString();
         }
 
+        public Toggle<T> Clone()
+        {
+            return new Toggle<T>(value, enabled);
+        }
+
 
         public override bool Equals(object obj)
         {
