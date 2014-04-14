@@ -160,105 +160,107 @@ namespace OrbItProcs
 
         public HalfPadState(ControlSide side, PlayerIndex controllerIndex)
         {
+            GamePadState gamePadState = GamePad.GetState(controllerIndex); //I've replaced every call to GamePad.GetState with this object. test
             if (side == ControlSide.left)
             {
-                stick1 = new Stick(GamePad.GetState(controllerIndex).ThumbSticks.Left);
-                stick2 = new Stick(GamePad.GetState(controllerIndex).DPad.Up,
-                                   GamePad.GetState(controllerIndex).DPad.Down,
-                                   GamePad.GetState(controllerIndex).DPad.Left,
-                                   GamePad.GetState(controllerIndex).DPad.Right);
+                stick1 = new Stick(gamePadState.ThumbSticks.Left);
+                stick2 = new Stick(gamePadState.DPad.Up,
+                                   gamePadState.DPad.Down,
+                                   gamePadState.DPad.Left,
+                                   gamePadState.DPad.Right);
 
-                Btn1 = GamePad.GetState(controllerIndex).Buttons.LeftShoulder;
-                Btn2 = (GamePad.GetState(controllerIndex).Triggers.Left < Controller.deadZone) ? ButtonState.Released : ButtonState.Pressed; //TODO: test
-                Btn2AsTrigger = GamePad.GetState(controllerIndex).Triggers.Left;
-                Btn3 = GamePad.GetState(controllerIndex).Buttons.LeftStick;
+                Btn1 = gamePadState.Buttons.LeftShoulder;
+                Btn2 = (gamePadState.Triggers.Left < Controller.deadZone) ? ButtonState.Released : ButtonState.Pressed; //TODO: test
+                Btn2AsTrigger = gamePadState.Triggers.Left;
+                Btn3 = gamePadState.Buttons.LeftStick;
 
-                BtnStart = GamePad.GetState(controllerIndex).Buttons.Back;
+                BtnStart = gamePadState.Buttons.Back;
             }
             else //if (side == ControlSide.right) 
             {
-                stick1 = new Stick(GamePad.GetState(controllerIndex).ThumbSticks.Right);
-                stick2 = new Stick(GamePad.GetState(controllerIndex).Buttons.Y,
-                                   GamePad.GetState(controllerIndex).Buttons.A,
-                                   GamePad.GetState(controllerIndex).Buttons.X,
-                                   GamePad.GetState(controllerIndex).Buttons.B);
+                stick1 = new Stick(gamePadState.ThumbSticks.Right);
+                stick2 = new Stick(gamePadState.Buttons.Y,
+                                   gamePadState.Buttons.A,
+                                   gamePadState.Buttons.X,
+                                   gamePadState.Buttons.B);
 
-                Btn1 = GamePad.GetState(controllerIndex).Buttons.RightShoulder;
-                Btn2 = (GamePad.GetState(controllerIndex).Triggers.Right < Controller.deadZone) ? ButtonState.Released : ButtonState.Pressed; //TODO: test
-                Btn2AsTrigger = GamePad.GetState(controllerIndex).Triggers.Right;
-                Btn3 = GamePad.GetState(controllerIndex).Buttons.RightStick;
+                Btn1 = gamePadState.Buttons.RightShoulder;
+                Btn2 = (gamePadState.Triggers.Right < Controller.deadZone) ? ButtonState.Released : ButtonState.Pressed; //TODO: test
+                Btn2AsTrigger = gamePadState.Triggers.Right;
+                Btn3 = gamePadState.Buttons.RightStick;
 
-                BtnStart = GamePad.GetState(controllerIndex).Buttons.Start;
+                BtnStart = gamePadState.Buttons.Start;
             }
         }
 
         public HalfPadState(FullPadMode mode, PlayerIndex controllerIndex)
         {
+            GamePadState gamePadState = GamePad.GetState(controllerIndex, GamePadDeadZone.Circular);
             if (mode == FullPadMode.mirrorMode)
             {
-                stick1 = new Stick(GamePad.GetState(controllerIndex).Buttons.Y,
-                                       GamePad.GetState(controllerIndex).Buttons.A,
-                                       GamePad.GetState(controllerIndex).Buttons.X,
-                                       GamePad.GetState(controllerIndex).Buttons.B);
+                stick1 = new Stick(gamePadState.Buttons.Y,
+                                   gamePadState.Buttons.A,
+                                   gamePadState.Buttons.X,
+                                   gamePadState.Buttons.B);
                 if (stick1.isCentered())
                 {
-                    stick1 = new Stick(GamePad.GetState(controllerIndex, GamePadDeadZone.Circular).ThumbSticks.Left);
+                    stick1 = new Stick(gamePadState.ThumbSticks.Left);
                 }
 
-                stick2 = new Stick(GamePad.GetState(controllerIndex, GamePadDeadZone.Circular).ThumbSticks.Right);
+                stick2 = new Stick(gamePadState.ThumbSticks.Right);
                 if (stick2.isCentered())
                 {
-                    stick2 = new Stick(GamePad.GetState(controllerIndex).DPad.Up,
-                                       GamePad.GetState(controllerIndex).DPad.Down,
-                                       GamePad.GetState(controllerIndex).DPad.Left,
-                                       GamePad.GetState(controllerIndex).DPad.Right);
+                    stick2 = new Stick(gamePadState.DPad.Up,
+                                       gamePadState.DPad.Down,
+                                       gamePadState.DPad.Left,
+                                       gamePadState.DPad.Right);
                 }
 
-                Btn1 = GamePad.GetState(controllerIndex).Buttons.RightShoulder;
-                if (Btn1 == ButtonState.Released) Btn1 = GamePad.GetState(controllerIndex).Buttons.LeftShoulder;
+                Btn1 = gamePadState.Buttons.RightShoulder;
+                if (Btn1 == ButtonState.Released) Btn1 = gamePadState.Buttons.LeftShoulder;
 
-                Btn2 = (GamePad.GetState(controllerIndex).Triggers.Right < Controller.deadZone) ? ButtonState.Released : ButtonState.Pressed; //TODO: test
-                if (Btn2 == ButtonState.Released) Btn2 = (GamePad.GetState(controllerIndex).Triggers.Left < Controller.deadZone) ? ButtonState.Released : ButtonState.Pressed;
+                Btn2 = (gamePadState.Triggers.Right < Controller.deadZone) ? ButtonState.Released : ButtonState.Pressed; //TODO: test
+                if (Btn2 == ButtonState.Released) Btn2 = (gamePadState.Triggers.Left < Controller.deadZone) ? ButtonState.Released : ButtonState.Pressed;
 
-                Btn2AsTrigger = Math.Max(GamePad.GetState(controllerIndex).Triggers.Right, GamePad.GetState(controllerIndex).Triggers.Left);
+                Btn2AsTrigger = Math.Max(gamePadState.Triggers.Right, gamePadState.Triggers.Left);
 
-                Btn3 = GamePad.GetState(controllerIndex).Buttons.RightStick;
-                if (Btn3 == ButtonState.Released) Btn3 = GamePad.GetState(controllerIndex).Buttons.LeftStick;
+                Btn3 = gamePadState.Buttons.RightStick;
+                if (Btn3 == ButtonState.Released) Btn3 = gamePadState.Buttons.LeftStick;
 
-                BtnStart = GamePad.GetState(controllerIndex).Buttons.Start;
-                if (BtnStart == ButtonState.Released) BtnStart = GamePad.GetState(controllerIndex).Buttons.Back;
+                BtnStart = gamePadState.Buttons.Start;
+                if (BtnStart == ButtonState.Released) BtnStart = gamePadState.Buttons.Back;
             }
             else
             {
-                stick1 = new Stick(GamePad.GetState(controllerIndex, GamePadDeadZone.Circular).ThumbSticks.Left);
-                stick2 = new Stick(GamePad.GetState(controllerIndex, GamePadDeadZone.Circular).ThumbSticks.Right);
+                stick1 = new Stick(gamePadState.ThumbSticks.Left);
+                stick2 = new Stick(gamePadState.ThumbSticks.Right);
                 if (stick2.isCentered())
                 {
-                    stick2 = new Stick(GamePad.GetState(controllerIndex).DPad.Up,
-                                       GamePad.GetState(controllerIndex).DPad.Down,
-                                       GamePad.GetState(controllerIndex).DPad.Left,
-                                       GamePad.GetState(controllerIndex).DPad.Right);
+                    stick2 = new Stick(gamePadState.DPad.Up,
+                                       gamePadState.DPad.Down,
+                                       gamePadState.DPad.Left,
+                                       gamePadState.DPad.Right);
                 }
 
-                Btn1 = GamePad.GetState(controllerIndex).Buttons.RightShoulder;
-                if (Btn1 == ButtonState.Released) Btn1 = GamePad.GetState(controllerIndex).Buttons.LeftShoulder;
-                if (Btn1 == ButtonState.Released) Btn1 = GamePad.GetState(controllerIndex).Buttons.A;
+                Btn1 = gamePadState.Buttons.RightShoulder;
+                if (Btn1 == ButtonState.Released) Btn1 = gamePadState.Buttons.LeftShoulder;
+                if (Btn1 == ButtonState.Released) Btn1 = gamePadState.Buttons.A;
 
-                Btn2 = (GamePad.GetState(controllerIndex).Triggers.Right < Controller.deadZone) ? ButtonState.Released : ButtonState.Pressed; //TODO: test
-                if (Btn2 == ButtonState.Released) Btn2 = (GamePad.GetState(controllerIndex).Triggers.Left < Controller.deadZone) ? ButtonState.Released : ButtonState.Pressed;
-                if (Btn2 == ButtonState.Released) Btn2 = GamePad.GetState(controllerIndex).Buttons.B;
-                if (Btn2 == ButtonState.Released) Btn2 = GamePad.GetState(controllerIndex).Buttons.Y;
+                Btn2 = (gamePadState.Triggers.Right < Controller.deadZone) ? ButtonState.Released : ButtonState.Pressed; //TODO: test
+                if (Btn2 == ButtonState.Released) Btn2 = (gamePadState.Triggers.Left < Controller.deadZone) ? ButtonState.Released : ButtonState.Pressed;
+                if (Btn2 == ButtonState.Released) Btn2 = gamePadState.Buttons.B;
+                if (Btn2 == ButtonState.Released) Btn2 = gamePadState.Buttons.Y;
 
-                Btn2AsTrigger = Math.Max(GamePad.GetState(controllerIndex).Triggers.Right, GamePad.GetState(controllerIndex).Triggers.Left);
-                if (GamePad.GetState(controllerIndex).Buttons.B == ButtonState.Pressed ||
-                    GamePad.GetState(controllerIndex).Buttons.Y == ButtonState.Pressed) Btn2AsTrigger = 1.0f;
+                Btn2AsTrigger = Math.Max(gamePadState.Triggers.Right, gamePadState.Triggers.Left);
+                if (gamePadState.Buttons.B == ButtonState.Pressed ||
+                    gamePadState.Buttons.Y == ButtonState.Pressed) Btn2AsTrigger = 1.0f;
 
-                Btn3 = GamePad.GetState(controllerIndex).Buttons.RightStick;
-                if (Btn3 == ButtonState.Released) Btn3 = GamePad.GetState(controllerIndex).Buttons.LeftStick;
-                if (Btn3 == ButtonState.Released) Btn3 = GamePad.GetState(controllerIndex).Buttons.X;
+                Btn3 = gamePadState.Buttons.RightStick;
+                if (Btn3 == ButtonState.Released) Btn3 = gamePadState.Buttons.LeftStick;
+                if (Btn3 == ButtonState.Released) Btn3 = gamePadState.Buttons.X;
 
-                BtnStart = GamePad.GetState(controllerIndex).Buttons.Start;
-                if (BtnStart == ButtonState.Released) BtnStart = GamePad.GetState(controllerIndex).Buttons.Back;
+                BtnStart = gamePadState.Buttons.Start;
+                if (BtnStart == ButtonState.Released) BtnStart = gamePadState.Buttons.Back;
 
             }
         }
@@ -388,9 +390,7 @@ namespace OrbItProcs
         public GamePadState getState()
         {
             if (enabled == false) return new GamePadState();
-            return GamePad.GetState(controllerIndex, GamePadDeadZone.Circular);;
-
-             
+            return GamePad.GetState(controllerIndex, GamePadDeadZone.Circular);
         }
         public override Vector2 getRightStick()
         {

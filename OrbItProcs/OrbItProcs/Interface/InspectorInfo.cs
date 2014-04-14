@@ -640,44 +640,14 @@ namespace OrbItProcs {
             {
                 if (masterList != null)
                 {
-                foreach (InspectorInfo subitem in children)
-                {
-                    //masterList.Insert(position + i++, subitem);
-                    masterList.Remove(subitem);
-                }
-            }
-            }
-
-        }
-
-        /*
-        public void ClickItem(int position)
-        {
-            if (hasChildren())
-            {
-                if (extended)
-                {
-                    prefix = "+";
-                    RemoveChildren();
-                }
-                else
-                {
-                    GenerateChildren();
-                    prefix = "-";
-                    int i = 1;
-                    if (masterList != null)
+                    foreach (InspectorInfo subitem in children)
                     {
-                        foreach (InspectorInfo subitem in children)
-                        {
-                            masterList.Insert(position + i++, subitem);
-                        }
+                        //masterList.Insert(position + i++, subitem);
+                        masterList.Remove(subitem);
                     }
                 }
-                extended = !extended;
             }
-
         }
-        */
 
         public void CheckItemType()
         {
@@ -831,7 +801,7 @@ namespace OrbItProcs {
                         toggle = GetValue();
                         dynamic tog2 = value;
                         toggle.GetType().GetProperty("enabled").SetValue(toggle, tog2.enabled, null);
-                        if (value.GetType() == toggle.value.GetType())
+                        if (tog2.value.GetType() == toggle.value.GetType())
                             toggle.GetType().GetProperty("value").SetValue(toggle, tog2.value, null);
                         return;
                     }
@@ -959,6 +929,11 @@ namespace OrbItProcs {
                             else if (temp.IsPanelType())
                             {
                                 temp.fpinfo.SetValue(value, temp.parentItem.obj);
+                                //temp.SetValue(value);
+                            }
+                            else if (Utils.isToggle(temp.obj))
+                            {
+                                temp.SetValue(value);
                             }
                         }
                     }

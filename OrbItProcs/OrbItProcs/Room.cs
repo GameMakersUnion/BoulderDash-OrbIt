@@ -162,7 +162,6 @@ namespace OrbItProcs {
             borderColor = Color.Green;
             collideAction = (c1, c2) =>
             {
-                
                 if (c1.parent == c2.parent) return;
                 if (c1 is Body)
                 {
@@ -189,15 +188,15 @@ namespace OrbItProcs {
                         //if (!c1.exclusionList.Contains(bb)) 
                             c1.CheckCollisionBody(bb);
                     }
-                    else
-                    {
-                        //c.CheckCollision(c2);
-                    }
+                    //else
+                    //{
+                    //    //c.CheckCollision(c2);
+                    //}
                 }
             };
         }
         Action<Collider, Collider> collideAction;
-        public Room(OrbIt game, int worldWidth, int worldHeight,bool gridSystem =true, bool Groups = true) : this()
+        public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true) : this()
         {
             //this.mapzoom = 2f;
             this.worldWidth = worldWidth;
@@ -402,7 +401,7 @@ namespace OrbItProcs {
 
         
 
-        static int algorithm = 5;
+        static int algorithm = 7;
         public void UpdateCollision()
         {
             Testing.modInc();
@@ -441,10 +440,12 @@ namespace OrbItProcs {
                     foreach (var otherCol in CollisionSetPolygon.ToList())
                     {
                         collideAction(c, otherCol);
+                        //otherCol.parent.body.color = Color.White;
                     }
                     foreach (var otherCol in CollisionSetCircle.ToList())
                     {
                         collideAction(c, otherCol);
+                        //otherCol.parent.body.color = Color.White;
                     }
                 }
             }
@@ -517,6 +518,10 @@ namespace OrbItProcs {
                                 }
                             }
                         }
+                    }
+                    else if (algorithm == 7)
+                    {
+                        gridsystemCollision.retrieveOffsetArrays(c, 6, collideAction);
                     }
                     //else if (algorithm == 6)
                     //{
@@ -807,9 +812,6 @@ namespace OrbItProcs {
             };
             return spawnNode(userP);
         }
-
-
-
         internal void resize(Vector2 vector2)
         {
             resizeVect = vector2;

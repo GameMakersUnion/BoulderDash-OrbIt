@@ -214,6 +214,9 @@ namespace OrbItProcs {
         }
         private Player _player;
         public Player player { get { return _player; } set { _player = value; if (value != null) SortComponentListsUpdate(); } }
+        [Info(UserLevel.Never)]
+        public bool IsPlayer { get { return player != null; } }
+
         private ObservableHashSet<Link> _SourceLinks = new ObservableHashSet<Link>();
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> SourceLinks { get { return _SourceLinks; } set { _SourceLinks = value; } }
@@ -318,8 +321,8 @@ namespace OrbItProcs {
         public Node(Room room, ShapeType shapetype, bool createHash = true)
         {
             this.room = room;
-            if (room == null) throw new NotImplementedException
-                ("Polenter is benched for now. Everyone else must use the Parameterized constructor and pass a room reference.");
+            //if (room == null) throw new NotImplementedException
+            //    ("Polenter is benched for now. Everyone else must use the Parameterized constructor and pass a room reference.");
             //if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0, 5);
             name = name + nodeCounter;
             if (createHash)
@@ -452,7 +455,7 @@ namespace OrbItProcs {
         public Func<Node, bool> ExclusionCheck = null;
         public virtual void Update(GameTime gametime)
         {
-            if (player != null)
+            if (IsPlayer)
             {
                 body.angularVelocity = 0;
             }
@@ -538,7 +541,6 @@ namespace OrbItProcs {
                     }
                 }
                 //*/
-
             }
             if (OnAffectOthers != null) OnAffectOthers.Invoke(this, null);
 
@@ -550,7 +552,7 @@ namespace OrbItProcs {
                     component.AffectSelf();
             }
 
-            if (player != null)
+            if (IsPlayer)
             {
                 player.controller.UpdateNewState();
                 foreach (Type c in playerProps)
@@ -684,7 +686,7 @@ namespace OrbItProcs {
 
             component.Initialize(this);
             SortComponentLists();
-            if (player != null && component.IsItem())
+            if (IsPlayer && component.IsItem())
             {
                 player.AddItem(component);
             }
@@ -722,7 +724,7 @@ namespace OrbItProcs {
                     comps.Remove(t);
                 }
                 comps.Add(t, component);
-                if (player != null && component.IsItem())
+                if (IsPlayer && component.IsItem())
                 {
                     player.AddItem(component);
                 }
@@ -734,7 +736,7 @@ namespace OrbItProcs {
                 {
                     Component component = MakeComponent(t, active, this);
                     comps.Add(t, component);
-                    if (player != null && component.IsItem())
+                    if (IsPlayer && component.IsItem())
                     {
                         player.AddItem(component);
                     }
@@ -793,7 +795,7 @@ namespace OrbItProcs {
                     if (!drawProps.Contains(c) && !aSelfProps.Contains(c) && !aOtherProps.Contains(c))
                     {
                         //we should call a 'destroy component' method here, instead of just hoping it gets garabage collected
-                        if (player != null)
+                        if (IsPlayer)
                         {
                             player.RemoveItem(comps[c]);
                         }
@@ -866,7 +868,7 @@ namespace OrbItProcs {
                     aSelfProps.Add(c);
                 }
             }
-            if (player != null)
+            if (IsPlayer)
             {
                 foreach (Type c in clist)
                 {

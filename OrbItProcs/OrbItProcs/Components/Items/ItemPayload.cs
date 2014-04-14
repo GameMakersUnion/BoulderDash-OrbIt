@@ -45,6 +45,21 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "The amount of time in seconds until the items in the payload disappear.")]
         public Toggle<int> timeLimit { get; set; }
+        /// <summary>
+        /// If enabled, players can pick up the item payload.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, players can pick up the item payload.")]
+        public bool PlayersCanGrab { get; set; }
+        /// <summary>
+        /// If enabled, nodes can grab the item payload.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, nodes can grab the item payload.")]
+        public bool NodesCanGrab { get; set; }
+        /// <summary>
+        /// If enabled, when the payload is picked up, the reciever will instead get the components on the parent node instead of the payload node.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, when the payload is picked up, the reciever will instead get the components on the parent node instead of the payload node.")]
+        public bool DropParentsComponents { get; set; }
         public ItemPayload() : this(null) { }
         public ItemPayload(Node parent)
         {
@@ -54,17 +69,42 @@ namespace OrbItProcs
             AlreadyDelivered = new HashSet<Node>();
             OverwriteComponents = false;
             DieOnDelivery = true;
+            PlayersCanGrab = true;
+            NodesCanGrab = false;
+            DropParentsComponents = false;
             OnCollision = (s, o) =>
             {
-                if (o.player == null) return;
-                if (AlreadyDelivered.Contains(o)) return;
-                foreach (Type t in payloadNode.comps.Keys)
+                if (o.IsPlayer)
                 {
+                    if (!PlayersCanGrab) return;
+                }
+                else
+                {
+                    if (!NodesCanGrab) return;
+                }
+                if (AlreadyDelivered.Contains(o)) return;
+                Dictionary<Type, Component> dict;
+                if (DropParentsComponents)
+                {
+                    dict = parent.comps;
+                }
+                else
+                {
+                    dict = payloadNode.comps;
+                }
+
+                foreach (Type t in dict.Keys)
+                {
+                    if (dict[t].isEssential()) continue;
                     if (o.HasComp(t) && !OverwriteComponents) continue;
-                    Component comp = payloadNode.comps[t];
+                    Component comp = dict[t];
                     Component clone = comp.CreateClone(o);
                     o.addComponent(clone, true, true);
                     clone.OnSpawn();
+                }
+                if (o.HasComp<ItemPayload>())
+                {
+                    o.Comp<ItemPayload>().AlreadyDelivered.Add(parent);
                 }
                 if (DieOnDelivery)
                 {

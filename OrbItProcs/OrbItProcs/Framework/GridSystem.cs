@@ -5,6 +5,7 @@ using System.Text;
 using C3.XNA;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace OrbItProcs {
     public class GridSystem {
@@ -23,8 +24,6 @@ namespace OrbItProcs {
         public List<Collider>[,] grid;
         public HashSet<Collider> alreadyVisited;
 
-        
-
         public bool PolenterHack { get { return false; } 
             set 
             {
@@ -41,8 +40,8 @@ namespace OrbItProcs {
 
         public GridSystem() 
         {
-            room = OrbIt.game.room;
-            alreadyVisited = new HashSet<Collider>();
+            //room = OrbIt.game.room;
+            //alreadyVisited = new HashSet<Collider>();
             //GenerateAllReachOffsetsPerCoord(300);
         }
 
@@ -88,9 +87,20 @@ namespace OrbItProcs {
                 }
             }
             //
-            distToOffsets = GenerateReachOffsets();
-            GenerateAllReachOffsetsPerCoord(300);
+            distToOffsets = GenerateReachOffsetsDictionary();
+
+            //Stopwatch stopwatch = new Stopwatch();
+            //stopwatch.Start();
+            //GenerateAllReachOffsetsPerCoord(room.worldWidth / 3); //takes a shitload of time.. but only for the temproom?
+            //stopwatch.Stop();
+            //string taken = stopwatch.Elapsed.ToString();
+            //Console.WriteLine("gridsystem generation time taken: " + taken);
+
             bucketLists = new List<List<Collider>>[cellsX, cellsY];
+
+            ///new attempt
+            GenerateReachOffsetsArray();
+            
 
         }
         public IndexArray<Collider>[][] arrayGrid;
@@ -124,25 +134,108 @@ namespace OrbItProcs {
         }
 
 
-        static int largest = 0;
+        //static int largest = 0;
         public void insert(Collider collider)
         {
             Tuple<int, int> indexs = getIndexs(collider);
             //if (node == room.game.targetNode) Console.WriteLine("target indexs: {0} {1}",indexs.Item1,indexs.Item2);
             grid[indexs.Item1, indexs.Item2].Add(collider);
-            if (grid[indexs.Item1, indexs.Item2].Count > largest)
-            {
-                largest = grid[indexs.Item1, indexs.Item2].Count;
-                //Console.WriteLine(largest);
-            }
+            //if (grid[indexs.Item1, indexs.Item2].Count > largest)
+            //{
+            //    largest = grid[indexs.Item1, indexs.Item2].Count;
+            //    //Console.WriteLine(largest);
+            //}
             //grid[indexs.Item1, indexs.Item2].ToArray();
         }
+
+
+
+
+        //new attempt : april 14 2014   START
+        public int[] offsetArray;
+        public int[] reachIndexs;
+
+        public void GenerateReachOffsetsArray()
+        {
+            SortedDictionary<float, List<Tuple<int, int>>> offsets = new SortedDictionary<float, List<Tuple<int, int>>>();
+            int fullLength = 0;
+            for (int x = 0; x < cellsX; x++)
+            {
+                for (int y = 0; y < cellsY; y++)
+                {
+                    float dist = (float)Math.Sqrt(x * x + y * y) * cellWidth;
+                    if (!offsets.ContainsKey(dist)) offsets.Add(dist, new List<Tuple<int, int>>());
+
+                    offsets[dist].Add(new Tuple<int, int>(x, y));
+                    fullLength++;
+
+                    if (x == 0 && y > 0)
+                    {
+                        offsets[dist].Add(new Tuple<int, int>(x, -y));
+                        fullLength++;
+                    }
+                    else if (x > 0 && y == 0)
+                    {
+                        offsets[dist].Add(new Tuple<int, int>(-x, y));
+                        fullLength++;
+                    }
+                    else if (x > 0 && y > 0)
+                    {
+                        offsets[dist].Add(new Tuple<int, int>(-x, y));
+                        offsets[dist].Add(new Tuple<int, int>(x, -y));
+                        offsets[dist].Add(new Tuple<int, int>(-x, -y));
+                        fullLength += 3;
+                    }
+                }
+            }
+
+            offsetArray = new int[fullLength * 2]; // + 10 for... safety?
+            reachIndexs = new int[offsets.Keys.Count];
+            int indexCount = 0;
+            int reachIndexCount = 0;
+            foreach(float dist in offsets.Keys)
+            {
+                foreach(Tuple<int, int> tup in offsets[dist])
+                {
+                    offsetArray[indexCount++] = tup.Item1;
+                    offsetArray[indexCount++] = tup.Item2;
+                }
+                reachIndexs[reachIndexCount++] = indexCount - 2;
+            }
+        }
+        //instead of taking a reachCount, convert a pixel distance to the reachCount
+        public void retrieveOffsetArrays(Collider collider, int reachCount, Action<Collider, Collider> action)
+        {
+            int x = (int)collider.pos.X / cellWidth;
+            int y = (int)collider.pos.Y / cellHeight;
+            if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
+            //int findcount = FindCount(reachDistance);
+            int lastIndex = reachIndexs[reachCount]; 
+            for (int coordPointer = 0; coordPointer <= lastIndex; coordPointer += 2)
+            {
+                int xx = offsetArray[coordPointer] + x; 
+                int yy = offsetArray[coordPointer + 1] + y;
+                if (xx < 0 || xx >= cellsX || yy < 0 || yy >= cellsY) continue;
+                IndexArray<Collider> buck = arrayGrid[xx][yy];
+                int count = buck.index;
+                for (int j = 0; j < count; j++)
+                {
+                    Collider c = arrayGrid[xx][yy].array[j];
+                    //if (collider.parent == room.targetNode) c.parent.body.color = Color.Purple;
+                    if (alreadyVisited.Contains(c) || collider == c) continue;
+                    action(collider, c);
+                }
+            }
+        }
+
+
+        // /new attempt april 14 2014     END
 
         //todo: save indexs of nodes upon insertion (duh.)
         // save 3d lookup table of retrieveBuckets lists (per x,y,reach)
         // 
         SortedDictionary<float, List<Tuple<int, int>>> distToOffsets;
-        public SortedDictionary<float, List<Tuple<int, int>>> GenerateReachOffsets()
+        public SortedDictionary<float, List<Tuple<int, int>>> GenerateReachOffsetsDictionary()
         {
             SortedDictionary<float, List<Tuple<int, int>>> offsets = new SortedDictionary<float, List<Tuple<int, int>>>();
             for (int x = 0; x < cellsX; x++)
@@ -172,25 +265,25 @@ namespace OrbItProcs {
             }
             return offsets;
         }
-        public SortedDictionary<float, List<Tuple<int, int>>>[,] offsetsArray;
+        public SortedDictionary<float, List<Tuple<int, int>>>[,] offsetsArrayCollection;
 
         public void GenerateAllReachOffsetsPerCoord(float maxdist = float.MaxValue)
         {
             //GC.GetTotalMemory(true);
-            offsetsArray = new SortedDictionary<float, List<Tuple<int, int>>>[cellsX, cellsY];
+            offsetsArrayCollection = new SortedDictionary<float, List<Tuple<int, int>>>[cellsX, cellsY];
             for (int x = 0; x < cellsX; x++)
             {
                 for (int y = 0; y < cellsY; y++)
                 {
-                    offsetsArray[x,y] = new SortedDictionary<float, List<Tuple<int, int>>>();
+                    offsetsArrayCollection[x,y] = new SortedDictionary<float, List<Tuple<int, int>>>();
                     foreach(float dist in distToOffsets.Keys)
                     {
                         if (dist > maxdist) break;
                         foreach(Tuple<int,int> tuple in distToOffsets[dist])
                         {
                             if (tuple.Item1 + x < 0 || tuple.Item1 + x >= cellsX || tuple.Item2 + y < 0 || tuple.Item2 + y >= cellsY) continue;
-                            if (!offsetsArray[x, y].ContainsKey(dist)) offsetsArray[x, y][dist] = new List<Tuple<int, int>>();
-                            offsetsArray[x, y][dist].Add(tuple);
+                            if (!offsetsArrayCollection[x, y].ContainsKey(dist)) offsetsArrayCollection[x, y][dist] = new List<Tuple<int, int>>();
+                            offsetsArrayCollection[x, y][dist].Add(tuple);
                             //add bucket to bucketBag
                             bucketBags[x][y].AddItem(arrayGrid[x + tuple.Item1][y + tuple.Item2]);
                         }
@@ -248,7 +341,7 @@ namespace OrbItProcs {
                 bucketLists[x, y] = new List<List<Collider>>();
 
                 int count = FindCount(reachDistance);
-                var dict = offsetsArray[x, y];
+                var dict = offsetsArrayCollection[x, y];
                 if (dict.Count <= count)
                 {
                     throw new SystemException("Count too big exception");
@@ -273,7 +366,7 @@ namespace OrbItProcs {
             int y = (int)collider.pos.Y / cellHeight;
             if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
             int count = FindCount(reachDistance);
-            var dict = offsetsArray[x, y];
+            var dict = offsetsArrayCollection[x, y];
             if (dict.Count <= count)
             {
                 throw new SystemException("Count too big exception");
@@ -337,7 +430,7 @@ namespace OrbItProcs {
             var offsets = distToOffsets;
             if (x >= 0 && y >= 0)
             {
-                offsets = offsetsArray[x, y];
+                offsets = offsetsArrayCollection[x, y];
             }
             Console.WriteLine(" ::::" + cellsX + "," + cellsY + "\t");
             int c = 0;

@@ -35,7 +35,6 @@ namespace OrbItProcs
             {ItemSlots.A_Green, null},
             {ItemSlots.B_Red, null},
             {ItemSlots.X_Blue, null},
-            
         };
         public ItemSlots _currentItem = ItemSlots.Y_Yellow;
         public ItemSlots currentItem { 

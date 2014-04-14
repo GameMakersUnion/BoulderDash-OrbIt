@@ -230,10 +230,10 @@ namespace OrbItProcs
         }
         public float DetermineDamage(Node damager, Node damagee, float dmg)
         {
-            if (damager.player != null)
+            if (damager.IsPlayer)
             {
                 //both players
-                if (damagee.player != null)
+                if (damagee.IsPlayer)
                 {
                     if (gameMode == GameModes.Cooperative) return 0;
                     float mult = playersHurtPlayers.enabled ? playersHurtPlayers.value : 0;
@@ -255,7 +255,7 @@ namespace OrbItProcs
             else
             {
                 //node hurting player
-                if (damagee.player != null)
+                if (damagee.IsPlayer)
                 {
                     if (nodesHurtPlayers.enabled)
                     {

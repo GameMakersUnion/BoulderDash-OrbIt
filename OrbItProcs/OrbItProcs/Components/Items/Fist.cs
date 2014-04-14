@@ -126,7 +126,7 @@ namespace OrbItProcs
                     f *= parryKnockback;
                     otherparent.body.ApplyForce(f);
                 }
-                else if (o.player != null)
+                else if (o.IsPlayer)
                 {
                     o.player.node.meta.CalculateDamage(parent, damageMultiplier);
                 }

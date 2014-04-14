@@ -14,7 +14,7 @@ namespace OrbItProcs
             this.array = array;
             this.index = 0;// array.Length;
         }
-        public IndexArray(T[] array, int index = 0)
+        public IndexArray(T[] array, int index)
         {
             this.array = array;
             this.index = index;

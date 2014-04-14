@@ -29,6 +29,7 @@ namespace OrbItProcs
         EventHandler NotImplemented;
         public OrbIt game;
         public Room room { get { return game.room; } }
+        
         public UserInterface ui;
         private UserLevel _userLevel = UserLevel.User;
         public UserLevel userLevel
@@ -56,12 +57,7 @@ namespace OrbItProcs
                 }
             }
         }
-
-
         public bool CreatingGroup = false;
-
-
-        //private Group _ActiveGroup;
         public Group ActiveGroup { 
             get 
             {
@@ -536,6 +532,8 @@ namespace OrbItProcs
             cbListPicker.ItemIndex = index;
             //cmbListPicker.Refresh();
             //cmbListPicker.ItemIndex = 0;
+
+
         }
 
         public void UpdateGroupComboBoxes()

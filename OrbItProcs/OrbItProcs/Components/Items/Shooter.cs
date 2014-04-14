@@ -129,13 +129,13 @@ namespace OrbItProcs
         {
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>()
             {
-                {nodeE.radius, 5f},
-                {comp.movement, true},
-                {comp.basicdraw, true},
-                {comp.collision, true},
-                {comp.laser, true},
-                {comp.colorchanger, true},
-                {comp.lifetime, true},
+                { nodeE.radius, 5f},
+                { comp.movement, true},
+                { comp.basicdraw, true},
+                { comp.collision, true},
+                { comp.laser, true},
+                { comp.colorchanger, true},
+                { comp.lifetime, true},
                 //{comp.waver, true},
             };
             bulletNode = new Node(room, props);
@@ -251,7 +251,7 @@ namespace OrbItProcs
                 n.body.AddExclusionCheck(parent.Comp<Sword>().swordNode.body);
                 //n.body.AddExclusion(parent.Comp<Sword>().sword.body);
             }
-            if (parent.player != null)
+            if (parent.IsPlayer)
             {
                 n.Comp<ColorChanger>().colormode = ColorChanger.ColorMode.none;
                 n.SetColor(parent.player.pColor);
@@ -276,11 +276,11 @@ namespace OrbItProcs
                 }
                 if (parent.meta.damageMode == Meta.DamageMode.OnlyPlayers)
                 {
-                    if (them.player == null) return;
+                    if (!them.IsPlayer) return;
                 }
                 else if (parent.meta.damageMode == Meta.DamageMode.OnlyNonPlayers)
                 {
-                    if (them.player != null) return;
+                    if (them.IsPlayer) return;
                 }
                 else if (parent.meta.damageMode == Meta.DamageMode.Nothing)
                 {

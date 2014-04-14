@@ -18,11 +18,11 @@ namespace OrbItProcs
         }
         public void SwitchPlayerNode(Node n1, Node n2)
         {
-            if (n1.player == null && n2.player == null)
+            if (!n1.IsPlayer && !n2.IsPlayer)
             {
                 return;
             }
-            else if (n1.player != null && n2.player != null)
+            else if (n1.IsPlayer && n2.IsPlayer)
             {
                 BigTonyData data1 = n1.player.Data<BigTonyData>();
                 BigTonyData data2 = n2.player.Data<BigTonyData>();
@@ -45,12 +45,12 @@ namespace OrbItProcs
             {
                 Player p1;
                 Node n;
-                if (n1.player != null && n2.player == null)
+                if (n1.IsPlayer && !n2.IsPlayer)
                 {
                     p1 = n1.player;
                     n = n2;
                 }
-                else if (n1.player == null && n2.player != null)
+                else if (!n1.IsPlayer && n2.IsPlayer)
                 {
                     p1 = n2.player;
                     n = n1;

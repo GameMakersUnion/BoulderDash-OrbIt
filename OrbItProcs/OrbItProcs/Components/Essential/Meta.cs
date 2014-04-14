@@ -140,8 +140,6 @@ namespace OrbItProcs
             if (nps.Buttons.B == ButtonState.Pressed && ops.Buttons.B == ButtonState.Released) parent.player.currentItem = ItemSlots.B_Red;
             if (nps.Buttons.X == ButtonState.Pressed && ops.Buttons.X == ButtonState.Released) parent.player.currentItem = ItemSlots.X_Blue;
             if (nps.Buttons.Y == ButtonState.Pressed && ops.Buttons.Y == ButtonState.Released) parent.player.currentItem = ItemSlots.Y_Yellow;
-            
-
         }
         public void CalculateDamage(Node other, float damage)
         {
@@ -166,7 +164,7 @@ namespace OrbItProcs
                 drawBar(parent, 1, healthRatio, rotateHealthBar, Color.Lime, Color.YellowGreen, Color.Orange, Color.Red);
 
             }
-            if (parent.player != null)
+            if (parent.IsPlayer)
             {
                 Color Q;
                 switch (parent.player.currentItem)

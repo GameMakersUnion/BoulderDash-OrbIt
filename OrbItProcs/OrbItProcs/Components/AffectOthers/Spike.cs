@@ -61,7 +61,7 @@ namespace OrbItProcs
         {
             collisionAction = (s, t) =>
             {
-                if (t.player != null)
+                if (t.IsPlayer)
                 {
                     if (damageMode == DamanageMode.Players || damageMode == DamanageMode.Both)
                     {
