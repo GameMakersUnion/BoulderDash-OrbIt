@@ -10,7 +10,7 @@ namespace OrbItProcs
     /// The spike hurts nodes.
     /// </summary>
     [Info(UserLevel.User, "The spike hurts nodes.")]
-    public class Spike : Component
+    public class Spike : Component//, IRadius
     {
         public const mtypes CompType = mtypes.none;
         public override mtypes compType { get { return CompType; } set { } }

@@ -52,7 +52,7 @@ namespace OrbItProcs
         /// Alpha color component
         /// </summary>
         [Info(UserLevel.User, "Alpha color component")]
-        public int Alpha { get; set; }
+        public float AlphaPercent { get; set; }
         public BasicDraw() : this(null) { }
         public BasicDraw(Node parent = null) 
         {
@@ -60,6 +60,7 @@ namespace OrbItProcs
             com = comp.basicdraw; 
             DrawCircle = true;
             UpdateColor();
+            AlphaPercent = 100f;
         }
 
         public void UpdateColor()
@@ -69,7 +70,7 @@ namespace OrbItProcs
             Red = c.R;
             Green = c.G;
             Blue = c.B;
-            Alpha = c.A;
+            //AlphaPercent = c.A;
         }
 
         public override void OnSpawn()
@@ -100,7 +101,7 @@ namespace OrbItProcs
         {
             if (parent != null)
             {
-                parent.body.color = new Color(Red, Green, Blue, Alpha);
+                parent.body.color = new Color(Red, Green, Blue);
                 parent.body.permaColor = parent.body.color;
             }
         }
@@ -141,9 +142,9 @@ namespace OrbItProcs
             Layers layer = parent.IsPlayer ? Layers.Player : Layers.Under1;
 
             if (parent.HasComp(comp.shader))
-                parent.room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale, parent.body.orient,layer, parent.Comp<Shader>().shaderPack);
+                parent.room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color * (AlphaPercent / 100f), parent.body.scale, parent.body.orient,layer, parent.Comp<Shader>().shaderPack);
             else
-                parent.room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color, parent.body.scale, parent.body.orient, layer);
+                parent.room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color * (AlphaPercent / 100f), parent.body.scale, parent.body.orient, layer);
 
             /*Rectangle? sourceRect = null;
             int minx = 0, miny = 0, maxx = tex.Width, maxy = tex.Height;

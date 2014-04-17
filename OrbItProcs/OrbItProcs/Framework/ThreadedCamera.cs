@@ -84,12 +84,13 @@ namespace OrbItProcs
             this.life = maxlife;
             this.shaderPack = shaderPack ?? new ShaderPack(color);
         }
-        public DrawCommand(string text, Vector2 position, Color color, float scale = 0.5f, int maxlife = -1, ShaderPack? shaderPack = null)
+        public DrawCommand(string text, Vector2 position, Color color, float scale = 0.5f, int maxlife = -1, ShaderPack? shaderPack = null, float layerDepth = 0)
         {
             this.type = DrawType.drawString;
             this.position = position;
             this.color = color;
             this.permColor = color;
+            this.layerDepth = layerDepth;
             this.scale = scale;
             this.text = text;
             this.maxlife = maxlife;
@@ -108,7 +109,7 @@ namespace OrbItProcs
                     batch.Draw(Assets.textureDict[texture], position, sourceRect, color, rotation, origin, scalevect, effects, layerDepth);
                     break;
                 case DrawType.drawString:
-                    batch.DrawString(Assets.font, text, position, color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
+                    batch.DrawString(Assets.font, text, position, color, 0f, Vector2.Zero, scale, SpriteEffects.None, layerDepth);
                     break;
             }
             if (maxlife > 0)
@@ -145,7 +146,7 @@ namespace OrbItProcs
         public SpriteBatch batch;
 
         static double x = 0;
-        static bool phaseBackgroundColor = true;
+        static bool phaseBackgroundColor = false;
 
         public ThreadedCamera(Room room, float zoom = 0.5f, Vector2? pos = null)
         {
@@ -292,12 +293,12 @@ namespace OrbItProcs
         }
         public void DrawStringWorld(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true, Layers Layer = Layers.Over5)
         {
-            Color c2 = Color.White;
+            Color c2 = Color.Red;
             if (color2 != null) c2 = (Color)color2;
             Vector2 pos = position * zoom;
             if (offset) pos += CameraOffsetVect;
-            nextFrame.Enqueue(new DrawCommand(text, position * zoom + CameraOffsetVect, c2, scale));
-            nextFrame.Enqueue(new DrawCommand(text, position * zoom + CameraOffsetVect + new Vector2(1, -1), color, scale));
+            nextFrame.Enqueue(new DrawCommand(text, position * zoom + CameraOffsetVect, c2, scale, layerDepth: (((float)Layer) / 10)));
+            nextFrame.Enqueue(new DrawCommand(text, position * zoom + CameraOffsetVect + new Vector2(1, -1), color, scale, layerDepth: (((float)Layer) / 10)));
         }
         public void DrawStringScreen(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true, Layers Layer = Layers.Over5)
         {
@@ -305,8 +306,8 @@ namespace OrbItProcs
             if (color2 != null) c2 = (Color)color2;
             Vector2 pos = position;
             if (offset) pos += CameraOffsetVect;
-            nextFrame.Enqueue(new DrawCommand(text, pos, c2, scale));
-            nextFrame.Enqueue(new DrawCommand(text, pos + new Vector2(1, -1), color, scale));
+            nextFrame.Enqueue(new DrawCommand(text, pos, c2, scale, layerDepth: (((float)Layer) / 10)));
+            nextFrame.Enqueue(new DrawCommand(text, pos + new Vector2(1, -1), color, scale, layerDepth: (((float)Layer) / 10)));
         }
 
         public void Screenshot()
@@ -335,7 +336,7 @@ namespace OrbItProcs
         internal void AbortThread()
         {
             try { _worker.Abort(); }
-            finally { }
+            catch { }
         }
     }
 }

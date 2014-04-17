@@ -11,7 +11,7 @@ namespace OrbItProcs
     /// When another node enters this radius, it is displaced in the direction of the angle without affecting its velocity.
     /// </summary>
     [Info(UserLevel.User, "When another node enters this radius, it is displaced in the direction of the angle without affecting its velocity.", CompType)]
-    public class Displace : Component, ILinkable, IMultipliable
+    public class Displace : Component, ILinkable, IMultipliable//, IRadius
     {
         public const mtypes CompType = mtypes.affectother;
         public override mtypes compType { get { return CompType; } set { } }

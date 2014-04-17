@@ -91,7 +91,8 @@ namespace OrbItProcs {
 
             //Stopwatch stopwatch = new Stopwatch();
             //stopwatch.Start();
-            //GenerateAllReachOffsetsPerCoord(room.worldWidth / 3); //takes a shitload of time.. but only for the temproom?
+            int generateReach = room.worldWidth / 3;
+            //GenerateAllReachOffsetsPerCoord(generateReach); //takes a shitload of time.. but only for the temproom?
             //stopwatch.Stop();
             //string taken = stopwatch.Elapsed.ToString();
             //Console.WriteLine("gridsystem generation time taken: " + taken);
@@ -119,7 +120,11 @@ namespace OrbItProcs {
         {
             int x = (int)collider.pos.X / cellWidth;
             int y = (int)collider.pos.Y / cellHeight;
-            if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
+            //if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
+            if (x < 0) x = 0;
+            else if (x >= cellsX) x = cellsX - 1;
+            if (y < 0) y = 0;
+            else if (y >= cellsY) y = cellsY - 1;
             arrayGrid[x][y].AddItem(collider);
         }
         public void clearBuckets()
@@ -203,14 +208,15 @@ namespace OrbItProcs {
                 reachIndexs[reachIndexCount++] = indexCount - 2;
             }
         }
-        //instead of taking a reachCount, convert a pixel distance to the reachCount
-        public void retrieveOffsetArrays(Collider collider, int reachCount, Action<Collider, Collider> action)
+        public void retrieveOffsetArraysCollision(Collider collider, Action<Collider, Collider> action, float distance)
         {
             int x = (int)collider.pos.X / cellWidth;
             int y = (int)collider.pos.Y / cellHeight;
-            if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
-            //int findcount = FindCount(reachDistance);
-            int lastIndex = reachIndexs[reachCount]; 
+            if (x < 0 || x > cellsX || y < 0 || y > cellsY) return;
+            int findcount = FindCount(distance);
+            int lastIndex;
+            //lastIndex = reachIndexs[reachCount];
+            lastIndex = reachIndexs[findcount];
             for (int coordPointer = 0; coordPointer <= lastIndex; coordPointer += 2)
             {
                 int xx = offsetArray[coordPointer] + x; 
@@ -221,13 +227,38 @@ namespace OrbItProcs {
                 for (int j = 0; j < count; j++)
                 {
                     Collider c = arrayGrid[xx][yy].array[j];
-                    //if (collider.parent == room.targetNode) c.parent.body.color = Color.Purple;
+                    //if (room.ColorNodesInReach && collider.parent == room.targetNode) c.parent.body.color = Color.Purple;
                     if (alreadyVisited.Contains(c) || collider == c) continue;
                     action(collider, c);
                 }
             }
         }
 
+        public void retrieveOffsetArraysAffect(Collider collider, Action<Collider, Collider> action, float distance)
+        {
+            int x = (int)collider.pos.X / cellWidth;
+            int y = (int)collider.pos.Y / cellHeight;
+            if (x < 0 || x > cellsX || y < 0 || y > cellsY) return;
+            int findcount = FindCount(distance);
+            int lastIndex;
+            //lastIndex = reachIndexs[reachCount];
+            lastIndex = reachIndexs[findcount];
+            for (int coordPointer = 0; coordPointer <= lastIndex; coordPointer += 2)
+            {
+                int xx = offsetArray[coordPointer] + x;
+                int yy = offsetArray[coordPointer + 1] + y;
+                if (xx < 0 || xx >= cellsX || yy < 0 || yy >= cellsY) continue;
+                IndexArray<Collider> buck = arrayGrid[xx][yy];
+                int count = buck.index;
+                for (int j = 0; j < count; j++)
+                {
+                    //Collider c = arrayGrid[xx][yy].array[j];
+                    if (room.ColorNodesInReach && collider.parent == room.targetNode) buck.array[j].parent.body.color = Color.Purple;
+                    //if (alreadyVisited.Contains(c) || collider == c) continue;
+                    action(collider, buck.array[j]);
+                }
+            }
+        }
 
         // /new attempt april 14 2014     END
 

@@ -196,6 +196,8 @@ namespace OrbItProcs {
             };
         }
         Action<Collider, Collider> collideAction;
+
+        
         public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true) : this()
         {
             //this.mapzoom = 2f;
@@ -342,29 +344,41 @@ namespace OrbItProcs {
             if (CollisionSetPolygon.Contains(collider))
                 CollisionSetPolygon.Remove(collider);
         }
-
+        public int affectAlgorithm = 2;
+        public bool ColorNodesInReach = true;
         public void Update(GameTime gametime)
         {
             camera.RenderAsync();
             long elapsed = 0;
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
             totalElapsedMilliseconds += elapsed;
-            
-            gridsystemAffect.clear();
+
             gridSystemLines = new List<Rectangle>();
 
             game.processManager.Update();
 
             HashSet<Node> toDelete = new HashSet<Node>();
-            //add all nodes from every group to the full hashset of nodes, and insert unique nodes into the gridsystem
-            //foreach (var n in masterGroup.childGroups["General Groups"].fullSet)
-            foreach (var n in masterGroup.fullSet)
+            if (affectAlgorithm == 1)
             {
-                if (masterGroup.childGroups["Walls"].fullSet.Contains(n)) continue;
-                gridsystemAffect.insert(n.body);
+                gridsystemAffect.clear();
+                foreach (var n in masterGroup.fullSet)
+                {
+                    if (ColorNodesInReach) n.body.color = Color.White;
+                    if (masterGroup.childGroups["Walls"].fullSet.Contains(n)) continue;
+                    gridsystemAffect.insert(n.body);
+                }
             }
-            Testing.OldStopTimer("gridsystem insert");
-            //
+            else if (affectAlgorithm == 2)
+            {
+                gridsystemAffect.clearBuckets();
+                foreach (var n in masterGroup.fullSet)
+                {
+                    if (ColorNodesInReach) n.body.color = Color.White;
+                    if (masterGroup.childGroups["Walls"].fullSet.Contains(n)) continue;
+                    gridsystemAffect.insertToBuckets(n.body);
+                }
+            }
+
             UpdateCollision();
             if (contacts.Count > 0) contacts = new List<Manifold>();
 
@@ -375,8 +389,6 @@ namespace OrbItProcs {
                     n.Update(gametime);
                 }
             }
-            Testing.OldStopTimer("node update");
-
             if (AfterIteration != null) AfterIteration(this, null);
 
             //addGridSystemLines(gridsystem);
@@ -388,21 +400,25 @@ namespace OrbItProcs {
 
             scheduler.AffectSelf();
 
-            
-            if (resizeRoomSignal)
-            {
-                triggerResizeRoom();
-                resizeRoomSignal = false;
-            }
+            CheckForRoomResize();
 
             Draw();
             camera.CatchUp();
         }
 
+        private void CheckForRoomResize()
+        {
+            if (resizeRoomSignal)
+            {
+                triggerResizeRoom();
+                resizeRoomSignal = false;
+            }
+        }
+
         
 
         static int algorithm = 7;
-        public void UpdateCollision()
+        private void UpdateCollision()
         {
             Testing.modInc();
             //Testing.w("insertion").Start();
@@ -417,9 +433,11 @@ namespace OrbItProcs {
             if (algorithm >= 5)
             {
                 gridsystemCollision.clearBuckets();
-                foreach (var n in CollisionSetCircle) //.ToList()
+                foreach (var c in CollisionSetCircle) //.ToList()
                 {
-                    gridsystemCollision.insertToBuckets(n);
+                    //if (ColorNodesInReach) c.parent.body.color = Color.White;
+                    if (!c.parent.active) continue;
+                    gridsystemCollision.insertToBuckets(c);
                 }
             }
 
@@ -440,12 +458,10 @@ namespace OrbItProcs {
                     foreach (var otherCol in CollisionSetPolygon.ToList())
                     {
                         collideAction(c, otherCol);
-                        //otherCol.parent.body.color = Color.White;
                     }
                     foreach (var otherCol in CollisionSetCircle.ToList())
                     {
                         collideAction(c, otherCol);
-                        //otherCol.parent.body.color = Color.White;
                     }
                 }
             }
@@ -458,70 +474,71 @@ namespace OrbItProcs {
                     int reach = (int)c.radius * 2;
                     if (c.shape is Polygon)
                     {
-                        reach = (int)(c.shape as Polygon).polyReach;
+                        reach = (int)(c.shape as Polygon).polyReach; //shouldnt have a polygon in the circle list
                         foreach (var otherCol in CollisionSetCircle.ToList())
                         {
                             collideAction(c, otherCol);
                         }
                     }
-                    else if (algorithm == 5)
-                    {
-                        var bucketBag = gridsystemCollision.retrieveBucketBags(c);
-                        if (bucketBag != null)
-                        {
-                            if (c is Body)
-                            {
-                                Body b = (Body)c;
-                                for (int i = 0; i < bucketBag.index; i++)
-                                {
-                                    for (int j = 0; j < bucketBag.array[i].index; j++)
-                                    {
-                                        Collider cc = bucketBag.array[i].array[j];
-                                        if (cc.parent == b.parent) continue;
-                                        if (gridsystemCollision.alreadyVisited.Contains(cc))
-                                            continue;
-                                        if (cc is Body)
-                                        {
-                                            Body bb = (Body)cc;
-                                            //if (!b.exclusionList.Contains(bb)) 
-                                                b.CheckCollisionBody(bb);
-                                            
-                                        }
-                                        else
-                                        {
-                                            b.CheckCollisionCollider(cc);
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                for (int i = 0; i < bucketBag.index; i++)
-                                {
-                                    for (int j = 0; j < bucketBag.array[i].index; j++)
-                                    {
-                                        Collider cc = bucketBag.array[i].array[j];
-                                        if (cc.parent == c.parent) continue;
-                                        if (gridsystemCollision.alreadyVisited.Contains(cc))
-                                        continue;
-                                        if (cc is Body)
-                                        {
-                                            Body bb = (Body)cc;
-                                            //if (!c.exclusionList.Contains(bb)) 
-                                                c.CheckCollisionBody(bb);
-                                        }
-                                        else
-                                        {
-                                            //c.CheckCollision(cc);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    //else if (algorithm == 5)
+                    //{
+                    //    var bucketBag = gridsystemCollision.retrieveBucketBags(c);
+                    //    if (bucketBag != null)
+                    //    {
+                    //        if (c is Body)
+                    //        {
+                    //            Body b = (Body)c;
+                    //            for (int i = 0; i < bucketBag.index; i++)
+                    //            {
+                    //                for (int j = 0; j < bucketBag.array[i].index; j++)
+                    //                {
+                    //                    Collider cc = bucketBag.array[i].array[j];
+                    //                    if (cc.parent == b.parent) continue;
+                    //                    if (c.parent == targetNode) cc.parent.body.color = Color.Purple;
+                    //                    if (gridsystemCollision.alreadyVisited.Contains(cc))
+                    //                        continue;
+                    //                    if (cc is Body)
+                    //                    {
+                    //                        Body bb = (Body)cc;
+                    //                        //if (!b.exclusionList.Contains(bb)) 
+                    //                            b.CheckCollisionBody(bb);
+                    //                    }
+                    //                    else
+                    //                    {
+                    //                        b.CheckCollisionCollider(cc);
+                    //                    }
+                    //                }
+                    //            }
+                    //        }
+                    //        else
+                    //        {
+                    //            for (int i = 0; i < bucketBag.index; i++)
+                    //            {
+                    //                for (int j = 0; j < bucketBag.array[i].index; j++)
+                    //                {
+                    //                    Collider cc = bucketBag.array[i].array[j];
+                    //                    if (cc.parent == c.parent) continue;
+                    //                    if (cc.parent == targetNode) cc.parent.body.color = Color.Purple;
+                    //                    if (gridsystemCollision.alreadyVisited.Contains(cc))
+                    //                    continue;
+                    //                    if (cc is Body)
+                    //                    {
+                    //                        Body bb = (Body)cc;
+                    //                        //if (!c.exclusionList.Contains(bb)) 
+                    //                            c.CheckCollisionBody(bb);
+                    //                    }
+                    //                    else
+                    //                    {
+                    //                        //c.CheckCollision(cc);
+                    //                    }
+                    //                }
+                    //            }
+                    //        }
+                    //    }
+                    //}
                     else if (algorithm == 7)
                     {
-                        gridsystemCollision.retrieveOffsetArrays(c, 6, collideAction);
+                        gridsystemCollision.retrieveOffsetArraysCollision(c, collideAction, c.radius * 2);
                     }
                     //else if (algorithm == 6)
                     //{

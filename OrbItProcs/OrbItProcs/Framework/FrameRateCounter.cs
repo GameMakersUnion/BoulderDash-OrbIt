@@ -49,7 +49,7 @@ namespace OrbItProcs {
                 frameCounter = 0;
                 updateRate = updateCounter;
                 updateCounter = 0;
-
+                
             }
         }
 
@@ -81,7 +81,7 @@ namespace OrbItProcs {
             {
                 string count = room.generalGroups.fullSet.Count.ToString();
                 int x = OrbIt.Width - (count.Length * 7) - 20;
-                room.camera.DrawStringScreen(count, new Vector2(x, OrbIt.Height - y1), Color.Black, offset: false);
+                room.camera.DrawStringScreen(count, new Vector2(x, OrbIt.Height - y1), Color.Black, offset: false, Layer: Layers.Over5);
             }
 
 

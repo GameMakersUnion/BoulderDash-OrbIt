@@ -358,9 +358,20 @@ namespace OrbItProcs {
             //comps.Add(comp.body, body);
             //comps.Add(comp.movement, movement);
             //comps.Add(comp.collision, collision);
-            
-        }
 
+            //room.gridsystemAffect.retrieveOffsetArrays()
+            affectAction = (source, other) =>
+            {
+                //todo: extend to check for every component for finer control if necessary
+                if (source.parent.ExclusionCheck != null && source.parent.ExclusionCheck(other.parent)) return;
+                foreach (Type t in source.parent.aOtherProps)
+                {
+                    if (!source.parent.comps[t].active) continue;
+                    source.parent.comps[t].AffectOther(other.parent);
+                }
+            };
+        }
+        Action<Collider, Collider> affectAction;
         public Node(Room room, Dictionary<dynamic, dynamic> userProps, ShapeType shapetype = ShapeType.eCircle, bool createHash = true)
             : this(room, shapetype, createHash)
         {
@@ -453,6 +464,7 @@ namespace OrbItProcs {
             tags.Remove(tag);
         }
         public Func<Node, bool> ExclusionCheck = null;
+        public int affectionReach = 180;
         public virtual void Update(GameTime gametime)
         {
             if (IsPlayer)
@@ -474,73 +486,58 @@ namespace OrbItProcs {
 
             if (aOtherProps.Count > 0)
             {
-                List<Collider> returnObjectsFinal = new List<Collider>();
+                if (room.affectAlgorithm == 1)
+                {
+                    List<Collider> returnObjectsFinal = new List<Collider>();
 
-                int reach; //update later based on cell size and radius (or polygon size.. maybe based on it's AABB)
-                if (body.shape is Polygon)
-                {
-                    reach = 20;
-                }
-                else
-                {
-                    //reach = (int)(body.radius * 5) / room.gridsystem.cellWidth;
-                    reach = 10;
-                }
-                returnObjectsFinal = room.gridsystemAffect.retrieve(body, reach);
-                returnObjectsFinal.Remove(body);
-                if (ExclusionCheck == null)
-                {
-                    foreach (Collider other in returnObjectsFinal)
+                    int reach; //update later based on cell size and radius (or polygon size.. maybe based on it's AABB)
+                    if (body.shape is Polygon)
                     {
-                        if (other.parent.active)
-                        {
-                            foreach (Type t in aOtherProps)
-                            {
-                                if (!comps[t].active) continue;
-                                comps[t].AffectOther(other.parent);
-                            }
-                        }
+                        reach = 20;
                     }
-                }
-                else
-                {
-                    foreach (Collider other in returnObjectsFinal)
+                    else
                     {
-                        if (other.parent.active)
-                        {
-                            if (ExclusionCheck(other.parent)) continue; //todo: extend to check for every component for finer control if necessary
-                            foreach (Type t in aOtherProps)
-                            {
-                                if (!comps[t].active) continue;
-                                comps[t].AffectOther(other.parent);
-                            }
-                        }
+                        //reach = (int)(body.radius * 5) / room.gridsystem.cellWidth;
+                        reach = 10;
                     }
-                }
-                // God's Tomb
-                //foreach(Component component in comps.Values)
-                //{
-                //    component.AffectSelf();
-                //}
-                /*
-                var buckets = room.gridsystem.retrieveBuckets(this, 115);
-                if (buckets != null)
-                {
-                    foreach (var bucket in buckets)
+                    returnObjectsFinal = room.gridsystemAffect.retrieve(body, reach);
+                    returnObjectsFinal.Remove(body);
+                    if (ExclusionCheck == null)
                     {
-                        foreach (var nn in bucket)
+                        foreach (Collider other in returnObjectsFinal)
                         {
-                            if (nn.active)
+                            if (room.ColorNodesInReach && this == room.targetNode && other is Body) (other as Body).color = Color.Purple;
+                            if (other.parent.active)
                             {
-                                foreach (comp c in aOtherProps)
+                                foreach (Type t in aOtherProps)
                                 {
-                                    comps[c].AffectOther(nn);
+                                    if (!comps[t].active) continue;
+                                    comps[t].AffectOther(other.parent);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (Collider other in returnObjectsFinal)
+                        {
+                            if (room.ColorNodesInReach && this == room.targetNode && other is Body) (other as Body).color = Color.Purple;
+                            if (other.parent.active)
+                            {
+                                if (ExclusionCheck(other.parent)) continue; //todo: extend to check for every component for finer control if necessary
+                                foreach (Type t in aOtherProps)
+                                {
+                                    if (!comps[t].active) continue;
+                                    comps[t].AffectOther(other.parent);
                                 }
                             }
                         }
                     }
                 }
-                //*/
+                else if (room.affectAlgorithm == 2)
+                {
+                    room.gridsystemAffect.retrieveOffsetArraysAffect(body, affectAction, affectionReach);
+                }
             }
             if (OnAffectOthers != null) OnAffectOthers.Invoke(this, null);
 
@@ -582,8 +579,15 @@ namespace OrbItProcs {
             {
                 RemoveComponentTriggered();
             }
-
         }
+        //may implement this optimization if there are more affect others compoenents based on grabbing surrounding nodes from buckets
+        //public void ReorderAffectOthersList()
+        //{
+        //    List<Type> affectOthers = aOtherProps.ToList();
+        //    //affectOthers.Sort((a, b) => )
+        //
+        //}
+
 
         public void Draw()
         {
@@ -828,6 +832,7 @@ namespace OrbItProcs {
             {
                 compsToAdd.Remove(toaddremove.ElementAt(0));
             }
+            
         }
 
         public void SortComponentLists()

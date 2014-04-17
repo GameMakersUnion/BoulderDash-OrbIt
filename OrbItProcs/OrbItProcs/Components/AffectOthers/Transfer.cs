@@ -12,7 +12,7 @@ namespace OrbItProcs
     /// When another node enters the radius of this node, it gets teleported to the opposite side of this node, relative to this node's origin. 
     /// </summary>
     [Info(UserLevel.User, "When another node enters the radius of this node, it gets teleported to the opposite side of this node, relative to this node's origin. ", CompType)]
-    public class Transfer : Component, ILinkable, IMultipliable
+    public class Transfer : Component, ILinkable, IMultipliable//, IRadius
     {
         public const mtypes CompType = mtypes.affectother;
         public override mtypes compType { get { return CompType; } set { } }

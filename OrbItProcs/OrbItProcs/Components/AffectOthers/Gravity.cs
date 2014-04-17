@@ -17,7 +17,7 @@ namespace OrbItProcs {
     /// Attracts or repels nodes that it affects.
     /// </summary>
     [Info(UserLevel.User, "Attracts or repels nodes that it affects.", CompType)]
-    public class Gravity : Component, ILinkable, IMultipliable
+    public class Gravity : Component, ILinkable, IMultipliable//, IRadius
     {
         public const mtypes CompType = mtypes.affectother | mtypes.minordraw;
         public override mtypes compType { get { return CompType; } set { } }
@@ -208,13 +208,13 @@ namespace OrbItProcs {
         }
         public void DrawOutwards()
         {
-            parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.5f, drawscale / 50f, Layers.Under2);
+            parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.2f, drawscale / 50f, Layers.Under2);
             drawscale -= 2f;
             if (drawscale < 10) drawscale = radius / 10;
         }
         public void DrawInwards()
         {
-            parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.5f, drawscale / 50f, Layers.Under2);
+            parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.2f, drawscale / 50f, Layers.Under2);
             drawscale += 2f;
             if (drawscale > radius / 10) drawscale = 5f;
         }

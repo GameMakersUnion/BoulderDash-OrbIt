@@ -11,7 +11,7 @@ namespace OrbItProcs
     /// Pushes all affected nodes in a globally set direction
     /// </summary>
     [Info(UserLevel.User, "Pushes all affected nodes in a globally set direction", CompType)]
-    public class FixedForce : Component, ILinkable
+    public class FixedForce : Component, ILinkable//, IRadius
     {
         public const mtypes CompType = mtypes.affectother;
         public override mtypes compType { get { return CompType; } set { } }

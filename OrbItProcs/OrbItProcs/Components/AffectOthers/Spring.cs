@@ -13,7 +13,7 @@ namespace OrbItProcs
     /// Pushes away nodes that are within the radius, can also pull in nodes that beyond the radius. 
     /// </summary>
     [Info(UserLevel.User, "Pushes away nodes that are within the radius, can also pull in nodes that beyond the radius. ", CompType)]
-    public class Spring : Component, ILinkable, IMultipliable
+    public class Spring : Component, ILinkable, IMultipliable//, IRadius
     {
         public const mtypes CompType = mtypes.affectself | mtypes.affectother;
         public override mtypes compType { get { return CompType; } set { } }
@@ -57,17 +57,19 @@ namespace OrbItProcs
         }
         public override void AffectOther(Node other) // called when used as a link
         {
-            if (!active) { return; }
-                float dist = Vector2.Distance(parent.body.pos, other.body.pos);
-                if (!hook && dist > restdist) return;
-                if (lowerBound.enabled && dist < lowerBound.value) dist = lowerBound.value;
+            if (!active) return;
 
-                float stretch = dist - restdist;
-                float strength = -stretch * multiplier / 10000f;
-                Vector2 force = other.body.pos - parent.body.pos;
-                VMath.NormalizeSafe(ref force);
-                force *= strength;
-                other.body.ApplyForce(force);
+            float dist = Vector2.Distance(parent.body.pos, other.body.pos);
+            if (!hook && dist > restdist) return;
+            if (dist > restdist * 2) return;
+            if (lowerBound.enabled && dist < lowerBound.value) dist = lowerBound.value;
+
+            float stretch = dist - restdist;
+            float strength = -stretch * multiplier / 10000f;
+            Vector2 force = other.body.pos - parent.body.pos;
+            VMath.NormalizeSafe(ref force);
+            force *= strength;
+            other.body.ApplyForce(force);
         }
         public override void AffectSelf() // called when making individual links (clicking for each link)
         {
