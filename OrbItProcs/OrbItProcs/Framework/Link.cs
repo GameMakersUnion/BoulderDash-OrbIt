@@ -258,29 +258,29 @@ namespace OrbItProcs
             }
         }
 
-
-        public Link()
-        {
-            //..
-            this.room = OrbIt.game.room;
-            this.components = new ObservableHashSet<ILinkable>();
-            this.sources = new ObservableHashSet<Node>();
-            this.targets = new ObservableHashSet<Node>();
-        }
+        //so sorry lil'p
+        //public Link()
+        //{
+        //    //..
+        //    this.room = OrbIt.game.room;
+        //    this.components = new ObservableHashSet<ILinkable>();
+        //    this.sources = new ObservableHashSet<Node>();
+        //    this.targets = new ObservableHashSet<Node>();
+        //}
 
         //blank link (for the palette)
-        public Link(ILinkable linkComponent, formationtype ftype = formationtype.AllToAll)
+        public Link(Room room, ILinkable linkComponent, formationtype ftype = formationtype.AllToAll)
         {
-            this.room = OrbIt.game.room;
+            this.room = room;
             this.components = new ObservableHashSet<ILinkable>();
             this.components.Add(linkComponent);
             this._FormationType = ftype;
             this.formation = new Formation(this, ftype, InitializeFormation: false);
         }
 
-        public Link(Link link, dynamic source, dynamic target)
+        public Link(Room room, Link link, dynamic source, dynamic target)
         {
-            this.room = OrbIt.game.room;
+            this.room = room;
             this.components = new ObservableHashSet<ILinkable>();
 
             this.UpdateTime = link.UpdateTime;
@@ -308,7 +308,7 @@ namespace OrbItProcs
 
         private void Initialize(dynamic src, dynamic trg, ILinkable linkComponent, dynamic formation)
         {
-            this.room = OrbIt.game.room;
+            //this.room = OrbIt.game.room;
             
             if (components == null)
             {

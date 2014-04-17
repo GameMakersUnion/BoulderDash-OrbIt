@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Component = OrbItProcs.Component;
 using System.Collections.ObjectModel;
 using OrbItProcs;
+using System.Threading;
 
 namespace OrbItProcs {
 
@@ -30,8 +31,8 @@ namespace OrbItProcs {
 
         #region // Lists // --------------------------------------------\
         [Polenter.Serialization.ExcludeFromSerialization]
-        public HashSet<Collider> CollisionSetCircle { get; set; }
-        public HashSet<Collider> CollisionSetPolygon { get; set; }
+        public ConcurrentHashSet<Collider> CollisionSetCircle { get; set; }
+        public ConcurrentHashSet<Collider> CollisionSetPolygon { get; set; }
         //[Polenter.Serialization.ExcludeFromSerialization]
         public List<Rectangle> gridSystemLines = new List<Rectangle>(); //dns
         //[Polenter.Serialization.ExcludeFromSerialization]
@@ -148,13 +149,16 @@ namespace OrbItProcs {
         #endregion
 
         private bool resizeRoomSignal = false;
-
+        //slim shady
+        public ManualResetEventSlim CameraWaiting = new ManualResetEventSlim(false);
+        public object locker = new object();
+        public bool updated = false;
         public Room()
         {
             groupHashes = new ObservableHashSet<string>();
             nodeHashes = new ObservableHashSet<string>();
-            CollisionSetCircle = new HashSet<Collider>();
-            CollisionSetPolygon = new HashSet<Collider>();
+            CollisionSetCircle = new ConcurrentHashSet<Collider>();
+            CollisionSetPolygon = new ConcurrentHashSet<Collider>();
             colIterations = 1;
             
             camera = new ThreadedCamera(this, 1f);
@@ -196,7 +200,7 @@ namespace OrbItProcs {
             };
         }
         Action<Collider, Collider> collideAction;
-
+        public event Action afterUpdateEvent;
         
         public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true) : this()
         {
@@ -332,10 +336,13 @@ namespace OrbItProcs {
         
         public void AddCollider(Collider collider)
         {
-            if (collider.shape is Circle)
-                CollisionSetCircle.Add(collider);
-            else if (collider.shape is Polygon)
-                CollisionSetPolygon.Add(collider);
+            afterUpdateEvent += delegate
+            {
+                if (collider.shape is Circle)
+                    CollisionSetCircle.Add(collider);
+                else if (collider.shape is Polygon)
+                    CollisionSetPolygon.Add(collider);
+            };
         }
         public void RemoveCollider(Collider collider)
         {
@@ -346,64 +353,84 @@ namespace OrbItProcs {
         }
         public int affectAlgorithm = 2;
         public bool ColorNodesInReach = true;
-        public void Update(GameTime gametime)
+        public void Update(object obj)
         {
-            camera.RenderAsync();
-            long elapsed = 0;
-            if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
-            totalElapsedMilliseconds += elapsed;
-
-            gridSystemLines = new List<Rectangle>();
-
-            game.processManager.Update();
-
-            HashSet<Node> toDelete = new HashSet<Node>();
-            if (affectAlgorithm == 1)
+            while (true)
             {
-                gridsystemAffect.clear();
-                foreach (var n in masterGroup.fullSet)
+                camera.RenderAsync();
+                long elapsed = 0;
+                if (OrbIt.gametime != null) elapsed = (long)Math.Round(OrbIt.gametime.ElapsedGameTime.TotalMilliseconds);
+                totalElapsedMilliseconds += elapsed;
+
+                gridSystemLines = new List<Rectangle>();
+
+                game.processManager.Update();
+
+                HashSet<Node> toDelete = new HashSet<Node>();
+                if (affectAlgorithm == 1)
                 {
-                    if (ColorNodesInReach) n.body.color = Color.White;
-                    if (masterGroup.childGroups["Walls"].fullSet.Contains(n)) continue;
-                    gridsystemAffect.insert(n.body);
+                    gridsystemAffect.clear();
+                    foreach (var n in masterGroup.fullSet)
+                    {
+                        if (ColorNodesInReach) n.body.color = Color.White;
+                        if (masterGroup.childGroups["Walls"].fullSet.Contains(n)) continue;
+                        gridsystemAffect.insert(n.body);
+                    }
                 }
-            }
-            else if (affectAlgorithm == 2)
-            {
-                gridsystemAffect.clearBuckets();
-                foreach (var n in masterGroup.fullSet)
+                else if (affectAlgorithm == 2)
                 {
-                    if (ColorNodesInReach) n.body.color = Color.White;
-                    if (masterGroup.childGroups["Walls"].fullSet.Contains(n)) continue;
-                    gridsystemAffect.insertToBuckets(n.body);
+                    gridsystemAffect.clearBuckets();
+                    foreach (var n in masterGroup.fullSet.ToList())
+                    {
+                        if (ColorNodesInReach) n.body.color = Color.White;
+                        if (masterGroup.childGroups["Walls"].fullSet.Contains(n)) continue;
+                        gridsystemAffect.insertToBuckets(n.body);
+                    }
                 }
-            }
 
-            UpdateCollision();
-            if (contacts.Count > 0) contacts = new List<Manifold>();
+                UpdateCollision();
+                if (contacts.Count > 0) contacts = new List<Manifold>();
 
-            foreach(Node n in masterGroup.fullSet.ToList())
-            {
-                if (n.active)
+                foreach (Node n in masterGroup.fullSet.ToList())
                 {
-                    n.Update(gametime);
+                    if (n.active)
+                    {
+                        n.Update(OrbIt.gametime);
+                    }
                 }
+                if (AfterIteration != null) AfterIteration(this, null);
+
+                //addGridSystemLines(gridsystem);
+                //addLevelLines(level);
+                addBorderLines();
+                //colorEffectedNodes();
+
+                updateTargetNodeGraphic();
+
+                scheduler.AffectSelf();
+
+                CheckForRoomResize();
+
+                Draw();
+
+                if (afterUpdateEvent != null)
+                {
+                    afterUpdateEvent();
+                    afterUpdateEvent = null;
+                }
+
+                lock(locker)
+                {
+                    updated = true;
+                }
+
+                CameraWaiting.Reset();
+                CameraWaiting.Wait();
+                
+
             }
-            if (AfterIteration != null) AfterIteration(this, null);
+            //camera.CatchUp();
 
-            //addGridSystemLines(gridsystem);
-            //addLevelLines(level);
-            addBorderLines();
-            //colorEffectedNodes();
-
-            updateTargetNodeGraphic();
-
-            scheduler.AffectSelf();
-
-            CheckForRoomResize();
-
-            Draw();
-            camera.CatchUp();
         }
 
         private void CheckForRoomResize()
@@ -414,10 +441,7 @@ namespace OrbItProcs {
                 resizeRoomSignal = false;
             }
         }
-
-        
-
-        static int algorithm = 7;
+        static readonly int algorithm = 7;
         private void UpdateCollision()
         {
             Testing.modInc();
@@ -433,10 +457,10 @@ namespace OrbItProcs {
             if (algorithm >= 5)
             {
                 gridsystemCollision.clearBuckets();
-                foreach (var c in CollisionSetCircle) //.ToList()
+                foreach (var c in CollisionSetCircle.ToList())
                 {
                     //if (ColorNodesInReach) c.parent.body.color = Color.White;
-                    if (!c.parent.active) continue;
+                    if (c == null || !c.parent.active) continue;
                     gridsystemCollision.insertToBuckets(c);
                 }
             }
@@ -465,8 +489,8 @@ namespace OrbItProcs {
                     }
                 }
             }
-
-            foreach (var c in CollisionSetCircle.ToList()) //.ToList() 
+             var l2 = CollisionSetCircle.ToList();
+            foreach (var c in l2) //.ToList() 
             {
                 if (c.parent.active)
                 {
@@ -480,70 +504,10 @@ namespace OrbItProcs {
                             collideAction(c, otherCol);
                         }
                     }
-                    //else if (algorithm == 5)
-                    //{
-                    //    var bucketBag = gridsystemCollision.retrieveBucketBags(c);
-                    //    if (bucketBag != null)
-                    //    {
-                    //        if (c is Body)
-                    //        {
-                    //            Body b = (Body)c;
-                    //            for (int i = 0; i < bucketBag.index; i++)
-                    //            {
-                    //                for (int j = 0; j < bucketBag.array[i].index; j++)
-                    //                {
-                    //                    Collider cc = bucketBag.array[i].array[j];
-                    //                    if (cc.parent == b.parent) continue;
-                    //                    if (c.parent == targetNode) cc.parent.body.color = Color.Purple;
-                    //                    if (gridsystemCollision.alreadyVisited.Contains(cc))
-                    //                        continue;
-                    //                    if (cc is Body)
-                    //                    {
-                    //                        Body bb = (Body)cc;
-                    //                        //if (!b.exclusionList.Contains(bb)) 
-                    //                            b.CheckCollisionBody(bb);
-                    //                    }
-                    //                    else
-                    //                    {
-                    //                        b.CheckCollisionCollider(cc);
-                    //                    }
-                    //                }
-                    //            }
-                    //        }
-                    //        else
-                    //        {
-                    //            for (int i = 0; i < bucketBag.index; i++)
-                    //            {
-                    //                for (int j = 0; j < bucketBag.array[i].index; j++)
-                    //                {
-                    //                    Collider cc = bucketBag.array[i].array[j];
-                    //                    if (cc.parent == c.parent) continue;
-                    //                    if (cc.parent == targetNode) cc.parent.body.color = Color.Purple;
-                    //                    if (gridsystemCollision.alreadyVisited.Contains(cc))
-                    //                    continue;
-                    //                    if (cc is Body)
-                    //                    {
-                    //                        Body bb = (Body)cc;
-                    //                        //if (!c.exclusionList.Contains(bb)) 
-                    //                            c.CheckCollisionBody(bb);
-                    //                    }
-                    //                    else
-                    //                    {
-                    //                        //c.CheckCollision(cc);
-                    //                    }
-                    //                }
-                    //            }
-                    //        }
-                    //    }
-                    //}
                     else if (algorithm == 7)
                     {
                         gridsystemCollision.retrieveOffsetArraysCollision(c, collideAction, c.radius * 2);
                     }
-                    //else if (algorithm == 6)
-                    //{
-                    //    gridsystemCollision.retrieveFromAllOffsets(c, reach, collideAction);
-                    //}
                 }
             }
             //Testing.PrintTimer("insertion");
@@ -565,7 +529,8 @@ namespace OrbItProcs {
                     //m.b.parent.SetColor(Color.Yellow);
                 }
             }
-            foreach (Node n in masterGroup.fullSet.ToList())
+            var l = masterGroup.fullSet.ToList();
+            foreach (Node n in l)
             {
                 n.movement.IntegrateVelocity();
 
@@ -626,7 +591,9 @@ namespace OrbItProcs {
 
             game.processManager.Draw();
 
-            GraphData.DrawGraph();
+            if (this == game.room) game.frameRateCounter.Draw(this, Assets.font);
+
+            GraphData.DrawGraph(this);
             //Testing.TestHues();
         }
         public void AddManifold(Manifold m)

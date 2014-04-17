@@ -169,7 +169,7 @@ namespace OrbItProcs
                     string ftype = cbLinkFormation.SelectedItem();
                     formationtype f = (formationtype)Enum.Parse(typeof(formationtype), ftype);
 
-                    Link newLink = new Link(l, f);
+                    Link newLink = new Link(sidebar.room, l, f);
                     newLink.IsEntangled = entangled;
 
                     sidebar.PaletteLinks.Add(newLink);

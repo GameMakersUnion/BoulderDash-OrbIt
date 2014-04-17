@@ -10,8 +10,9 @@ namespace OrbItProcs
     public class MapEditor : Process
     {
         public List<Vector2> verts;
-        public MapEditor(Level level) : base()
+        public MapEditor() : base()
         {
+            
             Draw += DrawEditor;
             verts = new List<Vector2>();
             addProcessKeyAction("placevertice", KeyCodes.LeftClick, OnPress: PlaceVertice);

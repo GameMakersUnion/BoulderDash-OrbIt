@@ -45,12 +45,16 @@ namespace OrbItProcs {
         private Vector2 tempPosition = new Vector2(0, 0);
         private string _nodeHash = "";
 
-        public string nodeHash { get { return _nodeHash; } set 
+        public string nodeHash
         {
-            room.nodeHashes.Remove(_nodeHash);
-            _nodeHash = value;
-            room.nodeHashes.Add(value);
-        } }
+            get { return _nodeHash; }
+            set
+            {
+                room.nodeHashes.Remove(_nodeHash);
+                _nodeHash = value;
+                room.nodeHashes.Add(value);
+            }
+        }
 
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;
         private Dictionary<Type, bool> tempCompActiveValues = new Dictionary<Type, bool>();
@@ -112,7 +116,8 @@ namespace OrbItProcs {
                     Console.WriteLine("Group115");
             } 
         }
-        public Room room;
+        [Polenter.Serialization.ExcludeFromSerialization][Info(UserLevel.Never)]
+        public Room room { get; set; }
 
         private Dictionary<Type, Component> _comps = new Dictionary<Type, Component>();
         public Dictionary<Type, Component> comps { get { return _comps; } set { _comps = value; } }
@@ -297,7 +302,7 @@ namespace OrbItProcs {
         }
 
         [Info(UserLevel.Never)]
-        public DataStore Kawasaki = new DataStore();
+        public DataStore Kawasaki { get; set; }
 
         public event EventHandler OnAffectOthers;
 
@@ -321,6 +326,7 @@ namespace OrbItProcs {
         public Node(Room room, ShapeType shapetype, bool createHash = true)
         {
             this.room = room;
+            Kawasaki = new DataStore();
             //if (room == null) throw new NotImplementedException
             //    ("Polenter is benched for now. Everyone else must use the Parameterized constructor and pass a room reference.");
             //if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0, 5);

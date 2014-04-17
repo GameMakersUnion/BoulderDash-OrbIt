@@ -21,7 +21,7 @@ namespace OrbItProcs {
         private int _cellReach;
         public int cellReach { get { return _cellReach; } set { if (value < 1) return; _cellReach = value; } }
 
-        public List<Collider>[,] grid;
+        private List<Collider>[,] grid;
         public HashSet<Collider> alreadyVisited;
 
         public bool PolenterHack { get { return false; } 

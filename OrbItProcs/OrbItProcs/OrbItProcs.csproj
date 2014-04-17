@@ -165,6 +165,7 @@
     <Compile Include="Components\Meta\Swap.cs" />
     <Compile Include="Components\Meta\Scheduler.cs" />
     <Compile Include="Components\Drawers\Shader.cs" />
+    <Compile Include="Framework\ConcurrentHashSet.cs" />
     <Compile Include="Framework\Gametypes\BigTony.cs" />
     <Compile Include="Framework\Gametypes\Gametype.cs" />
     <Compile Include="Interface\Views\AddComponentView.cs" />

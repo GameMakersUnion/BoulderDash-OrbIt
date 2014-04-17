@@ -168,13 +168,13 @@ namespace OrbItProcs
                     foreach(var pp in playerTeammates[p])
                     {
                         if (p == pp) continue;
-                        Utils.DrawLine(game.room, p.node.body.pos, pp.node.body.pos, 3f, Color.White, Layers.Under1);
+                        Utils.DrawLine(pp.room, p.node.body.pos, pp.node.body.pos, 3f, Color.White, Layers.Under1);
                     }
                 }
             }
         }
 
-        public void SetUpTeams()
+        public void SetUpTeams() //#sndmsg
         {
             playerTeammates = new Dictionary<Player, HashSet<Player>>();
             if (gameMode == GameModes.tAllvs1)

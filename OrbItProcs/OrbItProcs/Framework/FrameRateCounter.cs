@@ -54,7 +54,7 @@ namespace OrbItProcs {
         }
 
 
-        public void Draw(SpriteFont spriteFont)
+        public void Draw(Room room, SpriteFont spriteFont)
         {
             frameCounter++;
             int y1 = 70;
@@ -63,7 +63,7 @@ namespace OrbItProcs {
             string ups = string.Format("ups: {0}", updateRate);
             string process = "";
             //string fpsups = string.Format("fps:{0} ups:{1}", frameRate, updateRate);
-            Room room = OrbIt.game.room;
+            //Room room = OrbIt.game.room;
             bool hasProcess = room != null && OrbIt.ui.keyManager.TemporaryProcess != null;
             if (hasProcess)
             {

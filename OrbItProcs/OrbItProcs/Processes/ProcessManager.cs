@@ -60,9 +60,9 @@ namespace OrbItProcs
             processDict.Add(proc.singleselect, new SingleSelect());
             processDict.Add(proc.groupselect, new GroupSelect());
             processDict.Add(proc.polygonspawner, new PolygonSpawner());
-            processDict.Add(proc.mapeditor, new MapEditor(game.room.level));
+            processDict.Add(proc.mapeditor, new MapEditor());
             processDict.Add(proc.graphdata, new GraphData());
-            processDict.Add(proc.cameracontrol, new CameraControl(game.room.camera));
+            processDict.Add(proc.cameracontrol, new CameraControl());
             processDict.Add(proc.directedspawn, new DirectedSpawn());
             processDict.Add(proc.removenodes, new RemoveNodes());
             processDict.Add(proc.gridspawn, new GridSpawn());
@@ -106,7 +106,7 @@ namespace OrbItProcs
             toolbar.AddButton("static", enableKeyBinds(proc.gridspawn), "Spawn nodes statically to the grid.");
             toolbar.AddButton("resize", enableKeyBinds(proc.roomResize), "Change the size of the Room");
             
-            Keybindset.Add("resetplayers", new KeyBundle(KeyCodes.Home), delegate { Player.ResetPlayers(OrbIt.game.mainRoom); });
+            Keybindset.Add("resetplayers", new KeyBundle(KeyCodes.Home), delegate { Player.ResetPlayers(OrbIt.game.room); }); //#sndmsg2014
 
 
             Keybindset.Add("graphdata", new KeyBundle(KeyCodes.D6, KeyCodes.LeftShift), enableKeyBinds(proc.graphdata)); 

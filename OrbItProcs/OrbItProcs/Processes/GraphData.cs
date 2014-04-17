@@ -78,7 +78,7 @@ namespace OrbItProcs
             if (value != null) activated = (bool)value;
             else activated = !activated;
         }
-        public static void DrawGraph()
+        public static void DrawGraph(Room room)
         {
             /*Rectangle? sourceRect = null;
             Room roomm = Game1.game.room;
@@ -95,7 +95,6 @@ namespace OrbItProcs
             ShowFloatGraph();
             float xRange = max.X - min.X;
             float yRange = max.Y - min.Y;
-            Room room = OrbIt.game.room;
             float datapoints = 0;
             foreach (float f in floatData.Keys)
             {

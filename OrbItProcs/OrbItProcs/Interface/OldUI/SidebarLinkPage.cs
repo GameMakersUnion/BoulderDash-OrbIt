@@ -566,8 +566,8 @@ namespace OrbItProcs
             newComponent.active = true;
             if (newComponent.GetType().GetProperty("activated") != null) newComponent.activated = true;
             */
-
-            Link newLink = new Link(link, source, target);
+            
+            Link newLink = new Link(room, link, source, target);
             //Link newLink = new Link(source, target, newComponent, link.formation);
             room.AllActiveLinks.Add(newLink);
 

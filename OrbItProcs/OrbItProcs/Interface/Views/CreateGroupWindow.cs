@@ -117,7 +117,7 @@ namespace OrbItProcs
             cbExisting.Top = HeightCounter;
             cbExisting.Width = width;
             cbExisting.Left = offset;
-            foreach(Group gg in sidebar.game.mainRoom.generalGroups.childGroups.Values)
+            foreach(Group gg in sidebar.room.generalGroups.childGroups.Values.ToList())
             {
                 cbExisting.Items.Add(gg);
             }
@@ -197,18 +197,23 @@ namespace OrbItProcs
             {
                 if (String.IsNullOrWhiteSpace(txtName.Text))
                     PopUp.Toast("Please enter a group name.");
-                else if(sidebar.game.mainRoom.generalGroups.childGroups.Keys.Contains(txtName.Text))
+                else if(sidebar.game.room.generalGroups.childGroups.Keys.Contains(txtName.Text)) //#sndmsg
                     PopUp.Toast("Group already exists.");
-                else{                   
-                    
-                    OrbIt.game.room = sidebar.game.mainRoom;
-                    Node newNode = tempgroup.defaultNode.CreateClone(sidebar.game.mainRoom);
+                else{
+                    Node newNode = tempgroup.defaultNode.CreateClone(sidebar.game.room);
                     newNode.body.color = ColorChanger.randomColorHue();
                     newNode.basicdraw.UpdateColor();
-                    Group newGroup = new Group(sidebar.game.mainRoom, newNode, sidebar.game.mainRoom.generalGroups, txtName.Text.Trim());
+                    Group newGroup = new Group(sidebar.game.room, newNode, sidebar.game.room.generalGroups, txtName.Text.Trim());
                     newNode.name = txtName.Text.Trim();
                     newNode.group = newGroup;
                     sidebar.groupsView.UpdateGroups();
+                    foreach(var item in sidebar.groupsView.viewItems.ToList())
+                    {
+                        if (item.obj == newGroup)
+                        {
+                            sidebar.groupsView.SelectItem(item); //check if worked.
+                        }
+                    }
 
                     Close();
                 }
@@ -242,7 +247,7 @@ namespace OrbItProcs
 
         public void SetGroup(Node n)
         {
-            Node clone = n.CreateClone(OrbIt.game.mainRoom);
+            Node clone = n.CreateClone(OrbIt.game.room); //#sndmsg
             Group g = tempgroup;
             //if (g == null)
             //{

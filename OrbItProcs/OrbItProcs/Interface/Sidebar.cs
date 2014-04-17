@@ -73,8 +73,9 @@ namespace OrbItProcs
                 {
                     if (CreatingGroup)
                     {
-                        if (room.game.tempRoom.generalGroups.childGroups.Count == 0) return null;
-                        return room.game.tempRoom.generalGroups.childGroups.ElementAt(0).Value;
+                        //if (room.game.tempRoom.generalGroups.childGroups.Count == 0) return null;
+                        //return room.game.tempRoom.generalGroups.childGroups.ElementAt(0).Value;
+                        return null;
                     }
                     else
                     {
@@ -151,7 +152,7 @@ namespace OrbItProcs
                 _Width = value;
                 if (ui.SidebarActive)
                 {
-                    OrbIt.game.room.camera.CameraOffset = value;
+                    OrbIt.game.CameraOffset = value;
                 }
             }
         }
@@ -743,79 +744,79 @@ namespace OrbItProcs
 
         public void ProcessConsoleCommand(String text)
         {
-            text = text.Trim();
-
-            if (text.Equals(""))
-            {
-                PopUp.Toast("No Command Provided");
-                consoletextbox.Text = "";
-                return;
-            }
-            object currentObj = game.room;
-
-
-
-            List<String> args = text.Split(' ').ToList();
-            String methodname;
-            if (args.Count > 0)
-            {
-                methodname = args.ElementAt(0);
-                args.RemoveAt(0);
-            }
-            else
-            {
-                PopUp.Toast("No Command Provided");
-                return;
-            }
-
-            MethodInfo methinfo = currentObj.GetType().GetMethod(methodname);
-
-            if (methinfo == null || methinfo.IsPrivate)
-            {
-                PopUp.Toast("Invalid method specification.");
-                return;
-            }
-
-            ParameterInfo[] paraminfos = methinfo.GetParameters();
-
-            int paramNum = paraminfos.Length;
-            object[] finalargs = new object[paramNum];
-
-            for(int i = 0; i < paramNum; i++)
-            {
-
-                Type ptype = paraminfos[i].ParameterType;
-                if (i >= args.Count)
-                {
-                    if (paraminfos[i].IsOptional)
-                    {
-                        finalargs[i] = Type.Missing;
-                        continue;
-                    }
-                    PopUp.Toast("Parameter Inconsistenc[ies].");
-                    return;
-                }
-                try
-                {
-                  finalargs[i] = TypeDescriptor.GetConverter(ptype).ConvertFromInvariantString(args[i]);
-                }
-                catch (Exception e)
-                {
-                    PopUp.Toast("Casting exception: " + e.Message);
-                    throw e;
-                }
-
-            }
-            if (methinfo.IsStatic) currentObj = null;
-            try
-            {
-                methinfo.Invoke(currentObj, finalargs);
-            }
-            catch (Exception e)
-            {
-                PopUp.Toast("Invoking exception: " + e.Message);
-                throw e;
-            }
+            //text = text.Trim();
+            //
+            //if (text.Equals(""))
+            //{
+            //    PopUp.Toast("No Command Provided");
+            //    consoletextbox.Text = "";
+            //    return;
+            //}
+            //object currentObj = game.room;
+            //
+            //
+            //
+            //List<String> args = text.Split(' ').ToList();
+            //String methodname;
+            //if (args.Count > 0)
+            //{
+            //    methodname = args.ElementAt(0);
+            //    args.RemoveAt(0);
+            //}
+            //else
+            //{
+            //    PopUp.Toast("No Command Provided");
+            //    return;
+            //}
+            //
+            //MethodInfo methinfo = currentObj.GetType().GetMethod(methodname);
+            //
+            //if (methinfo == null || methinfo.IsPrivate)
+            //{
+            //    PopUp.Toast("Invalid method specification.");
+            //    return;
+            //}
+            //
+            //ParameterInfo[] paraminfos = methinfo.GetParameters();
+            //
+            //int paramNum = paraminfos.Length;
+            //object[] finalargs = new object[paramNum];
+            //
+            //for(int i = 0; i < paramNum; i++)
+            //{
+            //
+            //    Type ptype = paraminfos[i].ParameterType;
+            //    if (i >= args.Count)
+            //    {
+            //        if (paraminfos[i].IsOptional)
+            //        {
+            //            finalargs[i] = Type.Missing;
+            //            continue;
+            //        }
+            //        PopUp.Toast("Parameter Inconsistenc[ies].");
+            //        return;
+            //    }
+            //    try
+            //    {
+            //      finalargs[i] = TypeDescriptor.GetConverter(ptype).ConvertFromInvariantString(args[i]);
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        PopUp.Toast("Casting exception: " + e.Message);
+            //        throw e;
+            //    }
+            //
+            //}
+            //if (methinfo.IsStatic) currentObj = null;
+            //try
+            //{
+            //    methinfo.Invoke(currentObj, finalargs);
+            //}
+            //catch (Exception e)
+            //{
+            //    PopUp.Toast("Invoking exception: " + e.Message);
+            //    throw e;
+            //}
         }
 
         void btnClear_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)

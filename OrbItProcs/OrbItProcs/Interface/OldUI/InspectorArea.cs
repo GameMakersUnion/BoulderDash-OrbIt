@@ -15,8 +15,7 @@ namespace OrbItProcs
 {
     public class InspectorArea
     {
-        public OrbIt game;
-        public Room room { get { return game.room; } }
+        //public OrbIt game;
         public UserInterface ui;
         public Sidebar sidebar;
         public InspectorInfo ActiveInspectorParent;
@@ -59,7 +58,7 @@ namespace OrbItProcs
         public InspectorArea(Sidebar sidebar, Control parent, int Left, int Top)
         {
             //get rid of these if not needed.
-            this.game = sidebar.game;
+            //this.game = sidebar.game;
             this.ui = sidebar.ui;
             this.sidebar = sidebar;
             this.manager = sidebar.manager;

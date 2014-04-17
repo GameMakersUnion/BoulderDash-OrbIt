@@ -75,7 +75,7 @@ namespace OrbItProcs
         {
             for (int i = 0; i < 8; i++)
             {
-                Player p = Player.GetNew(i);
+                Player p = Player.GetNew(room, i);
                 if (p == null) break;
                 Vector2 spawnPos = Vector2.Zero;
                 double angle = Utils.random.NextDouble() * Math.PI * 2;

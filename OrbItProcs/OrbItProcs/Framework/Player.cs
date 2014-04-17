@@ -106,13 +106,13 @@ namespace OrbItProcs
         {
             return playerDatas.ContainsKey(typeof(T));
         }
-        public static Player GetNew(int playerIndex)
+        public static Player GetNew(Room room, int playerIndex)
         {
             bool success = false;
-            Player p = new Player(playerIndex, ref success);
+            Player p = new Player(room, playerIndex, ref success);
             return success ? p : null;
         }
-        private Player(int playerIndex, ref bool sucess)
+        private Player(Room room, int playerIndex, ref bool sucess)
         {
             controller = FullController.GetNew(playerIndex);
             if (controller == null)
@@ -121,7 +121,7 @@ namespace OrbItProcs
                 return;
             }
             sucess = true;
-            room = OrbIt.game.room;
+            this.room = room;
             this.playerIndex = playerIndex;
             
             switch (playerIndex)
@@ -150,7 +150,7 @@ namespace OrbItProcs
             room.playerGroup.defaultNode = def;
             for (int i = 1; i < 5; i++)
             {
-                Player p = Player.GetNew(i);
+                Player p = Player.GetNew(room, i);
                 if (p == null) break;
                 double angle = Utils.random.NextDouble() * Math.PI * 2;
                 angle -= Math.PI;

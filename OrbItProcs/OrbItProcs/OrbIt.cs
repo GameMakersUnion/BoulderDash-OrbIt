@@ -108,8 +108,8 @@ namespace OrbItProcs
             }
         }
         private Room _activeRoom;
-        public Room mainRoom;
-        public Room tempRoom;
+        private Room mainRoom;
+        //public Room tempRoom;
 
         public static GameTime gametime;
         public FrameRateCounter frameRateCounter;
@@ -126,6 +126,13 @@ namespace OrbItProcs
         public static Action OnUpdate;
         public static bool updateTemp = false;
 
+        private int _CameraOffset = 0;
+        public int CameraOffset { get { return _CameraOffset; } set { _CameraOffset = value; CameraOffsetVect = new Vector2(value + 10, 30); } }
+        public Vector2 CameraOffsetVect = new Vector2(0, 0);
+        
+        Thread _worker;
+        public readonly object _locker = new object();
+
         private OrbIt() : base(true)
         {
             game = this;
@@ -137,6 +144,8 @@ namespace OrbItProcs
             Manager.AutoCreateRenderTarget = false;
             Graphics.PreferMultiSampling = false;
             SystemBorder = false;
+
+            
         }
         public void setResolution(resolutions r, bool fullScreen, bool resizeRoom = false)
         {
@@ -176,8 +185,8 @@ namespace OrbItProcs
             base.Initialize();
             //Get Roomy
             mainRoom = new Room(this, Width, Height); //change to height
-            tempRoom = new Room(this, 200, 200);
-            tempRoom.borderColor = Color.Red;
+            //tempRoom = new Room(this, 200, 200);
+            //tempRoom.borderColor = Color.Red;
             room = mainRoom;
             //Hi-Definition Orbs:
             setResolution(resolutions.HD_1366x768, false);
@@ -207,8 +216,11 @@ namespace OrbItProcs
 
             MainWindow.TransparentClientArea = true;
 
-            
- 
+
+            _worker = new Thread(mainRoom.Update);
+            _worker.Name = "CameraThread";
+            _worker.IsBackground = true;
+            _worker.Start();
         }
         Window test;
         public resolutions preferredWindowed;
@@ -227,24 +239,21 @@ namespace OrbItProcs
             //Do not write code above this.
             base.Update(gameTime);
             //Do not move the above lines.
-            gametime = gameTime;
+
+            mainRoom.CameraWaiting.Set();
+
+            OrbIt.gametime = gameTime;
             frameRateCounter.Update(gameTime);
             if (IsActive) ui.Update(gameTime);
 
             if (!ui.IsPaused)
             {
-                if (mainRoom != null) mainRoom.Update(gameTime);
+                //if (mainRoom != null) mainRoom.Update(gameTime);
             }
-            tempRoom.Update(gameTime);
-            frameRateCounter.Draw(Assets.font);
+            //tempRoom.Update(gameTime);
+            //frameRateCounter.Draw(Assets.font);
 
-            base.Draw(gameTime);
-            if (GraphicsReset)
-            {
-                Manager.Graphics.ApplyChanges();
-                mainRoom.roomRenderTarget = new RenderTarget2D(GraphicsDevice, Width, Height);
-                GraphicsReset = false;
-            }
+            
             if (OnUpdate!= null)
                 OnUpdate.Invoke();
         }
@@ -258,21 +267,29 @@ namespace OrbItProcs
         }
         protected override void Draw(GameTime gameTime)
         {
-            //fuck tom shane
+            //fuck tom shane * 2
+            mainRoom.camera.Work();
+            base.Draw(gameTime);
+            if (GraphicsReset)
+            {
+                Manager.Graphics.ApplyChanges();
+                mainRoom.roomRenderTarget = new RenderTarget2D(GraphicsDevice, Width, Height);
+                GraphicsReset = false;
+            }
         }
         public void SwitchToMainRoom()
         {
             room = mainRoom;
         }
-        public void SwitchToTempRoom(bool reset = true)
-        {
-            if (tempRoom == null) return;
-            room = tempRoom;
-            if (reset)
-            {
-                room.generalGroups.EmptyGroup();
-            }
-        }
+        //public void SwitchToTempRoom(bool reset = true)
+        //{
+        //    //if (tempRoom == null) return;
+        //    //room = tempRoom;
+        //    if (reset)
+        //    {
+        //        room.generalGroups.EmptyGroup();
+        //    }
+        //}
         public static void Start()
         {
             if (game != null) throw new SystemException("Game was already Started");

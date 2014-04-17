@@ -26,6 +26,7 @@ namespace OrbItProcs
             { 7, Color.DarkGreen },
             { 8, Color.LightBlue },
             { 9, Color.Violet },
+        
         };
 
         private string _groupHash = "";
@@ -49,13 +50,13 @@ namespace OrbItProcs
         [Polenter.Serialization.ExcludeFromSerialization]
         public Group parentGroup { get; set; }
         //
-        public ObservableHashSet<Node> fullSet;
+        private ObservableHashSet<Node> _fullSet;
         [Polenter.Serialization.ExcludeFromSerialization]
-        public ObservableHashSet<Node> fullSetP
+        public ObservableHashSet<Node> fullSet
         {
-            get { return fullSet; }
+            get { return _fullSet; }
             set {
-                fullSet = value; ;
+                _fullSet = value; ;
             }
         }
         public ObservableHashSet<Node> entities;// { get; set; }
@@ -151,27 +152,28 @@ namespace OrbItProcs
         public ObservableHashSet<Link> SourceLinks { get { return _SourceLinks; } set { _SourceLinks = value; } }
 
         private ObservableHashSet<Link> _TargetLinks = new ObservableHashSet<Link>();
+  
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> TargetLinks { get { return _TargetLinks; } set { _TargetLinks = value; } }
 
         public bool PolenterHack { get { return true; }
             set
             {
-                if (fullSet == null) fullSet = new ObservableHashSet<Node>();
+                if (_fullSet == null) _fullSet = new ObservableHashSet<Node>();
                 foreach(Node n in entities)
                 {
-                    fullSet.Add(n);
+                    _fullSet.Add(n);
                     n.group = this;
                 }
                 foreach(Node n in inherited)
                 {
-                    fullSet.Add(n);
+                    _fullSet.Add(n);
                 }
                 foreach(Group g in childGroups.Values)
                 {
-                    foreach(Node n in g.fullSet)
+                    foreach(Node n in g._fullSet)
                     {
-                        fullSet.Add(n);
+                        _fullSet.Add(n);
                     }
                 }
             }
@@ -193,12 +195,12 @@ namespace OrbItProcs
             this.defaultNode = defaultNode ?? room.defaultNode;
             this.entities = entities ?? new ObservableHashSet<Node>();
             this.inherited = new ObservableHashSet<Node>();
-            this.fullSet = new ObservableHashSet<Node>();
+            this._fullSet = new ObservableHashSet<Node>();
             if (entities != null)
             {
                 foreach (Node e in entities)
                 {
-                    fullSet.Add(e);
+                    _fullSet.Add(e);
                 }
             }
             this.parentGroup = parentGroup;
@@ -253,17 +255,17 @@ namespace OrbItProcs
                     {
                         parentGroup.inherited.Add(n);
                     }
-                    fullSet.Add(n);
+                    _fullSet.Add(n);
                 }
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
             {
                 foreach (Node n in e.OldItems)
                 {
-                    if (sender != fullSet)
+                    if (sender != _fullSet)
                     {
                         if (!entities.Contains(n) && !inherited.Contains(n))
-                            fullSet.Remove(n);
+                            _fullSet.Remove(n);
                     }
                     if (n.group == this) n.group = null;
                 }
@@ -273,7 +275,7 @@ namespace OrbItProcs
         public void EmptyGroup()
         {
             bool isold = room.game.IsOldUI && OrbIt.ui.sidebar.cbListPicker.Text.Equals(Name);
-            foreach(Node n in fullSet.ToList())
+            foreach(Node n in _fullSet.ToList())
             {
                 DeleteEntity(n);
                 if (isold)
@@ -287,8 +289,8 @@ namespace OrbItProcs
 
         public void ForEachFullSet(Action<Node> action)
         {
-            //fullSet.ToList().ForEach(action);
-            foreach(var n in fullSet) // ToList()
+            //_fullSet.ToList().ForEach(action);
+            foreach(var n in _fullSet) // ToList()
             {
                 action(n);
             }
@@ -318,18 +320,18 @@ namespace OrbItProcs
             entities.Remove(entity);
             if (inherited.Contains(entity))
                 inherited.Remove(entity);
-            //fullSet.Remove(entity);
+            //_fullSet.Remove(entity);
             foreach(Group g in groupPath)
             {
                 g.inherited.Remove(entity);
-                //if (g.fullSet.Contains(entity))
+                //if (g._fullSet.Contains(entity))
                 //    System.Diagnostics.Debugger.Break();
             }
             //if (childGroups.Count > 0)
             //{
             //    foreach (Group childgroup in childGroups.Values.ToList())
             //    {
-            //        if (childgroup.fullSet.Contains(entity))
+            //        if (childgroup._fullSet.Contains(entity))
             //            childgroup.DiscludeEntity(entity);
             //    }
             //}
@@ -500,7 +502,7 @@ namespace OrbItProcs
 
         public Node FindNodeByHash(string value)
         {
-            foreach(Node n in fullSet)
+            foreach(Node n in _fullSet)
             {
                 if (n.nodeHash.Equals(value)) return n;
             }
@@ -510,7 +512,7 @@ namespace OrbItProcs
         public void FindNodeByHashes(ObservableHashSet<string> hashes, ObservableHashSet<Node> nodeSet)
         {
             ObservableHashSet<string> alreadyFound = new ObservableHashSet<string>();
-            foreach(Node n in fullSet)
+            foreach(Node n in _fullSet)
             {
                 if (hashes.Contains(n.nodeHash) && !alreadyFound.Contains(n.nodeHash))
                 {
@@ -539,7 +541,7 @@ namespace OrbItProcs
 
 /*public void ForEachThreading(GameTime gameTime)
 {
-    nodes = fullSet.ToArray();
+    nodes = _fullSet.ToArray();
 
     / *foreach(Node n in nodes)
     {

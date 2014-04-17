@@ -17,7 +17,7 @@ namespace OrbItProcs
         }
         public void resize()
         {
-            OrbIt.game.room.resize(UserInterface.WorldMousePos);
+            OrbIt.game.room.resize(UserInterface.WorldMousePos); //#sndmsg
         }
 
     }

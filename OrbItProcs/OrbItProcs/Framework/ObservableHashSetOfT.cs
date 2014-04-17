@@ -17,7 +17,7 @@ namespace OrbItProcs
     public sealed class ObservableHashSet<T> : ISet<T>, System.Collections.ICollection, INotifyCollectionChanged, INotifyPropertyChanged, IDisposable
     {
         private SimpleMonitor monitor = new SimpleMonitor();
-        public HashSet<T> hashSet;
+        private ConcurrentHashSet<T> hashSet;
 
         object ICollection.SyncRoot
         {
@@ -45,7 +45,7 @@ namespace OrbItProcs
         /// </summary>
         public ObservableHashSet()
         {
-            this.hashSet = new HashSet<T>();
+            this.hashSet = new ConcurrentHashSet<T>();
             
         }
 
@@ -55,7 +55,7 @@ namespace OrbItProcs
         /// <param name="collection">The collection whose elements are copied to the new set.</param>
         public ObservableHashSet(IEnumerable<T> collection)
         {
-            this.hashSet = new HashSet<T>(collection);
+            this.hashSet = new ConcurrentHashSet<T>(collection);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace OrbItProcs
         /// <param name="comparer">The IEqualityComparer&lt;T&gt; implementation to use when comparing values in the set, or null to use the default EqualityComparer&lt;T&gt; implementation for the set type.</param>
         public ObservableHashSet(IEqualityComparer<T> comparer)
         {
-            this.hashSet = new HashSet<T>(comparer);
+            this.hashSet = new ConcurrentHashSet<T>(comparer);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace OrbItProcs
         /// <param name="comparer">The IEqualityComparer&lt;T&gt; implementation to use when comparing values in the set, or null to use the default EqualityComparer&lt;T&gt; implementation for the set type.</param>
         public ObservableHashSet(IEnumerable<T> collection, IEqualityComparer<T> comparer)
         {
-            this.hashSet = new HashSet<T>(collection, comparer);
+            this.hashSet = new ConcurrentHashSet<T>(collection, comparer);
         }
 
         /// <summary>
@@ -105,10 +105,10 @@ namespace OrbItProcs
         /// <summary>
         /// Gets the IEqualityComparer&lt;T&gt; object that is used to determine equality for the values in the set.
         /// </summary>
-        public IEqualityComparer<T> Comparer
-        {
-            get { return this.hashSet.Comparer;  }            
-        }
+        //public IEqualityComparer<T> Comparer
+        //{
+        //    get { return this.hashSet.Comparer;  }            
+        //}
 
 
         /// <summary>
@@ -236,7 +236,7 @@ namespace OrbItProcs
         /// <param name="array">The one-dimensional array that is the destination of the elements copied from the <see cref="ObservableHashSet&lt;T&gt;"/> object. The array must have zero-based indexing.</param>
         public void CopyTo(T[] array)
         {
-            this.hashSet.CopyTo(array);
+            this.hashSet.CopyTo(array, 0);
         }
 
         /// <summary>

@@ -79,11 +79,11 @@ namespace OrbItProcs {
                 _SidebarActive = value;
                 if (value)
                 {
-                    OrbIt.game.room.camera.CameraOffset = sidebar.Width;
+                    OrbIt.game.CameraOffset = sidebar.Width;
                 }
                 else
                 {
-                    OrbIt.game.room.camera.CameraOffset = 0;
+                    OrbIt.game.CameraOffset = 0;
                 }
             } 
         }
@@ -178,12 +178,9 @@ namespace OrbItProcs {
                 }
             }
 
-            //game.testing.KeyManagerTest(() => Keybindset.Update());
             keyManager.Update();
             sidebar.Update();
 
-            //randomizerProcess = new Randomizer();
-            
         }
 
         public void ProcessKeyboard()
@@ -280,7 +277,7 @@ namespace OrbItProcs {
             //if (mouseState.XButton2 == ButtonState.Pressed)
             //    System.Console.WriteLine("X2");
 
-            MousePos = new Vector2(mouseState.X, mouseState.Y) - OrbIt.game.mainRoom.camera.CameraOffsetVect;
+            MousePos = new Vector2(mouseState.X, mouseState.Y) - game.CameraOffsetVect;
             WorldMousePos = (MousePos / room.zoom) + room.camera.pos;
             //ignore mouse clicks outside window
             if (!OrbIt.isFullScreen)

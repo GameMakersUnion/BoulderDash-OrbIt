@@ -84,7 +84,7 @@ namespace OrbItProcs
             bottomArea.Left = 0;
             bottomArea.Top = HeightCounter;
             bottomArea.Width = sidebar.Width - 5;
-            bottomArea.Height = OrbIt.game.tempRoom.worldHeight + 40;
+            bottomArea.Height = 240;// OrbIt.game.tempRoom.worldHeight + 40;
 
             bottomArea.AddPage();
             bottomArea.TabPages[0].Text = "Edit";
@@ -111,7 +111,7 @@ namespace OrbItProcs
             bottomArea.TabPages[1].Text = "Preview";
             TabPage previewTab = bottomArea.TabPages[1];
             previewTab.Margins = new Margins(0, 0, 0, 0);
-            roomPanel = new RoomPanel(sidebar, previewTab, OrbIt.game.tempRoom, true, 10, 15);
+            roomPanel = new RoomPanel(sidebar, previewTab, OrbIt.game.room, true, 10, 15);//OrbIt.game.tempRoom
 
             //UpdateGroupComboBox();
             //cbActiveGroup.ItemIndex = 0;

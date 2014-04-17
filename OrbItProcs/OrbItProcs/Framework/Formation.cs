@@ -86,13 +86,6 @@ namespace OrbItProcs
             }
         }
 
-        public Formation()
-        {
-            //..
-            this.room = OrbIt.game.room;
-            this.AffectionSets = new Dictionary<Node, ObservableHashSet<Node>>();
-        }
-
         public Formation(   Link link, 
                             formationtype FormationType = formationtype.AllToAll,
                             bool Uninhabited = false,
@@ -100,7 +93,8 @@ namespace OrbItProcs
                             int NearestNValue = 1,
                             bool InitializeFormation = true)
         {
-            this.room = OrbIt.game.room;
+            
+            this.room = link.room;
             this.link = link;
             //this.FormationType = FormationType;
             this.Uninhabited = Uninhabited;
@@ -115,7 +109,7 @@ namespace OrbItProcs
                             Formation form,
                             bool InitializeFormation = true)
         {
-            this.room = OrbIt.game.room;
+            this.room = link.room;
             this.link = link;
             //this.FormationType = FormationType;
             this.Uninhabited = form.Uninhabited;
