@@ -252,10 +252,11 @@ namespace OrbItProcs {
                 int count = buck.index;
                 for (int j = 0; j < count; j++)
                 {
-                    //Collider c = arrayGrid[xx][yy].array[j];
-                    if (room.ColorNodesInReach && collider.parent == room.targetNode) buck.array[j].parent.body.color = Color.Purple;
+                    Collider c = buck.array[j];// = arrayGrid[xx][yy].array[j];
+                    //if (room.ColorNodesInReach && collider.parent == room.targetNode) buck.array[j].parent.body.color = Color.Purple;
                     //if (alreadyVisited.Contains(c) || collider == c) continue;
-                    action(collider, buck.array[j]);
+                    if (c == collider) continue;
+                    action(collider, c);
                 }
             }
         }

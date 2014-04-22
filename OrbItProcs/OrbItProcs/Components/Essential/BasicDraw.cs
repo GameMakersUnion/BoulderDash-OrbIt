@@ -21,11 +21,6 @@ namespace OrbItProcs
         }
         public const mtypes CompType = mtypes.essential | mtypes.draw;
         public override mtypes compType { get { return CompType; } set { } }
-        /// <summary>
-        /// (Polygons only) Determines when to draw the center of mass as a circle
-        /// </summary>
-        [Info(UserLevel.Advanced, "WARNING: THIS FLAG IS ONLY OBSERVED BY POLYGONS: Determines when to draw the center of mass as a circle")]
-        public bool DrawCircle { get; set; }
 
         public Initial _InitialColor = Initial.Managed;
         /// <summary>
@@ -53,14 +48,19 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "Alpha color component")]
         public float AlphaPercent { get; set; }
+        /// <summary>
+        /// The layer that the node will draw on.
+        /// </summary>
+        [Info(UserLevel.User, "The layer that the node will draw on.")]
+        public Layers DrawLayer { get; set; }
         public BasicDraw() : this(null) { }
         public BasicDraw(Node parent = null) 
         {
             if (parent != null) this.parent = parent;
-            com = comp.basicdraw; 
-            DrawCircle = true;
+            com = comp.basicdraw;
             UpdateColor();
             AlphaPercent = 100f;
+            DrawLayer = Layers.Under1;
         }
 
         public void UpdateColor()
@@ -136,10 +136,10 @@ namespace OrbItProcs
             if (parent.body.shape is Polygon)
             {
                 parent.body.shape.Draw();
-                if (!parent.body.DrawCircle) return;
+                if (!parent.body.DrawPolygonCenter) return;
             }
 
-            Layers layer = parent.IsPlayer ? Layers.Player : Layers.Under1;
+            Layers layer = parent.IsPlayer ? Layers.Player : DrawLayer;
 
             if (parent.HasComp(comp.shader))
                 parent.room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color * (AlphaPercent / 100f), parent.body.scale, parent.body.orient,layer, parent.Comp<Shader>().shaderPack);

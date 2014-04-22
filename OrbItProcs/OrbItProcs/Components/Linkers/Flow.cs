@@ -217,14 +217,14 @@ namespace OrbItProcs
                 }
                 */
 
-                Utils.DrawLine(room, parent.body.pos, receiver.body.pos, 2f, col, Layers.Under3);
+                room.camera.DrawLine(parent.body.pos, receiver.body.pos, 2f, col, Layers.Under3);
                 Vector2 center = (receiver.body.pos + parent.body.pos) / 2;
                 Vector2 perp = new Vector2(center.Y, -center.X);
                 VMath.NormalizeSafe(ref perp);
                 perp *= 10;
                 //center += perp;
-                Utils.DrawLine(room, center + perp, receiver.body.pos, 2f, col, Layers.Under3);
-                Utils.DrawLine(room, center - perp, receiver.body.pos, 2f, col, Layers.Under3);
+                room.camera.DrawLine(center + perp, receiver.body.pos, 2f, col, Layers.Under3);
+                room.camera.DrawLine(center - perp, receiver.body.pos, 2f, col, Layers.Under3);
 
                 
                 //count++;

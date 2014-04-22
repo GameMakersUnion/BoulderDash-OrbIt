@@ -298,10 +298,10 @@ namespace OrbItProcs
                 VMath.NormalizeSafe(ref perp);
                 perp *= 2;
 
-                Utils.DrawLine(room, parent.body.pos, receiver.body.pos, 2f, col, Layers.Under3);
+                room.camera.DrawLine(parent.body.pos, receiver.body.pos, 2f, col, Layers.Under3);
 
-                Utils.DrawLine(room, parent.body.pos + perp, receiver.body.pos + perp, 2f, Color.Red, Layers.Under3);
-                Utils.DrawLine(room, parent.body.pos - perp, receiver.body.pos - perp, 2f, Color.Green, Layers.Under3);
+                room.camera.DrawLine(parent.body.pos + perp, receiver.body.pos + perp, 2f, Color.Red, Layers.Under3);
+                room.camera.DrawLine(parent.body.pos - perp, receiver.body.pos - perp, 2f, Color.Green, Layers.Under3);
                 
                 perp *= 20;
 
@@ -311,8 +311,8 @@ namespace OrbItProcs
                 //Utils.DrawLine(spritebatch, center - perp, receiver.transform.position, 1f, col, room);
 
                 Vector2 point = receiver.body.pos - (diff / 5);
-                Utils.DrawLine(room, point + perp, receiver.body.pos, 2f, col, Layers.Under3);
-                Utils.DrawLine(room, point - perp, receiver.body.pos, 2f, col, Layers.Under3);
+                room.camera.DrawLine(point + perp, receiver.body.pos, 2f, col, Layers.Under3);
+                room.camera.DrawLine(point - perp, receiver.body.pos, 2f, col, Layers.Under3);
             }
 
             //spritebatch.DrawString(room.game.font, gatestring, parent.transform.position / mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
@@ -321,10 +321,6 @@ namespace OrbItProcs
 
             //spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, parent.transform.color, 0, parent.TextureCenter(), parent.transform.scale / mapzoom, SpriteEffects.None, 0);
 
-        }
-
-        public void onCollision(Dictionary<dynamic, dynamic> args)
-        {
         }
 
     }

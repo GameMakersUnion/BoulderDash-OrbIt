@@ -148,6 +148,7 @@
     <Compile Include="Components\AffectOthers\FixedForce.cs" />
     <Compile Include="Components\AffectOthers\IMultipliable.cs" />
     <Compile Include="Components\AffectOthers\IRadius.cs" />
+    <Compile Include="Components\AffectOthers\Obstructor.cs" />
     <Compile Include="Components\AffectOthers\Spike.cs" />
     <Compile Include="Components\Drawers\Light.cs" />
     <Compile Include="Components\Drawers\Runer.cs" />
@@ -165,8 +166,10 @@
     <Compile Include="Components\Meta\Swap.cs" />
     <Compile Include="Components\Meta\Scheduler.cs" />
     <Compile Include="Components\Drawers\Shader.cs" />
+    <Compile Include="Components\Movement\Conveyor.cs" />
     <Compile Include="Framework\Gametypes\BigTony.cs" />
     <Compile Include="Framework\Gametypes\Gametype.cs" />
+    <Compile Include="Framework\Input.cs" />
     <Compile Include="Interface\Views\AddComponentView.cs" />
     <Compile Include="Interface\Views\AddComponentWindow.cs" />
     <Compile Include="Interface\Views\CreateGroupWindow.cs" />
@@ -253,7 +256,7 @@
     <Compile Include="Processes\ProcessManager.cs" />
     <Compile Include="Framework\QueueInfo.cs" />
     <Compile Include="Processes\Randomizer.cs" />
-    <Compile Include="Processes\RemoveNodes - Copy.cs" />
+    <Compile Include="Processes\ResizeRoom.cs" />
     <Compile Include="Processes\RemoveNodes.cs" />
     <Compile Include="Processes\SingleSelect.cs" />
     <Compile Include="Processes\SpawnNodes.cs" />

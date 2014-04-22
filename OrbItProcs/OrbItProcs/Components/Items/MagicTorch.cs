@@ -220,7 +220,7 @@ namespace OrbItProcs
             if (position == Vector2.Zero) position = parent.body.pos;
             else
             {
-                Utils.DrawLine(parent.room, position, parent.body.pos, 2f, col, Layers.Over3);
+                parent.room.camera.DrawLine(position, parent.body.pos, 2f, col, Layers.Over3);
             }
             
             torchNode.body.color = col;

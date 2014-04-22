@@ -103,6 +103,11 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "This affects the amount of damage this node will do when attacking other nodes.")]
         public float damageMultiplier { get; set; }
+        /// <summary>
+        /// If enabled, the node will ignore the grid system and iterate over every node in the room.
+        /// </summary>
+        [Info(UserLevel.User, "If enabled, the node will ignore the grid system and iterate over every node in the room.")]
+        public bool IgnoreAffectGrid { get; set; }
 
         /// <summary>
         /// The radius of the node.
@@ -125,6 +130,7 @@ namespace OrbItProcs
             AImode = AIMode.None;
             deadly = false;
             active = true;
+            IgnoreAffectGrid = false;
             damageMultiplier = 1f;
         }
         public override void AffectSelf()

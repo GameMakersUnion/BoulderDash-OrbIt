@@ -48,6 +48,7 @@ namespace OrbItProcs
         delegator,
         swap,
         shooter,
+        conveyor,
         //draw components
         rune,
         waver,
@@ -63,6 +64,7 @@ namespace OrbItProcs
         meta,
         shader,
         light,
+        obstructor,
         //middle,
         //slow,
         //siphon,
@@ -73,6 +75,7 @@ namespace OrbItProcs
         fist,
         magictorch,
         itempayload,
+
     };
     public enum resolutions
     {
@@ -207,7 +210,7 @@ namespace OrbItProcs
 
             MainWindow.TransparentClientArea = true;
 
-            
+            Testing.sawtoothTest();
  
         }
         Window test;

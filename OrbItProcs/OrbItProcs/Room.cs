@@ -345,7 +345,7 @@ namespace OrbItProcs {
                 CollisionSetPolygon.Remove(collider);
         }
         public int affectAlgorithm = 2;
-        public bool ColorNodesInReach = true;
+        public bool ColorNodesInReach = false;
         public void Update(GameTime gametime)
         {
             camera.RenderAsync();
@@ -358,7 +358,7 @@ namespace OrbItProcs {
             game.processManager.Update();
 
             HashSet<Node> toDelete = new HashSet<Node>();
-            if (affectAlgorithm == 1)
+            if (affectAlgorithm == 1)//OLD for testing
             {
                 gridsystemAffect.clear();
                 foreach (var n in masterGroup.fullSet)
@@ -617,7 +617,7 @@ namespace OrbItProcs {
                 //float scale = 1 / mapzoom;
                 Rectangle maprect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
                 //spritebatch.DrawLine((new Vector2(maprect.X, maprect.Y) - camera.pos) * zoom, (new Vector2(maprect.Width, maprect.Height) - camera.pos) * zoom, Color.Green, 2);
-                Utils.DrawLine(this, new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), 2, borderColor, Layers.Under5);
+                camera.DrawLine(new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), 2, borderColor, Layers.Under5);
                 linecount++;
             }
 
@@ -668,6 +668,8 @@ namespace OrbItProcs {
             masterGroup.childGroups["Walls"].entities.Add(n);
             return n;
         }
+
+        
 
         public void updateTargetNodeGraphic()
         {
@@ -733,9 +735,6 @@ namespace OrbItProcs {
         {
             addRectangleLines((int)x, (int)y, (int)width, (int)height);
         }
-
-        
-        
         public void tether()
         {
             Group g1 = masterGroup.FindGroup(OrbIt.ui.sidebar.cbListPicker.SelectedItem());
@@ -745,7 +744,6 @@ namespace OrbItProcs {
         public void hide()
         {
             //Game1.ui.sidebar.lstComp.Visible = false;
-            
         }
         public void show()
         {
@@ -756,7 +754,6 @@ namespace OrbItProcs {
             if (masterGroup == null) return null;
             return findGroupByHashRecurse(masterGroup, value);
         }
-
         private Group findGroupByHashRecurse(Group g, string value)
         {
             if (g.groupHash.Equals(value)) return g;

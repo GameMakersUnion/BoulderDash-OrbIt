@@ -291,6 +291,22 @@ namespace OrbItProcs
         {
             nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, sourceRect, color, rotation, origin, scalevect * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
+
+
+
+        public void DrawLine(Vector2 start, Vector2 end, float thickness, Color color, Layers Layer)
+        {
+            if (thickness * room.zoom < 1) thickness = 1 / room.zoom;
+            Vector2 diff = (end - start);// *mapzoom;
+            Vector2 centerpoint = (end + start) / 2;
+            //centerpoint *= mapzoom;
+            float len = diff.Length();
+            //thickness *= 2f * mapzoom;
+            Vector2 scalevect = new Vector2(len, thickness);
+            float angle = (float)(Math.Atan2(diff.Y, diff.X));
+            Draw(textures.whitepixel, centerpoint, null, color, angle, Assets.textureCenters[textures.whitepixel], scalevect, Layer);
+        }
+
         public void DrawStringWorld(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true, Layers Layer = Layers.Over5)
         {
             Color c2 = Color.Red;

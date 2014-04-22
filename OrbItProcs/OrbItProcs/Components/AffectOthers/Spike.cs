@@ -120,7 +120,7 @@ namespace OrbItProcs
             }
             parent.body.shape = poly;
             poly.Set(verts, 3);
-            parent.body.DrawCircle = true;
+            parent.body.DrawPolygonCenter = true;
             parent.body.orient = parent.body.orient; //todo:set this every init of polys
             parent.body.OnCollisionEnter += collisionAction;
 

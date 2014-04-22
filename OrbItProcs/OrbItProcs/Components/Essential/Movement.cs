@@ -173,8 +173,8 @@ namespace OrbItProcs
         public override void PlayerControl(Controller controller)
         {
 
-            Vector2 stick = controller.getLeftStick();
-            Vector2 stick2 = controller.getRightStick();
+            Vector2 stick = controller.GetLeftStick();
+            Vector2 stick2 = controller.GetRightStick();
             
                 //if (node != bigtony) node.collision.colliders["trigger"].radius = body.radius * 1.5f;
                 //else node.collision.colliders["trigger"].radius = body.radius * 1.2f;
@@ -269,7 +269,7 @@ namespace OrbItProcs
                 //parent.body.pos.X = (levelwidth - parent.body.radius - off) % parent.room.worldWidth;
                 parent.body.pos.X = DelegateManager.Triangle(parent.body.pos.X, parent.room.worldWidth - (int)parent.body.radius);
                 parent.body.velocity.X *= -1;
-                parent.body.InvokeOnCollisionStay(null);
+                parent.body.InvokeOnCollisionStay(null); //todo: find out why we needed null, fix this
 
             }
             if (parent.body.pos.X < parent.body.radius)

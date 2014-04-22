@@ -12,6 +12,20 @@ namespace OrbItProcs {
 
     public static class Utils {
 
+        public static float Sawtooth(float x, float mod)
+        {
+            float ret = x % mod;
+            if (x >= 0 || ret == 0)
+            {
+                return ret;
+            }
+            else
+            {
+                return mod - (float)Math.Abs(ret);
+            }
+        }
+
+
         public static float between0and2pi(this float value)
         {
             if (value > 2 * VMath.PI) value = value % (2 * VMath.PI);
@@ -498,19 +512,18 @@ namespace OrbItProcs {
                 //    kvp.Key, kvp.Value);
             }
         }
-        public static Vector2 CENTER_TEXTURE = new Vector2(0.5f, 0.5f);
-        public static void DrawLine(Room room, Vector2 start, Vector2 end, float thickness, Color color, Layers Layer)
-        {
-            if (thickness * room.zoom < 1) thickness = 1 / room.zoom;
-            Vector2 diff = (end - start);// *mapzoom;
-            Vector2 centerpoint = (end + start) / 2;
-            //centerpoint *= mapzoom;
-            float len = diff.Length();
-            //thickness *= 2f * mapzoom;
-            Vector2 scalevect = new Vector2(len, thickness);
-            float angle = (float)(Math.Atan2(diff.Y, diff.X));
-            room.camera.Draw(textures.whitepixel, centerpoint, null, color, angle, Assets.textureCenters[textures.whitepixel], scalevect, Layer);
-        }
+        //public static void DrawLine(Room room, Vector2 start, Vector2 end, float thickness, Color color, Layers Layer)
+        //{
+        //    if (thickness * room.zoom < 1) thickness = 1 / room.zoom;
+        //    Vector2 diff = (end - start);// *mapzoom;
+        //    Vector2 centerpoint = (end + start) / 2;
+        //    //centerpoint *= mapzoom;
+        //    float len = diff.Length();
+        //    //thickness *= 2f * mapzoom;
+        //    Vector2 scalevect = new Vector2(len, thickness);
+        //    float angle = (float)(Math.Atan2(diff.Y, diff.X));
+        //    room.camera.Draw(textures.whitepixel, centerpoint, null, color, angle, Assets.textureCenters[textures.whitepixel], scalevect, Layer);
+        //}
 
         public static bool checkCollision(Node o1, Node o2)
         {

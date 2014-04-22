@@ -85,8 +85,10 @@ namespace OrbItProcs
             //parent.Comp<Queuer>().qs = parent.Comp<Queuer>().qs | queues.scale | queues.position;// | queues.angle;
         }
         private Vector2 prevPos = Vector2.Zero;
+        private int counter = 0, onceEveryAmount = 3;
         public override void Draw()
         {
+            if (++counter % onceEveryAmount != 0) return; 
             Vector2 start = parent.body.pos;
             if (prevPos == Vector2.Zero)
             {

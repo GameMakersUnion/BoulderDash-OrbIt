@@ -25,35 +25,41 @@ namespace OrbItProcs
         [Info(UserLevel.User, "The strength of the spring's force")]
         public float multiplier { get; set; }
         /// <summary>
+        /// The maximum reach of the spring, after which it will have no effect.
+        /// </summary>
+        [Info(UserLevel.User, "The maximum reach of the spring, after which it will have no effect.")]
+        public float radius { get; set; }
+        /// <summary>
         /// If enabled, the spring will not only repel nodes, but also attract those outside the boundry.
         /// </summary>
         [Info(UserLevel.User, "If enabled, the spring will not only repel nodes, but also attract those outside the boundry.")]
         public bool hook { get; set; }
 
-        public int _restdist = 300;
+        public int _restdist;
         /// <summary>
         /// The distance at which no force is applied.
         /// </summary>
         [Info(UserLevel.User, "The distance at which no force is applied.")]
-        public int restdist { get { return _restdist; } set { _restdist = value; if (_restdist < _lowerBound.value) _restdist = _lowerBound.value; } }
+        public int restdist { get { return _restdist; } set { _restdist = value; if (_restdist < _deadzone.value) _restdist = _deadzone.value; } }
 
-        private Toggle<int> _lowerBound = new Toggle<int>(100, true);
+        private Toggle<int> _deadzone;
         /// <summary>
         /// Represents minimum distance taken into account when calculating push away.
         /// </summary>
-        [Info(UserLevel.Advanced, "Represents minimum distance taken into account when calculating push away.")]
-        public Toggle<int> lowerBound { get { return _lowerBound; } set { _lowerBound = value; if (_lowerBound.value > _restdist) _lowerBound.value = _restdist; } }
+        [Info(UserLevel.User, "Represents minimum distance taken into account when calculating push away.")]
+        public Toggle<int> deadzone { get { return _deadzone; } set { _deadzone = value; if (_deadzone.value > _restdist) _deadzone.value = _restdist; } }
 
         public Spring() : this(null) { }
         public Spring(Node parent = null)
         {
-            multiplier = 100f;
-
             if (parent != null)
             {
                 this.parent = parent;
             }
-            com = comp.spring;
+            multiplier = 100f;
+            radius = 800;
+            _restdist = 300;
+            _deadzone = new Toggle<int>(100, true);
         }
         public override void AffectOther(Node other) // called when used as a link
         {
@@ -61,8 +67,8 @@ namespace OrbItProcs
 
             float dist = Vector2.Distance(parent.body.pos, other.body.pos);
             if (!hook && dist > restdist) return;
-            if (dist > restdist * 2) return;
-            if (lowerBound.enabled && dist < lowerBound.value) dist = lowerBound.value;
+            //if (dist > restdist * 2) return;
+            if (deadzone.enabled && dist < deadzone.value) dist = deadzone.value;
 
             float stretch = dist - restdist;
             float strength = -stretch * multiplier / 10000f;
@@ -70,14 +76,6 @@ namespace OrbItProcs
             VMath.NormalizeSafe(ref force);
             force *= strength;
             other.body.ApplyForce(force);
-        }
-        public override void AffectSelf() // called when making individual links (clicking for each link)
-        {
-
-        }
-
-        public override void Draw()
-        {
         }
 
     }

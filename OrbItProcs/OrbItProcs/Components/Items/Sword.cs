@@ -124,7 +124,7 @@ namespace OrbItProcs
             
             swordNode.body.shape = poly;
             swordNode.body.pos = parent.body.pos;
-            swordNode.body.DrawCircle = false;
+            swordNode.body.DrawPolygonCenter = false;
             swordNode.basicdraw.active = false;
             ///parent.room.spawnNode(sword);
 

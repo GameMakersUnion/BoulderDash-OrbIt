@@ -131,7 +131,7 @@ namespace OrbItProcs
         [Info(UserLevel.User, "Controls how bouncy the node is during collisions. The higher the value, the more bounce.")]
         public float restitution { get { return _restitution; } set { _restitution = value; } }
 
-        public bool DrawCircle { get; set; }
+        public bool DrawPolygonCenter { get; set; }
         /// <summary>
         /// Sets the X position of the node.
         /// </summary>
@@ -186,9 +186,9 @@ namespace OrbItProcs
 
 
         /// <summary>
-        /// Sets the angle of orientation of the node.
+        /// Sets the angle of orientation of the node. (Radians)
         /// </summary>
-        [Info(UserLevel.Advanced, "Sets the angle of orientation of the node.")]
+        [Info(UserLevel.Advanced, "Sets the angle of orientation of the node. (Radians)")]
         public float orient
         {
             get { return _orient; }
@@ -248,7 +248,7 @@ namespace OrbItProcs
             this.shape = shape ?? new Circle(25);
             this.shape.body = this;
             this.shape.Initialize();
-            DrawCircle = true;
+            DrawPolygonCenter = true;
 
             AfterCloning();
         }

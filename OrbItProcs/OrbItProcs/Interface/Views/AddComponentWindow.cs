@@ -103,9 +103,12 @@ namespace OrbItProcs
                 if (!(di.itemControls["checkbox"] as CheckBox).Checked) continue;
                 comp c = Utils.compEnums[(Type)di.obj];
                 node.addComponent(c, true);
-                foreach(Node n in node.group.fullSet)
+                if (node.group != null) //todo: more checks about whether to add to everyone in group
                 {
-                    n.addComponent(c, true);
+                    foreach (Node n in node.group.fullSet)
+                    {
+                        n.addComponent(c, true);
+                    }
                 }
             }
             view.RefreshRoot();

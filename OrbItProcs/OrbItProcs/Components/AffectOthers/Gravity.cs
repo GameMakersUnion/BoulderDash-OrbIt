@@ -76,7 +76,16 @@ namespace OrbItProcs {
         /// </summary>
         [Info(UserLevel.User, "Causes the node to repulse other nodes, pushing them away.")]
         public bool Repulsive { get; set; }
-
+        /// <summary>
+        /// Draws the gravitational rings around the node.
+        /// </summary>
+        [Info(UserLevel.User, "Draws the gravitational rings around the node.")]
+        public bool ShowRings { get; set; }
+        /// <summary>
+        /// Draws the lines on the nodes that it is exerting a force on, in the direction of the force.
+        /// </summary>
+        [Info(UserLevel.User, "Draws the lines on the nodes that it is exerting a force on, in the direction of the force.")]
+        public bool ShowForceLines { get; set; }
         /// <summary>
         /// If the distance to the node is less than the deadZone, no gravity is applied.
         /// </summary>
@@ -99,9 +108,12 @@ namespace OrbItProcs {
             multiplier = 40f;
             radius = 800f;
             lowerbound = 20;
+            angle = 0;
             mode = Mode.Strong;
             Repulsive = false;
             deadZone = new Toggle<float>(10, true);
+            ShowForceLines = false;
+            ShowRings = true;
         }
 
         //public bool EveryOther = false;
@@ -130,7 +142,7 @@ namespace OrbItProcs {
                 distVects = (float)Math.Sqrt(distVects);
                 if (deadZone.enabled && distVects < deadZone.value) return;
                 if (distVects < lowerbound) distVects = lowerbound;
-                double angle = Math.Atan2((affector.body.pos.Y - affected.body.pos.Y), (affector.body.pos.X - affected.body.pos.X));
+                double angletemp = Math.Atan2((affector.body.pos.Y - affected.body.pos.Y), (affector.body.pos.X - affected.body.pos.X));
 
                 float gravForce = (multiplier * affector.body.mass * affected.body.mass);
 
@@ -149,11 +161,13 @@ namespace OrbItProcs {
                 if (Repulsive) gravForce *= -1;
 
                 if (angle != 0)
-                    angle = (angle + Math.PI + (Math.PI * (float)(angle / 180.0f)) % (Math.PI * 2)) - Math.PI;
+                {
+                    angletemp = (angletemp + Math.PI + (Math.PI * (float)(angle / 180.0f)) % (Math.PI * 2)) - Math.PI; //test for validity
+                }
 
                 //float gravForce = gnode1.GravMultiplier;
-                float velX = (float)Math.Cos(angle) * gravForce;
-                float velY = (float)Math.Sin(angle) * gravForce;
+                float velX = (float)Math.Cos(angletemp) * gravForce;
+                float velY = (float)Math.Sin(angletemp) * gravForce;
                 Vector2 delta = new Vector2(velX, velY);
                 
                 /*
@@ -171,17 +185,19 @@ namespace OrbItProcs {
                 {
                     affected.body.ApplyForce(delta);
                 }
+
+                if (ShowForceLines)
+                {
+                    parent.room.camera.DrawLine(other.body.pos, other.body.pos + (delta * 100), 2, parent.body.color, Layers.Over4);
+                }
                 //other.body.velocity += delta;
                 //other.body.velocity /= other.body.mass; //creates snakelike effect when put below increments
             }
         }
-        public override void AffectSelf()
-        { 
-            //do stuff (actually nope; gravity doesn't have this method)
-        }
 
         public override void Draw()
         {
+            if (!ShowRings) return;
             float deadzone = 5f;
             if (!Repulsive)
             {

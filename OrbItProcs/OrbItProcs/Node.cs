@@ -336,7 +336,7 @@ namespace OrbItProcs {
             Shape shape;
             if (shapetype == ShapeType.eCircle)
             {
-                shape = new Circle(25);
+                shape = new Circle(15);
             }
             else if (shapetype == ShapeType.ePolygon)
             {
@@ -344,11 +344,11 @@ namespace OrbItProcs {
             }
             else
             {
-                shape = new Circle(25); //in case there are more shapes
+                shape = new Circle(15); //in case there are more shapes
             }
 
             body = new Body(shape: shape, parent: this);
-            body.radius = 25;
+            body.radius = 15;
             collision = new Collision(this);
             basicdraw = new BasicDraw(this);
             movement.active = true; collision.active = true; basicdraw.active = true;
@@ -375,23 +375,46 @@ namespace OrbItProcs {
         public Node(Room room, Dictionary<dynamic, dynamic> userProps, ShapeType shapetype = ShapeType.eCircle, bool createHash = true)
             : this(room, shapetype, createHash)
         {
-            // add the userProps to the props
-            foreach (dynamic p in userProps.Keys)
+            if (userProps != null)
             {
-                // if the key is a comp type, we need to add the component to comps dict
-                if (p is comp)
+                // add the userProps to the props
+                foreach (dynamic p in userProps.Keys)
                 {
-                    comp c = (comp)p;
-                    fetchComponent(Utils.compTypes[c], userProps[c]);
-                }
-                // if the key is a node type, we need to update the instance variable value
-                else if (p is nodeE)
-                {
-                    nodeE nn = (nodeE)p;
-                    storeInInstance(nn, userProps);
+                    // if the key is a comp type, we need to add the component to comps dict
+                    if (p is comp)
+                    {
+                        comp c = (comp)p;
+                        fetchComponent(Utils.compTypes[c], userProps[c]);
+                    }
+                    // if the key is a node type, we need to update the instance variable value
+                    else if (p is nodeE)
+                    {
+                        nodeE nn = (nodeE)p;
+                        storeInInstance(nn, userProps);
+                    }
                 }
             }
             SortComponentLists();
+        }
+
+        public static Node ContructLineWall(Room room, Vector2 start, Vector2 end, int thickness, Dictionary<dynamic, dynamic> props = null)
+        {
+            float dist = Vector2.Distance(start, end);
+            int halfheight = (int)(dist / 2);
+            int halfwidth = thickness / 2;
+            float angle = Utils.VectorToAngle(start - end);
+
+            Node n = new Node(room, props, ShapeType.ePolygon);
+            Polygon p = (Polygon)n.body.shape;
+            p.SetBox(halfheight, halfwidth); //flipped
+
+            n.body.pos = (start + end) / 2;
+            n.body.DrawPolygonCenter = false;
+            p.SetOrient(angle);
+
+            n.body.SetStatic();
+            room.masterGroup.childGroups["Walls"].IncludeEntity(n);
+            return n;
         }
 
         public T Comp<T>() where T : Component
@@ -536,7 +559,17 @@ namespace OrbItProcs {
                 }
                 else if (room.affectAlgorithm == 2)
                 {
-                    room.gridsystemAffect.retrieveOffsetArraysAffect(body, affectAction, affectionReach);
+                    if (meta.IgnoreAffectGrid)
+                    {
+                        foreach(Node n in room.masterGroup.fullSet)
+                        {
+                            affectAction(body, n.body);
+                        }
+                    }
+                    else
+                    {
+                        room.gridsystemAffect.retrieveOffsetArraysAffect(body, affectAction, affectionReach);
+                    }
                 }
             }
             if (OnAffectOthers != null) OnAffectOthers.Invoke(this, null);

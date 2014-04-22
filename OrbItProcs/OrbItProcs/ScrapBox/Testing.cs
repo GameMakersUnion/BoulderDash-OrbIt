@@ -56,7 +56,26 @@ namespace OrbItProcs
         public HashSet<int> hints = new HashSet<int>();
         public List<int> lints = new List<int>();
         public ObservableCollection<int> oblist = new ObservableCollection<int>();
-        
+
+
+        public static void sawtoothTest()
+        {
+            for (int i = -10; i <= 10; i++)
+            {
+
+                float f = i / 10f;
+                float val = Utils.Sawtooth(f, 1);
+                Console.WriteLine("st: {0} % 1 = {1}", f, val);
+            }
+        }
+        public static void modulusTest()
+        {
+            for(int i = -10; i <= 10; i++)
+            {
+                Console.WriteLine("{0} % 5 = {1}", i, i % 5);
+            }
+        }
+
         public static void modInc()
         {
             count++;
@@ -250,7 +269,7 @@ namespace OrbItProcs
                 Color col = ColorChanger.getColorFromHSV((float)i);
                 Room room = OrbIt.game.room;
                 float thickness = (float)room.worldWidth / 360f;
-                Utils.DrawLine(room, new Vector2(thickness * i, 0), new Vector2(thickness * i, room.worldHeight), thickness, col, Layers.Over5);
+                room.camera.DrawLine(new Vector2(thickness * i, 0), new Vector2(thickness * i, room.worldHeight), thickness, col, Layers.Over5);
             }
         }
 

@@ -237,7 +237,7 @@ namespace OrbItProcs
 
                 Vector2 v1 = position + a1;
                 Vector2 v2 = position + a2;
-                Utils.DrawLine(body.parent.room, v1, v2, LineThickness, color, Layers.Over2);
+                body.parent.room.camera.DrawLine(v1, v2, LineThickness, color, Layers.Over2);
 
                 if (RecurseDrawEnabled)
                 {
@@ -263,7 +263,7 @@ namespace OrbItProcs
 
                 Vector2 v1 = pos + a1;
                 Vector2 v2 = pos + a2;
-                Utils.DrawLine(body.parent.room, v1, v2, LineThickness, body.color, Layers.Under5);
+                body.parent.room.camera.DrawLine(v1, v2, LineThickness, body.color, Layers.Under5);
 
                 //Draw(pos, count, scale, scalediff);
             }
@@ -284,7 +284,7 @@ namespace OrbItProcs
 
                 Vector2 v1 = pos + a1;
                 Vector2 v2 = pos + a2;
-                Utils.DrawLine(body.parent.room, v1, v2, 1f, body.color, Layers.Under5);
+                body.parent.room.camera.DrawLine(v1, v2, 1f, body.color, Layers.Under5);
 
                 DrawRecurse(pos + a1, count, scale);
             }

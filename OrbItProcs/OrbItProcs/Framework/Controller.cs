@@ -31,13 +31,13 @@ namespace OrbItProcs
 
         public Stick(Vector2 sourceStick)
         {
-            v2 = Vector2.Zero;
+            //v2 = Vector2.Zero;
             up = ButtonState.Released;
             down = ButtonState.Released;
             left = ButtonState.Released;
             right = ButtonState.Released;
 
-            v2 = sourceStick;
+            v2 = sourceStick;//multiply by -1?
             if (v2.LengthSquared() < Controller.deadZone * Controller.deadZone) return;
 
             double angle = Math.Atan2(sourceStick.Y, sourceStick.X);
@@ -56,13 +56,52 @@ namespace OrbItProcs
             }
 
         }
+        //const float fourtyfivedegreeratio = 0.70710678118654f;
+          const float fourtyfivedegreeratio = 0.70710678118654752440084436210485f;
+        public Stick(bool up, bool down, bool left, bool right)
+        {
+            float x = 0, y = 0;
+            if (up)
+            {
+                y -= 1;
+                this.up = ButtonState.Pressed;
+            }
+            else this.up = ButtonState.Released;
+            if (down)
+            {
+                y += 1;
+                this.down = ButtonState.Pressed;
+            }
+            else this.down = ButtonState.Released;
+            if (left)
+            {
+                x -= 1;
+                this.left = ButtonState.Pressed;
+            }
+            else this.left = ButtonState.Released;
+            if (right)
+            {
+                x += 1;
+                this.right = ButtonState.Pressed;
+            }
+            else this.right = ButtonState.Released;
+
+            Vector2 v = new Vector2(x, y);
+
+            if (x != 0 && y != 0)
+            {
+                v *= fourtyfivedegreeratio;
+            }
+            this.v2 = v;
+
+        }
         public Stick(ButtonState up, ButtonState down, ButtonState left, ButtonState right)
         {
             v2 = Vector2.Zero;
-            this.up = ButtonState.Released;
-            this.down = ButtonState.Released;
-            this.left = ButtonState.Released;
-            this.right = ButtonState.Released;
+            //this.up = ButtonState.Released;
+            //this.down = ButtonState.Released;
+            //this.left = ButtonState.Released;
+            //this.right = ButtonState.Released;
 
             this.up = up; this.down = down; this.left = left; this.right = right;
             if (isCentered()) return;
@@ -314,8 +353,8 @@ namespace OrbItProcs
             {2, PlayerIndex.Two},
             {3, PlayerIndex.Three},
             {4, PlayerIndex.Four}};
-        public abstract Vector2 getLeftStick();
-        public abstract Vector2 getRightStick();
+        public abstract Vector2 GetLeftStick();
+        public abstract Vector2 GetRightStick();
         public static int connectedControllers()
         {
             for (int i = 1; i <= 4; i++)
@@ -392,11 +431,11 @@ namespace OrbItProcs
             if (enabled == false) return new GamePadState();
             return GamePad.GetState(controllerIndex, GamePadDeadZone.Circular);
         }
-        public override Vector2 getRightStick()
+        public override Vector2 GetRightStick()
         {
             return newGamePadState.ThumbSticks.Right * new Vector2(1,-1);
         }
-        public override Vector2 getLeftStick()
+        public override Vector2 GetLeftStick()
         {
             return newGamePadState.ThumbSticks.Left * new Vector2(1, -1);
         }
@@ -431,11 +470,11 @@ namespace OrbItProcs
             this.playerNum = player;
             assign = reassign();
         }
-        public override Vector2 getRightStick()
+        public override Vector2 GetRightStick()
         {
             return newHalfPadState.stick1 * new Vector2(1, -1);
         }
-        public override Vector2 getLeftStick()
+        public override Vector2 GetLeftStick()
         {
             return newHalfPadState.stick2 * new Vector2(1, -1);
         }

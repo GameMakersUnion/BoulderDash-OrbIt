@@ -104,7 +104,7 @@ namespace OrbItProcs
                 float x = ratio * room.worldWidth;
                 float y = (room.worldHeight - ((floatData[f] - min.Y + 1) / (max.Y - min.Y + 1) * room.worldHeight * 0.5f));
                 datapoints += floatData[f];
-                Utils.DrawLine(room, new Vector2(x, room.worldHeight), new Vector2(x, y), 1, ColorChanger.getColorFromHSV(hue), Layers.Under5);
+                room.camera.DrawLine(new Vector2(x, room.worldHeight), new Vector2(x, y), 1, ColorChanger.getColorFromHSV(hue), Layers.Under5);
             }
 
             if (datapoints % 100 == 0) Console.WriteLine("Datapoints: {0}  Size: {1}", datapoints, floatData.Count);
