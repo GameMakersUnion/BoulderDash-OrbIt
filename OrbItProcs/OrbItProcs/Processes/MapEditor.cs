@@ -47,13 +47,8 @@ namespace OrbItProcs
             if (verts.Count < 3) return;
             Vector2[] vertices = verts.ToArray();
             Node newNode = new Node(room, ShapeType.ePolygon);
-            //Node.cloneNode(Game1.ui.sidebar.ActiveDefaultNode, newNode);
-            //Polygon poly = new Polygon();
-            //poly.body = newNode.body;
-            //poly.FindCentroid(vertices);
             Polygon poly = (Polygon)newNode.body.shape;
             poly.SetCenterOfMass(vertices);
-            //newNode.body.shape = poly;
             newNode.body.SetStatic();
             newNode.body.orient = 0;
             newNode.movement.mode = movemode.free;

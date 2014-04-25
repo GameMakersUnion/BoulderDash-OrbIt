@@ -13,14 +13,13 @@ namespace OrbItProcs
     public class AddComponentWindow
     {
         public AddComponentView addCompView;
-
         public Manager manager;
         public Sidebar sidebar;
         public Poop poop;
         public int HeightCounter = 5;
         public int LeftPadding = 5;
         public Label lblComp, lblProperties;
-        Button btnAdd;//, btnCancel;
+        public Button btnAdd;//, btnCancel;
         public Node node;
         public DetailedView view;
         public Control under;
