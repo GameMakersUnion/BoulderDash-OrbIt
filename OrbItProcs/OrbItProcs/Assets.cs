@@ -54,6 +54,7 @@ namespace OrbItProcs
     static class Assets
     {
         public const string filepath = "Presets//Nodes/";
+        public const string levelsFilepath = "Presets//Levels/";
 
         public static SpriteFont font;
         public static Dictionary<textures, Texture2D> textureDict;

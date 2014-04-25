@@ -41,8 +41,6 @@ namespace OrbItProcs {
         public GridSystem gridsystemCollision { get; set; }
         //[Polenter.Serialization.ExcludeFromSerialization]
         public Level level { get; set; }
-
-
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<string> groupHashes { get; set; }
         public ObservableHashSet<string> nodeHashes { get; set; }
@@ -110,6 +108,15 @@ namespace OrbItProcs {
             {
                 if (masterGroup == null) return null;
                 return masterGroup.childGroups["Bullet Group"];
+            }
+        }
+        [Polenter.Serialization.ExcludeFromSerialization]
+        public Group wallGroup
+        {
+            get
+            {
+                if (masterGroup == null) return null;
+                return masterGroup.childGroups["Wall Group"];
             }
         }
         [Polenter.Serialization.ExcludeFromSerialization]
@@ -250,7 +257,7 @@ namespace OrbItProcs {
                 Group itemGroup = new Group(this, defaultNode, masterGroup, "Item Group", false);
                 Group linkGroup = new Group(this, defaultNode, masterGroup, "Link Groups", false);
                 Group bulletGroup = new Group(this, defaultNode.CreateClone(this), masterGroup, "Bullet Group", true);
-                Group wallGroup = new Group(this, defaultNode, masterGroup, "Walls", true);
+                Group wallGroup = new Group(this, defaultNode, masterGroup, "Wall Group", true);
                 Group firstGroup = new Group(this, firstdefault, generalGroup, "Group1");
             }
 
@@ -355,7 +362,7 @@ namespace OrbItProcs {
 
             gridSystemLines = new List<Rectangle>();
 
-            game.processManager.Update();
+            //game.processManager.Update();
 
             HashSet<Node> toDelete = new HashSet<Node>();
             if (affectAlgorithm == 1)//OLD for testing
@@ -364,7 +371,7 @@ namespace OrbItProcs {
                 foreach (var n in masterGroup.fullSet)
                 {
                     if (ColorNodesInReach) n.body.color = Color.White;
-                    if (masterGroup.childGroups["Walls"].fullSet.Contains(n)) continue;
+                    if (masterGroup.childGroups["Wall Group"].fullSet.Contains(n)) continue;
                     gridsystemAffect.insert(n.body);
                 }
             }
@@ -374,7 +381,7 @@ namespace OrbItProcs {
                 foreach (var n in masterGroup.fullSet)
                 {
                     if (ColorNodesInReach) n.body.color = Color.White;
-                    if (masterGroup.childGroups["Walls"].fullSet.Contains(n)) continue;
+                    if (masterGroup.childGroups["Wall Group"].fullSet.Contains(n)) continue;
                     gridsystemAffect.insertToBuckets(n.body);
                 }
             }
@@ -665,7 +672,7 @@ namespace OrbItProcs {
 
             //n.movement.pushable = false;
 
-            masterGroup.childGroups["Walls"].entities.Add(n);
+            masterGroup.childGroups["Wall Group"].entities.Add(n);
             return n;
         }
 

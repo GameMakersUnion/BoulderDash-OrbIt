@@ -106,7 +106,7 @@ namespace OrbItProcs
         private string _Name;
         public string Name { get { return _Name; } set { if (_Name != null && _Name.Equals("master")) return; _Name = value; } } //cannot rename main group
         public bool Spawnable { get; set; }
-        public GroupState groupState { get; set; }
+        //public GroupState groupState { get; set; }
 
         private bool _Disabled = false;
         public bool Disabled
@@ -119,28 +119,26 @@ namespace OrbItProcs
                 {
                     if (parentGroup != null)
                     {
-                        foreach (Node n in entities)
+                        
+                        foreach (Node n in fullSet)
                         {
                             if (parentGroup.inherited.Contains(n)) parentGroup.inherited.Remove(n);
+                            if (room.CollisionSetCircle.Contains(n.body)) room.CollisionSetCircle.Remove(n.body);
+                            if (room.CollisionSetPolygon.Contains(n.body)) room.CollisionSetPolygon.Remove(n.body);
                         }
-                        foreach (Node n in inherited)
-                        {
-                            if (parentGroup.inherited.Contains(n)) parentGroup.inherited.Remove(n);
-                        }
+                        Spawnable = false;
                     }
                 }
                 else
                 {
                     if (parentGroup != null)
                     {
-                        foreach (Node n in entities)
+                        foreach (Node n in fullSet)
                         {
                             parentGroup.inherited.Add(n);
+                            n.collision.UpdateCollisionSet();
                         }
-                        foreach (Node n in inherited)
-                        {
-                            parentGroup.inherited.Add(n);
-                        }
+                        Spawnable = true;
                     }
                 }
             }
@@ -183,7 +181,7 @@ namespace OrbItProcs
             : this(null)
         {
         }
-        public Group(Room room, Node defaultNode = null, Group parentGroup = null, string Name = "", bool Spawnable = true, GroupState groupState = GroupState.on, ObservableHashSet<Node> entities = null)
+        public Group(Room room, Node defaultNode = null, Group parentGroup = null, string Name = "", bool Spawnable = true, ObservableHashSet<Node> entities = null)
         {
             if (parentGroup != null) room = parentGroup.room;
             this.room = room;
@@ -202,7 +200,7 @@ namespace OrbItProcs
                 }
             }
             this.parentGroup = parentGroup;
-            this.groupState = groupState;
+            //this.groupState = groupState;
             this.Spawnable = Spawnable;
             this.childGroups = new Dictionary<string, Group>();
             this.entities.CollectionChanged += entities_CollectionChanged;
@@ -264,6 +262,10 @@ namespace OrbItProcs
                     {
                         if (!entities.Contains(n) && !inherited.Contains(n))
                             fullSet.Remove(n);
+                    }
+                    if (parentGroup != null && parentGroup.inherited.Contains(n))
+                    {
+                        parentGroup.inherited.Remove(n);
                     }
                     if (n.group == this) n.group = null;
                 }
@@ -402,21 +404,21 @@ namespace OrbItProcs
             }
         }
 
-        public void Update(GameTime gametime)
-        {
-            if (groupState.In(GroupState.on, GroupState.updatingOnly))
-            {
-                entities.ToList().ForEach(delegate(Node n) { ((Node)n).Update(gametime); });
-            }
-        }
+        //public void Update(GameTime gametime)
+        //{
+        //    if (groupState.In(GroupState.on, GroupState.updatingOnly))
+        //    {
+        //        entities.ToList().ForEach(delegate(Node n) { ((Node)n).Update(gametime); });
+        //    }
+        //}
 
-        public void Draw(SpriteBatch spritebatch)
-        {
-            if (groupState.In(GroupState.on, GroupState.drawingOnly))
-            {
-                entities.ToList().ForEach(delegate(Node n) { ((Node)n).Draw(); });
-            }
-        }
+        //public void Draw(SpriteBatch spritebatch)
+        //{
+        //    if (groupState.In(GroupState.on, GroupState.drawingOnly))
+        //    {
+        //        entities.ToList().ForEach(delegate(Node n) { ((Node)n).Draw(); });
+        //    }
+        //}
 
         public override string ToString()
         {
@@ -442,6 +444,25 @@ namespace OrbItProcs
                 throw new SystemException("Error: One of the childGroups with the same key was already present in this Group.");
             }
             childGroups.Add(name, group);
+            group.parentGroup = this;
+            foreach(Node n in group.fullSet)
+            {
+                inherited.Add(n);
+            }
+        }
+
+        public void DetatchFromParent()
+        {
+            if (parentGroup == null) return;
+            foreach(Node n in fullSet)
+            {
+                parentGroup.inherited.Remove(n);
+            }
+            if (parentGroup.childGroups.ContainsKey(Name))
+            {
+                parentGroup.childGroups.Remove(Name);
+            }
+            parentGroup = null;
         }
 
         public void GroupNamesToList(List<object> list, bool addSelf = true)

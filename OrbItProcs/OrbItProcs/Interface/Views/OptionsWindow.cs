@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using TomShane.Neoforce.Controls;
 using EventHandler = TomShane.Neoforce.Controls.EventHandler;
+using System.IO;
 
 namespace OrbItProcs
 {
@@ -18,7 +19,7 @@ namespace OrbItProcs
 
         public ComboBox cbUserLevel;
         public Label lblUserLevel;
-        public Button btnOk;
+        public Button btnOk, btnSaveLevel, btnLoadLevel;
 
         public OptionsWindow(Sidebar sidebar)
         {
@@ -45,6 +46,24 @@ namespace OrbItProcs
             btnOk.Top = window.Height - (btnOk.Height * 3);
             btnOk.Text = "Ok";// +"\u2713";
             btnOk.Click += (s, e) => window.Close();
+
+            btnLoadLevel = new Button(manager);
+            btnLoadLevel.Init();
+            window.Add(btnLoadLevel);
+            btnLoadLevel.Width += 30;
+            btnLoadLevel.Left = window.Width - btnLoadLevel.Width - LeftPadding * 5;
+            btnLoadLevel.Text = "Load Level";
+            btnLoadLevel.Top = window.Height - (btnLoadLevel.Height * 3);
+            btnLoadLevel.Click += btnLoadLevel_Click;
+
+            btnSaveLevel = new Button(manager);
+            btnSaveLevel.Init();
+            window.Add(btnSaveLevel);
+            btnSaveLevel.Width += 30;
+            btnSaveLevel.Left = window.Width - btnSaveLevel.Width - LeftPadding * 5;
+            btnSaveLevel.Text = "Save Level";
+            btnSaveLevel.Top = btnLoadLevel.Top - btnSaveLevel.Height - LeftPadding;
+            btnSaveLevel.Click += btnSaveLevel_Click;
 
             lblUserLevel = new Label(manager);
             lblUserLevel.Init();
@@ -122,6 +141,42 @@ namespace OrbItProcs
             CreateCheckBox("Edit Selected Node", false, (o, e) => Utils.notImplementedException() );
             
             //CreateCheckBox("Edit Selected Node", sidebar.EditSelectedNode, (o, e) => sidebar.EditSelectedNode = (o as CheckBox).Checked);
+        }
+
+        void btnSaveLevel_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            Group g = sidebar.room.wallGroup;
+            
+            if (g.fullSet.Count == 0)
+                PopUp.Toast("Unable to save: there are no walls.");
+            else
+                PopUp.Text("Level Name:", "Name Level", delegate(bool c, object input)
+                {
+                    if (c) LevelSave.SaveLevel(g, sidebar.room.worldWidth, sidebar.room.worldHeight, (string)input);//Assets.saveNode(inspectorArea.editNode, (string)input);
+                    return true;
+                });
+
+
+            //string filename = Assets.levelsFilepath + "/" + "name" + ".xml";//"Presets//Rooms//room1.bin";
+            //sidebar.room.game.serializer = new Polenter.Serialization.SharpSerializer(true);
+
+            //sidebar.room.game.serializer.Serialize(sidebar.room, filename);
+        }
+
+        void btnLoadLevel_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            return;
+            foreach (string file in Directory.GetFiles(Assets.levelsFilepath, "*.xml"))
+            {
+                try
+                {
+                    LevelSave levelSave = (LevelSave)OrbIt.game.serializer.Deserialize(file);
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine("Failed to deserialize level: {0}", ex.Message);
+                }
+            }
         }
 
         public void CreateCheckBox(string key, bool isChecked, EventHandler ev)

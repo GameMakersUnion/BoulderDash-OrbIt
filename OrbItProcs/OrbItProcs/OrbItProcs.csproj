@@ -170,12 +170,14 @@
     <Compile Include="Framework\Gametypes\BigTony.cs" />
     <Compile Include="Framework\Gametypes\Gametype.cs" />
     <Compile Include="Framework\Input.cs" />
+    <Compile Include="Framework\LevelSave.cs" />
     <Compile Include="Interface\Views\AddComponentView.cs" />
     <Compile Include="Interface\Views\AddComponentWindow.cs" />
     <Compile Include="Interface\Views\CreateGroupWindow.cs" />
     <Compile Include="Framework\ThreadedCamera.cs" />
     <Compile Include="Interface\Views\EditNodeWindow.cs" />
     <Compile Include="Interface\Views\GamemodeWindow.cs" />
+    <Compile Include="Interface\Views\LoadLevelWindow.cs" />
     <Compile Include="Interface\Views\OptionsWindow.cs" />
     <Compile Include="Interface\Views\ComponentView.cs" />
     <Compile Include="Interface\Views\DetailedView.cs" />

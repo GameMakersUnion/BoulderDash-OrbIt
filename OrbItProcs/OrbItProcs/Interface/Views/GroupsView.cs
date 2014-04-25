@@ -15,7 +15,7 @@ namespace OrbItProcs
     public class GroupsView : DetailedView
     {
         public Label lblGroupLabel;
-        public Button btnCreateGroup, btnEmptyGroup;
+        public Button btnCreateGroup, btnEmptyGroup, btnEmptyAll;
         public Group parentGroup;
         public CreateGroupWindow createGroupWindow;
         public EditNodeWindow editGroupWindow;
@@ -71,7 +71,7 @@ namespace OrbItProcs
 
             HeightCounter += btnCreateGroup.Height + LeftPadding;
 
-            Button btnEmptyAll = new Button(manager);
+            btnEmptyAll = new Button(manager);
             btnEmptyAll.Init();
             btnEmptyAll.Parent = parent;
             btnEmptyAll.Top = HeightCounter;
@@ -106,6 +106,12 @@ namespace OrbItProcs
         public void UpdateGroups()
         {
             if (parentGroup == null) return;
+            Group currentlySelected = null;
+            if (selectedItem != null && selectedItem.obj is Group)
+            {
+                currentlySelected = (Group)selectedItem.obj;
+            }
+
             ClearView();
             showRemoveButton = parentGroup.childGroups.Count > 1;
             foreach (Group g in parentGroup.childGroups.Values)
@@ -114,6 +120,14 @@ namespace OrbItProcs
             }
             if (viewItems.Count > 0)
             {
+                foreach(DetailedItem item in viewItems)
+                {
+                    if (item.obj == currentlySelected)
+                    {
+                        SelectItem(item);
+                        return;
+                    }
+                }
                 SelectItem(viewItems.ElementAt(0));
             }
         }

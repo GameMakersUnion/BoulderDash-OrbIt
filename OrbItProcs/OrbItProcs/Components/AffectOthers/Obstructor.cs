@@ -24,9 +24,12 @@ namespace OrbItProcs
             set
             {
                 base.active = value;
-                foreach(var n in walls){
-                    n.active = value;
-
+                if (walls != null)
+                {
+                    foreach (var n in walls)
+                    {
+                        n.active = value;
+                    }
                 }
             }
         }
@@ -62,13 +65,14 @@ namespace OrbItProcs
         public Obstructor() : this(null) { }
         public Obstructor(Node parent)
         {
+            this.parent = parent;
             nodeDistances = new List<KeyValuePair<float, Node>>();
             maxWalls = 5;
             thickness = 10;
             radius = 500;
             onlyObstructors = true;
+
             walls = new Node[maxWalls];
-            this.parent = parent;
             for (int i = 0; i < maxWalls; i++)
             {
                 walls[i] = CreateBlankWallPoly();
@@ -77,10 +81,21 @@ namespace OrbItProcs
 
         public Node CreateBlankWallPoly()
         {
-            Node wall = Node.ContructLineWall(parent.room, parent.body.pos, parent.body.pos, thickness);
+            Node wall = Node.ContructLineWall(parent.room, parent.body.pos, parent.body.pos, thickness, addToWallGroup: false);
             wall.active = false;
             wall.body.ExclusionCheck += (a, b) => b.parent == parent || walls.Contains(b.parent);
             return wall;
+        }
+
+        public override void OnSpawn()
+        {
+            if (walls != null)
+            {
+                foreach(Node n in walls)
+                {
+                    parent.room.masterGroup.childGroups["Wall Group"].IncludeEntity(n);
+                }
+            }
         }
         
         public override void AffectOther(Node other)

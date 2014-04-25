@@ -10,7 +10,7 @@ namespace OrbItProcs
     public class MapEditor : Process
     {
         public List<Vector2> verts;
-        public MapEditor(Level level) : base()
+        public MapEditor() : base()
         {
             Draw += DrawEditor;
             verts = new List<Vector2>();
@@ -24,7 +24,7 @@ namespace OrbItProcs
         {
             int vertX = 0, vertY = 0;
             MouseToGrid(ref vertX, ref vertY);
-            Vector2 vert = new Vector2(vertX, vertY);// / room.mapzoom;
+            Vector2 vert = new Vector2(vertX, vertY);
             if (verts.Contains(vert))
             {
                 if (verts.IndexOf(vert) == 0)
@@ -59,13 +59,13 @@ namespace OrbItProcs
             newNode.movement.mode = movemode.free;
             newNode.body.restitution = 1f;
             newNode.meta.maxHealth.enabled = false;
-            room.spawnNode(newNode, g: room.masterGroup.childGroups["Walls"]);
+            room.spawnNode(newNode, g: room.masterGroup.childGroups["Wall Group"]);
             verts = new List<Vector2>();
         }
 
         public void ClearWalls()
         {
-            room.masterGroup.childGroups["Walls"].EmptyGroup();
+            room.masterGroup.childGroups["Wall Group"].EmptyGroup();
         }
 
         public void DrawEditor()

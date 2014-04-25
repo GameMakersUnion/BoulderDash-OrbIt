@@ -209,6 +209,14 @@ namespace OrbItProcs
                     newNode.name = txtName.Text.Trim();
                     newNode.group = newGroup;
                     sidebar.groupsView.UpdateGroups();
+                    foreach(DetailedItem item in sidebar.groupsView.viewItems)
+                    {
+                        if (item.obj == newGroup)
+                        {
+                            sidebar.groupsView.SelectItem(item);
+                            break;
+                        }
+                    }
 
                     Close();
                 }

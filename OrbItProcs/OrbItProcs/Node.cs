@@ -397,7 +397,7 @@ namespace OrbItProcs {
             SortComponentLists();
         }
 
-        public static Node ContructLineWall(Room room, Vector2 start, Vector2 end, int thickness, Dictionary<dynamic, dynamic> props = null)
+        public static Node ContructLineWall(Room room, Vector2 start, Vector2 end, int thickness, Dictionary<dynamic, dynamic> props = null, bool addToWallGroup = true)
         {
             float dist = Vector2.Distance(start, end);
             int halfheight = (int)(dist / 2);
@@ -413,7 +413,10 @@ namespace OrbItProcs {
             p.SetOrient(angle);
 
             n.body.SetStatic();
-            room.masterGroup.childGroups["Walls"].IncludeEntity(n);
+            if (addToWallGroup)
+            {
+                room.masterGroup.childGroups["Wall Group"].IncludeEntity(n);
+            }
             return n;
         }
 

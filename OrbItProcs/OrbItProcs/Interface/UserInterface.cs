@@ -217,8 +217,8 @@ namespace OrbItProcs {
                 isShiftDown = false;
             }
 
-            if (keybState.IsKeyDown(Keys.F) && !oldKeyBState.IsKeyDown(Keys.F))
-                IsPaused = !IsPaused;
+            //if (keybState.IsKeyDown(Keys.F) && !oldKeyBState.IsKeyDown(Keys.F))
+            //    IsPaused = !IsPaused;
 
             oldKeyBState = Keyboard.GetState();
         }

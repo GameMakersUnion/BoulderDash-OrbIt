@@ -210,7 +210,7 @@ namespace OrbItProcs
 
             MainWindow.TransparentClientArea = true;
 
-            Testing.sawtoothTest();
+            //Testing.sawtoothTest();
  
         }
         Window test;
@@ -237,6 +237,13 @@ namespace OrbItProcs
             if (!ui.IsPaused)
             {
                 if (mainRoom != null) mainRoom.Update(gameTime);
+            }
+            else
+            {
+                room.camera.RenderAsync();
+                room.Draw();
+                room.camera.CatchUp();
+
             }
             tempRoom.Update(gameTime);
             frameRateCounter.Draw(Assets.font);
