@@ -167,6 +167,7 @@
     <Compile Include="Components\Meta\Scheduler.cs" />
     <Compile Include="Components\Drawers\Shader.cs" />
     <Compile Include="Components\Movement\Conveyor.cs" />
+    <Compile Include="Framework\DanteIsRetarded.cs" />
     <Compile Include="Framework\Gametypes\BigTony.cs" />
     <Compile Include="Framework\Gametypes\Gametype.cs" />
     <Compile Include="Framework\Input.cs" />
