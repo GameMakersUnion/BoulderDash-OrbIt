@@ -802,13 +802,17 @@ namespace OrbItProcs {
                         dynamic tog2 = value;
                         toggle.GetType().GetProperty("enabled").SetValue(toggle, tog2.enabled, null);
                         if (tog2.value.GetType() == toggle.value.GetType())
+                        {
                             toggle.GetType().GetProperty("value").SetValue(toggle, tog2.value, null);
+                            Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + value.GetType() + " >> " + value);
+                        }
                         return;
                     }
                     else if (value is bool)
                     {
                         toggle = GetValue();
                         toggle.GetType().GetProperty("enabled").SetValue(toggle, value, null);
+                        Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + toggle.GetType() + " >> " + toggle);
                         return;
                     }
                     object san = TrySanitize(value);
@@ -816,7 +820,10 @@ namespace OrbItProcs {
                     {
                         toggle = GetValue();
                         if (value.GetType() == toggle.value.GetType())
+                        {
                             toggle.GetType().GetProperty("value").SetValue(toggle, san, null);
+                            Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + toggle.GetType() + " >> " + toggle);
+                        }
                     }
                     return;
                 }
@@ -824,23 +831,22 @@ namespace OrbItProcs {
                 {
                     object san = TrySanitize(value);
                     if (san != null)
+                    {
                         fpinfo.SetValue(san, parentItem.obj);
+                        Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + value.GetType() + " >> " + value);
+                    }
                     return;
                 }
                 if (value.GetType() == fpinfo.FPType)
+                {
                     fpinfo.SetValue(value, parentItem.obj);
+                    Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + value.GetType() + " >> " + value);
+                }
             }
             else
             {
                 System.Console.WriteLine("Error while SetValue() in InspectorInfo.");
             }
-        }
-        public void SetValueSafe(object value)
-        {
-            object san = TrySanitize(value);
-            if (san != null)
-                SetValue(value);
-            //todo: fix for dictionaries / lists
         }
 
         public object TrySanitize(object value)

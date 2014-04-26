@@ -117,7 +117,7 @@ namespace OrbItProcs
         {
             //Node.cloneNode(parent.Game1.ui.sidebar.ActiveDefaultNode, sword);
             //parent.body.texture = textures.orientedcircle;
-            swordNode.Kawasaki["swordnodeparent"] = parent;
+            swordNode.dataStore["swordnodeparent"] = parent;
             Polygon poly = new Polygon();
             poly.body = swordNode.body;
             poly.SetBox(swordWidth, swordLength);
@@ -134,9 +134,9 @@ namespace OrbItProcs
             swordNode.body.ExclusionCheck += delegate(Collider p, Collider o) { return !movingStick; };
             swordNode.body.OnCollisionEnter += (p, o) =>
             {
-                if (o.Kawasaki.ContainsKey("swordnodeparent"))
+                if (o.dataStore.ContainsKey("swordnodeparent"))
                 {
-                    Node otherparent = o.Kawasaki["swordnodeparent"];
+                    Node otherparent = o.dataStore["swordnodeparent"];
                     Vector2 f = otherparent.body.pos - parent.body.pos;
                     VMath.NormalizeSafe(ref f);
                     f *= parryKnockback;

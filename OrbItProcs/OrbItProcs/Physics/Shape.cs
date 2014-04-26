@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
-
+using Point = System.Drawing.Point;
 namespace OrbItProcs
 {
     
@@ -216,6 +216,8 @@ namespace OrbItProcs
         public override void Draw()
         {
             DrawPolygon(body.pos, body.color);
+            if (testTexture!= null)
+                body.parent.room.camera.Draw(testTexture, body.pos + (trueOffset.Rotate(body.orient)) + (offset.Rotate(body.orient)), body.color, 1f, body.orient, Layers.Over1);
         }
 
         public void DrawPolygon(Vector2 position, Color color)
@@ -312,7 +314,15 @@ namespace OrbItProcs
             }
             //body.pos = new Vector2(x, y);
             Set(vertices, vertexCount);
-
+            
+            float minX = vertices.Min(x => x.X);
+            float maxX = vertices.Max(x => x.X);
+            //offset.X = (maxX+min
+            float minY = vertices.Min(x => x.Y);
+            float maxY = vertices.Max(x => x.Y);
+            trueOffset = new Vector2((maxX-minX)/2,(maxY-minY)/2);
+            testTexture = CreateClippedTexture(Assets.textureDict[body.texture], vertices, vertexCount, out offset);
+            this.offset = new Vector2(offset.X, offset.Y);
             //Vector2 newCentroid = FindCentroid(vertices, vertexCount);
             body.pos = centroid;// +newCentroid;
             
@@ -352,7 +362,7 @@ namespace OrbItProcs
         }
 
         // half width and half height
-        public void SetBox(float hw, float hh)
+        public void SetBox(float hw, float hh, bool fill = true)
         {
             vertexCount = 4;
             VMath.Set(ref vertices[0], -hw, -hh);//vertices[0].Set(-hw, -hh);
@@ -364,6 +374,11 @@ namespace OrbItProcs
             VMath.Set(ref normals[2], 0, 1);//normals[2].Set(0, 1);
             VMath.Set(ref normals[3], -1, 0);//normals[3].Set(-1, 0);
             polyReach = Vector2.Distance(Vector2.Zero, new Vector2(hw, hh)) * 2;
+            if (fill)
+            {
+                testTexture = CreateClippedTexture(Assets.textureDict[body.texture], vertices, vertexCount, out this.offset);
+                this.trueOffset = this.offset * -1f;
+            }
         }
 
         public void Set(Vector2[] verts, int count)
@@ -434,6 +449,7 @@ namespace OrbItProcs
                 }
             }
             float maxDist = 0;
+            
             // Copy vertices into shape's vertices
             for (int i = 0; i < vertexCount; ++i)
             {
@@ -445,6 +461,25 @@ namespace OrbItProcs
 
             ComputeNormals();
         }
+        public Texture2D CreateClippedTexture(Texture2D tex, Vector2[] verts, int count, out Vector2 offset)
+        {
+            Point offsetP = new Point();
+
+
+
+            Point[] points = new Point[count];
+            for(int i = 0; i < count; i++)
+            {
+                points[i] = new Point((int)verts[i].X, (int)verts[i].Y);
+            }
+
+            Texture2D ret = Assets.ClippedBitmap(tex, points, out offsetP);
+            offset.X = offsetP.X; offset.Y = offsetP.Y;
+            return ret;
+        }
+        public Texture2D testTexture;
+        private Vector2 offset;
+        private Vector2 trueOffset;
 
         public void ComputeNormals()
         {

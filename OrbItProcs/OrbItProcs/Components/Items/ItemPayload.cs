@@ -160,16 +160,22 @@ namespace OrbItProcs
         }
         public override void AffectSelf()
         {
+            if (particlePacks != null)
+            {
             foreach(var pack in particlePacks)
             {
                 pack.Update();
             }
+                }
         }
         public override void Draw()
         {
-            foreach (var pack in particlePacks)
+            if (particlePacks != null)
             {
-                pack.Draw(parent.room, parent.body.pos, parent.body.color);
+                foreach (var pack in particlePacks)
+                {
+                    pack.Draw(parent.room, parent.body.pos, parent.body.color);
+                }
             }
             foreach (Component c in payloadNode.comps.Values)
             {

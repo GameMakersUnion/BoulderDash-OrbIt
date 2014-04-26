@@ -184,7 +184,7 @@ namespace OrbItProcs
 
             //Node n = new Node(room, props, ShapeType.ePolygon);
             Polygon p = (Polygon)wall.body.shape;
-            p.SetBox(halfwidth, halfheight); //flipped
+            p.SetBox(halfwidth, halfheight, false); //flipped
 
             Vector2 endpos = parent.body.pos + (other.body.pos - parent.body.pos) * 0.25f;
             wall.body.pos = endpos;// (parent.body.pos + other.body.pos) / 2;

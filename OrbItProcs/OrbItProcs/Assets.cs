@@ -4,9 +4,14 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+
+
+using Point = System.Drawing.Point;
+using Color = Microsoft.Xna.Framework.Color;
 
 namespace OrbItProcs
 {
@@ -161,6 +166,45 @@ namespace OrbItProcs
             Assets.NodePresets.Remove(p);
         }
 
+
+        public static Texture2D ClippedBitmap(Texture2D t2d, Point[] pointsArray,  out Point position)
+        {
+
+            MemoryStream mStream = new MemoryStream();
+            t2d.SaveAsPng(mStream, t2d.Width, t2d.Height);
+            Bitmap texture = new Bitmap(mStream);
+            int minX = pointsArray.Min(x => x.X);//margin.X >= 0 ? x.X : x.X + margin.X);
+            int maxX = pointsArray.Max(x => x.X);//margin.X <= 0 ? x.X : x.X + margin.X);
+            int minY = pointsArray.Min(x => x.Y);//margin.Y >= 0 ? x.Y : x.Y + margin.Y);
+            int maxY = pointsArray.Max(x => x.Y);//margin.Y <= 0 ? x.X : x.X + margin.X);
+            position = new Point(minX, minY);
+            if (maxX - minX <= 0 || maxY - minY <= 0) return Assets.textureDict[textures.whitepixel];
+            Bitmap bmp = new Bitmap(maxX - minX, maxY - minY);
+            Point[] offset = new Point[pointsArray.Length];
+            pointsArray.CopyTo(offset, 0);
+            offset = Array.ConvertAll(offset, x => x = new Point(x.X - minX, x.Y - minY));
+            Graphics g = Graphics.FromImage(bmp);
+            TextureBrush tb = new TextureBrush(texture);
+            g.FillPolygon(tb, offset);
+
+            Color[] pixels = new Color[bmp.Width * bmp.Height];
+            for (int y = 0; y < bmp.Height; y++)
+            {
+                for (int x = 0; x < bmp.Width; x++)
+                {
+                    System.Drawing.Color c = bmp.GetPixel(x, y);
+                    pixels[(y * bmp.Width) + x] = new Color(c.R, c.G, c.B, c.A);
+                }
+            }
+
+            Texture2D myTex = new Texture2D(
+              OrbIt.game.GraphicsDevice,
+              bmp.Width,
+              bmp.Height);
+
+            myTex.SetData<Color>(pixels);
+            return myTex;
+        }
 
     }
 }

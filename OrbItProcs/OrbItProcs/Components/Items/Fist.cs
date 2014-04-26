@@ -100,7 +100,7 @@ namespace OrbItProcs
         {
             //Node.cloneNode(parent.Game1.ui.sidebar.ActiveDefaultNode, sword);
             //parent.body.texture = textures.orientedcircle;
-            fistNode.Kawasaki["fistnodeparent"] = parent;
+            fistNode.dataStore["fistnodeparent"] = parent;
             fistNode.body.pos = parent.body.pos;
             
 
@@ -110,17 +110,17 @@ namespace OrbItProcs
             fistNode.body.ExclusionCheck += delegate(Collider p, Collider o) { return !movingStick; };
             fistNode.body.OnCollisionEnter += (p, o) =>
             {
-                if (o.Kawasaki.ContainsKey("swordnodeparent"))
+                if (o.dataStore.ContainsKey("swordnodeparent"))
                 {
-                    Node otherparent = o.Kawasaki["swordnodeparent"];
+                    Node otherparent = o.dataStore["swordnodeparent"];
                     Vector2 f = otherparent.body.pos - parent.body.pos;
                     VMath.NormalizeSafe(ref f);
                     f *= parryKnockback;
                     otherparent.body.ApplyForce(f);
                 }
-                else if (o.Kawasaki.ContainsKey("fistnodeparent"))
+                else if (o.dataStore.ContainsKey("fistnodeparent"))
                 {
-                    Node otherparent = o.Kawasaki["fistnodeparent"];
+                    Node otherparent = o.dataStore["fistnodeparent"];
                     Vector2 f = otherparent.body.pos - parent.body.pos;
                     VMath.NormalizeSafe(ref f);
                     f *= parryKnockback;
