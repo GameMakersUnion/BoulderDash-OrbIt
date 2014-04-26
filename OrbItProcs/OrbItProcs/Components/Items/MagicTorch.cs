@@ -37,9 +37,9 @@ namespace OrbItProcs
         public const mtypes CompType = mtypes.playercontrol | mtypes.minordraw | mtypes.item;// | mtypes.affectself;
         public override mtypes compType { get { return CompType; } set { } }
         /// <summary>
-        /// The radius of the fist.
+        /// The radius of the torch.
         /// </summary>
-        [Info(UserLevel.User, "The radius of the fist.")]
+        [Info(UserLevel.User, "The radius of the torch.")]
         public float torchRadius { get; set; }
         /// <summary>
         /// The multiplier affects the strength of the torch, which will make to more gravitating, or more repulsive.

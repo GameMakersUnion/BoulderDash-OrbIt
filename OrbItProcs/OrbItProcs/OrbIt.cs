@@ -29,6 +29,7 @@ namespace OrbItProcs
 
     public enum comp
     {
+        friction,
         queuer,
         gravity,
         transfer,

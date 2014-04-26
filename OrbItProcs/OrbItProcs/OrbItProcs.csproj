@@ -156,6 +156,7 @@
     <Compile Include="Components\Items\Fist.cs" />
     <Compile Include="Components\Items\MagicTorch.cs" />
     <Compile Include="Components\Items\ItemPayload.cs" />
+    <Compile Include="Components\Items\Shovel.cs" />
     <Compile Include="Components\Linkers\Orbiter.cs" />
     <Compile Include="Components\AffectOthers\Spring.cs" />
     <Compile Include="Components\Meta\Delegator.cs" />
@@ -167,6 +168,7 @@
     <Compile Include="Components\Meta\Scheduler.cs" />
     <Compile Include="Components\Drawers\Shader.cs" />
     <Compile Include="Components\Movement\Conveyor.cs" />
+    <Compile Include="Components\Movement\Friction.cs" />
     <Compile Include="Framework\Gametypes\BigTony.cs" />
     <Compile Include="Framework\Gametypes\Gametype.cs" />
     <Compile Include="Framework\Input.cs" />

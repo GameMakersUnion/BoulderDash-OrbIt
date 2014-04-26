@@ -446,7 +446,7 @@ namespace OrbItProcs
             ComputeNormals();
         }
 
-        private void ComputeNormals()
+        public void ComputeNormals()
         {
             // Compute face normals
             for (int i1 = 0; i1 < vertexCount; ++i1)

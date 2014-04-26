@@ -213,7 +213,7 @@ namespace OrbItProcs
 
 
         }
-
+        //reminder: make a vocal recognition extension for visual studio to take you where you want ("Class: Movement. Method: fallOff.")
         public void fallOff()
         {
             int levelwidth = parent.room.worldWidth;
@@ -223,6 +223,7 @@ namespace OrbItProcs
 
             if (parent.HasComp<Queuer>() && (parent.Comp<Queuer>().qs & queues.position) == queues.position)
             {
+                Queuer q = parent.Comp<Queuer>();
                 Queue<Vector2> positions = ((Queue<Vector2>)(parent.Comp<Queuer>().positions));
                 pos = positions.ElementAt(0);
             }

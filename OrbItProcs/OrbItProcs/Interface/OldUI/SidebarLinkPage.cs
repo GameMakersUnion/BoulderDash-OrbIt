@@ -23,7 +23,7 @@ namespace OrbItProcs
         //panels
         CollapsePanel SourceTarget;
         CollapsePanel LinkPalette;
-        CollapsePanel c3, c4, c5, c6, c7, c8;
+        //CollapsePanel c3, c4, c5, c6, c7, c8;
         //SourceTarget
         Label lblSource, lblTarget, lblGroupS, lblGroupT, lblNodeS, lblNodeT;
         public ComboBox cbGroupS, cbGroupT, cbNodeS, cbNodeT;

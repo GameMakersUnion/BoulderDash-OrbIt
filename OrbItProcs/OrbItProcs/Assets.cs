@@ -49,6 +49,7 @@ namespace OrbItProcs
         itemWhisper,
         fist,
         cage,
+        robot1,
     }
 
     static class Assets
@@ -85,10 +86,11 @@ namespace OrbItProcs
             { textures.outerL, content.Load<Texture2D>("Textures/outerL"                    )},
             { textures.outerR, content.Load<Texture2D>("Textures/outerR"                    )},
             { textures.pointer, content.Load<Texture2D>("Textures/pointer"                  )},
-            { textures.itemLight, content.Load<Texture2D>("Textures/itemLight"                 )},
-            { textures.itemWhisper, content.Load<Texture2D>("Textures/itemWhisper"               )},
+            { textures.itemLight, content.Load<Texture2D>("Textures/itemLight"              )},
+            { textures.itemWhisper, content.Load<Texture2D>("Textures/itemWhisper"          )},
             { textures.cage, content.Load<Texture2D>("Textures/cage"                        )},
             { textures.fist, content.Load<Texture2D>("Textures/fist"                        )},
+            { textures.robot1, content.Load<Texture2D>("Textures/Robot1"                    )},
             };
 
             for (int i = 0; i < 16; i++)

@@ -127,7 +127,7 @@ namespace OrbItProcs
                     newNode.movement.mode = movemode.free;
                     newNode.body.restitution = 1f;
                     newNode.meta.maxHealth.enabled = false;
-
+                    poly.ComputeNormals();
                     nodes.Add(newNode);
                 }
                 levelSaves[levelSave] = nodes;

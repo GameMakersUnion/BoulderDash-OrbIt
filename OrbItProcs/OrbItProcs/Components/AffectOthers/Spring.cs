@@ -15,6 +15,12 @@ namespace OrbItProcs
     [Info(UserLevel.User, "Pushes away nodes that are within the radius, can also pull in nodes that beyond the radius. ", CompType)]
     public class Spring : Component, ILinkable, IMultipliable//, IRadius
     {
+        public enum mode
+        {
+            PushAndPull,
+            PushOnly,
+            PullOnly,
+        }
         public const mtypes CompType = mtypes.affectself | mtypes.affectother;
         public override mtypes compType { get { return CompType; } set { } }
         [Info(UserLevel.Developer)]
@@ -30,10 +36,10 @@ namespace OrbItProcs
         [Info(UserLevel.User, "The maximum reach of the spring, after which it will have no effect.")]
         public float radius { get; set; }
         /// <summary>
-        /// If enabled, the spring will not only repel nodes, but also attract those outside the boundry.
+        /// Sets the mode of the spring. Pull means with will pull nodes beyond the restdist. Push means it will push nodes within the restdist.
         /// </summary>
-        [Info(UserLevel.User, "If enabled, the spring will not only repel nodes, but also attract those outside the boundry.")]
-        public bool hook { get; set; }
+        [Info(UserLevel.User, "Sets the mode of the spring. Pull means with will pull nodes beyond the restdist. Push means it will push nodes within the restdist.")]
+        public mode springMode { get; set; }
 
         public int _restdist;
         /// <summary>
@@ -66,7 +72,9 @@ namespace OrbItProcs
             if (!active) return;
 
             float dist = Vector2.Distance(parent.body.pos, other.body.pos);
-            if (!hook && dist > restdist) return;
+            //if (dist > radius) return;
+            if (springMode == mode.PullOnly && dist < restdist) return;
+            if (springMode == mode.PushOnly && dist > restdist) return;
             //if (dist > restdist * 2) return;
             if (deadzone.enabled && dist < deadzone.value) dist = deadzone.value;
 
