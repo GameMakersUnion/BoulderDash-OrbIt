@@ -57,7 +57,7 @@ namespace OrbItProcs
 
             HeightCounter = Top;
             Width = parent.Width - LeftPadding * 2;
-            backColor = UserInterface.TomDark;//new Color(80, 80, 80);//new Color(92, 92, 92);
+            backColor = UserInterface.TomDark;
             textColor = Color.Black;
 
             if (Init)
@@ -65,7 +65,7 @@ namespace OrbItProcs
                 Initialize();
             }
         }
-
+        
         public void Initialize()
         {
             #region /// Components List (back panel) ///

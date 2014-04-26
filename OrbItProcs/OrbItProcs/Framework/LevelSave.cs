@@ -9,29 +9,43 @@ namespace OrbItProcs
 {
     public class LevelSave
     {
-        public Vector2 levelSize;
-        public List<List<Vector2>> polygonVertices;
-        public string name;
-        public LevelSave(Group group, Vector2 levelSize, string name)
+        public int levelHeight { get; set; }
+        public int levelWidth { get; set; }
+        public List<float[]> polygonVertices { get; set; }
+        public List<float[]> polygonPositions { get; set; }
+        public string name { get; set; }
+        public LevelSave()
         {
-            this.levelSize = levelSize;
-            polygonVertices = new List<List<Vector2>>();
+
+        }
+        public LevelSave(Group group, int levelWidth, int levelHeight, string name)
+        {
+            this.levelHeight = levelHeight;
+            this.levelWidth = levelWidth;
+            this.name = name;
+            polygonVertices = new List<float[]>();
+            polygonPositions = new List<float[]>();
             foreach(Node n in group.fullSet)
             {
                 if (n.body.shape is Polygon)
                 {
                     Polygon p = (Polygon)n.body.shape;
-                    List<Vector2> verts = new List<Vector2>();
+                    float[] verts = new float[p.vertexCount * 2];
                     for(int i = 0; i < p.vertexCount; i++)
                     {
-                        verts.Add(p.vertices[i]);
+                        verts[i * 2] = p.vertices[i].X;
+                        verts[(i * 2) + 1] = p.vertices[i].Y;
                     }
-                    if (verts.Count > 2)
-                    {
-                        polygonVertices.Add(verts);
-                    }
+                    polygonVertices.Add(verts);
+                    polygonPositions.Add(new float[]{n.body.pos.X, n.body.pos.Y});
+                    //cover angle?
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            return name;
         }
 
         public static void SaveLevel(Group group, int levelWidth, int levelHeight, string name)
@@ -42,7 +56,7 @@ namespace OrbItProcs
             string filename = Assets.levelsFilepath + "/" + name + ".xml";
             Action completeSave = delegate
             {
-                LevelSave levelSave = new LevelSave(group, new Vector2(levelWidth, levelHeight), name);
+                LevelSave levelSave = new LevelSave(group, levelWidth, levelHeight, name);
                 OrbIt.game.serializer = new Polenter.Serialization.SharpSerializer();
                 OrbIt.game.serializer.Serialize(levelSave, filename);
                 //Assets.NodePresets.Add(serializenode);

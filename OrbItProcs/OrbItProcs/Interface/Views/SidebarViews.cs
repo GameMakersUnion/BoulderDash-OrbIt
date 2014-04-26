@@ -55,7 +55,7 @@ namespace OrbItProcs
             tbcViews.Left = 0;
             tbcViews.Top = 0;
             tbcViews.Width = master.Width - 5;
-            tbcViews.Height = master.Height - 40;
+            tbcViews.Height = master.Height - 60;
             tbcViews.Anchor = Anchors.All;
             tbcViews.Color = UserInterface.TomLight;
 
@@ -164,14 +164,62 @@ namespace OrbItProcs
 
             btnPause.Click += (s, e) =>
             {
-
                 ui.IsPaused = !ui.IsPaused;
                 btnPause.Text = ui.IsPaused ? "Resume" : "Pause";
-
             };
+
+            btnLoadLevel = new Button(manager);
+            btnLoadLevel.Init();
+            master.Add(btnLoadLevel);
+            btnLoadLevel.Left = btnGameMode.Left;
+            btnLoadLevel.Top = btnGameMode.Top + btnGameMode.Height;
+            btnLoadLevel.Text = "Load Level";
+            btnLoadLevel.Width = (int)manager.Skin.Fonts[0].Resource.MeasureString(btnLoadLevel.Text).X + 10;
+            btnLoadLevel.ClientMargins = new Margins(0, btnLoadLevel.ClientMargins.Top, 0, btnLoadLevel.ClientMargins.Bottom);
+            btnLoadLevel.Anchor = Anchors.Bottom;
+
+            btnLoadLevel.Click += btnLoadLevel_Click;
+
+            btnSaveLevel = new Button(manager);
+            btnSaveLevel.Init();
+            master.Add(btnSaveLevel);
+            btnSaveLevel.Left = btnLoadLevel.Left + btnLoadLevel.Width;
+            btnSaveLevel.Top = btnGameMode.Top + btnGameMode.Height;
+            btnSaveLevel.Text = "Save Level";
+            btnSaveLevel.Width = (int)manager.Skin.Fonts[0].Resource.MeasureString(btnSaveLevel.Text).X + 10;
+            btnSaveLevel.ClientMargins = new Margins(0, btnSaveLevel.ClientMargins.Top, 0, btnSaveLevel.ClientMargins.Bottom);
+            btnSaveLevel.Anchor = Anchors.Bottom;
+
+            btnSaveLevel.Click += btnSaveLevel_Click;
 
 
         }
+
+        void btnSaveLevel_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            Group g = room.wallGroup;
+
+            if (g.fullSet.Count == 0)
+                PopUp.Toast("Unable to save: there are no walls.");
+            else
+                PopUp.Text("Level Name:", "Name Level", delegate(bool c, object input)
+                {
+                    if (c) LevelSave.SaveLevel(g, room.worldWidth, room.worldHeight, (string)input);//Assets.saveNode(inspectorArea.editNode, (string)input);
+                    return true;
+                });
+
+
+            //string filename = Assets.levelsFilepath + "/" + "name" + ".xml";//"Presets//Rooms//room1.bin";
+            //sidebar.room.game.serializer = new Polenter.Serialization.SharpSerializer(true);
+
+            //sidebar.room.game.serializer.Serialize(sidebar.room, filename);
+        }
+
+        void btnLoadLevel_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
+        {
+            LoadLevelWindow loadLevelWindow = new LoadLevelWindow(this);
+        }
+
         GamemodeWindow gamemodeWindow;
         public PlayerView playerView;
         public void InitializePlayersPage()
@@ -190,8 +238,7 @@ namespace OrbItProcs
 
         }
         GroupsView itemsView;
-        private Button btnFullScreen;
-        private Button btnPause;
+        private Button btnFullScreen, btnPause, btnLoadLevel, btnSaveLevel;
         public void InitializeItemsPage()
         {
             tbcViews.AddPage();
