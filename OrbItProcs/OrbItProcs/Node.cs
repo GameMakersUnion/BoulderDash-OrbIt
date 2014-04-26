@@ -34,7 +34,7 @@ namespace OrbItProcs {
         on,
     }
     public delegate void CollisionDelegate(Node source, Node target);
-
+   
     public class DataStore : Dictionary<string, dynamic>
     {
         public DataStore() : base() { }
@@ -44,7 +44,7 @@ namespace OrbItProcs {
         public static int nodeCounter = 0;
         private Vector2 tempPosition = new Vector2(0, 0);
         private string _nodeHash = "";
-
+        public List<string> nodeHistory = new List<string>();
         public string nodeHash { get { return _nodeHash; } set 
         {
             room.nodeHashes.Remove(_nodeHash);
@@ -297,7 +297,7 @@ namespace OrbItProcs {
         }
 
         [Info(UserLevel.Never)]
-        public DataStore Kawasaki = new DataStore();
+        public DataStore dataStore = new DataStore();
 
         public event EventHandler OnAffectOthers;
 
@@ -466,9 +466,9 @@ namespace OrbItProcs {
         }
         public T CheckData<T>(string key)
         {
-            if (Kawasaki.ContainsKey(key))
+            if (dataStore.ContainsKey(key))
             {
-                return Kawasaki[key];
+                return dataStore[key];
             }
             else
             {
@@ -478,7 +478,7 @@ namespace OrbItProcs {
 
         public void SetData(string key, dynamic data)
         {
-            Kawasaki[key] = data;
+            dataStore[key] = data;
         }
 
         public void AddTag(string tag)
@@ -1043,7 +1043,7 @@ namespace OrbItProcs {
 
         public Node CreateClone(Room room = null, bool CloneHash = false)
         {
-            Room r = room ?? room;
+            Room r = room ?? this.room;
             Node newNode = new Node(r, !CloneHash);
             cloneNode(this, newNode, CloneHash);
             return newNode;
@@ -1138,6 +1138,11 @@ namespace OrbItProcs {
                     destNode.body.AfterCloning();
                 }
             }
+        }
+
+        internal void clearData(string p)
+        {
+            dataStore.Remove(p);
         }
     }
 }

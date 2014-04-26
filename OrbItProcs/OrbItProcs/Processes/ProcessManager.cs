@@ -23,6 +23,7 @@ namespace OrbItProcs
         removenodes,
         gridspawn,
         roomResize,
+        floodFill,
     }
     public struct MouseArgs
     {
@@ -67,6 +68,7 @@ namespace OrbItProcs
             processDict.Add(proc.removenodes, new RemoveNodes());
             processDict.Add(proc.gridspawn, new GridSpawn());
             processDict.Add(proc.roomResize, new ResizeRoom());
+            processDict.Add(proc.floodFill, new FloodFill());
 
             activeInputProcess = processDict[proc.spawnnodes];
             OrbIt.ui.groupSelectSet = (processDict[proc.groupselect] as GroupSelect).groupSelectSet;
@@ -98,10 +100,10 @@ namespace OrbItProcs
             toolbar.AddButton("level",enableKeyBinds(proc.mapeditor), "Click to set static colidable polygons." );
 
             Keybindset.Add("randomizer", new KeyBundle(KeyCodes.D2, KeyCodes.LeftShift), enableKeyBinds(proc.randomizer));
-            toolbar.AddButton("random",enableKeyBinds(proc.randomizer), "Click to spawn a random node, right click to spawn a copy of the previous random node." );
+            toolbar.AddButton("random", enableKeyBinds(proc.randomizer), "Click to spawn a random node, right click to spawn a copy of the previous random node.");
 
             toolbar.AddButton("forceSpawn", enableKeyBinds(proc.directedspawn), "Spawn nodes in a direction using left and right click.");
-            toolbar.AddButton("forcePush", Utils.notImplementedException,"Take a hike.");
+            toolbar.AddButton("forcePush", enableKeyBinds(proc.floodFill), "Take a hike.");
             toolbar.AddButton("control", Utils.notImplementedException,"Take a hike.");
             toolbar.AddButton("static", enableKeyBinds(proc.gridspawn), "Spawn nodes statically to the grid.");
             toolbar.AddButton("resize", enableKeyBinds(proc.roomResize), "Change the size of the Room");

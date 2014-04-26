@@ -30,7 +30,8 @@ namespace OrbItProcs
         {
             standard,
             vectScaled,
-            drawString
+            drawString,
+            direct
         }
 
         private DrawType type;
@@ -54,6 +55,23 @@ namespace OrbItProcs
         {
             this.type = DrawType.standard;
             this.texture = texture;
+            this.position = position;
+            this.color = color;
+            this.permColor = color;
+            this.scale = scale;
+            this.rotation = rotation;
+            this.sourceRect = sourceRect;
+            this.origin = origin;
+            this.effects = effects;
+            this.layerDepth = layerDepth;
+            this.maxlife = maxlife;
+            this.life = maxlife;
+            this.shaderPack = shaderPack ?? ShaderPack.Default;
+        }
+        public DrawCommand(Texture2D texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0, int maxlife = -1, ShaderPack? shaderPack = null)
+        {
+            this.type = DrawType.direct;
+            this.texture2d = texture;
             this.position = position;
             this.color = color;
             this.permColor = color;
@@ -105,6 +123,9 @@ namespace OrbItProcs
                 case DrawType.standard:
                     batch.Draw(Assets.textureDict[texture], position, sourceRect, color, rotation, origin, scale, effects, layerDepth);
                     break;
+                case DrawType.direct:
+                    batch.Draw(texture2d, position, sourceRect, color, rotation, origin, scale, effects, layerDepth);
+                    break;
                 case DrawType.vectScaled:
                     batch.Draw(Assets.textureDict[texture], position, sourceRect, color, rotation, origin, scalevect, effects, layerDepth);
                     break;
@@ -119,6 +140,8 @@ namespace OrbItProcs
             }
         }
 
+
+        public Texture2D texture2d { get; set; }
     }
     public class ThreadedCamera
     {
@@ -275,9 +298,18 @@ namespace OrbItProcs
         {
             nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
+        public void Draw(Texture2D texture, Vector2 position, Color color, float scale, Layers Layer, ShaderPack? shaderPack = null)
+        {
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, new Vector2(texture.Width/2, texture.Height/2), scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
+        }
+
         public void Draw(textures texture, Vector2 position, Color color, float scale, float rotation, Layers Layer, ShaderPack? shaderPack = null)
         {
             nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
+        }
+        public void Draw(Texture2D texture, Vector2 position, Color color, float scale, float rotation, Layers Layer, ShaderPack? shaderPack = null)
+        {
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, new Vector2(texture.Width / 2, texture.Height / 2), scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
         public void Draw(textures texture, Vector2 position, Color color, Vector2 scalevect, float rotation, Layers Layer, ShaderPack? shaderPack = null)
         {

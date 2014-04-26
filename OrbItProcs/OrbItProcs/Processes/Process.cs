@@ -53,7 +53,7 @@ namespace OrbItProcs
             processKeyActions.Add(keyAction, keyBundle);
         }
 
-        public void OnUpdate()
+        public virtual void OnUpdate()
         {
             foreach (Process p in procs)
             {

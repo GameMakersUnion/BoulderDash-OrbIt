@@ -21,6 +21,12 @@ namespace OrbItProcs
         public override string ToString()
         {
             if (value == null) return "";
+            return "(" + enabled.ToString() + " , " + value.ToString() + ")";
+        }
+
+        public string valueString()
+        {
+            if (value == null) return "";
             return value.ToString();
         }
 

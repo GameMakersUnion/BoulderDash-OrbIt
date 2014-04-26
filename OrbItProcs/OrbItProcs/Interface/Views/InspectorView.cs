@@ -90,7 +90,7 @@ namespace OrbItProcs
 
         public void OnEvent(Control control, DetailedItem item, EventArgs e)
         {
-            if (item == null || control == null || item.obj == null) return;
+           if (item == null || control == null || item.obj == null) return;
             if (!(item.obj is InspectorInfo)) return;
             InspectorInfo ins = (InspectorInfo)item.obj;
             if (e is KeyEventArgs && control.GetType() == typeof(TextBox))
@@ -102,6 +102,7 @@ namespace OrbItProcs
                 if (san != null)
                 {
                     ins.SetValue(san);
+                    Console.WriteLine(ins.parentItem.obj.GetType() + " >> " + ins + " >> " + san.GetType() + " >> " + san);
                     if (GroupSync)
                     {
                         ins.ApplyToAllNodes(activeGroup);
@@ -266,7 +267,7 @@ namespace OrbItProcs
                         textbox.Left = backPanel.Width - w - 26;
                         textbox.Width = w;
                         textbox.Height = textbox.Height - 4;
-                        textbox.Text = o.ToString();
+                        
                         textbox.Name = "number_textbox";
                         if (isToggle)
                         {
@@ -286,9 +287,11 @@ namespace OrbItProcs
                             item.AddControl(btnEnabled);
 
                             //item.AddControl(checkbox);
-                            
 
+                            //textbox.Text = (o as dynamic).valueString(); // too slow. 
+                            textbox.Text = "...";
                         }
+                        else textbox.Text = o.ToString();
                         textbox.ClientArea.Top += 2;
                         textbox.ClientArea.Left += 4;
                         textbox.FocusLost += delegate

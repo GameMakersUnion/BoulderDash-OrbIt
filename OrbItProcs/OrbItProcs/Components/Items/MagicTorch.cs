@@ -138,7 +138,7 @@ namespace OrbItProcs
         {
             //Node.cloneNode(parent.Game1.ui.sidebar.ActiveDefaultNode, sword);
             //parent.body.texture = textures.orientedcircle;
-            torchNode.Kawasaki["magictorchnodeparent"] = parent;
+            torchNode.dataStore["magictorchnodeparent"] = parent;
             torchNode.body.pos = parent.body.pos;
 
             torchNode.ExclusionCheck += (node) => node == parent;
@@ -149,17 +149,17 @@ namespace OrbItProcs
             torchNode.body.OnCollisionEnter += (p, o) =>
             {
                 Node otherparent = null;
-                if (o.Kawasaki.ContainsKey("swordnodeparent"))
+                if (o.dataStore.ContainsKey("swordnodeparent"))
                 {
-                    otherparent = o.Kawasaki["swordnodeparent"];
+                    otherparent = o.dataStore["swordnodeparent"];
                 }
-                else if (o.Kawasaki.ContainsKey("fistnodeparent"))
+                else if (o.dataStore.ContainsKey("fistnodeparent"))
                 {
-                    otherparent = o.Kawasaki["fistnodeparent"];
+                    otherparent = o.dataStore["fistnodeparent"];
                 }
-                else if (o.Kawasaki.ContainsKey("magictorchnodeparent"))
+                else if (o.dataStore.ContainsKey("magictorchnodeparent"))
                 {
-                    otherparent = o.Kawasaki["magictorchnodeparent"];
+                    otherparent = o.dataStore["magictorchnodeparent"];
                 }
                 if (otherparent != null)
                 {

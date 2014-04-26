@@ -47,7 +47,7 @@ namespace OrbItProcs
         {
             //if (buttonState == ButtonState.Released) return;
             Node found = FindNode(UserInterface.WorldMousePos);
-            if (found != null && !found.IsPlayer && found.Kawasaki.Count == 0)
+            if (found != null && !found.IsPlayer && found.dataStore.Count == 0)
             {
                 found.OnDeath(null);
             }
