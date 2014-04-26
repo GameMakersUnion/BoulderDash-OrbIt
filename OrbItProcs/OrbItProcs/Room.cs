@@ -166,7 +166,7 @@ namespace OrbItProcs {
             
             camera = new ThreadedCamera(this, 1f);
             scheduler = new Scheduler();
-            borderColor = Color.Green;
+            borderColor = Color.Orange;
             collideAction = (c1, c2) =>
             {
                 if (c1.parent == c2.parent) return;
@@ -398,7 +398,7 @@ namespace OrbItProcs {
             }
             if (AfterIteration != null) AfterIteration(this, null);
 
-            //addGridSystemLines(gridsystem);
+            addGridSystemLines(gridsystemCollision);
             //addLevelLines(level);
             addBorderLines();
             //colorEffectedNodes();

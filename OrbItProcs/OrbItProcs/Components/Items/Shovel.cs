@@ -51,6 +51,13 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "Represents the max distance the shovel can reach from the player.")]
         public float shovelReach { get; set; }
+        /// <summary>
+        /// Sets the maximum amount of nodes that can be captured by the shovel at any time.
+        /// </summary>
+        [Info(UserLevel.User, "Sets the maximum amount of nodes that can be captured by the shovel at any time.")]
+        public int maxShovelCapacity { get; set; }
+
+        public float scoopReach { get; set; }
 
         public Shovel() : this(null) { }
         public Shovel(Node parent)
@@ -81,7 +88,7 @@ namespace OrbItProcs
         {
             //Node.cloneNode(parent.Game1.ui.sidebar.ActiveDefaultNode, sword);
             //parent.body.texture = textures.orientedcircle;
-            shovelNode.Kawasaki["shovelnodeparent"] = parent;
+            shovelNode.dataStore["shovelnodeparent"] = parent;
             shovelNode.body.pos = parent.body.pos;
 
             shovelNode.ExclusionCheck += (node) => node == parent;
@@ -100,6 +107,7 @@ namespace OrbItProcs
         Link shovelLink;
         bool shovelling = false;
         float deadzone = 0.5f;
+
         public override void PlayerControl(Controller controller)
         {
             if (controller is FullController)
@@ -127,7 +135,13 @@ namespace OrbItProcs
                     if (fc.newGamePadState.Triggers.Right > deadzone && fc.oldGamePadState.Triggers.Right < deadzone)
                     {
                         shovelling = true;
-                        //parent.room.gridsystemAffect.retrieveBuckets()
+                        ObservableHashSet<Node> capturedNodes = new ObservableHashSet<Node>();
+                        int count = 0;
+                        Action<Collider, Collider> del = delegate(Collider c1, Collider c2){
+                            float dist = Vector2.Distance(c1.pos, c2.pos);
+                            //if (dist < )
+                        };
+                        //parent.room.gridsystemAffect.retrieveOffsetArraysAffect()
                     }
                     else
                     {
