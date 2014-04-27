@@ -95,22 +95,23 @@ namespace OrbItProcs
                 walking,
             }
             public static state State = state.waiting;
-            static float spiderPos = -50f;
+            static float spiderPos = -100f;
             static Texture2D currentTexture = null;
             static int freezeCount = 0, freezeMax = 10;
             static bool frozen = false;
             static public float scale = .6f;
+            
             public static void UpdateSpider(Room room)
             {
                 if (room.loading) return;
-                Vector2 finalpos = room.gridsystemAffect.position + new Vector2((room.worldWidth - Assets.Spider.Wait.Width*scale)/2, room.gridsystemAffect.gridHeight - (Assets.Spider.Wait.Height / 2) - spiderPos);
+                Vector2 finalpos = room.gridsystemAffect.position + new Vector2((room.worldWidth - Assets.Spider.Wait.Width*scale)/2, room.gridsystemAffect.gridHeight - (Assets.Spider.Wait.Height / 2) - spiderPos + 400);
 
                 room.camera.Draw(currentTexture, finalpos, Color.White, scale, Layers.Over4, center: false);
 
                 Vector2 spiderHead = new Vector2(room.gridsystemAffect.gridWidth / 2, room.gridsystemAffect.position.Y + room.gridsystemAffect.gridHeight - spiderPos);
                 float radiusReach = 300f;
                 
-                room.camera.Draw(textures.whitecircle, spiderHead, Color.Red * 0.4f, radiusReach / 64f, 0, Layers.Under5);
+                if (frozen)room.camera.Draw(textures.whitecircle, spiderHead, Color.Red * 0.4f, radiusReach / 64f, 0, Layers.Under5);
 
                 if (masterCount++ % masterMod != 0) return;
                 if (State == state.waiting)
@@ -137,7 +138,7 @@ namespace OrbItProcs
                     //Texture2D t = Walk[walkCount];
                     //room.camera.Draw(t, finalpos, Color.Blue, .5f, Layers.Over4, center: false);
                     walkCount++;
-                    spiderPos += 0.2f;
+                    spiderPos += 0.6f;
                     if (walkCount >= Walk.Length)
                     {
                         walkCount = 0;
@@ -148,6 +149,14 @@ namespace OrbItProcs
                 else if (State == state.protecting)
                 {
                     currentTexture = Protect[protectCount];
+                    if (protectCount == 15)
+                    {
+                        frozen = true;
+                    }
+                    if (protectCount == 19)
+                    {
+                        frozen = false;
+                    }
                     if (protectCount == 16 || protectCount == 18)
                     {
                         foreach (Node n in room.masterGroup.fullSet.ToList())
