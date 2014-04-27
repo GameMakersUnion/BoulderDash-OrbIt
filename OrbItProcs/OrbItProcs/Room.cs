@@ -381,7 +381,7 @@ namespace OrbItProcs {
             }
 
             FloodFill.boulderFountain();
-            if (scroll)
+            if (scroll && gameStarted)
             {
                 if (waitTimeCounter < waitTime)
                 {
@@ -915,6 +915,7 @@ namespace OrbItProcs {
 
         private Vector2 resizeVect; //in the land down under
         public bool loading;
+        public bool gameStarted = false;
         internal void boulderize(Action afterFilling)
         {
             int heightCounter = OrbIt.Height/2;
