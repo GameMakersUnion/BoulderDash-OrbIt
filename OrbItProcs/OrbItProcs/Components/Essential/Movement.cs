@@ -308,6 +308,10 @@ namespace OrbItProcs
                 parent.body.pos.Y = DelegateManager.Triangle(parent.body.pos.Y - parent.body.radius, parent.room.worldHeight) + parent.body.radius;
                 parent.body.velocity.Y *= -1;
                 parent.body.InvokeOnCollisionStay(null);
+                if (parent.IsPlayer)
+                {
+                    LoadLevelWindow.StaticLevel(parent.room.levelList.Dequeue());
+                }
             }
 
             int levelLeft = (int)parent.room.gridsystemAffect.position.X, levelTop = (int)parent.room.gridsystemAffect.position.Y;

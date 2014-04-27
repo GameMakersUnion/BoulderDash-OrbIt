@@ -417,7 +417,7 @@ namespace OrbItProcs
                 this.targetGroup.TargetLinks.Add(this);
 
                 room.masterGroup.childGroups["Link Groups"].AddGroup(ts.Name, ts);
-                OrbIt.ui.sidebar.UpdateGroupComboBoxes();
+                if (OrbIt.ui != null) OrbIt.ui.sidebar.UpdateGroupComboBoxes();
 
                 foreach (Node t in this.targets)
                 {

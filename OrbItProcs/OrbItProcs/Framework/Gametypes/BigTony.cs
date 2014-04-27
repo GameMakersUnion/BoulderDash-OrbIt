@@ -99,6 +99,7 @@ namespace OrbItProcs
                 p.node.addComponent<Swap>(true);
                 p.node.Comp<Swap>().OnSwapBefore += before;
                 p.node.Comp<Swap>().OnSwapAfter += after;
+                
             }
         }
         public void MakeBigTony(Room room)

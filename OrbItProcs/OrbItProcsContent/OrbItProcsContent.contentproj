@@ -356,6 +356,406 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0001.png">
+      <Name>SpiderAni0001</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0002.png">
+      <Name>SpiderAni0002</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0003.png">
+      <Name>SpiderAni0003</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0004.png">
+      <Name>SpiderAni0004</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0005.png">
+      <Name>SpiderAni0005</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0006.png">
+      <Name>SpiderAni0006</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0007.png">
+      <Name>SpiderAni0007</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0008.png">
+      <Name>SpiderAni0008</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0009.png">
+      <Name>SpiderAni0009</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0010.png">
+      <Name>SpiderAni0010</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0011.png">
+      <Name>SpiderAni0011</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0012.png">
+      <Name>SpiderAni0012</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0013.png">
+      <Name>SpiderAni0013</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0014.png">
+      <Name>SpiderAni0014</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0015.png">
+      <Name>SpiderAni0015</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0016.png">
+      <Name>SpiderAni0016</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0017.png">
+      <Name>SpiderAni0017</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0018.png">
+      <Name>SpiderAni0018</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0019.png">
+      <Name>SpiderAni0019</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0020.png">
+      <Name>SpiderAni0020</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0021.png">
+      <Name>SpiderAni0021</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0022.png">
+      <Name>SpiderAni0022</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0023.png">
+      <Name>SpiderAni0023</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0024.png">
+      <Name>SpiderAni0024</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0025.png">
+      <Name>SpiderAni0025</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0026.png">
+      <Name>SpiderAni0026</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0027.png">
+      <Name>SpiderAni0027</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0028.png">
+      <Name>SpiderAni0028</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0029.png">
+      <Name>SpiderAni0029</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0030.png">
+      <Name>SpiderAni0030</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0031.png">
+      <Name>SpiderAni0031</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0032.png">
+      <Name>SpiderAni0032</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0033.png">
+      <Name>SpiderAni0033</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0034.png">
+      <Name>SpiderAni0034</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0035.png">
+      <Name>SpiderAni0035</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0036.png">
+      <Name>SpiderAni0036</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0037.png">
+      <Name>SpiderAni0037</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0038.png">
+      <Name>SpiderAni0038</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0039.png">
+      <Name>SpiderAni0039</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0040.png">
+      <Name>SpiderAni0040</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0041.png">
+      <Name>SpiderAni0041</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0042.png">
+      <Name>SpiderAni0042</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0043.png">
+      <Name>SpiderAni0043</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0044.png">
+      <Name>SpiderAni0044</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0045.png">
+      <Name>SpiderAni0045</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0046.png">
+      <Name>SpiderAni0046</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0047.png">
+      <Name>SpiderAni0047</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0048.png">
+      <Name>SpiderAni0048</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0049.png">
+      <Name>SpiderAni0049</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0050.png">
+      <Name>SpiderAni0050</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0051.png">
+      <Name>SpiderAni0051</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0052.png">
+      <Name>SpiderAni0052</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0053.png">
+      <Name>SpiderAni0053</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0054.png">
+      <Name>SpiderAni0054</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0055.png">
+      <Name>SpiderAni0055</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0056.png">
+      <Name>SpiderAni0056</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0057.png">
+      <Name>SpiderAni0057</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0058.png">
+      <Name>SpiderAni0058</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0059.png">
+      <Name>SpiderAni0059</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0060.png">
+      <Name>SpiderAni0060</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0061.png">
+      <Name>SpiderAni0061</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0062.png">
+      <Name>SpiderAni0062</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0063.png">
+      <Name>SpiderAni0063</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0064.png">
+      <Name>SpiderAni0064</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0065.png">
+      <Name>SpiderAni0065</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0066.png">
+      <Name>SpiderAni0066</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0067.png">
+      <Name>SpiderAni0067</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0068.png">
+      <Name>SpiderAni0068</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0069.png">
+      <Name>SpiderAni0069</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0070.png">
+      <Name>SpiderAni0070</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0071.png">
+      <Name>SpiderAni0071</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0072.png">
+      <Name>SpiderAni0072</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0073.png">
+      <Name>SpiderAni0073</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0074.png">
+      <Name>SpiderAni0074</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0075.png">
+      <Name>SpiderAni0075</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0076.png">
+      <Name>SpiderAni0076</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0077.png">
+      <Name>SpiderAni0077</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0078.png">
+      <Name>SpiderAni0078</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0079.png">
+      <Name>SpiderAni0079</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\SpiderFrames\SpiderAni0080.png">
+      <Name>SpiderAni0080</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="TomShane.Neoforce.Importers.dll">

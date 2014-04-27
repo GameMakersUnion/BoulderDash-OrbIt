@@ -230,6 +230,10 @@ namespace OrbItProcs
         }
         public float DetermineDamage(Node damager, Node damagee, float dmg)
         {
+            if (damager == null)
+            {
+                return dmg;
+            }
             if (damager.IsPlayer)
             {
                 //both players

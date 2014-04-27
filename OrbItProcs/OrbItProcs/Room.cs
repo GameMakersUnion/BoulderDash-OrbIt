@@ -44,6 +44,7 @@ namespace OrbItProcs {
         [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<string> groupHashes { get; set; }
         public ObservableHashSet<string> nodeHashes { get; set; }
+        public Queue<String> levelList = new Queue<string>();
 
         public int timertimer = 0;
         public int timermax = 60;
@@ -165,6 +166,11 @@ namespace OrbItProcs {
         
         public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true) : this()
         {
+            levelList.Enqueue("Level1");
+            levelList.Enqueue("Level2");
+            levelList.Enqueue("Level3");
+            levelList.Enqueue("Level4");
+
             this.worldWidth = worldWidth;
             this.worldHeight = worldHeight;
             groupHashes = new ObservableHashSet<string>();
@@ -397,6 +403,9 @@ namespace OrbItProcs {
             //game.processManager.Update();
             int counter = 0;
             camera.Draw(textures.endLight, new Vector2(0, 0), Color.White, .5f, Layers.Over4, center: false);
+
+            Assets.Spider.UpdateSpider(this);
+
             do
             {
                 camera.Draw(textures.ridgesL, new Vector2(0, counter), Color.DarkGray, .5f, Layers.Under4, center: false);
@@ -905,6 +914,7 @@ namespace OrbItProcs {
         }
 
         private Vector2 resizeVect; //in the land down under
+        public bool loading;
         internal void boulderize(Action afterFilling)
         {
             int heightCounter = OrbIt.Height/2;

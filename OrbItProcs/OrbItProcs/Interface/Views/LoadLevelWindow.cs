@@ -155,7 +155,68 @@ namespace OrbItProcs
                 wallGroup.IncludeEntity(n);
             }
         }
+        public static void LoadLevelSpider(LevelSave levelSave)
+        {
+            Room room = OrbIt.game.mainRoom;
+            //room.worldWidth = levelSave.levelWidth;
+            //room.worldHeight = levelSave.levelHeight;
+            Vector2 v = new Vector2(levelSave.levelWidth, levelSave.levelHeight);
+            room.resize(v, true);
+            room.waitTimeCounter = 0;
+            ObservableHashSet<Node> nodes = new ObservableHashSet<Node>();
+            for (int i = 0; i < levelSave.polygonVertices.Count; i++)
+            {
+                Node newNode = new Node(OrbIt.ui.game.mainRoom, ShapeType.ePolygon);
+                Polygon poly = (Polygon)newNode.body.shape;
+                //poly.SetCenterOfMass(vertices);
+                float[] list = levelSave.polygonVertices[i];
+                for (int j = 0; j < list.Length / 2; j++)
+                {
+                    poly.vertices[j] = new Vector2(list[j * 2], list[(j * 2) + 1]);
+                }
+                poly.vertexCount = list.Length / 2;
+                newNode.body.pos = new Vector2(levelSave.polygonPositions[i][0], levelSave.polygonPositions[i][1]);
+                newNode.body.SetStatic();
+                newNode.body.orient = 0;
+                newNode.movement.mode = movemode.free;
+                newNode.body.restitution = 1f;
+                newNode.body.texture = textures.rock1;
+                newNode.meta.maxHealth.enabled = false;
+                poly.ComputeNormals();
+                poly.CalibrateTexture();
+                nodes.Add(newNode);
+            }
+                foreach (var dd in levelSave.Diodes)
+                {
+                    var dict = new Dictionary<dynamic, dynamic>() { { comp.diode, true }, { nodeE.texture, textures.gradient1 } };
+                    Node lastSpawnedDiode = Node.ContructLineWall(room, new Vector2(dd.start[0], dd.start[1]), new Vector2(dd.end[0], dd.end[1]), DiodeSpawner.diodeThickness, dict, false);
+                    lastSpawnedDiode.SetColor(new Color(255, 255, 255, 255));
+                    lastSpawnedDiode.Comp<Diode>().start = new Vector2(dd.start[0], dd.start[1]);
+                    lastSpawnedDiode.Comp<Diode>().end = new Vector2(dd.end[0], dd.end[1]);
+                    lastSpawnedDiode.Comp<Diode>().semaphore = dd.isSemaphore;
+                    lastSpawnedDiode.Comp<Diode>().maxTickets = dd.tickets;
+                    lastSpawnedDiode.body.orient = dd.orientation;
 
+                    room.masterGroup.IncludeEntity(lastSpawnedDiode);
+                    lastSpawnedDiode.OnSpawn();
+                }
+            
+            ObservableHashSet<Node> incomingNodes = nodes;
+            foreach (Node n in room.wallGroup.entities.ToList())
+            {
+                room.wallGroup.DiscludeEntity(n);
+            }
+
+            foreach (Node n in incomingNodes)
+            {
+                room.wallGroup.IncludeEntity(n);
+            }
+            foreach (Node n in room.wallGroup.entities)
+            {
+                n.collision.UpdateCollisionSet();
+            }
+            finalizeLevelLoad(v);
+        }
         public void PopulateLevelSaves()
         {
             foreach (string file in Directory.GetFiles(Assets.levelsFilepath, "*.xml"))
@@ -172,9 +233,16 @@ namespace OrbItProcs
                 }
             }
         }
-        
-        public void finalizeLevelLoad()
+        public static void StaticLevel(String name)
         {
+            String FileName = Assets.levelsFilepath + name;
+            LevelSave levelSave = (LevelSave)OrbIt.game.serializer.Deserialize(FileName);
+            LoadLevelSpider(levelSave);
+        }
+        
+        public static void finalizeLevelLoad(Vector2 v)
+        {
+            Room room = OrbIt.game.room;
             //HashSet<Node> saved = new HashSet<Node>();
             //foreach (Node n in wallGroup.entities.ToList())
             //{
@@ -182,19 +250,25 @@ namespace OrbItProcs
             //    saved.Add(n);
             //}
             //wallGroup.IncludeEntity(holder);
-            Node holder = Node.ContructLineWall(sidebar.room, new Vector2(0, sidebar.room.worldHeight - OrbIt.Height), new Vector2(sidebar.room.worldWidth, sidebar.room.worldHeight - OrbIt.Height), 20);
-            sidebar.room.boulderize(delegate
+            Node holder = Node.ContructLineWall(room, new Vector2(0, room.worldHeight - OrbIt.Height), new Vector2(room.worldWidth, room.worldHeight - OrbIt.Height), 20);
+            room.loading = true;
+            room.boulderize(delegate
             {
-                wallGroup.DiscludeEntity(holder);
+
+                room.wallGroup.DiscludeEntity(holder);
                //foreach (Node n in saved)
                //{
                //    wallGroup.IncludeEntity(n);
                //}
-                sidebar.room.resize(v);
-                foreach (var n in sidebar.room.masterGroup.fullSet)
+
+                room.resize(v);
+
+                foreach (var n in room.masterGroup.fullSet)
                 {
                     n.body.velocity = Vector2.Zero;
                 }
+                Player.ResetPlayers(OrbIt.game.mainRoom);
+                room.loading = false;
             }); 
         }
         public void CloseWindow()
@@ -209,7 +283,7 @@ namespace OrbItProcs
             {
                 n.collision.UpdateCollisionSet();
             }
-            finalizeLevelLoad();
+            finalizeLevelLoad(v);
         }
 
     }
