@@ -100,6 +100,7 @@ namespace OrbItProcs
             static int freezeCount = 0, freezeMax = 10;
             static bool frozen = false;
             static public float scale = .6f;
+            public static int spiderAttackDamage = 5;
             public static void UpdateSpider(Room room)
             {
                 if (room.loading) return;
@@ -154,8 +155,18 @@ namespace OrbItProcs
                         {
                             if (!n.IsPlayer) continue;
                             if (Vector2.Distance(n.body.pos, spiderHead) > radiusReach) continue;
-                            n.meta.CalculateDamage(null, 2);
-                            n.body.velocity = new Vector2(0, -2);
+                            n.meta.CalculateDamage(null, spiderAttackDamage);
+                            //n.body.velocity = new Vector2(0, -2);
+
+                            n.movement.maxVelocity.value = 30f;
+                            n.body.velocity = new Vector2(0, -30);
+                            CollisionDelegate callback = null;
+                            callback = delegate(Node n1, Node n2)
+                            {
+                                n.movement.maxVelocity.value = 2;
+                                n.body.OnCollisionEnter -= callback;
+                            };
+                            n.body.OnCollisionEnter += callback;
                         }
                     }
                     if (protectCount == 17)

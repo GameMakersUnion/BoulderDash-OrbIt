@@ -235,9 +235,16 @@ namespace OrbItProcs
         }
         public static void StaticLevel(String name)
         {
-            String FileName = Assets.levelsFilepath + name;
-            LevelSave levelSave = (LevelSave)OrbIt.game.serializer.Deserialize(FileName);
-            LoadLevelSpider(levelSave);
+            try
+            {
+                String FileName = Assets.levelsFilepath + name;
+                LevelSave levelSave = (LevelSave)OrbIt.game.serializer.Deserialize(FileName);
+                LoadLevelSpider(levelSave);
+            }
+            catch(Exception ex)
+            {
+                System.Console.WriteLine("Failed to deserialize level: {0}", ex.Message);
+            }
         }
         
         public static void finalizeLevelLoad(Vector2 v)
