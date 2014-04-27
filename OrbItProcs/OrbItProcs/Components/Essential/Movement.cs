@@ -312,16 +312,20 @@ namespace OrbItProcs
                 {
                     LoadLevelWindow.StaticLevel(parent.room.levelList.Dequeue());
                 }
+                else
+                {
+                    //if (parent.texture == textures.boulder1)
+                    //{
+                    //    parent.texture = textures.boulderShine;
+                    //    parent.collision.active = false;
+                    //}
+                }
             }
 
             int levelLeft = (int)parent.room.gridsystemAffect.position.X, levelTop = (int)parent.room.gridsystemAffect.position.Y;
             int levelwidth = parent.room.gridsystemAffect.gridWidth;
             int levelheight = parent.room.gridsystemAffect.gridHeight;
 
-            
-
-
-            
             if (parent.body.pos.X >= (levelLeft +levelwidth - parent.body.radius))
             {
                 //float off = parent.body.pos.X - (levelwidth - parent.body.radius);
@@ -351,10 +355,54 @@ namespace OrbItProcs
                 //parent.body.InvokeOnCollisionStay(null);
                 //parent.body.pos.Y += 5;
             }
-            else if (parent.body.pos.Y >= (levelTop + levelheight - parent.body.radius))
+            else if (!parent.IsPlayer && parent.body.texture == textures.boulder1)
             {
-                parent.OnDeath(null);
+                float y = Assets.Spider.finalpos.Y;
+                float distFromCenter = parent.body.pos.X - parent.room.gridsystemAffect.gridWidth / 2;
+                distFromCenter = (float)Math.Abs(distFromCenter);
+                float maxDistFromCenter = 120;
 
+                float distFromSpiderhead = Vector2.Distance(parent.body.pos, Assets.Spider.spiderHead);
+                if (distFromSpiderhead < 120 && !parent.room.loading)
+                {
+                    Assets.Spider.spiderPos -= 10;
+                    parent.texture = textures.boulderShine;
+                    parent.collision.active = false;
+                }
+
+                if (!parent.room.loading && parent.body.pos.Y >= y + 200 && distFromCenter > maxDistFromCenter)
+                {
+                    parent.texture = textures.boulderShine;
+                    parent.collision.active = false;
+                }
+
+                if (parent.body.pos.Y >= (levelTop + levelheight - parent.body.radius))
+                {
+                    parent.OnDeath(null);
+
+                }
+            }
+
+            if (parent.IsPlayer)
+            {
+                float y = Assets.Spider.finalpos.Y;
+                float distFromCenter = parent.body.pos.X - parent.room.gridsystemAffect.gridWidth / 2;
+                int sign = -1;
+                if (distFromCenter < 0) sign = 1;
+                distFromCenter = (float)Math.Abs(distFromCenter);
+                float maxDistFromCenter = 120;
+                if (!parent.room.loading && parent.body.pos.Y >= y + 200 && distFromCenter > maxDistFromCenter)
+                {
+                    parent.movement.maxVelocity.value = 30f;
+                    parent.body.velocity = new Vector2(20 * sign, 0);
+                    CollisionDelegate callback = null;
+                    callback = delegate(Node n1, Node n2)
+                    {
+                        parent.movement.maxVelocity.value = 2;
+                        parent.body.OnCollisionEnter -= callback;
+                    };
+                    parent.body.OnCollisionEnter += callback;
+                }
             }
             
         }

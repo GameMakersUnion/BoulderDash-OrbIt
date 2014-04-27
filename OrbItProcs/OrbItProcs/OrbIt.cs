@@ -250,7 +250,7 @@ namespace OrbItProcs
                 room.camera.CatchUp();
 
             }
-            tempRoom.Update(gameTime);
+            //tempRoom.Update(gameTime);
             frameRateCounter.Draw(Assets.font);
 
             base.Draw(gameTime);

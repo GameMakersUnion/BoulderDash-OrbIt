@@ -61,6 +61,7 @@ namespace OrbItProcs
             UpdateColor();
             AlphaPercent = 100f;
             DrawLayer = Layers.Under1;
+            DrawSparkles = true;
         }
 
         public void UpdateColor()
@@ -128,7 +129,7 @@ namespace OrbItProcs
             else SetColor();
             
         }
-
+        public bool DrawSparkles { get; set; }
         public override void Draw()
         {
             //it would be really cool to have some kind of blending effects so that every combination of components will look diff
@@ -146,7 +147,7 @@ namespace OrbItProcs
             else
                 parent.room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color * (AlphaPercent / 100f), parent.body.scale, parent.body.orient, layer);
 
-            if(parent.body.texture == textures.boulder1) parent.room.camera.Draw(textures.boulderShine, parent.body.pos, Utils.randomColor(), parent.body.scale, parent.body.orient, layer);
+            if(parent.body.texture == textures.boulder1 && DrawSparkles) parent.room.camera.Draw(textures.boulderShine, parent.body.pos, Utils.randomColor(), parent.body.scale, parent.body.orient, layer);
             /*Rectangle? sourceRect = null;
             int minx = 0, miny = 0, maxx = tex.Width, maxy = tex.Height;
             bool needsModifying = false;

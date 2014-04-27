@@ -376,7 +376,15 @@ namespace OrbItProcs {
             int heightCounter = OrbIt.Height / 2;
             while (drawCage && heightCounter < worldHeight - OrbIt.Height)
             {
-                camera.Draw(textures.cage, new Vector2(worldWidth / 2, heightCounter), Color.White, 1f, Layers.Over5);
+                //int rand = Utils.random.Next(50);
+                //if (rand < 3)
+                //{
+                //    camera.Draw(textures.cage, new Vector2(worldWidth / 2, heightCounter), Color.Pink, 1f, Layers.Under4);
+                //}
+                //else
+                //{
+                    camera.Draw(textures.goat, new Vector2(worldWidth / 2, heightCounter), Color.Yellow, 0.5f, Layers.Under4);
+                //}
                 heightCounter += OrbIt.Height;
             }
 
@@ -664,6 +672,7 @@ namespace OrbItProcs {
             }
             foreach(var n in masterGroup.fullSet.ToList()) //todo:wtfuck threading?
             {
+                if (skipOutsideGrid && (n.body.pos.Y < gridsystemAffect.position.Y || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
                 //Node n = (Node)o;
                 n.Draw();
             }
