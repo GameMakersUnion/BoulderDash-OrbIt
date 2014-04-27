@@ -117,6 +117,7 @@ namespace OrbItProcs
         private float lightRotation = 0f;
         public Action<Node, Node> OnDeath { get; set; }
         public Action<Node, Node, int> OnTakeDamage { get; set; }
+        public bool itemSwitching { get; set; }
         public Meta() : this(null) { }
         public Meta(Node parent)
         {
@@ -132,6 +133,7 @@ namespace OrbItProcs
             active = true;
             IgnoreAffectGrid = false;
             damageMultiplier = 1f;
+            itemSwitching = false;
         }
         public override void AffectSelf()
         {
@@ -142,10 +144,13 @@ namespace OrbItProcs
             if (controller is HalfController) return;
             GamePadState nps = ((FullController)controller).newGamePadState;
             GamePadState ops = ((FullController)controller).oldGamePadState;
-            if (nps.Buttons.A == ButtonState.Pressed && ops.Buttons.A == ButtonState.Released) parent.player.currentItem = ItemSlots.A_Green;
-            if (nps.Buttons.B == ButtonState.Pressed && ops.Buttons.B == ButtonState.Released) parent.player.currentItem = ItemSlots.B_Red;
-            if (nps.Buttons.X == ButtonState.Pressed && ops.Buttons.X == ButtonState.Released) parent.player.currentItem = ItemSlots.X_Blue;
-            if (nps.Buttons.Y == ButtonState.Pressed && ops.Buttons.Y == ButtonState.Released) parent.player.currentItem = ItemSlots.Y_Yellow;
+            if (itemSwitching)
+            {
+                if (nps.Buttons.A == ButtonState.Pressed && ops.Buttons.A == ButtonState.Released) parent.player.currentItem = ItemSlots.A_Green;
+                if (nps.Buttons.B == ButtonState.Pressed && ops.Buttons.B == ButtonState.Released) parent.player.currentItem = ItemSlots.B_Red;
+                if (nps.Buttons.X == ButtonState.Pressed && ops.Buttons.X == ButtonState.Released) parent.player.currentItem = ItemSlots.X_Blue;
+                if (nps.Buttons.Y == ButtonState.Pressed && ops.Buttons.Y == ButtonState.Released) parent.player.currentItem = ItemSlots.Y_Yellow;
+            }
         }
         public void CalculateDamage(Node other, float damage)
         {
