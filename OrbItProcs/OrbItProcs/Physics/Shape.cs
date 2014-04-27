@@ -216,7 +216,7 @@ namespace OrbItProcs
         public override void Draw()
         {
             DrawPolygon(body.pos, body.color);
-            if (testTexture!= null)
+            if (testTexture != null)
                 body.parent.room.camera.Draw(testTexture, body.pos + (trueOffset.Rotate(body.orient)) + (offset.Rotate(body.orient)), body.color, 1f, body.orient, Layers.Over1);
         }
 

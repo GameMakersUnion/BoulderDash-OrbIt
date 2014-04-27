@@ -211,7 +211,7 @@ namespace OrbItProcs
 
                         diffcopy *= result;
                         Vector2 force = (diff / physicsDivisor);
-                        if (shovelling && compoundedMass >= 1) force /= compoundedMass;
+                        if (shovelling && compoundedMass >= 1) force /= compoundedMass * 3;
                         shovelNode.body.velocity = diffcopy + force;
                         //shovelNode.body.ApplyForce(force);
                     }

@@ -24,6 +24,7 @@ namespace OrbItProcs
         gridspawn,
         roomResize,
         floodFill,
+        diodeSpawner,
     }
     public struct MouseArgs
     {
@@ -69,6 +70,7 @@ namespace OrbItProcs
             processDict.Add(proc.gridspawn, new GridSpawn());
             processDict.Add(proc.roomResize, new ResizeRoom());
             processDict.Add(proc.floodFill, new FloodFill());
+            processDict.Add(proc.diodeSpawner, new DiodeSpawner());
 
             activeInputProcess = processDict[proc.spawnnodes];
             OrbIt.ui.groupSelectSet = (processDict[proc.groupselect] as GroupSelect).groupSelectSet;
@@ -116,6 +118,7 @@ namespace OrbItProcs
             Keybindset.Add("graphdata", new KeyBundle(KeyCodes.D6, KeyCodes.LeftShift), enableKeyBinds(proc.graphdata)); 
 
             Keybindset.Add("polygonspawner", new KeyBundle(KeyCodes.D9, KeyCodes.LeftShift), enableKeyBinds(proc.polygonspawner));
+            Keybindset.Add("diodespawner", new KeyBundle(KeyCodes.D8, KeyCodes.LeftShift), enableKeyBinds(proc.diodeSpawner));
             
 
             Keybindset.AddProcess(processDict[proc.cameracontrol], false);

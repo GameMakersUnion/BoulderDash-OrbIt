@@ -801,10 +801,10 @@ namespace OrbItProcs {
             return SpawnNodeHelper(newNode, afterSpawnAction, activegroup, lifetime);
         }
 
-
         private Node SpawnNodeHelper(Node newNode, Action<Node> afterSpawnAction = null, Group g = null, int lifetime = -1)
         {
             //newNode.addComponent(comp.itempayload, true);
+            newNode.texture = textures.boulder1;
             newNode.OnSpawn();
             if (afterSpawnAction != null) afterSpawnAction(newNode);
             if (lifetime != -1)

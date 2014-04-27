@@ -164,6 +164,7 @@
     <Compile Include="Components\Drawers\ColorGravity.cs" />
     <Compile Include="Components\Items\Sword.cs" />
     <Compile Include="Components\Items\Shooter.cs" />
+    <Compile Include="Components\Meta\Diode.cs" />
     <Compile Include="Components\Meta\Swap.cs" />
     <Compile Include="Components\Meta\Scheduler.cs" />
     <Compile Include="Components\Drawers\Shader.cs" />
@@ -200,6 +201,7 @@
     <Compile Include="Interface\Views\ToolWindow.cs" />
     <Compile Include="Physics\Collider.cs" />
     <Compile Include="Processes\CameraControl.cs" />
+    <Compile Include="Processes\DiodeSpawner.cs" />
     <Compile Include="Processes\DirectedSpawn.cs" />
     <Compile Include="Processes\FloodFill.cs" />
     <Compile Include="Processes\GraphData.cs" />

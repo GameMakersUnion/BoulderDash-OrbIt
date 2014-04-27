@@ -30,7 +30,6 @@ namespace OrbItProcs
     public enum comp
     {
         friction,
-        queuer,
         gravity,
         transfer,
         displace,
@@ -66,6 +65,8 @@ namespace OrbItProcs
         shader,
         light,
         obstructor,
+        diode,
+        queuer,
         //middle,
         //slow,
         //siphon,
@@ -185,7 +186,7 @@ namespace OrbItProcs
             tempRoom.borderColor = Color.Red;
             room = mainRoom;
             //Hi-Definition Orbs:
-            setResolution(resolutions.HD_1366x768, false);
+            setResolution(resolutions.SVGA_800x600, false);//(resolutions.HD_1366x768, false);
             //A game need players, no?
             Player.CreatePlayers(mainRoom);
             //UI

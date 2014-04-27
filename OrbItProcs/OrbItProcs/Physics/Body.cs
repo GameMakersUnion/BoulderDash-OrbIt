@@ -153,7 +153,7 @@ namespace OrbItProcs
 
         public Color color = new Color(255, 255, 255);
         public Color permaColor = new Color(255, 255, 255);
-        private textures _texture = textures.whitecircle;
+        private textures _texture;
 
         [Info(UserLevel.Never)]
         public float[] positionP { get { return pos.toFloatArray(); }
@@ -243,6 +243,7 @@ namespace OrbItProcs
         public Body(Shape shape = null, Node parent = null)
         {
             if (parent != null) this.parent = parent;
+            _texture = textures.whitecircle;
             //com = comp.body;
             //methods = mtypes.none;
             this.shape = shape ?? new Circle(25);
@@ -251,6 +252,8 @@ namespace OrbItProcs
             DrawPolygonCenter = true;
 
             AfterCloning();
+
+            
         }
 
 

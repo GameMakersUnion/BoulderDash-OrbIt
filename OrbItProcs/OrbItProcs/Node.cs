@@ -406,16 +406,17 @@ namespace OrbItProcs {
 
             Node n = new Node(room, props, ShapeType.ePolygon);
             Polygon p = (Polygon)n.body.shape;
-            p.SetBox(halfheight, halfwidth); //flipped
-
+            n.body.orient = angle;
+            p.SetBox(halfwidth, halfheight);
             n.body.pos = (start + end) / 2;
             n.body.DrawPolygonCenter = false;
-            p.SetOrient(angle);
+            
 
             n.body.SetStatic();
             if (addToWallGroup)
             {
                 room.masterGroup.childGroups["Wall Group"].IncludeEntity(n);
+                n.OnSpawn();
             }
             return n;
         }

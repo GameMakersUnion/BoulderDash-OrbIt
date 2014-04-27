@@ -169,6 +169,8 @@ namespace OrbItProcs
                 room.playerGroup.IncludeEntity(node);
                 node.meta.healthBar = Meta.HealthBarMode.Bar;
                 node.OnSpawn();
+                node.body.mass = 0.1f;
+                node.movement.maxVelocity.value = 2f;
             }
         }
 
