@@ -244,7 +244,8 @@ namespace OrbItProcs
                         int count = 0;
                         Action<Collider, Collider> del = delegate(Collider c1, Collider c2){
                             if (count >= maxShovelCapacity) return;
-                            if (modePlayers != ModePlayers.GrabBoth && c2.parent.player != null)
+                            if (c2.parent.dataStore.ContainsKey("shovelnodeparent"))return;
+                            if (modePlayers != ModePlayers.GrabBoth && c2.parent.IsPlayer)
                             {
                                 if (modePlayers == ModePlayers.GrabNone) return;
                                 if (modePlayers == ModePlayers.GrabSelf && c2.parent != parent) return;

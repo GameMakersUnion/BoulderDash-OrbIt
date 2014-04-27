@@ -7,6 +7,22 @@ using System.IO;
 
 namespace OrbItProcs
 {
+    public class DiodeData {
+        public float[] start { get; set; }
+        public float[] end { get; set; }
+        public float orientation { get; set; }
+        public int tickets { get; set; }
+        public bool isSemaphore { get; set; }
+        public DiodeData(Diode d)
+        {
+            this.start = d.start.toFloatArray();
+            this.end = d.end.toFloatArray();
+            this.orientation = d.parent.body.orient;
+            this.tickets = d.maxTickets;
+            this.isSemaphore = d.semaphore;
+        }
+        public DiodeData() { }
+    }
     public class LevelSave
     {
         public int levelHeight { get; set; }
@@ -14,12 +30,21 @@ namespace OrbItProcs
         public List<float[]> polygonVertices { get; set; }
         public List<float[]> polygonPositions { get; set; }
         public string name { get; set; }
+        public List<DiodeData> Diodes { get; set; }
         public LevelSave()
         {
 
         }
         public LevelSave(Group group, int levelWidth, int levelHeight, string name)
         {
+            Diodes = new List<DiodeData>();
+            foreach (var n in group.room.masterGroup.fullSet)
+            {
+                if (n.HasComp<Diode>())
+                {
+                    Diodes.Add(new DiodeData(n.Comp<Diode>()));
+                }
+            }
             this.levelHeight = levelHeight;
             this.levelWidth = levelWidth;
             this.name = name;

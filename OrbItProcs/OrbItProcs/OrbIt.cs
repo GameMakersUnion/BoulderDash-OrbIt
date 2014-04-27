@@ -214,11 +214,12 @@ namespace OrbItProcs
             MainWindow.TransparentClientArea = true;
 
             //Testing.sawtoothTest();
- 
+
+            LoadLevelWindow.StaticLevel("Test.xml");
         }
         Window test;
         public resolutions preferredWindowed;
-        public static string gameMode = "wpp[";
+        public static string gameMode = "SpiderDiggers";
 
         private void RoomPanel(Room room)
         {

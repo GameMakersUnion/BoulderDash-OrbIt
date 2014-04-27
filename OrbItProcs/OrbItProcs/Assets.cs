@@ -62,6 +62,8 @@ namespace OrbItProcs
         gradient2,
         ridgesR,
         ridgesL,
+        boulderShine,
+        endLight,
     }
 
     static class Assets
@@ -75,8 +77,148 @@ namespace OrbItProcs
         public static Texture2D[,] btnTextures;
         public static ObservableCollection<object> NodePresets = new ObservableCollection<object>();
         public static Effect shaderEffect; // Shader code
-        
 
+
+        public static class Spider{
+            const string fp = "Textures//SpiderFrames/";
+            public static Texture2D Wait = OrbIt.game.Content.Load<Texture2D>("Textures//SpiderFrames/SpiderAni0001");
+            public static Texture2D[] Protect = new Texture2D[23];
+            public static Texture2D[] Stab = new Texture2D[25];
+            public static Texture2D[] Walk = new Texture2D[28];
+
+            static int protectCount = 0, stabCount = 0, walkCount = 0, masterCount = 0, masterMod = 3;
+            public enum state
+            {
+                waiting,
+                protecting,
+                stabbing,
+                walking,
+            }
+            public static state State = state.waiting;
+            static float spiderPos = -50f;
+            static Texture2D currentTexture = null;
+            static int freezeCount = 0, freezeMax = 10;
+            static bool frozen = false;
+            static public float scale = .6f;
+            public static void UpdateSpider(Room room)
+            {
+                if (room.loading) return;
+                Vector2 finalpos = room.gridsystemAffect.position + new Vector2((room.worldWidth - Assets.Spider.Wait.Width*scale)/2, room.gridsystemAffect.gridHeight - (Assets.Spider.Wait.Height / 2) - spiderPos);
+
+                room.camera.Draw(currentTexture, finalpos, Color.White, scale, Layers.Over4, center: false);
+
+                Vector2 spiderHead = new Vector2(room.gridsystemAffect.gridWidth / 2, room.gridsystemAffect.position.Y + room.gridsystemAffect.gridHeight - spiderPos);
+                float radiusReach = 300f;
+                
+                room.camera.Draw(textures.whitecircle, spiderHead, Color.Red * 0.4f, radiusReach / 64f, 0, Layers.Under5);
+
+                if (masterCount++ % masterMod != 0) return;
+                if (State == state.waiting)
+                {
+                    currentTexture = Assets.Spider.Wait;
+                    //room.camera.Draw(Assets.Spider.Wait, finalpos, Color.White, .5f, Layers.Over4, center: false);
+                    int r = Utils.random.Next(3);
+                    if (r == 0)
+                    {
+                        State = state.stabbing;
+                    }
+                    else if (r == 1)
+                    {
+                        State = state.protecting;
+                    }
+                    else
+                    {
+                        State = state.walking;
+                    }
+                }
+                else if (State == state.walking)
+                {
+                    currentTexture = Walk[walkCount];
+                    //Texture2D t = Walk[walkCount];
+                    //room.camera.Draw(t, finalpos, Color.Blue, .5f, Layers.Over4, center: false);
+                    walkCount++;
+                    spiderPos += 0.2f;
+                    if (walkCount >= Walk.Length)
+                    {
+                        walkCount = 0;
+                        State = state.waiting;
+                    }
+                    
+                }
+                else if (State == state.protecting)
+                {
+                    currentTexture = Protect[protectCount];
+                    if (protectCount == 16 || protectCount == 18)
+                    {
+                        foreach (Node n in room.masterGroup.fullSet.ToList())
+                        {
+                            if (!n.IsPlayer) continue;
+                            if (Vector2.Distance(n.body.pos, spiderHead) > radiusReach) continue;
+                            n.meta.CalculateDamage(null, 2);
+                            n.body.velocity = new Vector2(0, -2);
+                        }
+                    }
+                    if (protectCount == 17)
+                    {
+                        freezeCount++;
+                        if (freezeCount < freezeMax) return;
+                        freezeCount = 0;
+                    }
+                    //Texture2D t = Protect[protectCount];
+                    //room.camera.Draw(t, finalpos, Color.Green, .5f, Layers.Over4, center: false);
+                    protectCount++;
+                    spiderPos -= 0;
+                    if (protectCount >= Protect.Length)
+                    {
+                        protectCount = 0;
+                        State = state.waiting;
+                    }
+
+                }
+                else if (State == state.stabbing)
+                {
+                    currentTexture = Stab[stabCount];
+                    //Texture2D t = Stab[stabCount];
+                    //room.camera.Draw(t, finalpos, Color.Red, .5f, Layers.Over4, center: false);
+                    stabCount++;
+                    if (stabCount >= Stab.Length)
+                    {
+                        stabCount = 0;
+                        State = state.waiting;
+                    }
+
+                }
+            }
+
+            static Spider(){
+                int count = 0;
+                //var fullList = Directory.GetFiles(fp);
+                for (int i = 2; i <= 24; i++)
+                {
+                    string filename = "Textures//SpiderFrames/SpiderAni00";
+                    if (i < 10) filename += "0";
+                    filename += i;
+                    Protect[i - 2] = OrbIt.game.Content.Load<Texture2D>(filename);
+                }
+
+                for (int i = 26; i <= 50; i++)
+                {
+                    string filename = "Textures//SpiderFrames/SpiderAni00";
+                    if (i < 10) filename += "0";
+                    filename += i;
+                    Stab[i - 26] = OrbIt.game.Content.Load<Texture2D>(filename);
+                }
+
+                for (int i = 52; i <= 79; i++)
+                {
+                    string filename = "Textures//SpiderFrames/SpiderAni00";
+                    if (i < 10) filename += "0";
+                    filename += i;
+                    Walk[i - 52] = OrbIt.game.Content.Load<Texture2D>(filename);
+                }
+                currentTexture = Wait;
+            }
+        }
         public static void LoadAssets(ContentManager content)
         {
             if (!Directory.Exists(filepath)) Directory.CreateDirectory(filepath);
@@ -112,6 +254,9 @@ namespace OrbItProcs
             { textures.gradient2, content.Load<Texture2D>("Textures/gradient2"                )},
             { textures.ridgesL, content.Load<Texture2D>("Textures/RidgesL"                )},
             { textures.ridgesR, content.Load<Texture2D>("Textures/RidgesR"                )},
+            { textures.boulderShine, content.Load<Texture2D>("Textures/boulderShine"                )},
+            { textures.endLight, content.Load<Texture2D>("Textures/endLight"                )},
+            
             };
 
             for (int i = 0; i < 16; i++)

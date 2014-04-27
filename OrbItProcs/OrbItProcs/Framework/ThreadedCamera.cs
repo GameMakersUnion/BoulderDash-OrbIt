@@ -301,9 +301,9 @@ namespace OrbItProcs
         {
             nextFrame.Enqueue(new DrawCommand(texture, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, null, color, 0, center?Assets.textureCenters[texture]:Vector2.Zero, scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
-        public void Draw(Texture2D texture, Vector2 position, Color color, float scale, Layers Layer, ShaderPack? shaderPack = null)
+        public void Draw(Texture2D texture, Vector2 position, Color color, float scale, Layers Layer, ShaderPack? shaderPack = null, bool center = true)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, null, color, 0, new Vector2(texture.Width/2, texture.Height/2), scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, null, color, 0, center?new Vector2(texture.Width/2, texture.Height/2):Vector2.Zero, scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
 
         public void Draw(textures texture, Vector2 position, Color color, float scale, float rotation, Layers Layer, ShaderPack? shaderPack = null)
