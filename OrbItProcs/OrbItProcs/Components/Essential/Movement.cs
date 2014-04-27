@@ -303,11 +303,25 @@ namespace OrbItProcs
 
         private void SpiderBounce()
         {
-            int levelLeft = 0, levelTop = 0;
+            int levelLeft = (int)parent.room.gridsystemAffect.position.X, levelTop = (int)parent.room.gridsystemAffect.position.Y;
             int levelwidth = parent.room.gridsystemAffect.gridWidth;
             int levelheight = parent.room.gridsystemAffect.gridHeight;
 
-            if (parent.body.pos.X >= (levelwidth - parent.body.radius))
+            if (parent.body.pos.Y < levelTop + parent.body.radius)
+            {
+                if (parent.body.pos.Y > levelTop + parent.body.radius - 100)
+                {
+                    parent.body.velocity.Y *= -1;
+                }
+                else return;
+                //parent.body.pos.Y = DelegateManager.Triangle(parent.body.pos.Y - levelTop - parent.body.radius, levelheight) + parent.body.radius + levelTop;
+                //parent.body.velocity.Y *= -1;
+                //parent.body.InvokeOnCollisionStay(null);
+                //parent.body.pos.Y += 5;
+
+
+            }
+            else if (parent.body.pos.X >= (levelLeft +levelwidth - parent.body.radius))
             {
                 //float off = parent.body.pos.X - (levelwidth - parent.body.radius);
                 //parent.body.pos.X = (levelwidth - parent.body.radius - off) % parent.room.worldWidth;
@@ -316,7 +330,7 @@ namespace OrbItProcs
                 parent.body.InvokeOnCollisionStay(null); //todo: find out why we needed null, fix this
 
             }
-            if (parent.body.pos.X < levelLeft + parent.body.radius)
+            else if (parent.body.pos.X < levelLeft + parent.body.radius)
             {
                 //float off = parent.body.radius - parent.body.pos.X;
                 //parent.body.pos.X = (parent.body.radius + off) % parent.room.worldWidth;
@@ -324,19 +338,12 @@ namespace OrbItProcs
                 parent.body.velocity.X *= -1;
                 parent.body.InvokeOnCollisionStay(null);
             }
-            if (parent.body.pos.Y >= (levelheight - parent.body.radius))
-            {
-                //float off = parent.body.pos.Y - (levelheight - parent.body.radius);
-                //parent.body.pos.Y = (levelheight - parent.body.radius - off) % parent.room.worldHeight;
-                parent.body.pos.Y = DelegateManager.Triangle(parent.body.pos.Y, levelheight - (int)parent.body.radius) + levelTop;
-                parent.body.velocity.Y *= -1;
-                parent.body.InvokeOnCollisionStay(null);
-            }
-            if (parent.body.pos.Y < levelTop + parent.body.radius)
+            else if (parent.body.pos.Y >= (levelTop + levelheight - parent.body.radius))
             {
                 parent.OnDeath(null);
-
+                
             }
+            
         }
 
         public void halt()

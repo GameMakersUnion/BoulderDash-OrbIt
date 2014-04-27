@@ -175,7 +175,7 @@ namespace OrbItProcs {
             
             
             scheduler = new Scheduler();
-            borderColor = Color.Orange;
+            borderColor = Color.DarkGray;
             collideAction = (c1, c2) =>
             {
                 if (c1.parent == c2.parent) return;
