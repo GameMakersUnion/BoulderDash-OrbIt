@@ -106,12 +106,21 @@ namespace OrbItProcs
             if (item == null) return;
             if (!(item.obj is LevelSave)) return;
             LevelSave levelSave = (LevelSave)item.obj;
+            LoadLevel(levelSave);
+        }
+
+        public void LoadLevel(LevelSave levelSave)
+        {
+            Room room = OrbIt.game.mainRoom;
+            //room.worldWidth = levelSave.levelWidth;
+            //room.worldHeight = levelSave.levelHeight;
+            room.resize(new Vector2(levelSave.levelWidth, levelSave.levelHeight));
+            room.waitTimeCounter = 0;
             if (!levelSaves.ContainsKey(levelSave))
             {
                 ObservableHashSet<Node> nodes = new ObservableHashSet<Node>();
                 for (int i = 0; i < levelSave.polygonVertices.Count; i++)
                 {
-
                     Node newNode = new Node(sidebar.ui.game.mainRoom, ShapeType.ePolygon);
                     Polygon poly = (Polygon)newNode.body.shape;
                     //poly.SetCenterOfMass(vertices);
@@ -126,8 +135,10 @@ namespace OrbItProcs
                     newNode.body.orient = 0;
                     newNode.movement.mode = movemode.free;
                     newNode.body.restitution = 1f;
+                    newNode.body.texture = textures.rock1;
                     newNode.meta.maxHealth.enabled = false;
                     poly.ComputeNormals();
+                    poly.CalibrateTexture();
                     nodes.Add(newNode);
                 }
                 levelSaves[levelSave] = nodes;
@@ -141,8 +152,8 @@ namespace OrbItProcs
             {
                 wallGroup.IncludeEntity(n);
             }
-
         }
+
         public void PopulateLevelSaves()
         {
             foreach (string file in Directory.GetFiles(Assets.levelsFilepath, "*.xml"))

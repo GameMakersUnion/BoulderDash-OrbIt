@@ -358,9 +358,25 @@ namespace OrbItProcs {
         }
         public int affectAlgorithm = 2;
         public bool ColorNodesInReach = false;
+
+        public float scrollRate = 0.5f;
+        public bool scroll = true;
+        public int waitTime = 5000;
+        public int waitTimeCounter = 0;
         public void Update(GameTime gametime)
         {
-            if (gridsystemAffect.position.Y > 0) { gridsystemAffect.position.Y--; gridsystemCollision.position.Y--; }
+            if (scroll)
+            {
+                if (waitTimeCounter < waitTime)
+                {
+                    waitTimeCounter += gametime.ElapsedGameTime.Milliseconds;
+                }
+                else
+                {
+                    if (gridsystemAffect.position.Y > 0) { gridsystemAffect.position.Y -= scrollRate; gridsystemCollision.position.Y -= scrollRate; }
+                    camera.pos = gridsystemCollision.position + new Vector2(gridsystemCollision.gridWidth / 2, gridsystemCollision.gridHeight / 2);
+                }
+            }
             camera.RenderAsync();
             long elapsed = 0;
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
@@ -376,7 +392,7 @@ namespace OrbItProcs {
                 camera.Draw(textures.ridgesR, new Vector2((this.worldWidth - Assets.textureDict[textures.ridgesL].Width * .5f), counter), Color.DarkGray, .5f, Layers.Under4, center: false);
                 counter += Assets.textureDict[textures.ridgesL].Height / 2;
             } while (counter < worldHeight);
-                HashSet<Node> toDelete = new HashSet<Node>();
+            HashSet<Node> toDelete = new HashSet<Node>();
             if (affectAlgorithm == 1)//OLD for testing
             {
                 gridsystemAffect.clear();
