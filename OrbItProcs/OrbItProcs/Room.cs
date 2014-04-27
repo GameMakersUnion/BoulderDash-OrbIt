@@ -192,7 +192,7 @@ namespace OrbItProcs {
                     if (c2 is Body)
                     {
                         Body bb = (Body)c2;
-                        //if (!c1.exclusionList.Contains(bb)) 
+                        //if (!c1.exclusionList.Contains(bb))
                             c1.CheckCollisionBody(bb);
                     }
                     //else

@@ -76,6 +76,7 @@ namespace OrbItProcs
         fist,
         magictorch,
         itempayload,
+        shovel,
 
     };
     public enum resolutions

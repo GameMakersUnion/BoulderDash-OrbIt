@@ -97,6 +97,7 @@ namespace OrbItProcs {
             Normal,
             Strong,
             ConstantForce,
+            //Logarithmic,
         }
         
         private float drawscale;

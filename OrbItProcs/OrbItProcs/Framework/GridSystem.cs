@@ -137,8 +137,6 @@ namespace OrbItProcs {
                 }
             }
         }
-
-
         //static int largest = 0;
         public void insert(Collider collider)
         {

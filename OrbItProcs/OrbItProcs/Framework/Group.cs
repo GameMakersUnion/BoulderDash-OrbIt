@@ -184,11 +184,11 @@ namespace OrbItProcs
         public Group(Room room, Node defaultNode = null, Group parentGroup = null, string Name = "", bool Spawnable = true, ObservableHashSet<Node> entities = null)
         {
             if (parentGroup != null) room = parentGroup.room;
-            this.room = room;
+            this.room = room ?? OrbIt.game.mainRoom;
 
             GroupId = -1;
-            groupHash = Utils.uniqueString(room.groupHashes);
-            this.defaultNode = defaultNode ?? room.defaultNode;
+            groupHash = Utils.uniqueString(this.room.groupHashes);
+            this.defaultNode = defaultNode ?? this.room.defaultNode;
             this.entities = entities ?? new ObservableHashSet<Node>();
             this.inherited = new ObservableHashSet<Node>();
             this.fullSet = new ObservableHashSet<Node>();

@@ -804,7 +804,7 @@ namespace OrbItProcs {
                         if (tog2.value.GetType() == toggle.value.GetType())
                         {
                             toggle.GetType().GetProperty("value").SetValue(toggle, tog2.value, null);
-                            Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + value.GetType() + " >> " + value);
+                            //Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + value.GetType() + " >> " + value);
                         }
                         return;
                     }
@@ -812,7 +812,7 @@ namespace OrbItProcs {
                     {
                         toggle = GetValue();
                         toggle.GetType().GetProperty("enabled").SetValue(toggle, value, null);
-                        Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + toggle.GetType() + " >> " + toggle);
+                        //Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + toggle.GetType() + " >> " + toggle);
                         return;
                     }
                     object san = TrySanitize(value);
@@ -822,7 +822,7 @@ namespace OrbItProcs {
                         if (value.GetType() == toggle.value.GetType())
                         {
                             toggle.GetType().GetProperty("value").SetValue(toggle, san, null);
-                            Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + toggle.GetType() + " >> " + toggle);
+                            //Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + toggle.GetType() + " >> " + toggle);
                         }
                     }
                     return;
@@ -833,14 +833,14 @@ namespace OrbItProcs {
                     if (san != null)
                     {
                         fpinfo.SetValue(san, parentItem.obj);
-                        Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + value.GetType() + " >> " + value);
+                        //Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + value.GetType() + " >> " + value);
                     }
                     return;
                 }
                 if (value.GetType() == fpinfo.FPType)
                 {
                     fpinfo.SetValue(value, parentItem.obj);
-                    Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + value.GetType() + " >> " + value);
+                    //Console.WriteLine(parentItem.obj.GetType() + " >> " + this + " >> " + value.GetType() + " >> " + value);
                 }
             }
             else
