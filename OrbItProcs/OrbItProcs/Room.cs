@@ -356,9 +356,25 @@ namespace OrbItProcs {
         }
         public int affectAlgorithm = 2;
         public bool ColorNodesInReach = false;
+
+        public float scrollRate = 0.5f;
+        public bool scroll = true;
+        public int waitTime = 5000;
+        public int waitTimeCounter = 0;
         public void Update(GameTime gametime)
         {
-            //if (gridsystemAffect.position.Y > 0) { gridsystemAffect.position.Y--; gridsystemCollision.position.Y--; }
+            if (scroll)
+            {
+                if (waitTimeCounter < waitTime)
+                {
+                    waitTimeCounter += gametime.ElapsedGameTime.Milliseconds;
+                }
+                else
+                {
+                    if (gridsystemAffect.position.Y > 0) { gridsystemAffect.position.Y -= scrollRate; gridsystemCollision.position.Y -= scrollRate; }
+                    camera.pos = gridsystemCollision.position + new Vector2(gridsystemCollision.gridWidth / 2, gridsystemCollision.gridHeight / 2);
+                }
+            }
             camera.RenderAsync();
             long elapsed = 0;
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);

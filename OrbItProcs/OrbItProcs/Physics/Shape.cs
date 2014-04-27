@@ -314,15 +314,8 @@ namespace OrbItProcs
             }
             //body.pos = new Vector2(x, y);
             Set(vertices, vertexCount);
-            
-            float minX = vertices.Min(x => x.X);
-            float maxX = vertices.Max(x => x.X);
-            //offset.X = (maxX+min
-            float minY = vertices.Min(x => x.Y);
-            float maxY = vertices.Max(x => x.Y);
-            trueOffset = new Vector2((maxX-minX)/2,(maxY-minY)/2);
-            testTexture = CreateClippedTexture(Assets.textureDict[body.texture], vertices, vertexCount, out offset);
-            this.offset = new Vector2(offset.X, offset.Y);
+
+            CalibrateTexture();
             //Vector2 newCentroid = FindCentroid(vertices, vertexCount);
             body.pos = centroid;// +newCentroid;
             
@@ -357,8 +350,6 @@ namespace OrbItProcs
             //if (x < 0 || y < 0) System.Diagnostics.Debugger.Break();
 
             return new Vector2(x, y);
-            
-
         }
 
         // half width and half height
@@ -379,6 +370,17 @@ namespace OrbItProcs
                 testTexture = CreateClippedTexture(Assets.textureDict[body.texture], vertices, vertexCount, out this.offset);
                 this.trueOffset = this.offset * -1f;
             }
+        }
+
+        public void CalibrateTexture()
+        {
+            float minX = vertices.Min(x => x.X);
+            float maxX = vertices.Max(x => x.X);
+            float minY = vertices.Min(x => x.Y);
+            float maxY = vertices.Max(x => x.Y);
+            this.trueOffset = new Vector2((maxX - minX) / 2, (maxY - minY) / 2);
+            this.testTexture = CreateClippedTexture(Assets.textureDict[body.texture], vertices, vertexCount, out offset);
+            this.offset = new Vector2(offset.X, offset.Y);
         }
 
         public void Set(Vector2[] verts, int count)
@@ -464,9 +466,6 @@ namespace OrbItProcs
         public Texture2D CreateClippedTexture(Texture2D tex, Vector2[] verts, int count, out Vector2 offset)
         {
             Point offsetP = new Point();
-
-
-
             Point[] points = new Point[count];
             for(int i = 0; i < count; i++)
             {
