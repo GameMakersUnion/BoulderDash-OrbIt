@@ -181,12 +181,12 @@ namespace OrbItProcs
             //Sup Tom.
             base.Initialize();
             //Get Roomy
-            mainRoom = new Room(this, Width, Height*8); //change to height
+            mainRoom = new Room(this, Width, Height);//*8); //change to height
             tempRoom = new Room(this, 200, 200);
             tempRoom.borderColor = Color.Red;
             room = mainRoom;
             //Hi-Definition Orbs:
-            setResolution(resolutions.SVGA_800x600, false);//(resolutions.HD_1366x768, false);
+            setResolution(resolutions.HD_1366x768, false);//(resolutions.HD_1366x768, false);
             //A game need players, no?
             Player.CreatePlayers(mainRoom);
             //UI

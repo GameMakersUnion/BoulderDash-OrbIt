@@ -261,7 +261,7 @@
     <Compile Include="Processes\MapEditor.cs" />
     <Compile Include="Processes\PolygonSpawner.cs" />
     <Compile Include="Processes\Process.cs" />
-    <Compile Include="Processes\ProcessManager.cs" />
+    <Compile Include="Framework\ProcessManager.cs" />
     <Compile Include="Framework\QueueInfo.cs" />
     <Compile Include="Processes\Randomizer.cs" />
     <Compile Include="Processes\ResizeRoom.cs" />

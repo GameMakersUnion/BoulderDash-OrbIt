@@ -27,8 +27,9 @@ namespace OrbItProcs
             else
             {
                 firstclick = true;
-                var dict = new Dictionary<dynamic, dynamic>() { { comp.diode, true } };
+                var dict = new Dictionary<dynamic, dynamic>() { { comp.diode, true },{nodeE.texture, textures.gradient1} };
                 lastSpawnedDiode = Node.ContructLineWall(room, firstPos, mousePos, diodeThickness, dict);
+                lastSpawnedDiode.SetColor(new Color(255, 255, 255, 255));
                 Console.WriteLine(lastSpawnedDiode.body.orient);
             }
         }

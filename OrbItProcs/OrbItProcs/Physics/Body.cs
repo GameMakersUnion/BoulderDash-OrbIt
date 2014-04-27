@@ -243,7 +243,7 @@ namespace OrbItProcs
         public Body(Shape shape = null, Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            _texture = textures.whitecircle;
+            //_texture = textures.rock1;
             //com = comp.body;
             //methods = mtypes.none;
             this.shape = shape ?? new Circle(25);
@@ -309,6 +309,7 @@ namespace OrbItProcs
                         }
                     }
                 }
+                if (DoExclusionCheckResolution(other)) return;
                 if (isSolid && other.isSolid)
                     parent.room.AddManifold(m);
             }

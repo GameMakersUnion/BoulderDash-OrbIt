@@ -228,7 +228,7 @@ namespace OrbItProcs {
             #region ///Default User props///
             Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {
                 { nodeE.position, new Vector2(0, 0) },
-                { nodeE.texture, textures.whitecircle },
+                { nodeE.texture, textures.boulder1 },
                 { comp.basicdraw, true },
                 { comp.collision, true },
                 { comp.movement, true },
@@ -358,7 +358,7 @@ namespace OrbItProcs {
         public bool ColorNodesInReach = false;
         public void Update(GameTime gametime)
         {
-            if (gridsystemAffect.position.Y > 0) { gridsystemAffect.position.Y--; gridsystemCollision.position.Y--; }
+            //if (gridsystemAffect.position.Y > 0) { gridsystemAffect.position.Y--; gridsystemCollision.position.Y--; }
             camera.RenderAsync();
             long elapsed = 0;
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
@@ -811,7 +811,6 @@ namespace OrbItProcs {
         private Node SpawnNodeHelper(Node newNode, Action<Node> afterSpawnAction = null, Group g = null, int lifetime = -1)
         {
             //newNode.addComponent(comp.itempayload, true);
-            newNode.texture = textures.boulder1;
             newNode.OnSpawn();
             if (afterSpawnAction != null) afterSpawnAction(newNode);
             if (lifetime != -1)

@@ -75,12 +75,24 @@ namespace OrbItProcs
         public Action<Node> OnCollisionAllExit;
 
         public Func<Collider, Collider, bool> ExclusionCheck;
+        public Func<Collider, Collider, bool> ExclusionCheckResolution;
 
         public bool DoExclusionCheck(Collider other)
         {
             if (ExclusionCheck != null)
             {
                 foreach (Func<Collider, Collider, bool> del in ExclusionCheck.GetInvocationList())
+                {
+                    if (del(this, other)) return true;
+                }
+            }
+            return false;
+        }
+        public bool DoExclusionCheckResolution(Collider other)
+        {
+            if (ExclusionCheckResolution != null)
+            {
+                foreach (Func<Collider, Collider, bool> del in ExclusionCheckResolution.GetInvocationList())
                 {
                     if (del(this, other)) return true;
                 }

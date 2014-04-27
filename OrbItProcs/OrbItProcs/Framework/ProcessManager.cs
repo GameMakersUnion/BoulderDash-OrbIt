@@ -106,7 +106,7 @@ namespace OrbItProcs
 
             toolbar.AddButton("forceSpawn", enableKeyBinds(proc.directedspawn), "Spawn nodes in a direction using left and right click.");
             toolbar.AddButton("forcePush", enableKeyBinds(proc.floodFill), "Take a hike.");
-            toolbar.AddButton("control", Utils.notImplementedException,"Take a hike.");
+            toolbar.AddButton("control", enableKeyBinds(proc.diodeSpawner), "Spawn things in a confusing way");//Utils.notImplementedException,"Take a hike.");
             toolbar.AddButton("static", enableKeyBinds(proc.gridspawn), "Spawn nodes statically to the grid.");
             toolbar.AddButton("resize", enableKeyBinds(proc.roomResize), "Change the size of the Room");
             
@@ -118,7 +118,7 @@ namespace OrbItProcs
             Keybindset.Add("graphdata", new KeyBundle(KeyCodes.D6, KeyCodes.LeftShift), enableKeyBinds(proc.graphdata)); 
 
             Keybindset.Add("polygonspawner", new KeyBundle(KeyCodes.D9, KeyCodes.LeftShift), enableKeyBinds(proc.polygonspawner));
-            Keybindset.Add("diodespawner", new KeyBundle(KeyCodes.D8, KeyCodes.LeftShift), enableKeyBinds(proc.diodeSpawner));
+            //Keybindset.Add("diodespawner", new KeyBundle(KeyCodes.D8, KeyCodes.LeftShift), enableKeyBinds(proc.diodeSpawner));
             
 
             Keybindset.AddProcess(processDict[proc.cameracontrol], false);
