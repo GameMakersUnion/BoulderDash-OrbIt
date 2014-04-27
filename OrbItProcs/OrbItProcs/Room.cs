@@ -360,7 +360,8 @@ namespace OrbItProcs {
         public bool ColorNodesInReach = false;
 
         public float scrollRate = 0.5f;
-        public bool scroll = true;
+        public bool skipOutsideGrid = true;
+        public bool scroll = false;
         public int waitTime = 5000;
         public int waitTimeCounter = 0;
         public void Update(GameTime gametime)
@@ -393,21 +394,23 @@ namespace OrbItProcs {
                 counter += Assets.textureDict[textures.ridgesL].Height / 2;
             } while (counter < worldHeight);
             HashSet<Node> toDelete = new HashSet<Node>();
-            if (affectAlgorithm == 1)//OLD for testing
-            {
-                gridsystemAffect.clear();
-                foreach (var n in masterGroup.fullSet)
-                {
-                    if (ColorNodesInReach) n.body.color = Color.White;
-                    if (masterGroup.childGroups["Wall Group"].fullSet.Contains(n)) continue;
-                    gridsystemAffect.insert(n.body);
-                }
-            }
-            else if (affectAlgorithm == 2)
+            //if (affectAlgorithm == 1)//OLD for testing
+            //{
+            //    gridsystemAffect.clear();
+            //    foreach (var n in masterGroup.fullSet)
+            //    {
+            //        if (ColorNodesInReach) n.body.color = Color.White;
+            //        if (masterGroup.childGroups["Wall Group"].fullSet.Contains(n)) continue;
+            //        gridsystemAffect.insert(n.body);
+            //    }
+            //}
+            if (affectAlgorithm == 2)
             {
                 gridsystemAffect.clearBuckets();
                 foreach (var n in masterGroup.fullSet)
                 {
+                    if (skipOutsideGrid && (n.body.pos.Y < gridsystemAffect.position.Y || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
+
                     if (ColorNodesInReach) n.body.color = Color.White;
                     if (masterGroup.childGroups["Wall Group"].fullSet.Contains(n)) continue;
                     gridsystemAffect.insertToBuckets(n.body);
@@ -419,6 +422,10 @@ namespace OrbItProcs {
 
             foreach(Node n in masterGroup.fullSet.ToList())
             {
+                //if (skipOutsideGrid && (n.body.pos.Y < gridsystemAffect.position.Y || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
+
+                if (!n.body.pos.isWithin(gridsystemAffect.position, gridsystemAffect.position + new Vector2(gridsystemAffect.gridWidth, gridsystemAffect.gridHeight))) continue;
+                
                 if (n.active)
                 {
                     n.Update(gametime);
@@ -457,19 +464,21 @@ namespace OrbItProcs {
         {
             Testing.modInc();
             //Testing.w("insertion").Start();
-            if (algorithm <= 4)
-            {
-                gridsystemCollision.clear();
-                foreach (var c in CollisionSetCircle) //.ToList()
-                {
-                    gridsystemCollision.insert(c);
-                }
-            }
+            //if (algorithm <= 4)
+            //{
+            //    gridsystemCollision.clear();
+            //    foreach (var c in CollisionSetCircle) //.ToList()
+            //    {
+            //        gridsystemCollision.insert(c);
+            //    }
+            //}
             if (algorithm >= 5)
             {
                 gridsystemCollision.clearBuckets();
                 foreach (var c in CollisionSetCircle) //.ToList()
                 {
+                    if (skipOutsideGrid && (c.pos.Y < gridsystemCollision.position.Y || c.pos.Y > gridsystemCollision.position.Y + gridsystemCollision.gridHeight)) continue;
+
                     //if (ColorNodesInReach) c.parent.body.color = Color.White;
                     if (!c.parent.active) continue;
                     gridsystemCollision.insertToBuckets(c);
@@ -503,6 +512,7 @@ namespace OrbItProcs {
 
             foreach (var c in CollisionSetCircle.ToList()) //.ToList() 
             {
+                if (skipOutsideGrid && (c.pos.Y < gridsystemCollision.position.Y || c.pos.Y > gridsystemCollision.position.Y + gridsystemCollision.gridHeight)) continue;
                 if (c.parent.active)
                 {
                     gridsystemCollision.alreadyVisited.Add(c);

@@ -47,6 +47,8 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "If enabled, the given amount of 'shadows' of the same color will be overlaid on the light with reducing scale.")]
         public Toggle<int> shadowCount { get; set; }
+
+        public Layers drawLayer { get; set; }
         public Light() : this(null) { }
         public Light(Node parent = null) 
         {
@@ -58,6 +60,7 @@ namespace OrbItProcs
             scaleRateTemp = scaleRate;
             randomColor = true;
             shadowCount = new Toggle<int>(1, false);
+            drawLayer = Layers.Under5;
         }
         public override void OnSpawn()
         {
@@ -78,14 +81,14 @@ namespace OrbItProcs
                 scaleRateTemp = scaleRate;
                 scale = min;
             }
-            parent.room.camera.Draw(textures.whitecircle, parent.body.pos, color * (transparencyPercent / 100f), scale, Layers.Under1);
+            parent.room.camera.Draw(textures.whitecircle, parent.body.pos, color * (transparencyPercent / 100f), scale, drawLayer);
             if (shadowCount.enabled)
             {
                 float totalScaleDifference = 0.5f;
                 float singleScaleDifference = totalScaleDifference / shadowCount.value;
                 for(int i = 0; i < shadowCount.value; i++)
                 {
-                    parent.room.camera.Draw(textures.whitecircle, parent.body.pos, color * (transparencyPercent / 100f), scale * (1f - (singleScaleDifference * (i + 1))), Layers.Under1);
+                    parent.room.camera.Draw(textures.whitecircle, parent.body.pos, color * (transparencyPercent / 100f), scale * (1f - (singleScaleDifference * (i + 1))), drawLayer);
                 }
             }
         }
