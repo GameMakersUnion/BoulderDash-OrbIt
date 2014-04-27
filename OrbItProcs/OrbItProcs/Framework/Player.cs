@@ -157,9 +157,10 @@ namespace OrbItProcs
                 float dist = 200;
                 float x = dist * (float)Math.Cos(angle);
                 float y = dist * (float)Math.Sin(angle);
-                Vector2 spawnPos = new Vector2(room.worldWidth / 2, room.worldHeight / 2) - new Vector2(x, y);
+                Vector2 spawnPos = new Vector2((room.worldWidth / 4) * i - (room.worldWidth / 8), room.worldHeight - 200);// -new Vector2(x, y);
                 Node node = def.CreateClone(room);
                 node.body.pos = spawnPos;
+                
                 node.name = "player" + p.ColorName;
                 node.SetColor(p.pColor);
                 //node.addComponent(comp.shooter, true);
@@ -169,6 +170,7 @@ namespace OrbItProcs
                 room.playerGroup.IncludeEntity(node);
                 node.meta.healthBar = Meta.HealthBarMode.Bar;
                 node.OnSpawn();
+                node.body.velocity = Vector2.Zero;
             }
         }
 

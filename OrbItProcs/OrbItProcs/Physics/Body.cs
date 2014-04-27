@@ -227,7 +227,7 @@ namespace OrbItProcs
         public textures texture
         {
             get { return _texture; }
-            set { _texture = value; }
+            set { _texture = value; radius = radius; }
         }
         [Info(UserLevel.Never)]
         public bool PolenterHack

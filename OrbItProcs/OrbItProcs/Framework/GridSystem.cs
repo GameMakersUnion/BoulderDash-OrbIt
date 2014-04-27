@@ -10,10 +10,10 @@ using System.Diagnostics;
 namespace OrbItProcs {
     public class GridSystem {
         public Room room;
-        public Vector2 position { get 
-        {
-            return room.camera.pos - new Vector2((float)gridWidth / 2, (float)gridHeight / 2); 
-        } }
+        public Vector2 position;
+        //{
+        //    return room.camera.pos - new Vector2((float)gridWidth / 2, (float)gridHeight / 2); 
+        //} }
         public int cellsX { get; set; }
         public int cellsY { get; set; }
 
@@ -41,10 +41,10 @@ namespace OrbItProcs {
                 }
             } 
         }
-        public GridSystem(Room room, int cellsX, int? GridWidth = null, int? GridHeight = null)
+        public GridSystem(Room room, int cellsX, Vector2 position, int? GridWidth = null, int? GridHeight = null)
         {
 
-            //this.position = position ?? Vector2.Zero; 
+            this.position = position;
             this.room = room;
             
             this.gridWidth = GridWidth ?? room.worldWidth;
@@ -159,8 +159,6 @@ namespace OrbItProcs {
                 }
             }
         }
-
-
         //static int largest = 0;
         public void insert(Collider collider)
         {

@@ -8,8 +8,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-
-
 using Point = System.Drawing.Point;
 using Color = Microsoft.Xna.Framework.Color;
 
@@ -55,6 +53,11 @@ namespace OrbItProcs
         fist,
         cage,
         robot1,
+        shoveltip,
+        spiderhead,
+        spiderleg1,
+        rock1,
+        boulder1,
     }
 
     static class Assets
@@ -96,6 +99,11 @@ namespace OrbItProcs
             { textures.cage, content.Load<Texture2D>("Textures/cage"                        )},
             { textures.fist, content.Load<Texture2D>("Textures/fist"                        )},
             { textures.robot1, content.Load<Texture2D>("Textures/Robot1"                    )},
+            { textures.shoveltip, content.Load<Texture2D>("Textures/ShovelTip"              )},
+            { textures.spiderhead, content.Load<Texture2D>("Textures/SpiderHead"            )},
+            { textures.spiderleg1, content.Load<Texture2D>("Textures/SpiderLeg1"            )},
+            { textures.rock1, content.Load<Texture2D>("Textures/RockTexture1"               )},
+            { textures.boulder1, content.Load<Texture2D>("Textures/Bolders"                )},
             };
 
             for (int i = 0; i < 16; i++)

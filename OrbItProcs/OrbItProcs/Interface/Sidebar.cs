@@ -31,7 +31,7 @@ namespace OrbItProcs
         public Room room { get { return game.room; } }
         
         public UserInterface ui;
-        private UserLevel _userLevel = UserLevel.User;
+        private UserLevel _userLevel = UserLevel.Debug;
         public UserLevel userLevel
         {
             get { return _userLevel; }

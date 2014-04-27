@@ -172,8 +172,8 @@ namespace OrbItProcs {
             CollisionSetCircle = new HashSet<Collider>();
             CollisionSetPolygon = new HashSet<Collider>();
             colIterations = 1;
-
-            camera = new ThreadedCamera(this, 1f);
+            
+            
             scheduler = new Scheduler();
             borderColor = Color.Orange;
             collideAction = (c1, c2) =>
@@ -182,13 +182,13 @@ namespace OrbItProcs {
                 if (c1 is Body)
                 {
                     Body b = (Body)c1;
-
+                    
                     if (gridsystemCollision.alreadyVisited.Contains(c2)) return;
                     if (c2 is Body)
                     {
                         Body bb = (Body)c2;
                         //if (!b.exclusionList.Contains(bb)) 
-                        b.CheckCollisionBody(bb);
+                            b.CheckCollisionBody(bb);
                     }
                     else
                     {
@@ -202,7 +202,7 @@ namespace OrbItProcs {
                     {
                         Body bb = (Body)c2;
                         //if (!c1.exclusionList.Contains(bb)) 
-                        c1.CheckCollisionBody(bb);
+                            c1.CheckCollisionBody(bb);
                     }
                     //else
                     //{
@@ -214,10 +214,11 @@ namespace OrbItProcs {
 
 
             // grid System
-            gridsystemAffect = new GridSystem(this, 40);
+            gridsystemAffect = new GridSystem(this, 40, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
             level = new Level(this, 40, 40, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
-            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
-            gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX);
+            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, OrbIt.Width, OrbIt.Height);
+            gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
+            camera = new ThreadedCamera(this, 1f);
             DrawLinks = true;
             WallWidth = 10;
             scheduler = new Scheduler();
@@ -357,6 +358,7 @@ namespace OrbItProcs {
         public bool ColorNodesInReach = false;
         public void Update(GameTime gametime)
         {
+            if (gridsystemAffect.position.Y > 0) { gridsystemAffect.position.Y--; gridsystemCollision.position.Y--; }
             camera.RenderAsync();
             long elapsed = 0;
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
@@ -579,10 +581,10 @@ namespace OrbItProcs {
                 if (n.body.pos.isWithin(gridsystemAffect.position, gridsystemAffect.position + new Vector2(gridsystemAffect.gridWidth, gridsystemAffect.gridHeight)))
                 {
                 n.movement.IntegrateVelocity();
-                
+
                 VMath.Set(ref n.body.force, 0, 0);
                 n.body.torque = 0;
-                }
+            }
             }
             foreach (Manifold m in contacts)
                 m.PositionalCorrection();
@@ -705,12 +707,12 @@ namespace OrbItProcs {
             for (int i = 0; i <= gs.cellsX; i++)
             {
                 int x = i * gs.cellWidth + (int)gs.position.X;
-                gridSystemLines.Add(new Rectangle(x, (int)gs.position.Y, x, worldHeight + (int)gs.position.Y));
+                gridSystemLines.Add(new Rectangle(x, (int)gs.position.Y, x, gs.gridHeight + (int)gs.position.Y));
             }
             for (int i = 0; i <= gs.cellsY; i++)
             {
                 int y = i * gs.cellHeight + (int)gs.position.Y;
-                gridSystemLines.Add(new Rectangle((int)gs.position.X, y, worldWidth + (int)gs.position.X, y));
+                gridSystemLines.Add(new Rectangle((int)gs.position.X, y, gs.gridWidth + (int)gs.position.X, y));
             }
         }
 
@@ -848,10 +850,10 @@ namespace OrbItProcs {
             worldWidth = (int)resizeVect.X;
             worldHeight = (int)resizeVect.Y;
             int newCellsX = worldWidth / gridsystemCollision.cellWidth;
-            gridsystemAffect = new GridSystem(this, newCellsX);
+            gridsystemAffect = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
             level = new Level(this, newCellsX, newCellsX, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
             //roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
-            gridsystemCollision = new GridSystem(this, newCellsX);
+            gridsystemCollision = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
         }
 
         private Vector2 resizeVect; //in the land down under

@@ -165,24 +165,22 @@ namespace OrbItProcs
         public Room room;
         public float zoom;
         
-        public float vWidth;
-        public float vHeight;
+        public float vWidth{get{return OrbIt.Width - CameraOffsetVect.X - OrbIt.ui.sidebar.toolWindow.toolBar.Width;}}
+        public float vHeight { get { return OrbIt.Height - CameraOffsetVect.Y; } }
 
-        public Vector2 virtualTopLeft { get { return pos - new Vector2(vWidth, vHeight) * 1/zoom ; } }
+        public Vector2 virtualTopLeft { get { return pos - new Vector2(room.gridsystemAffect.gridWidth/2, room.gridsystemAffect.gridHeight/ 2) * 1 / zoom; } }// + CameraOffsetVect; } }
         public SpriteBatch batch;
 
         static double x = 0;
         static bool phaseBackgroundColor = false;
         public Vector2 pos;
 
-        public ThreadedCamera(Room room, float zoom = 0.5f, Vector2? pos = null, int? width = null, int? height = null)
+        public ThreadedCamera(Room room, float zoom = 0.5f, Vector2? pos = null)
         {
             this.room = room;
             this.batch = new SpriteBatch(OrbIt.game.GraphicsDevice);
             this.zoom = zoom;
-            this.pos = pos ?? new Vector2(room.worldWidth / 2, room.worldHeight / 2);
-            vWidth = width?? room.worldWidth/2;
-            vHeight = height?? room.worldHeight/2;;
+            this.pos = pos ?? new Vector2(room.gridsystemAffect.position.X + room.gridsystemAffect.gridWidth / 2, room.gridsystemAffect.position.Y + room.gridsystemAffect.gridHeight / 2);
             _worker = new Thread(Work);
             _worker.Name = "CameraThread";
             _worker.IsBackground = true;

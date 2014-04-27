@@ -102,7 +102,7 @@ namespace OrbItProcs
                 if (san != null)
                 {
                     ins.SetValue(san);
-                    Console.WriteLine(ins.parentItem.obj.GetType() + " >> " + ins + " >> " + san.GetType() + " >> " + san);
+                    //Console.WriteLine(ins.parentItem.obj.GetType() + " >> " + ins + " >> " + san.GetType() + " >> " + san);
                     if (GroupSync)
                     {
                         ins.ApplyToAllNodes(activeGroup);
