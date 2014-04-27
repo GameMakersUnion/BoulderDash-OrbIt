@@ -303,25 +303,22 @@ namespace OrbItProcs
 
         private void SpiderBounce()
         {
+            if (parent.body.pos.Y < parent.body.radius)
+            {
+                parent.body.pos.Y = DelegateManager.Triangle(parent.body.pos.Y - parent.body.radius, parent.room.worldHeight) + parent.body.radius;
+                parent.body.velocity.Y *= -1;
+                parent.body.InvokeOnCollisionStay(null);
+            }
+
             int levelLeft = (int)parent.room.gridsystemAffect.position.X, levelTop = (int)parent.room.gridsystemAffect.position.Y;
             int levelwidth = parent.room.gridsystemAffect.gridWidth;
             int levelheight = parent.room.gridsystemAffect.gridHeight;
 
-            if (parent.body.pos.Y < levelTop + parent.body.radius)
-            {
-                if (parent.body.pos.Y > levelTop + parent.body.radius - 100)
-                {
-                    parent.body.velocity.Y *= -1;
-                }
-                else return;
-                //parent.body.pos.Y = DelegateManager.Triangle(parent.body.pos.Y - levelTop - parent.body.radius, levelheight) + parent.body.radius + levelTop;
-                //parent.body.velocity.Y *= -1;
-                //parent.body.InvokeOnCollisionStay(null);
-                //parent.body.pos.Y += 5;
+            
 
 
-            }
-            else if (parent.body.pos.X >= (levelLeft +levelwidth - parent.body.radius))
+            
+            if (parent.body.pos.X >= (levelLeft +levelwidth - parent.body.radius))
             {
                 //float off = parent.body.pos.X - (levelwidth - parent.body.radius);
                 //parent.body.pos.X = (levelwidth - parent.body.radius - off) % parent.room.worldWidth;
@@ -338,10 +335,22 @@ namespace OrbItProcs
                 parent.body.velocity.X *= -1;
                 parent.body.InvokeOnCollisionStay(null);
             }
+            else if (parent.body.pos.Y < levelTop + parent.body.radius)
+            {
+                if (parent.body.pos.Y > levelTop + parent.body.radius - 100)
+                {
+                    parent.body.velocity.Y *= -1;
+                }
+                else return;
+                //parent.body.pos.Y = DelegateManager.Triangle(parent.body.pos.Y - levelTop - parent.body.radius, levelheight) + parent.body.radius + levelTop;
+                //parent.body.velocity.Y *= -1;
+                //parent.body.InvokeOnCollisionStay(null);
+                //parent.body.pos.Y += 5;
+            }
             else if (parent.body.pos.Y >= (levelTop + levelheight - parent.body.radius))
             {
                 parent.OnDeath(null);
-                
+
             }
             
         }

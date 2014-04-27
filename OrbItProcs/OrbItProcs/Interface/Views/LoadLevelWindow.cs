@@ -108,13 +108,14 @@ namespace OrbItProcs
             LevelSave levelSave = (LevelSave)item.obj;
             LoadLevel(levelSave);
         }
-
+        Vector2 v;
         public void LoadLevel(LevelSave levelSave)
         {
             Room room = OrbIt.game.mainRoom;
             //room.worldWidth = levelSave.levelWidth;
             //room.worldHeight = levelSave.levelHeight;
-            room.resize(new Vector2(levelSave.levelWidth, levelSave.levelHeight));
+            v = new Vector2(levelSave.levelWidth, levelSave.levelHeight);
+            room.resize(v, true);
             room.waitTimeCounter = 0;
             if (!levelSaves.ContainsKey(levelSave))
             {
@@ -148,6 +149,7 @@ namespace OrbItProcs
             {
                 wallGroup.DiscludeEntity(n);
             }
+
             foreach (Node n in incomingNodes)
             {
                 wallGroup.IncludeEntity(n);
@@ -170,11 +172,33 @@ namespace OrbItProcs
                 }
             }
         }
-
+        
+        public void finalizeLevelLoad()
+        {
+            //HashSet<Node> saved = new HashSet<Node>();
+            //foreach (Node n in wallGroup.entities.ToList())
+            //{
+            //    wallGroup.DiscludeEntity(n);
+            //    saved.Add(n);
+            //}
+            //wallGroup.IncludeEntity(holder);
+            Node holder = Node.ContructLineWall(sidebar.room, new Vector2(0, sidebar.room.worldHeight - OrbIt.Height), new Vector2(sidebar.room.worldWidth, sidebar.room.worldHeight - OrbIt.Height), 20);
+            sidebar.room.boulderize(delegate
+            {
+                wallGroup.DiscludeEntity(holder);
+               //foreach (Node n in saved)
+               //{
+               //    wallGroup.IncludeEntity(n);
+               //}
+                sidebar.room.resize(v);
+                foreach (var n in sidebar.room.masterGroup.fullSet)
+                {
+                    n.body.velocity = Vector2.Zero;
+                }
+            }); 
+        }
         public void CloseWindow()
         {
-            
-
             UserInterface.GameInputDisabled = false;
             manager.Remove(tomShaneSidebar);
             //under.Visible = true;
@@ -185,6 +209,7 @@ namespace OrbItProcs
             {
                 n.collision.UpdateCollisionSet();
             }
+            finalizeLevelLoad();
         }
 
     }

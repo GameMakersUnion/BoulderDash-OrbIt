@@ -361,11 +361,20 @@ namespace OrbItProcs {
 
         public float scrollRate = 0.5f;
         public bool skipOutsideGrid = true;
-        public bool scroll = false;
+        public bool scroll = true;
         public int waitTime = 5000;
         public int waitTimeCounter = 0;
+        public bool drawCage = true;
         public void Update(GameTime gametime)
         {
+            int heightCounter = OrbIt.Height / 2;
+            while (drawCage && heightCounter < worldHeight - OrbIt.Height)
+            {
+                camera.Draw(textures.cage, new Vector2(worldWidth / 2, heightCounter), Color.White, 1f, Layers.Over5);
+                heightCounter += OrbIt.Height;
+            }
+
+            FloodFill.boulderFountain();
             if (scroll)
             {
                 if (waitTimeCounter < waitTime)
@@ -387,6 +396,7 @@ namespace OrbItProcs {
 
             //game.processManager.Update();
             int counter = 0;
+            camera.Draw(textures.endLight, new Vector2(0, 0), Color.White, .5f, Layers.Over4, center: false);
             do
             {
                 camera.Draw(textures.ridgesL, new Vector2(0, counter), Color.DarkGray, .5f, Layers.Under4, center: false);
@@ -873,22 +883,38 @@ namespace OrbItProcs {
             };
             return spawnNode(userP);
         }
-        internal void resize(Vector2 vector2)
+
+        bool fillWithGrid = false;
+        internal void resize(Vector2 vector2, bool fillWithGrid = false)
         {
             resizeVect = vector2;
             resizeRoomSignal = true;
+            this.fillWithGrid = fillWithGrid;
         }
         private void triggerResizeRoom()
         {
             worldWidth = (int)resizeVect.X;
             worldHeight = (int)resizeVect.Y;
             int newCellsX = worldWidth / gridsystemCollision.cellWidth;
-            gridsystemAffect = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
+            int gridHeight = fillWithGrid ? worldHeight : OrbIt.Height;
+            gridsystemAffect = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - gridHeight), worldWidth, gridHeight);
             level = new Level(this, newCellsX, newCellsX, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
             //roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
-            gridsystemCollision = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
+            gridsystemCollision = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - gridHeight), worldWidth, gridHeight);
+            fillWithGrid = false;
         }
 
         private Vector2 resizeVect; //in the land down under
+        internal void boulderize(Action afterFilling)
+        {
+            int heightCounter = OrbIt.Height/2;
+
+            FloodFill.afterFilling += afterFilling;
+            while (heightCounter < worldHeight - OrbIt.Height)
+            {
+                FloodFill.startFill(new Vector2(worldWidth / 2, heightCounter));
+                heightCounter += OrbIt.Height;
+            }
+        }
     }
 }
