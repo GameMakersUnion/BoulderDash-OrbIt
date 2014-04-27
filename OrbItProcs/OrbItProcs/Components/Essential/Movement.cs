@@ -254,15 +254,15 @@ namespace OrbItProcs
 
         public void wallBounce()
         {
+            if (OrbIt.gameMode == "SpiderDiggers")
+            {
+                 SpiderBounce();
+                 return;
+            }
             //if (room.PropertiesDict["wallBounce"])
             //float levelwidth = room.game...;
             int levelwidth = parent.room.worldWidth;
             int levelheight = parent.room.worldHeight;
-
-            if (parent.body.pos.X < 0)
-            {
-
-            }
 
             if (parent.body.pos.X >= (levelwidth - parent.body.radius))
             {
@@ -301,6 +301,44 @@ namespace OrbItProcs
             
         }
 
+        private void SpiderBounce()
+        {
+            int levelLeft = 0, levelTop = 0;
+            int levelwidth = parent.room.gridsystemAffect.gridWidth;
+            int levelheight = parent.room.gridsystemAffect.gridHeight;
+
+            if (parent.body.pos.X >= (levelwidth - parent.body.radius))
+            {
+                //float off = parent.body.pos.X - (levelwidth - parent.body.radius);
+                //parent.body.pos.X = (levelwidth - parent.body.radius - off) % parent.room.worldWidth;
+                parent.body.pos.X = DelegateManager.Triangle(parent.body.pos.X, levelwidth - (int)parent.body.radius)+ levelLeft;
+                parent.body.velocity.X *= -1;
+                parent.body.InvokeOnCollisionStay(null); //todo: find out why we needed null, fix this
+
+            }
+            if (parent.body.pos.X < levelLeft + parent.body.radius)
+            {
+                //float off = parent.body.radius - parent.body.pos.X;
+                //parent.body.pos.X = (parent.body.radius + off) % parent.room.worldWidth;
+                parent.body.pos.X = DelegateManager.Triangle(parent.body.pos.X - parent.body.radius, levelwidth) + parent.body.radius + levelLeft;
+                parent.body.velocity.X *= -1;
+                parent.body.InvokeOnCollisionStay(null);
+            }
+            if (parent.body.pos.Y >= (levelheight - parent.body.radius))
+            {
+                //float off = parent.body.pos.Y - (levelheight - parent.body.radius);
+                //parent.body.pos.Y = (levelheight - parent.body.radius - off) % parent.room.worldHeight;
+                parent.body.pos.Y = DelegateManager.Triangle(parent.body.pos.Y, levelheight - (int)parent.body.radius) + levelTop;
+                parent.body.velocity.Y *= -1;
+                parent.body.InvokeOnCollisionStay(null);
+            }
+            if (parent.body.pos.Y < levelTop + parent.body.radius)
+            {
+                parent.OnDeath(null);
+
+            }
+        }
+
         public void halt()
         {
             //if (room.PropertiesDict["wallBounce"])
@@ -337,7 +375,7 @@ namespace OrbItProcs
 
         }
 
-
+        
         public void screenWrap()
         {
             //if (room.PropertiesDict["wallBounce"])

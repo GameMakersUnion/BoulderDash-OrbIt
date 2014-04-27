@@ -60,6 +60,8 @@ namespace OrbItProcs
         boulder1,
         gradient1,
         gradient2,
+        ridgesR,
+        ridgesL,
     }
 
     static class Assets
@@ -108,6 +110,8 @@ namespace OrbItProcs
             { textures.boulder1, content.Load<Texture2D>("Textures/Bolders"                )},
             { textures.gradient1, content.Load<Texture2D>("Textures/gradient"                )},
             { textures.gradient2, content.Load<Texture2D>("Textures/gradient2"                )},
+            { textures.ridgesL, content.Load<Texture2D>("Textures/RidgesL"                )},
+            { textures.ridgesR, content.Load<Texture2D>("Textures/RidgesR"                )},
             };
 
             for (int i = 0; i < 16; i++)

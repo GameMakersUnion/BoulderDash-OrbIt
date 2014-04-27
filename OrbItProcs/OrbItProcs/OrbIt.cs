@@ -181,7 +181,7 @@ namespace OrbItProcs
             //Sup Tom.
             base.Initialize();
             //Get Roomy
-            mainRoom = new Room(this, Width, Height);//*8); //change to height
+            mainRoom = new Room(this, Width, Height*8);//*8); //change to height
             tempRoom = new Room(this, 200, 200);
             tempRoom.borderColor = Color.Red;
             room = mainRoom;
@@ -218,6 +218,7 @@ namespace OrbItProcs
         }
         Window test;
         public resolutions preferredWindowed;
+        public static string gameMode = "wpp[";
 
         private void RoomPanel(Room room)
         {

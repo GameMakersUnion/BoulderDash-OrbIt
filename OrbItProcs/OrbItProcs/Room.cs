@@ -215,9 +215,11 @@ namespace OrbItProcs {
 
             // grid System
             gridsystemAffect = new GridSystem(this, 40, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
+            gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
+            //gridsystemAffect = new GridSystem(this, 40, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
             level = new Level(this, 40, 40, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
             roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, OrbIt.Width, OrbIt.Height);
-            gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
+            //gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
             camera = new ThreadedCamera(this, 1f);
             DrawLinks = true;
             WallWidth = 10;
@@ -358,7 +360,7 @@ namespace OrbItProcs {
         public bool ColorNodesInReach = false;
         public void Update(GameTime gametime)
         {
-            //if (gridsystemAffect.position.Y > 0) { gridsystemAffect.position.Y--; gridsystemCollision.position.Y--; }
+            if (gridsystemAffect.position.Y > 0) { gridsystemAffect.position.Y--; gridsystemCollision.position.Y--; }
             camera.RenderAsync();
             long elapsed = 0;
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
@@ -367,8 +369,14 @@ namespace OrbItProcs {
             gridSystemLines = new List<Rectangle>();
 
             //game.processManager.Update();
-
-            HashSet<Node> toDelete = new HashSet<Node>();
+            int counter = 0;
+            do
+            {
+                camera.Draw(textures.ridgesL, new Vector2(0, counter), Color.DarkGray, .5f, Layers.Under4, center: false);
+                camera.Draw(textures.ridgesR, new Vector2((this.worldWidth - Assets.textureDict[textures.ridgesL].Width * .5f), counter), Color.DarkGray, .5f, Layers.Under4, center: false);
+                counter += Assets.textureDict[textures.ridgesL].Height / 2;
+            } while (counter < worldHeight);
+                HashSet<Node> toDelete = new HashSet<Node>();
             if (affectAlgorithm == 1)//OLD for testing
             {
                 gridsystemAffect.clear();
