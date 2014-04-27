@@ -10,6 +10,10 @@ using System.Diagnostics;
 namespace OrbItProcs {
     public class GridSystem {
         public Room room;
+        public Vector2 position { get 
+        {
+            return room.camera.pos - new Vector2((float)gridWidth / 2, (float)gridHeight / 2); 
+        } }
         public int cellsX { get; set; }
         public int cellsY { get; set; }
 
@@ -18,8 +22,8 @@ namespace OrbItProcs {
         public int gridWidth { get; set; }
         public int gridHeight { get; set; }
 
-        private int _cellReach;
-        public int cellReach { get { return _cellReach; } set { if (value < 1) return; _cellReach = value; } }
+        //private int _cellReach;
+        //public int cellReach { get { return _cellReach; } set { if (value < 1) return; _cellReach = value; } }
 
         public List<Collider>[,] grid;
         public HashSet<Collider> alreadyVisited;
@@ -37,23 +41,17 @@ namespace OrbItProcs {
                 }
             } 
         }
-
-        public GridSystem() 
+        public GridSystem(Room room, int cellsX, int? GridWidth = null, int? GridHeight = null)
         {
-            //room = OrbIt.game.room;
-            //alreadyVisited = new HashSet<Collider>();
-            //GenerateAllReachOffsetsPerCoord(300);
-        }
 
-        public GridSystem(Room room, int cellsX, int cellReach = 4): this()
-        {
+            //this.position = position ?? Vector2.Zero; 
             this.room = room;
             
-            this.gridWidth = room.worldWidth;
-            this.gridHeight = room.worldHeight;
+            this.gridWidth = GridWidth ?? room.worldWidth;
+            this.gridHeight = GridHeight ?? room.worldHeight;
             this.cellsX = cellsX;
             
-            this.cellReach = cellReach;
+            //this.cellReach = cellReach;
             cellWidth = gridWidth / cellsX;
             cellHeight = cellWidth;
             this.cellsY = gridHeight / cellHeight;
@@ -91,7 +89,7 @@ namespace OrbItProcs {
 
             //Stopwatch stopwatch = new Stopwatch();
             //stopwatch.Start();
-            int generateReach = room.worldWidth / 3;
+            int generateReach = gridWidth / 3;
             //GenerateAllReachOffsetsPerCoord(generateReach); //takes a shitload of time.. but only for the temproom?
             //stopwatch.Stop();
             //string taken = stopwatch.Elapsed.ToString();
@@ -111,20 +109,44 @@ namespace OrbItProcs {
 
         public IndexArray<IndexArray<Collider>> retrieveBucketBags(Collider collider)
         {
-            int x = (int)collider.pos.X / cellWidth;
-            int y = (int)collider.pos.Y / cellHeight;
+            int effectiveX = (int)(collider.pos.X - position.X);
+            int effectiveY = (int)(collider.pos.Y - position.Y);
+
+            if (effectiveX < 0 || effectiveY < 0) return null;
+            int x = effectiveX / cellWidth;
+            int y = effectiveY / cellHeight;
+
             if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return null;
             return bucketBags[x][y];
         }
-        public void insertToBuckets(Collider collider)
+        public void insertToBuckets(Collider collider, bool forceIntoGrid = false)
         {
-            int x = (int)collider.pos.X / cellWidth;
-            int y = (int)collider.pos.Y / cellHeight;
+            int effectiveX = (int)(collider.pos.X - position.X);
+            int effectiveY = (int)(collider.pos.Y - position.Y);
+
+            int x = effectiveX / cellWidth;
+            int y = effectiveY / cellHeight;
             //if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return;
-            if (x < 0) x = 0;
-            else if (x >= cellsX) x = cellsX - 1;
-            if (y < 0) y = 0;
-            else if (y >= cellsY) y = cellsY - 1;
+            if (x < 0)
+            {
+                if (forceIntoGrid) x = 0;
+                else return;
+            }
+            else if (x >= cellsX)
+            {
+                if (forceIntoGrid) x = cellsX - 1;
+                else return;
+            }
+            if (y < 0)
+            {
+                if (forceIntoGrid) y = 0;
+                else return;
+            }
+            else if (y >= cellsY)
+            {
+                if (forceIntoGrid) y = cellsY - 1;
+                else return;
+            }
             arrayGrid[x][y].AddItem(collider);
         }
         public void clearBuckets()
@@ -210,8 +232,12 @@ namespace OrbItProcs {
         }
         public void retrieveOffsetArraysCollision(Collider collider, Action<Collider, Collider> action, float distance)
         {
-            int x = (int)collider.pos.X / cellWidth;
-            int y = (int)collider.pos.Y / cellHeight;
+
+            int effectiveX = (int)(collider.pos.X - position.X);
+            int effectiveY = (int)(collider.pos.Y - position.Y);
+
+            int x = effectiveX / cellWidth;
+            int y = effectiveY / cellHeight;
             if (x < 0 || x > cellsX || y < 0 || y > cellsY) return;
             int findcount = FindCount(distance);
             int lastIndex;
@@ -236,8 +262,10 @@ namespace OrbItProcs {
 
         public void retrieveOffsetArraysAffect(Collider collider, Action<Collider, Collider> action, float distance)
         {
-            int x = (int)collider.pos.X / cellWidth;
-            int y = (int)collider.pos.Y / cellHeight;
+            int effectiveX = (int)(collider.pos.X - position.X);
+            int effectiveY = (int)(collider.pos.Y - position.Y);
+            int x = effectiveX / cellWidth;
+            int y = effectiveY / cellHeight;
             if (x < 0 || x > cellsX || y < 0 || y > cellsY) return;
             int findcount = FindCount(distance);
             int lastIndex;
@@ -521,7 +549,8 @@ namespace OrbItProcs {
         {
             //CountArray<Node>[,] nodes;
 
-            if (reach == -1) reach = cellReach;
+            //if (reach == -1) reach = cellReach;
+            if (reach == -1) reach = 5;
             List<Collider> returnList = new List<Collider>();
             Tuple<int, int> indexs = getIndexs(collider);
             int x = indexs.Item1;

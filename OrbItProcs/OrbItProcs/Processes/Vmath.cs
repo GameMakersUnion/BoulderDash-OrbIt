@@ -52,6 +52,11 @@ namespace OrbItProcs
         {
             v.X = x; v.Y = y;
         }
+
+        public static bool isWithin(this Vector2 v, Vector2 TopLeft, Vector2 BottomRight)
+        {
+            return (v.X >= TopLeft.X && v.Y >= TopLeft.Y && v.X <= BottomRight.X && v.Y <= BottomRight.Y);
+        }
         public static Vector2 Rotate(this Vector2 v, float radians)
         {
             double c = Math.Cos(radians);

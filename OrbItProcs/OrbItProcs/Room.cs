@@ -158,12 +158,21 @@ namespace OrbItProcs {
 
         public Room()
         {
+            
+        }
+        Action<Collider, Collider> collideAction;
+
+        
+        public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true) : this()
+        {
+            this.worldWidth = worldWidth;
+            this.worldHeight = worldHeight;
             groupHashes = new ObservableHashSet<string>();
             nodeHashes = new ObservableHashSet<string>();
             CollisionSetCircle = new HashSet<Collider>();
             CollisionSetPolygon = new HashSet<Collider>();
             colIterations = 1;
-            
+
             camera = new ThreadedCamera(this, 1f);
             scheduler = new Scheduler();
             borderColor = Color.Orange;
@@ -173,13 +182,13 @@ namespace OrbItProcs {
                 if (c1 is Body)
                 {
                     Body b = (Body)c1;
-                    
+
                     if (gridsystemCollision.alreadyVisited.Contains(c2)) return;
                     if (c2 is Body)
                     {
                         Body bb = (Body)c2;
                         //if (!b.exclusionList.Contains(bb)) 
-                            b.CheckCollisionBody(bb);
+                        b.CheckCollisionBody(bb);
                     }
                     else
                     {
@@ -193,7 +202,7 @@ namespace OrbItProcs {
                     {
                         Body bb = (Body)c2;
                         //if (!c1.exclusionList.Contains(bb)) 
-                            c1.CheckCollisionBody(bb);
+                        c1.CheckCollisionBody(bb);
                     }
                     //else
                     //{
@@ -201,21 +210,14 @@ namespace OrbItProcs {
                     //}
                 }
             };
-        }
-        Action<Collider, Collider> collideAction;
-
-        
-        public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true) : this()
-        {
             //this.mapzoom = 2f;
-            this.worldWidth = worldWidth;
-            this.worldHeight = worldHeight;
+
 
             // grid System
-            gridsystemAffect = new GridSystem(this, 40, 5);
+            gridsystemAffect = new GridSystem(this, 40);
             level = new Level(this, 40, 40, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
             roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
-            gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX, 20);
+            gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX);
             DrawLinks = true;
             WallWidth = 10;
             scheduler = new Scheduler();
@@ -574,10 +576,13 @@ namespace OrbItProcs {
             }
             foreach (Node n in masterGroup.fullSet.ToList())
             {
+                if (n.body.pos.isWithin(gridsystemAffect.position, gridsystemAffect.position + new Vector2(gridsystemAffect.gridWidth, gridsystemAffect.gridHeight)))
+                {
                 n.movement.IntegrateVelocity();
-
+                
                 VMath.Set(ref n.body.force, 0, 0);
                 n.body.torque = 0;
+                }
             }
             foreach (Manifold m in contacts)
                 m.PositionalCorrection();
@@ -699,13 +704,13 @@ namespace OrbItProcs {
         {
             for (int i = 0; i <= gs.cellsX; i++)
             {
-                int x = i * gs.cellWidth;
-                gridSystemLines.Add(new Rectangle(x, 0, x, worldHeight));
+                int x = i * gs.cellWidth + (int)gs.position.X;
+                gridSystemLines.Add(new Rectangle(x, (int)gs.position.Y, x, worldHeight + (int)gs.position.Y));
             }
             for (int i = 0; i <= gs.cellsY; i++)
             {
-                int y = i * gs.cellHeight;
-                gridSystemLines.Add(new Rectangle(0, y, worldWidth, y));
+                int y = i * gs.cellHeight + (int)gs.position.Y;
+                gridSystemLines.Add(new Rectangle((int)gs.position.X, y, worldWidth + (int)gs.position.X, y));
             }
         }
 
@@ -843,10 +848,10 @@ namespace OrbItProcs {
             worldWidth = (int)resizeVect.X;
             worldHeight = (int)resizeVect.Y;
             int newCellsX = worldWidth / gridsystemCollision.cellWidth;
-            gridsystemAffect = new GridSystem(this, newCellsX, 5);
+            gridsystemAffect = new GridSystem(this, newCellsX);
             level = new Level(this, newCellsX, newCellsX, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
             //roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
-            gridsystemCollision = new GridSystem(this, newCellsX, 20);
+            gridsystemCollision = new GridSystem(this, newCellsX);
         }
 
         private Vector2 resizeVect; //in the land down under

@@ -281,7 +281,7 @@ namespace OrbItProcs {
             //    System.Console.WriteLine("X2");
 
             MousePos = new Vector2(mouseState.X, mouseState.Y) - OrbIt.game.mainRoom.camera.CameraOffsetVect;
-            WorldMousePos = (MousePos / room.zoom) + room.camera.pos;
+            WorldMousePos = (MousePos / room.zoom) + room.camera.virtualTopLeft;
             //ignore mouse clicks outside window
             if (!OrbIt.isFullScreen)
             {

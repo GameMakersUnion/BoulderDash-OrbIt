@@ -162,22 +162,27 @@ namespace OrbItProcs
         public float backgroundHue = 180;
         public int CameraOffset { get { return _CameraOffset; } set { _CameraOffset = value; CameraOffsetVect = new Vector2(value + 10, 30); } }
         public Vector2 CameraOffsetVect = new Vector2(0, 0);
-
         public Room room;
         public float zoom;
-        public Vector2 pos;
+        
+        public float vWidth;
+        public float vHeight;
+
+        public Vector2 virtualTopLeft { get { return pos - new Vector2(vWidth, vHeight) * 1/zoom ; } }
         public SpriteBatch batch;
 
         static double x = 0;
         static bool phaseBackgroundColor = false;
+        public Vector2 pos;
 
-        public ThreadedCamera(Room room, float zoom = 0.5f, Vector2? pos = null)
+        public ThreadedCamera(Room room, float zoom = 0.5f, Vector2? pos = null, int? width = null, int? height = null)
         {
             this.room = room;
             this.batch = new SpriteBatch(OrbIt.game.GraphicsDevice);
             this.zoom = zoom;
-            this.pos = pos ?? Vector2.Zero;
-
+            this.pos = pos ?? new Vector2(room.worldWidth / 2, room.worldHeight / 2);
+            vWidth = width?? room.worldWidth/2;
+            vHeight = height?? room.worldHeight/2;;
             _worker = new Thread(Work);
             _worker.Name = "CameraThread";
             _worker.IsBackground = true;
@@ -212,16 +217,16 @@ namespace OrbItProcs
 
         public void AddPermanentDraw(textures texture, Vector2 position, Color color, float scale, float rotation, int life)
         {
-            addPerm.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, 0, life));
+            addPerm.Enqueue(new DrawCommand(texture, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, 0, life));
         }
         public void AddPermanentDraw(textures texture, Vector2 position, Color color, Vector2 scalevect, float rotation, int life)
         {
-            addPerm.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scalevect * zoom, SpriteEffects.None, 0, life));
+            addPerm.Enqueue(new DrawCommand(texture, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scalevect * zoom, SpriteEffects.None, 0, life));
         }
 
         public void removePermanentDraw(textures texture, Vector2 position, Color color, float scale)
         {
-            removePerm.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, 0));
+            removePerm.Enqueue(new DrawCommand(texture, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, null, color, 0, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, 0));
         }
 
         private void Work(object obj)
@@ -296,32 +301,32 @@ namespace OrbItProcs
         }
         public void Draw(textures texture, Vector2 position, Color color, float scale, Layers Layer, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, null, color, 0, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
         public void Draw(Texture2D texture, Vector2 position, Color color, float scale, Layers Layer, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, 0, new Vector2(texture.Width/2, texture.Height/2), scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, null, color, 0, new Vector2(texture.Width/2, texture.Height/2), scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
 
         public void Draw(textures texture, Vector2 position, Color color, float scale, float rotation, Layers Layer, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
         public void Draw(Texture2D texture, Vector2 position, Color color, float scale, float rotation, Layers Layer, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, new Vector2(texture.Width / 2, texture.Height / 2), scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, null, color, rotation, new Vector2(texture.Width / 2, texture.Height / 2), scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
         public void Draw(textures texture, Vector2 position, Color color, Vector2 scalevect, float rotation, Layers Layer, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scalevect * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, null, color, rotation, Assets.textureCenters[texture], scalevect * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
         public void Draw(textures texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, Layers Layer, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, sourceRect, color, rotation, origin, scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, sourceRect, color, rotation, origin, scale * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
         public void Draw(textures texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, Vector2 scalevect, Layers Layer, ShaderPack? shaderPack = null)
         {
-            nextFrame.Enqueue(new DrawCommand(texture, ((position - pos) * zoom) + CameraOffsetVect, sourceRect, color, rotation, origin, scalevect * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
+            nextFrame.Enqueue(new DrawCommand(texture, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, sourceRect, color, rotation, origin, scalevect * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
 
 
