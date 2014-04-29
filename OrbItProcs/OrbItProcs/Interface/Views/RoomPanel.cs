@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,8 +19,8 @@ namespace OrbItProcs
         {
  	        panel.Refresh();
             OrbIt.updateTemp = true;
-        } 
-
+        }
+        
         public RoomPanel(Sidebar sidebar, Control parent, Room room, bool interactive, int Top = 0, int Padding = 5)
         {
             this.Padding = Padding;
@@ -42,7 +43,10 @@ namespace OrbItProcs
             parent.Add(panel);
             panel.ClientArea.Draw += (s, e) =>
             {
+
                 e.Renderer.Draw(room.roomRenderTarget, e.Rectangle, Color.White);
+
+
             };
 
             refreshAction = refresh;

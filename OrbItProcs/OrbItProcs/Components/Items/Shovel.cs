@@ -83,6 +83,7 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "The modePlayers allows you to specific which players the shovel can pick up. You can shovel yourself, other players, both, or none.")]
         public ModePlayers modePlayers { get; set; }
+
         public Shovel() : this(null) { }
         public Shovel(Node parent)
         {
@@ -228,6 +229,7 @@ namespace OrbItProcs
                             n.collision.active = true;
                             shovelLink.targets.Remove(n);
                             n.body.ClearExclusionChecks();
+                            n.body.color = n.body.permaColor;
                         }
                         shovelLink.formation.UpdateFormation();
                         shovelLink.active = false;
@@ -245,6 +247,7 @@ namespace OrbItProcs
                         Action<Collider, Collider> del = delegate(Collider c1, Collider c2){
                             if (count >= maxShovelCapacity) return;
                             if (c2.parent.dataStore.ContainsKey("shovelnodeparent"))return;
+                            if (c2.parent.HasComp<Diode>()) return;
                             if (modePlayers != ModePlayers.GrabBoth && c2.parent.IsPlayer)
                             {
                                 if (modePlayers == ModePlayers.GrabNone) return;
@@ -256,6 +259,7 @@ namespace OrbItProcs
                             {
                                 count++;
                                 capturedNodes.Add(c2.parent);
+                                c2.parent.body.color = parent.body.color;
                             }
                         };
                         shovelNode.room.gridsystemAffect.retrieveOffsetArraysAffect(shovelNode.body, del, scoopReach * 2);

@@ -65,6 +65,16 @@ namespace OrbItProcs
         ridgesL,
         boulderShine,
         endLight,
+        black,
+        controller,
+        Logo,
+        Player1_1,
+        Player1_2,
+        Player2_2,
+        Player3_1,
+        Player3_2,
+        Player4_1,
+        Player4_2,
     }
 
     static class Assets
@@ -288,6 +298,16 @@ namespace OrbItProcs
             { textures.ridgesR, content.Load<Texture2D>("Textures/RidgesR"                )},
             { textures.boulderShine, content.Load<Texture2D>("Textures/boulderShine"                )},
             { textures.endLight, content.Load<Texture2D>("Textures/endLight"                )},
+            { textures.black, content.Load<Texture2D>("Textures/GUI/black"               )},
+            { textures.controller, content.Load<Texture2D>("Textures/GUI/controller"               )},
+            { textures.Logo, content.Load<Texture2D>("Textures/GUI/Logo"               )},
+            { textures.Player1_2, content.Load<Texture2D>("Textures/GUI/Player1_2"               )},
+            { textures.Player1_1, content.Load<Texture2D>("Textures/GUI/Player1_1"               )},
+            { textures.Player2_2, content.Load<Texture2D>("Textures/GUI/Player2_2"               )},
+            { textures.Player3_1, content.Load<Texture2D>("Textures/GUI/Player3_1"               )},
+            { textures.Player3_2, content.Load<Texture2D>("Textures/GUI/Player3_2"               )},
+            { textures.Player4_1, content.Load<Texture2D>("Textures/GUI/Player4_1"               )},
+            { textures.Player4_2, content.Load<Texture2D>("Textures/GUI/Player4_2"               )},
             
             };
 

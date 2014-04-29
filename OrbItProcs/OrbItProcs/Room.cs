@@ -367,7 +367,7 @@ namespace OrbItProcs {
 
         public float scrollRate = 0.5f;
         public bool skipOutsideGrid = true;
-        public bool scroll = true;
+        public bool scroll = true; //#tojam
         public int waitTime = 5000;
         public int waitTimeCounter = 0;
         public bool drawCage = true;
@@ -389,7 +389,7 @@ namespace OrbItProcs {
             }
 
             FloodFill.boulderFountain();
-            if (scroll)
+            if (scroll && gameStarted)
             {
                 if (waitTimeCounter < waitTime)
                 {
@@ -399,6 +399,7 @@ namespace OrbItProcs {
                 {
                     if (gridsystemAffect.position.Y > 0) { gridsystemAffect.position.Y -= scrollRate; gridsystemCollision.position.Y -= scrollRate; }
                     camera.pos = gridsystemCollision.position + new Vector2(gridsystemCollision.gridWidth / 2, gridsystemCollision.gridHeight / 2);
+//#tojam
                 }
             }
             camera.RenderAsync();
@@ -460,7 +461,7 @@ namespace OrbItProcs {
             }
             if (AfterIteration != null) AfterIteration(this, null);
 
-            addGridSystemLines(gridsystemCollision);
+            //addGridSystemLines(gridsystemCollision);
             //addLevelLines(level);
             addBorderLines();
             //colorEffectedNodes();
@@ -672,6 +673,7 @@ namespace OrbItProcs {
             }
             foreach(var n in masterGroup.fullSet.ToList()) //todo:wtfuck threading?
             {
+                //tojam
                 if (skipOutsideGrid && (n.body.pos.Y < gridsystemAffect.position.Y || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
                 //Node n = (Node)o;
                 n.Draw();
@@ -924,6 +926,7 @@ namespace OrbItProcs {
 
         private Vector2 resizeVect; //in the land down under
         public bool loading;
+        public bool gameStarted = false;
         internal void boulderize(Action afterFilling)
         {
             int heightCounter = OrbIt.Height/2;

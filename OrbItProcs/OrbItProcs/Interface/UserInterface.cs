@@ -83,7 +83,7 @@ namespace OrbItProcs {
                 }
                 else
                 {
-                    OrbIt.game.room.camera.CameraOffset = 0;
+                    //OrbIt.game.room.camera.CameraOffset = 0;
                 }
             } 
         }
@@ -147,11 +147,20 @@ namespace OrbItProcs {
             {
                 sidebar.master.Visible = false;
                 sidebar.master.Enabled = false;
+                foreach(Button b in ToolWindow.buttons.Values)
+                {
+                    b.Visible = false;
+                }
+
             }
             else
             {
                 sidebar.master.Visible = true;
                 sidebar.master.Enabled = true;
+                foreach (Button b in ToolWindow.buttons.Values)
+                {
+                    b.Visible = true;
+                }
             }
             SidebarActive = !SidebarActive;
         }

@@ -212,7 +212,7 @@ namespace OrbItProcs
             ui.keyManager.addProcessKeyAction("removeall", KeyCodes.Delete, OnPress: () => ui.sidebar.btnRemoveAllNodes_Click(null, null));
 
             MainWindow.TransparentClientArea = true;
-
+            ui.ToggleSidebar();
             //Testing.sawtoothTest();
 
             LoadLevelWindow.StaticLevel("Test.xml");
@@ -264,11 +264,39 @@ namespace OrbItProcs
                 OnUpdate.Invoke();
         }
 
-
+        bool Title = true;
+        bool cont = false;
+        
         protected override void DrawScene(GameTime gameTime)
         {
             Manager.Renderer.Begin(BlendingMode.Default);
-            Manager.Renderer.Draw(room.roomRenderTarget, new Microsoft.Xna.Framework.Rectangle(0, 0, Width, Height), Color.White);
+            Microsoft.Xna.Framework.Rectangle frame = new Microsoft.Xna.Framework.Rectangle(0, 0, Width, Height);
+
+            if (!room.gameStarted && Title)
+            {
+                Manager.Renderer.Draw(Assets.textureDict[textures.black], frame, Color.White);
+                Manager.Renderer.Draw(Assets.textureDict[textures.Logo], frame, Color.White);
+                if (GamePad.GetState(Controller.intToPlayerIndex[1]).IsConnected) Manager.Renderer.Draw(Assets.textureDict[textures.Player1_2], frame, Color.White);
+                if (GamePad.GetState(Controller.intToPlayerIndex[2]).IsConnected) Manager.Renderer.Draw(Assets.textureDict[textures.Player2_2], frame, Color.White);
+                if (GamePad.GetState(Controller.intToPlayerIndex[3]).IsConnected) Manager.Renderer.Draw(Assets.textureDict[textures.Player3_2], frame, Color.White);
+                if (GamePad.GetState(Controller.intToPlayerIndex[4]).IsConnected) Manager.Renderer.Draw(Assets.textureDict[textures.Player4_2], frame, Color.White);
+                if (GamePad.GetState(Controller.intToPlayerIndex[1]).Buttons.Start == ButtonState.Pressed) {Title = false;cont =true;}
+                if (GamePad.GetState(Controller.intToPlayerIndex[2]).Buttons.Start == ButtonState.Pressed) {Title = false;cont =true;}
+                if (GamePad.GetState(Controller.intToPlayerIndex[3]).Buttons.Start == ButtonState.Pressed) {Title = false;cont =true;}
+                if (GamePad.GetState(Controller.intToPlayerIndex[4]).Buttons.Start == ButtonState.Pressed) { Title = false; cont = true; }
+            }
+            else if (!room.gameStarted)
+            {
+                Manager.Renderer.Draw(Assets.textureDict[textures.controller], frame, Color.White);
+                if (GamePad.GetState(Controller.intToPlayerIndex[1]).Buttons.A == ButtonState.Pressed) { room.gameStarted = true; }
+                if (GamePad.GetState(Controller.intToPlayerIndex[2]).Buttons.A == ButtonState.Pressed) { room.gameStarted = true; }
+                if (GamePad.GetState(Controller.intToPlayerIndex[3]).Buttons.A == ButtonState.Pressed) { room.gameStarted = true; }
+                if (GamePad.GetState(Controller.intToPlayerIndex[4]).Buttons.A == ButtonState.Pressed) { room.gameStarted = true; }
+            
+            } else{
+                Manager.Renderer.Draw(room.roomRenderTarget, new Microsoft.Xna.Framework.Rectangle(0, 0, Width, Height), Color.White);
+            }
+            
             Manager.Renderer.End();
         }
         protected override void Draw(GameTime gameTime)

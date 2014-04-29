@@ -19,7 +19,7 @@ namespace OrbItProcs
         public int LeftPadding = 5;
         public Dictionary<string, Texture2D> buttonTextures = new Dictionary<string,Texture2D>();
   //      Texture2D[,] textures;
-        public Dictionary<string, Button> buttons = new Dictionary<string, Button>();
+        public static Dictionary<string, Button> buttons = new Dictionary<string, Button>();
         
         public ToolWindow(Sidebar sidebar)
         {
