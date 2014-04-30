@@ -84,6 +84,9 @@ namespace OrbItProcs
         [Info(UserLevel.User, "The modePlayers allows you to specific which players the shovel can pick up. You can shovel yourself, other players, both, or none.")]
         public ModePlayers modePlayers { get; set; }
 
+        public bool physicsThrow { get; set; }
+        public float throwSpeed { get; set; }
+
         public Shovel() : this(null) { }
         public Shovel(Node parent)
         {
@@ -94,8 +97,10 @@ namespace OrbItProcs
             scoopReach = 60;
             maxShovelCapacity = 5;
             modePlayers = ModePlayers.GrabNone;
-            modeShovelPosition = ModeShovelPosition.PhysicsBased;
+            modeShovelPosition = ModeShovelPosition.AbsoluteStickPos;
             physicsDivisor = 8;
+            physicsThrow = false;
+            throwSpeed = 12;
 
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>()
             {
@@ -168,7 +173,7 @@ namespace OrbItProcs
         bool shovelling = false;
         float deadzone = 0.5f;
         public float physicsDivisor { get; set; }
-        Func<Collider, Collider, bool> exclusionDel;
+        //Func<Collider, Collider, bool> exclusionDel;
         float compoundedMass = 0f;
         public override void PlayerControl(Controller controller)
         {
@@ -195,7 +200,6 @@ namespace OrbItProcs
                     if (len < 1)
                     {
                         shovelNode.body.velocity = Vector2.Zero;
-
                     }
                     else
                     {
@@ -225,7 +229,17 @@ namespace OrbItProcs
                         shovelling = false;
                         foreach(Node n in shovelLink.targets.ToList())
                         {
-                            n.body.velocity = n.body.effvelocity;
+                            if (physicsThrow)
+                            {
+                                n.body.velocity = n.body.effvelocity;
+                            }
+                            else
+                            {
+                                Vector2 stickdirection = newstickpos;
+                                VMath.NormalizeSafe(ref stickdirection);
+
+                                n.body.velocity = stickdirection * throwSpeed;
+                            }
                             n.collision.active = true;
                             shovelLink.targets.Remove(n);
                             n.body.ClearExclusionChecks();
