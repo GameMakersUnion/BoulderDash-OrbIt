@@ -172,7 +172,7 @@ namespace OrbItProcs
                 node.OnSpawn();
                 node.body.velocity = Vector2.Zero;
                 node.body.mass = 0.1f;
-                node.movement.maxVelocity.value = 2f;
+                node.movement.maxVelocity.value = 6f;
                 node.addComponent<Shovel>(true);
                 node.OnSpawn();
                 node.texture = textures.robot1;

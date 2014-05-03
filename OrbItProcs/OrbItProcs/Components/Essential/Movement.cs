@@ -300,7 +300,7 @@ namespace OrbItProcs
 
             
         }
-
+        public static bool WinSpiderGame = false;
         private void SpiderBounce()
         {
             if (parent.body.pos.Y < parent.body.radius)
@@ -310,7 +310,14 @@ namespace OrbItProcs
                 parent.body.InvokeOnCollisionStay(null);
                 if (parent.IsPlayer)
                 {
-                    LoadLevelWindow.StaticLevel(parent.room.levelList.Dequeue());
+                    try
+                    {
+                        LoadLevelWindow.StaticLevel(parent.room.levelList.Dequeue());
+                    }
+                    catch(Exception e)
+                    {
+                        WinSpiderGame = true;
+                    }
                 }
                 else
                 {

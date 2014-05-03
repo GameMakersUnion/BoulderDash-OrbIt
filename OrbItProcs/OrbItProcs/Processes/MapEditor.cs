@@ -12,7 +12,7 @@ namespace OrbItProcs
         public List<Vector2> verts;
         public MapEditor() : base()
         {
-            Draw += DrawEditor;
+            OnDraw += DrawEditor;
             verts = new List<Vector2>();
             addProcessKeyAction("placevertice", KeyCodes.LeftClick, OnPress: PlaceVertice);
             addProcessKeyAction("FinishWall", KeyCodes.Enter, OnPress: FinishWall);

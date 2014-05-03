@@ -88,23 +88,25 @@ namespace OrbItProcs
         {
             return new Vector2(v.X * (float)d, v.Y * (float)d);
         }
-
+        //todo: test resize and redirect
+        public static Vector2 Resize(Vector2 v, float length)
+        {
+            return v *= length / v.Length(); 
+        }
+        public static Vector2 Redirect(Vector2 source, Vector2 direction)
+        {
+            return direction *= source.Length() / direction.Length();
+            //return Resize(direction, source.Length());
+        }
         public static void NormalizeSafe(ref Vector2 v)
         {
-            //v.Normalize();
-            //return;
             if (v.X != 0 || v.Y != 0)
             {
-                //v.Normalize();
-                //return;
                 float len = v.Length();
                 if (len == 0) return;
                 float invLen = 1.0f / len;
                 v.X *= invLen;
                 v.Y *= invLen;
-                //Console.WriteLine("A: x:{0} , y:{1}", v.X, v.Y);
-                //float newlen = v.Length();
-                //if (newlen != 1f) Console.WriteLine("NEWLEN: {0}", newlen);
             }
         }
 
@@ -112,10 +114,6 @@ namespace OrbItProcs
         {
             return Math.Abs(a - b) <= EPSILON;
         }
-        //public static double RandDouble(double l, double h)
-        //{
-        //    
-        //}
         public static bool BiasGreaterThan(double a, double b)
         {
             double k_biasRelative = 0.95;

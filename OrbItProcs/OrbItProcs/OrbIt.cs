@@ -98,6 +98,7 @@ namespace OrbItProcs
     {
         public static OrbIt game;
         public static UserInterface ui;
+        public const int fucksGiven =  0;
         public ProcessManager processManager { get; set; }
 
         public SharpSerializer serializer = new SharpSerializer();

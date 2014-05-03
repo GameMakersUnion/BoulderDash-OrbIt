@@ -18,17 +18,20 @@ namespace OrbItProcs
         public Room room { get { return OrbIt.game.room; } }
         public bool active { get; set; }
 
-        public event Action Update;
-        public event Action Draw;
-        public event ProcessMethod Create;
-        public event ProcessMethod Destroy;
-        public event Action<Node,Node> Collision;
+        public event Action OnUpdate;
+        public event Action OnDraw;
+        public event ProcessMethod OnCreate;
+        public event ProcessMethod OnDestroy;
+        public event Action<Node,Node> OnCollision;
         //public event ProcessMethod OutOfBounds;
 
         public Dictionary<KeyAction, KeyBundle> processKeyActions = new Dictionary<KeyAction,KeyBundle>();
 
-        public List<Process> procs = new List<Process>();
+        //removing these for now; processes can have child processes later
+        //public List<Process> procs = new List<Process>();
         //Process parentprocess; //I bet you a coke -Dante (resolved section 33.32 of the skeet bible studies)
+
+
         public Dictionary<dynamic, dynamic> pargs;
         public Dictionary<dynamic, ProcessMethod> pmethods;
 
@@ -37,7 +40,6 @@ namespace OrbItProcs
             // / // / //
             active = true;
         }
-
         protected void addProcessKeyAction(String name, KeyCodes k1, KeyCodes? k2 = null, KeyCodes? k3 = null, Action OnPress = null, Action OnRelease = null, Action OnHold = null)
         {
             KeyBundle keyBundle;
@@ -52,61 +54,23 @@ namespace OrbItProcs
 
             processKeyActions.Add(keyAction, keyBundle);
         }
+        //the process manager will invoke OnUpdate and OnDraw
+        public virtual void Update() { }
+        public virtual void Draw() { }
 
-        public virtual void OnUpdate()
+        public void InvokeOnCollision(Node me, Node it)
         {
-            foreach (Process p in procs)
-            {
-                if (p.active)
-                {
-                    p.OnUpdate();
-                }
-            }
-            if (Update != null) 
-                Update();
+            if (OnCollision != null) OnCollision(me, it);
         }
-        public void OnDraw()
+        public void InvokeOnCreate()
         {
-            foreach (Process p in procs)
-            {
-                if (p.active)
-                {
-                    p.OnDraw();
-                }
-            }
-            if (Draw != null) Draw();
+            if (OnCreate != null) OnCreate(pargs);
         }
-
-        public void Add(Process p)
+        public void InvokeOnDestroy()
         {
-            procs.Add(p);
-            p.OnCreate();
+            if (OnDestroy != null) OnDestroy(pargs);
         }
-
-        public void OnCreate()
-        {
-            if (Create != null) Create(pargs);
-        }
-
-        public void OnCollision(Node me, Node it)
-        {
-            if (Collision != null)
-            {
-                Collision(me, it);
-            }
-        }
-
-        public void Remove(Process p)
-        {
-            p.OnDestroy();
-            procs.Remove(p);
-        }
-
-        public void OnDestroy()
-        {
-            if (Destroy != null) Destroy(pargs);
-        }
-
+        /*
         public bool DetectKeyPress(Keys key)
         {
             return UserInterface.keybState.IsKeyDown(key) && UserInterface.oldKeyBState.IsKeyUp(key);
@@ -119,6 +83,17 @@ namespace OrbItProcs
         {
             return UserInterface.keybState.IsKeyDown(key);
         }
+        public void Add(Process p)
+        {
+            procs.Add(p);
+            p.OnCreate();
+        }
+        public void Remove(Process p)
+        {
+            p.OnDestroy();
+            procs.Remove(p);
+        }
+        */
         
     }
 }

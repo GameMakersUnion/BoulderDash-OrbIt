@@ -224,7 +224,8 @@ namespace OrbItProcs
 
                 if (shovelling)
                 {
-                    if (fc.newGamePadState.Triggers.Right < deadzone && fc.oldGamePadState.Triggers.Right > deadzone)
+                    //if (fc.newGamePadState.Triggers.Right < deadzone && fc.oldGamePadState.Triggers.Right > deadzone)
+                    if (CheckForButtonRelease(fc))
                     {
                         shovelling = false;
                         foreach(Node n in shovelLink.targets.ToList())
@@ -253,7 +254,8 @@ namespace OrbItProcs
                 }
                 else
                 {
-                    if (fc.newGamePadState.Triggers.Right > deadzone && fc.oldGamePadState.Triggers.Right < deadzone)
+                    //if (fc.newGamePadState.Triggers.Right > deadzone && fc.oldGamePadState.Triggers.Right < deadzone)
+                    if (CheckForButtonPress(fc))
                     {
                         shovelling = true;
                         ObservableHashSet<Node> capturedNodes = new ObservableHashSet<Node>();
@@ -292,6 +294,16 @@ namespace OrbItProcs
 
             }
 
+        }
+        bool CheckForButtonPress(FullController fc)
+        {
+            return (fc.newGamePadState.Triggers.Right > deadzone && fc.oldGamePadState.Triggers.Right < deadzone)
+                || (fc.newGamePadState.Buttons.RightStick == ButtonState.Pressed && fc.oldGamePadState.Buttons.RightStick == ButtonState.Released);
+        }
+        bool CheckForButtonRelease(FullController fc)
+        {
+            return (fc.oldGamePadState.Triggers.Right > deadzone && fc.newGamePadState.Triggers.Right < deadzone)
+                || (fc.oldGamePadState.Buttons.RightStick == ButtonState.Pressed && fc.newGamePadState.Buttons.RightStick == ButtonState.Released);
         }
         public override void Draw()
         {

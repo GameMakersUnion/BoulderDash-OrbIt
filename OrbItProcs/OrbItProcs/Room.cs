@@ -365,7 +365,7 @@ namespace OrbItProcs {
         public int affectAlgorithm = 2;
         public bool ColorNodesInReach = false;
 
-        public float scrollRate = 0.5f;
+        public float scrollRate = 1.5f;//0.5f;
         public bool skipOutsideGrid = true;
         public bool scroll = true; //#tojam
         public int waitTime = 5000;
@@ -674,7 +674,7 @@ namespace OrbItProcs {
             foreach(var n in masterGroup.fullSet.ToList()) //todo:wtfuck threading?
             {
                 //tojam
-                if (skipOutsideGrid && (n.body.pos.Y < gridsystemAffect.position.Y || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
+                if (skipOutsideGrid && (n.body.pos.Y < (gridsystemAffect.position.Y - gridsystemAffect.gridHeight /2) || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
                 //Node n = (Node)o;
                 n.Draw();
             }

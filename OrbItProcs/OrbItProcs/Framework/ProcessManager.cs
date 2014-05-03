@@ -43,7 +43,6 @@ namespace OrbItProcs
 
     public class ProcessManager
     {
-
         public Dictionary<proc, Process> processDict { get; set; }
         public Process activeInputProcess;
         public HashSet<Process> processes;
@@ -106,7 +105,7 @@ namespace OrbItProcs
 
             toolbar.AddButton("forceSpawn", enableKeyBinds(proc.directedspawn), "Spawn nodes in a direction using left and right click.");
             toolbar.AddButton("forcePush", enableKeyBinds(proc.floodFill), "Take a hike.");
-            toolbar.AddButton("control", enableKeyBinds(proc.diodeSpawner), "Spawn things in a confusing way");//Utils.notImplementedException,"Take a hike.");
+            toolbar.AddButton("control", enableKeyBinds(proc.diodeSpawner), "Spawn things in a confusing way");
             toolbar.AddButton("static", enableKeyBinds(proc.gridspawn), "Spawn nodes statically to the grid.");
             toolbar.AddButton("resize", enableKeyBinds(proc.roomResize), "Change the size of the Room");
             
@@ -136,9 +135,6 @@ namespace OrbItProcs
             }
             if (activeInputProcess != null)
                 activeInputProcess.OnUpdate();*/
-
-
-
         }
         
         public void Draw()
@@ -147,7 +143,7 @@ namespace OrbItProcs
             {
                 if (p.active)
                 {
-                    p.OnDraw();
+                    p.Draw();
                 }
             }
         }
@@ -162,14 +158,14 @@ namespace OrbItProcs
                 if (isIn) return;
 
                 processes.Add(p);
-                p.OnCreate();
+                p.InvokeOnCreate();
             }
             //System.Console.WriteLine("heyo pre-emptive strike");
         }
 
         public void Remove(Process p)
         {
-            p.OnDestroy();
+            p.InvokeOnDestroy();
             processes.Remove(p);
         }
     }

@@ -13,7 +13,7 @@ namespace OrbItProcs
         public float velocity = 40f;
         public CameraControl()
         {
-            Update += update;
+            OnUpdate += update;
         }
 
         public void update()

@@ -261,7 +261,6 @@ namespace OrbItProcs
             room.loading = true;
             room.boulderize(delegate
             {
-
                 room.wallGroup.DiscludeEntity(holder);
                //foreach (Node n in saved)
                //{

@@ -969,11 +969,11 @@ namespace OrbItProcs
             foreach(var p in PermanentProcesses)
             {
                 //if (p.active)
-                    p.OnUpdate();
+                    p.Update();
             }
             if (TemporaryProcess != null) // && TemporaryProcess.active
             {
-                TemporaryProcess.OnUpdate();
+                TemporaryProcess.Update();
             }
 
             oldKeyboardState = newKeyboardState;
