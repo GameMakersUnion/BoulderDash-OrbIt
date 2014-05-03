@@ -365,7 +365,7 @@ namespace OrbItProcs {
         public int affectAlgorithm = 2;
         public bool ColorNodesInReach = false;
 
-        public float scrollRate = 1.5f;//0.5f;
+        public float scrollRate = 0.5f;//0.5f;
         public bool skipOutsideGrid = true;
         public bool scroll = true; //#tojam
         public int waitTime = 5000;
