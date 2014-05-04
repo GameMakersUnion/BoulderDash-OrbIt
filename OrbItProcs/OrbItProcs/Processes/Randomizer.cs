@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework;
 using TomShane.Neoforce.Controls;
 using OrbItProcs;
 using Microsoft.Xna.Framework.Input;
+using System.Reflection;
+using System.Collections;
 
 
 namespace OrbItProcs
@@ -24,7 +26,8 @@ namespace OrbItProcs
             //LeftClick += CreateNode;
             //KeyEvent += KeyEv;
             //RightClick += SpawnFromQueue;
-            addProcessKeyAction("createrandom", KeyCodes.LeftClick, OnPress: CreateNode);
+            addProcessKeyAction("spawnsemrandom", KeyCodes.LeftClick, OnPress: SpawnSemiRandom);
+            addProcessKeyAction("spawnfullyrandom", KeyCodes.MiddleClick, OnPress: SpawnFullyRandom);
             addProcessKeyAction("plus", KeyCodes.OemPlus, OnPress: Plus);
             addProcessKeyAction("minus", KeyCodes.OemMinus, OnPress: Minus);
             addProcessKeyAction("spawnfromqueue", KeyCodes.RightClick, OnPress: SpawnFromQueue);
@@ -63,8 +66,24 @@ namespace OrbItProcs
         }
         */
 
+        public void SpawnSemiRandom()
+        {
+            CreateNode();
+        }
+        public void SpawnFullyRandom()
+        {
+            Node n = CreateNode();
+            if (n != null)
+            {
+                foreach (var c in n.comps.Values)
+                {
+                    RandomizeObject(c);
+                }
+            }
+        }
 
-        public void CreateNode()
+
+        public Node CreateNode()
         {
 
             Vector2 pos = UserInterface.WorldMousePos;
@@ -123,13 +142,63 @@ namespace OrbItProcs
                 //p.AddGroup(g.Name, g);
                 OrbIt.ui.sidebar.UpdateGroupComboBoxes();
                 savedGroups.Enqueue(g);
-
             }
+            return n;
             //ListBox lst = Game1.ui.sidebar.lstMain;
             //Node newNode = (Node)lst.Items.ElementAt(lst.ItemIndex + 1);
             //System.Console.WriteLine(newNode.name);
         }
 
+        public static void RandomizeObject(object o)
+        {
+            Type type = o.GetType();
+            //properties
+            List<PropertyInfo> propertyInfos;
+            propertyInfos = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
+            foreach(var pinfo in propertyInfos)
+            {
+                FPInfo fpinfo = new FPInfo(pinfo);
+                ApplyFPInfo(o, fpinfo);
+            }
+            //fields
+            List<FieldInfo> fieldInfos;
+            fieldInfos = type.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
+            foreach (var finfo in fieldInfos)
+            {
+                FPInfo fpinfo = new FPInfo(finfo);
+                ApplyFPInfo(o, fpinfo);
+            }
+        }
+        private static void ApplyFPInfo(object o, FPInfo info)
+        {
+            Type ftype = info.FPType;
+            Random rand = Utils.random;
+
+            if (ftype == typeof(int))
+            {
+                int a = rand.Next(500);
+                info.SetValue(a, o);
+            }
+            else if (ftype == typeof(float))
+            {
+                if (info.Name.Contains("scale")) return;
+                float a = (float)rand.NextDouble() * 500f;
+                info.SetValue(a, o);
+            }
+            else if (ftype == typeof(bool))
+            {
+                int a = rand.Next(100);
+                bool b = a % 2 == 0 ? true : false;
+                info.SetValue(b, o);
+            }
+            else if (ftype.IsEnum)
+            {
+                if (ftype == typeof(mtypes)) return;
+                ArrayList list = new ArrayList(Enum.GetValues(ftype));
+                int a = rand.Next(list.Count);
+                info.SetValue(list[a], o);
+            }
+        }
 
     }
 }

@@ -560,7 +560,8 @@ namespace OrbItProcs
             {
                 component.active = false;
                 Link link = (Link)item.parentItem.parentItem.obj;
-                link.components.Remove(component as ILinkable);
+                //link.components.Remove(component as ILinkable);
+                link.components.Remove(component.GetType());
                 item.RemoveChildren();
                 InsBox.Items.Remove(item);
             }

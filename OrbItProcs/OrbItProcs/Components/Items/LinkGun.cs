@@ -108,7 +108,7 @@ namespace OrbItProcs
 
             shootLink = new Link(parent, shootNode, grav);
             shootLink.AddLinkComponent(spring, true);
-            
+            //
             Gravity attachGrav = new Gravity();
             attachGrav.active = true;
             attachGrav.multiplier = 100;
@@ -119,9 +119,14 @@ namespace OrbItProcs
             aTether.mindist = 100;
             aTether.activated = true;
 
+            Spring aSpring = new Spring();
+            aSpring.springMode = Spring.mode.PushAndPull;
+
             attachedNodesQueue = new Queue<Node>();
             attachLink = new Link(parent, new HashSet<Node>(), attachGrav);
-            attachLink.AddLinkComponent(aTether, true);
+            //attachLink.AddLinkComponent(aTether, true);
+            attachLink.AddLinkComponent(aSpring, true);
+
 
             shootNode.body.OnCollisionEnter += (n, other) =>
                 {
@@ -175,7 +180,7 @@ namespace OrbItProcs
                         spring.active = true;
                         shootLink.active = true;
 
-            }
+                    }
                 }
                 else if (state == GunState.extending)
                 {
@@ -206,9 +211,9 @@ namespace OrbItProcs
                         if (attachLink.targets.Contains(n))
                         {
                             attachLink.targets.Remove(n);
-        }
+                        }
                         if (attachedNodesQueue.Count == 0)
-        {
+                        {
                             attachLink.active = false;
                         }
                         attachLink.formation.UpdateFormation();
@@ -218,7 +223,7 @@ namespace OrbItProcs
                 if (fc.newGamePadState.Buttons.LeftShoulder == ButtonState.Pressed && fc.oldGamePadState.Buttons.LeftShoulder == ButtonState.Released)
                 {
                     if (attachedNodesQueue.Count > 0)
-            {
+                    {
                         if (attachedNodesQueue.Count != 0)
                             attachedNodesQueue = new Queue<Node>();
                         if (attachLink.targets.Count != 0)
@@ -228,8 +233,22 @@ namespace OrbItProcs
                     }
                 }
 
+                if (attachLink.active)
+                {
+                    float amountPushed = 1f - fc.newGamePadState.Triggers.Left;
+                    amountPushed = amountPushed * 100 + 50;
+                    if (attachLink.HasComp<Tether>())
+                    {
+                        attachLink.Comp<Tether>().maxdist = (int)amountPushed;
+                        attachLink.Comp<Tether>().mindist = (int)amountPushed;
+                    }
+                    if (attachLink.HasComp<Spring>())
+                    {
+                        attachLink.Comp<Spring>().restdist = (int)amountPushed;
+                    }
+                }
             }
-            }
+        }
         public override void Draw()
         {
             //Color col = Color.White;
