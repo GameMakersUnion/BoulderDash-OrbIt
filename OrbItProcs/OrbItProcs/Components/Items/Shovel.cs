@@ -139,7 +139,7 @@ namespace OrbItProcs
             tether.active = true;
 
             shovelLink = new Link(shovelNode, new HashSet<Node>(), spring);
-            shovelLink.components.Add(tether);
+            shovelLink.AddLinkComponent(tether);
 
             //to keep the shovel in reach for physics based control
             Tether rangeTether = new Tether();

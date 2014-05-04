@@ -54,23 +54,8 @@ namespace OrbItProcs
             } 
         }
         public Room room;
-        //public ILinkable linkComponent { get; set; }
-        //[Polenter.Serialization.ExcludeFromSerialization]
-        public ObservableHashSet<ILinkable> components { get; set; }
-        /*public HashSet<Component> componentsP
-        {
-            get
-            {
-                HashSet<Component> result = new HashSet<Component>();
-                components.ToList().ForEach(w => result.Add((Component)w));
-                return result;
-            }
-            set{
-                HashSet<ILinkable> result = new HashSet<ILinkable>();
-                value.ToList().ForEach(w => result.Add((ILinkable)w));
-                components = result;
-            }
-        }*/
+        //public ObservableHashSet<ILinkable> components { get; set; }
+        public Dictionary<Type, ILinkable> components { get; set; }
 
         public linktype ltype { get; set; }
         public updatetime _UpdateTime = updatetime.SourceUpdate;
@@ -263,7 +248,7 @@ namespace OrbItProcs
         {
             //..
             this.room = OrbIt.game.room;
-            this.components = new ObservableHashSet<ILinkable>();
+            this.components = new Dictionary<Type, ILinkable>();
             this.sources = new ObservableHashSet<Node>();
             this.targets = new ObservableHashSet<Node>();
         }
@@ -272,8 +257,8 @@ namespace OrbItProcs
         public Link(ILinkable linkComponent, formationtype ftype = formationtype.AllToAll)
         {
             this.room = OrbIt.game.room;
-            this.components = new ObservableHashSet<ILinkable>();
-            this.components.Add(linkComponent);
+            this.components = new Dictionary<Type, ILinkable>();
+            this.components[linkComponent.GetType()] = linkComponent;
             this._FormationType = ftype;
             this.formation = new Formation(this, ftype, InitializeFormation: false);
         }
@@ -281,7 +266,7 @@ namespace OrbItProcs
         public Link(Link link, dynamic source, dynamic target)
         {
             this.room = OrbIt.game.room;
-            this.components = new ObservableHashSet<ILinkable>();
+            this.components = new Dictionary<Type, ILinkable>();
 
             this.UpdateTime = link.UpdateTime;
             this.IsEntangled = link.IsEntangled;
@@ -289,7 +274,7 @@ namespace OrbItProcs
             this.AngleInc = link.AngleInc;
             this.DrawTips = link.DrawTips;
 
-            foreach (ILinkable component in link.components)
+            foreach (ILinkable component in link.components.Values)
             {
                 dynamic newComponent = Activator.CreateInstance(component.GetType());
                 Component.CloneComponent((Component)component, newComponent);
@@ -297,7 +282,7 @@ namespace OrbItProcs
                 newComponent.link = this;
                 if (newComponent.GetType().GetProperty("activated") != null) newComponent.activated = true;
 
-                this.components.Add(newComponent);
+                this.components[newComponent.GetType()] = newComponent;
             }
 
             Initialize(source, target, null, link.formation);
@@ -312,12 +297,12 @@ namespace OrbItProcs
             
             if (components == null)
             {
-                this.components = new ObservableHashSet<ILinkable>();
+                this.components = new Dictionary<Type, ILinkable>();
             }
             if (linkComponent != null)
             {
                 linkComponent.link = this;
-                this.components.Add(linkComponent);
+                this.components[linkComponent.GetType()] = linkComponent;
             }
 
 
@@ -559,8 +544,18 @@ namespace OrbItProcs
         public void AddLinkComponent(ILinkable linkC, bool active = true)
         {
             linkC.link = this;
+            components[linkC.GetType()] = linkC;
             linkC.active = active;
-            components.Add(linkC);
+        }
+
+        public T Comp<T>() where T : ILinkable
+        {
+            if (components.ContainsKey(typeof(T))) return (T)components[typeof(T)];
+            return default(T);
+        }
+        public bool HasComp<T>() where T : ILinkable
+        {
+            return components.ContainsKey(typeof(T));
         }
 
         public void UpdateNodeToNode()
@@ -569,7 +564,7 @@ namespace OrbItProcs
 
             if (IsEntangled)
             {
-                foreach (ILinkable link in components)
+                foreach (ILinkable link in components.Values)
                 {
                     link.parent = sourceNode;
                     link.AffectOther(targetNode);
@@ -579,7 +574,7 @@ namespace OrbItProcs
             }
             else
             {
-                foreach (ILinkable link in components)
+                foreach (ILinkable link in components.Values)
                 {
                     link.parent = sourceNode;
                     link.AffectOther(targetNode);
@@ -593,7 +588,7 @@ namespace OrbItProcs
             if (IsEntangled)
             {
                 if (!formation.AffectionSets.ContainsKey(source)) return;
-                foreach (ILinkable link in components)
+                foreach (ILinkable link in components.Values)
                 {
                     foreach (Node target in formation.AffectionSets[source])
                     {
@@ -610,7 +605,7 @@ namespace OrbItProcs
             {
                 if (!formation.AffectionSets.ContainsKey(source)) return;
 
-                foreach (ILinkable link in components)
+                foreach (ILinkable link in components.Values)
                 {
                     link.parent = source;
                     foreach (Node target in formation.AffectionSets[source])
@@ -621,71 +616,6 @@ namespace OrbItProcs
                 }
             }
         }
-        //unused for now
-        /*
-        public void UpdateNodeToGroup()
-        {
-            if (!active) return;
-            if (IsEntangled)
-            {
-                foreach (ILinkable link in components)
-                {
-                    foreach (Node target in formation.AffectionSets[sourceNode])
-                    {
-                        link.parent = sourceNode;
-                        link.AffectOther(target);
-                        link.parent = target;
-                        link.AffectOther(sourceNode);
-                    }
-                }
-            }
-            else
-            {
-                foreach (ILinkable link in components)
-                {
-                    link.parent = sourceNode;
-                    foreach (Node target in formation.AffectionSets[sourceNode])
-                    {
-                        link.AffectOther(target);
-                    }
-                }
-            }
-        }
-        */
-        //unused for now
-        /*
-        public void UpdateGroupToGroup()
-        {
-            if (!active) return;
-            if (IsEntangled)
-            {
-                //every sourcenode will affect every target, and vise-versa.. way too much going on
-                foreach (Node source in sources)
-                {
-                    foreach (Node target in formation.AffectionSets[source])
-                    {
-                        linkComponent.parent = source;
-                        linkComponent.AffectOther(target);
-                        linkComponent.parent = target;
-                        linkComponent.AffectOther(source);
-                    }
-                }
-            }
-            else
-            {
-                //every sourcenode will affect every target... probably too much going on.
-                foreach (Node source in sources)
-                {
-                    linkComponent.parent = source;
-                    foreach (Node target in formation.AffectionSets[source])
-                    {
-                        linkComponent.AffectOther(target);
-                    }
-                }
-            }
-            
-        }
-        */
         public void GenericDraw()
         {
             if (!active) return;
@@ -720,8 +650,13 @@ namespace OrbItProcs
                 foreach (Node target in formation.AffectionSets[source])
                 {
                     anglestep += AngleInc;
-                    
-                    Color color1 = ColorChanger.getColorFromHSV(anglestep % 360);
+
+
+                    Color color1 = Color.White;
+                    if (sourceNode != null && sourceNode.IsPlayer)
+                    {
+                        color1 = sourceNode.body.color;
+                    }
 
                     Vector2 diff = target.body.pos - source.body.pos;
                     Vector2 perp = new Vector2(diff.Y, -diff.X);
@@ -751,7 +686,7 @@ namespace OrbItProcs
             string result = "[L]";
             if (components != null)
             {
-                foreach(ILinkable link in components)
+                foreach(ILinkable link in components.Values)
                 {
                     Component c = (Component)link;
                     result += c.GetType().Name.Substring(0, 4) + "|";
