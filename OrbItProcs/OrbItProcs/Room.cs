@@ -366,7 +366,7 @@ namespace OrbItProcs {
         public bool ColorNodesInReach = false;
 
         public float scrollRate = 1.5f;//0.5f;
-        public bool skipOutsideGrid = true;
+        public bool skipOutsideGrid = false;
         public bool scroll = false; //#tojam
         public int waitTime = 5000;
         public int waitTimeCounter = 0;
@@ -427,9 +427,9 @@ namespace OrbItProcs {
 
             foreach(Node n in masterGroup.fullSet.ToList())
             {
-                //if (skipOutsideGrid && (n.body.pos.Y < gridsystemAffect.position.Y || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
+                if (skipOutsideGrid && (n.body.pos.Y < gridsystemAffect.position.Y || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
 
-                if (!n.body.pos.isWithin(gridsystemAffect.position, gridsystemAffect.position + new Vector2(gridsystemAffect.gridWidth, gridsystemAffect.gridHeight))) continue;
+                if (skipOutsideGrid && !n.body.pos.isWithin(gridsystemAffect.position, gridsystemAffect.position + new Vector2(gridsystemAffect.gridWidth, gridsystemAffect.gridHeight))) continue;
                 
                 if (n.active)
                 {
@@ -656,7 +656,7 @@ namespace OrbItProcs {
             GroupSelectDraw();
             foreach(var n in masterGroup.fullSet.ToList()) //todo:wtfuck threading?
             {
-                //tojam
+                
                 if (skipOutsideGrid && (n.body.pos.Y < (gridsystemAffect.position.Y - gridsystemAffect.gridHeight /2) || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
                 //Node n = (Node)o;
                 n.Draw();
