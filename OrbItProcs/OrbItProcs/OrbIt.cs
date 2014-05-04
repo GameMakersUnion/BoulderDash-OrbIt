@@ -67,6 +67,7 @@ namespace OrbItProcs
         obstructor,
         diode,
         queuer,
+        linkgun,
         //middle,
         //slow,
         //siphon,
@@ -98,7 +99,6 @@ namespace OrbItProcs
     {
         public static OrbIt game;
         public static UserInterface ui;
-        public const int fucksGiven =  0;
         public ProcessManager processManager { get; set; }
 
         public SharpSerializer serializer = new SharpSerializer();
@@ -182,7 +182,7 @@ namespace OrbItProcs
             //Sup Tom.
             base.Initialize();
             //Get Roomy
-            mainRoom = new Room(this, Width, Height);//*8);//*8); //change to height
+            mainRoom = new Room(this, Width, Height-40);//*8);//*8); //change to height
             tempRoom = new Room(this, 200, 200);
             tempRoom.borderColor = Color.Red;
             room = mainRoom;

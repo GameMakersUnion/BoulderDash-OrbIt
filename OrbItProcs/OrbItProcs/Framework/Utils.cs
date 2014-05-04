@@ -606,7 +606,7 @@ namespace OrbItProcs {
             if (Utils.random.Next(50000) == 0)
             {
                 newNode.body.color = Color.Red;
-                CollisionDelegate evil = null;
+                Action<Node, Node> evil = null;
                 Action<Node> doAfter = delegate(Node n)
                 {
                     n.body.color = Color.Red;

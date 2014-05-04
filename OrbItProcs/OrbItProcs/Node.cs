@@ -33,7 +33,7 @@ namespace OrbItProcs {
         drawOnly,
         on,
     }
-    public delegate void CollisionDelegate(Node source, Node target);
+    //public delegate void CollisionDelegate(Node source, Node target);
    
     public class DataStore : Dictionary<string, dynamic>
     {

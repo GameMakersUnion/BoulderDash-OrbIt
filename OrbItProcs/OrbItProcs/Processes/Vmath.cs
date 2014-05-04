@@ -98,6 +98,18 @@ namespace OrbItProcs
             return direction *= source.Length() / direction.Length();
             //return Resize(direction, source.Length());
         }
+
+        public static Vector2 NormalizeSafe(this Vector2 v)
+        {
+            if (v.X == 0 && v.Y == 0) return v;
+            float len = v.Length();
+            if (len == 0) return v;
+            float invLen = 1.0f / len;
+            v.X *= invLen;
+            v.Y *= invLen;
+            return v;
+        }
+
         public static void NormalizeSafe(ref Vector2 v)
         {
             if (v.X != 0 || v.Y != 0)

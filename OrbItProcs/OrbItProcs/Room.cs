@@ -796,20 +796,6 @@ namespace OrbItProcs {
         {
             addRectangleLines((int)x, (int)y, (int)width, (int)height);
         }
-        public void tether()
-        {
-            Group g1 = masterGroup.FindGroup(OrbIt.ui.sidebar.cbListPicker.SelectedItem());
-            g1.defaultNode.Comp<Tether>().compType = mtypes.affectother | mtypes.draw;
-        }
-
-        public void hide()
-        {
-            //Game1.ui.sidebar.lstComp.Visible = false;
-        }
-        public void show()
-        {
-            //Game1.ui.sidebar.lstComp.Visible = true;
-        }
         public Group findGroupByHash(string value)
         {
             if (masterGroup == null) return null;
