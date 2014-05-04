@@ -27,9 +27,9 @@ namespace OrbItProcs
         public Vector2 accel;
         public float absaccel { get; set; }
         public float friction { get; set; }
-        public CollisionDelegate onCollisionStay;
-        public CollisionDelegate onCollisionEnter;
-        public CollisionDelegate onCollisionExit;
+        public Action<Node, Node> onCollisionStay;
+        public Action<Node, Node> onCollisionEnter;
+        public Action<Node, Node> onCollisionExit;
         
         public static float maxScore = 50000;
         public static int colorChange = 120;

@@ -170,7 +170,7 @@ namespace OrbItProcs
 
         private int _CameraOffset = 0;
         public float backgroundHue = 180;
-        public int CameraOffset { get { return _CameraOffset; } set { _CameraOffset = value; CameraOffsetVect = new Vector2(value + 10, 30); } }
+        public int CameraOffset { get { return _CameraOffset; } set { _CameraOffset = value; CameraOffsetVect = new Vector2(value + 10, 0); } }
         public Vector2 CameraOffsetVect = new Vector2(0, 0);
         public Room room;
         public float zoom;
@@ -190,7 +190,7 @@ namespace OrbItProcs
             this.room = room;
             this.batch = new SpriteBatch(OrbIt.game.GraphicsDevice);
             this.zoom = zoom;
-            this.pos = pos ?? new Vector2(room.gridsystemAffect.position.X + room.gridsystemAffect.gridWidth / 2, room.gridsystemAffect.position.Y + room.gridsystemAffect.gridHeight / 2);
+            this.pos = pos ?? new Vector2(room.gridsystemAffect.position.X + room.gridsystemAffect.gridWidth / 2, 10 + room.gridsystemAffect.position.Y + room.gridsystemAffect.gridHeight / 2);
             _worker = new Thread(Work);
             _worker.Name = "CameraThread";
             _worker.IsBackground = true;

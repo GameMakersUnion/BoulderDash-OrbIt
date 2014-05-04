@@ -30,7 +30,7 @@ namespace OrbItProcs
         public bool active { get { return _active; } 
             set 
             {
-                if (value && !_active)
+                if (value)
                 {
                     if (formation != null)
                     {
@@ -42,7 +42,7 @@ namespace OrbItProcs
                         room.AllActiveLinks.Add(this);
                     }
                 }
-                else if (!value && _active)
+                else
                 {
                     if (room != null)
                     {

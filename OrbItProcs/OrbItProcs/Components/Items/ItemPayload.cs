@@ -22,7 +22,7 @@ namespace OrbItProcs
         [Info(UserLevel.User, "The payload node contains all the components that will be picked up by the colliding player/node.")]
         [CopyNodeProperty]
         public Node payloadNode { get; set; }
-        public CollisionDelegate OnCollision;
+        public Action<Node, Node> OnCollision;
         /// <summary>
         /// If enabled, components picked up will overwrite existing components.
         /// </summary>

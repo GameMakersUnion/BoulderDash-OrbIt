@@ -68,9 +68,9 @@ namespace OrbItProcs
 
         public virtual float radius { get { return shape.radius; } set { shape.radius = value; } }
 
-        public CollisionDelegate OnCollisionEnter;
-        public CollisionDelegate OnCollisionExit;
-        public CollisionDelegate OnCollisionStay;
+        public Action<Node, Node> OnCollisionEnter;
+        public Action<Node, Node> OnCollisionExit;
+        public Action<Node, Node> OnCollisionStay;
         public Action<Node> OnCollisionFirstEnter;
         public Action<Node> OnCollisionAllExit;
 

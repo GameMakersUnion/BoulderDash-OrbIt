@@ -34,7 +34,7 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.User, "The amount of seconds the spike will stun others.")]
         public Toggle<float> stunSeconds { get; set; }
-        public CollisionDelegate collisionAction;
+        public Action<Node, Node> collisionAction;
         public enum DamanageMode
         {
             Players,

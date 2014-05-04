@@ -139,7 +139,7 @@ namespace OrbItProcs
             torchNode.dataStore["magictorchnodeparent"] = parent;
             torchNode.body.pos = parent.body.pos;
 
-            torchNode.ExclusionCheck += (node) => node == parent;
+            torchNode.AffectExclusionCheck += (node) => node == parent;
 
             parent.room.itemGroup.IncludeEntity(torchNode);
             torchNode.OnSpawn();

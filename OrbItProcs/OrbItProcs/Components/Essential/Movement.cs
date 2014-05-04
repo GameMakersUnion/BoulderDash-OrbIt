@@ -49,7 +49,7 @@ namespace OrbItProcs
 
 
 
-        private movemode _mode = movemode.wallbounce;
+        private movemode _mode;
         /// <summary>
         /// How the screen's Limits affect this wall:
         /// Free: the restraints won't affect the wall.
@@ -67,6 +67,7 @@ namespace OrbItProcs
             if (parent != null) this.parent = parent;
             randInitialVel = new Toggle<float>(8f);
             pushable = true;
+            mode = movemode.wallbounce;
         }
         public override void OnSpawn()
         {
@@ -258,8 +259,9 @@ namespace OrbItProcs
                 //float off = parent.body.pos.X - (levelwidth - parent.body.radius);
                 //parent.body.pos.X = (levelwidth - parent.body.radius - off) % parent.room.worldWidth;
                 parent.body.pos.X = DelegateManager.Triangle(parent.body.pos.X, parent.room.worldWidth - (int)parent.body.radius);
-                parent.body.velocity.X *= -1;
-                parent.body.InvokeOnCollisionStay(null); //todo: find out why we needed null, fix this
+                if (parent.body.velocity.X > 0)
+                    parent.body.velocity.X *= -1;
+                //parent.body.InvokeOnCollisionStay(null); //todo: find out why we needed null, fix this
 
             }
             if (parent.body.pos.X < parent.body.radius)
@@ -267,24 +269,27 @@ namespace OrbItProcs
                 //float off = parent.body.radius - parent.body.pos.X;
                 //parent.body.pos.X = (parent.body.radius + off) % parent.room.worldWidth;
                 parent.body.pos.X = DelegateManager.Triangle(parent.body.pos.X - parent.body.radius, parent.room.worldWidth) + parent.body.radius;
-                parent.body.velocity.X *= -1;
-                parent.body.InvokeOnCollisionStay(null);
+                if (parent.body.velocity.X < 0)
+                    parent.body.velocity.X *= -1;
+                //parent.body.InvokeOnCollisionStay(null);
             }
             if (parent.body.pos.Y >= (levelheight - parent.body.radius))
             {
                 //float off = parent.body.pos.Y - (levelheight - parent.body.radius);
                 //parent.body.pos.Y = (levelheight - parent.body.radius - off) % parent.room.worldHeight;
                 parent.body.pos.Y = DelegateManager.Triangle(parent.body.pos.Y, parent.room.worldHeight - (int)parent.body.radius);
-                parent.body.velocity.Y *= -1;
-                parent.body.InvokeOnCollisionStay(null);
+                if (parent.body.velocity.Y > 0)
+                    parent.body.velocity.Y *= -1;
+                //parent.body.InvokeOnCollisionStay(null);
             }
             if (parent.body.pos.Y < parent.body.radius)
             {
                 //float off = parent.body.radius - parent.body.pos.Y;
                 //parent.body.pos.Y = (parent.body.radius + off) % parent.room.worldHeight;
                 parent.body.pos.Y = DelegateManager.Triangle(parent.body.pos.Y - parent.body.radius, parent.room.worldHeight) + parent.body.radius;
-                parent.body.velocity.Y *= -1;
-                parent.body.InvokeOnCollisionStay(null);
+                if (parent.body.velocity.Y < 0)
+                    parent.body.velocity.Y *= -1;
+                //parent.body.InvokeOnCollisionStay(null);
             }
         }
 

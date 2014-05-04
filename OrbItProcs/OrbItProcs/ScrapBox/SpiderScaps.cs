@@ -113,7 +113,7 @@ namespace OrbItProcs.ScrapBox
 
                         n.movement.maxVelocity.value = 30f;
                         n.body.velocity = new Vector2(0, -30);
-                        CollisionDelegate callback = null;
+                        Action<Node, Node> callback = null;
                         callback = delegate(Node n1, Node n2)
                         {
                             n.movement.maxVelocity.value = 2;
@@ -288,7 +288,7 @@ namespace OrbItProcs.ScrapBox
                 {
                     parent.movement.maxVelocity.value = 30f;
                     parent.body.velocity = new Vector2(20 * sign, 0);
-                    CollisionDelegate callback = null;
+                    Action<Node, Node> callback = null;
                     callback = delegate(Node n1, Node n2)
                     {
                         parent.movement.maxVelocity.value = 2;

@@ -253,7 +253,7 @@ namespace OrbItProcs
                 n.SetColor(parent.player.pColor);
             }
             parent.room.spawnNode(n, g: parent.room.bulletGroup);
-            CollisionDelegate bulletHit = (n1, n2) =>
+            Action<Node, Node> bulletHit = (n1, n2) =>
             {
                 Node bullet, them;
                 if (n1 == n)

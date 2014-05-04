@@ -122,7 +122,7 @@ namespace OrbItProcs
             shovelNode.dataStore["shovelnodeparent"] = parent;
             shovelNode.body.pos = parent.body.pos;
 
-            shovelNode.ExclusionCheck += (node) => node == parent;
+            shovelNode.AffectExclusionCheck += (node) => node == parent;
 
             parent.room.itemGroup.IncludeEntity(shovelNode);
             shovelNode.OnSpawn();

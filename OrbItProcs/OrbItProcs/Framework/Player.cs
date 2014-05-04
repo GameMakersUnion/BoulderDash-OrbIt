@@ -192,9 +192,9 @@ namespace OrbItProcs
             node.meta.healthBar = Meta.HealthBarMode.Bar;
             //node.OnSpawn();
             node.body.velocity = Vector2.Zero;
-            node.body.mass = 0.1f;
+            //node.body.mass = 0.1f;
             node.movement.maxVelocity.value = 6f;
-            node.addComponent<Shovel>(true);
+            node.addComponent<LinkGun>(true);
             node.OnSpawn();
             node.texture = textures.robot1;
         }

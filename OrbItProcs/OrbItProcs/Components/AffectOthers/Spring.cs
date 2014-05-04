@@ -65,7 +65,7 @@ namespace OrbItProcs
             multiplier = 100f;
             radius = 800;
             _restdist = 300;
-            _deadzone = new Toggle<int>(100, true);
+            _deadzone = new Toggle<int>(100, false);
         }
         public override void AffectOther(Node other) // called when used as a link
         {
