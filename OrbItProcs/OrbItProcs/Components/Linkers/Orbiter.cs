@@ -56,7 +56,6 @@ namespace OrbItProcs
         {
             orbiterDatas = new Dictionary<Node, OrbiterData>();
             if (parent != null) this.parent = parent;
-            com = comp.orbiter;
             maxRadius = 500;
             maxSpeed = 50;
             speedMult = 1f;

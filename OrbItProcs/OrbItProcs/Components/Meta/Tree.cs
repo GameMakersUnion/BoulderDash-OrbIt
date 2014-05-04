@@ -59,7 +59,6 @@ namespace OrbItProcs
         public Tree(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.tree;
             InitializeLists();
             r1 = Utils.random.Next(255) / 255f;
             g1 = Utils.random.Next(255) / 255f;

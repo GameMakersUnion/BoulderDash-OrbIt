@@ -65,8 +65,6 @@ namespace OrbItProcs
             shaderPack.enabled = 1;
 
             if (parent != null) this.parent = parent;
-            com = comp.shader;
-
             // On creation, shader is enabled
             diffuse = new Toggle<int>(128, false);
         }

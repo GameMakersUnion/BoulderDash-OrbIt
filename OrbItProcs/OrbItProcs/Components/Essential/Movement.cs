@@ -65,7 +65,6 @@ namespace OrbItProcs
         public Movement(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.movement;
             randInitialVel = new Toggle<float>(8f);
             pushable = true;
         }

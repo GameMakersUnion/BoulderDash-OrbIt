@@ -28,7 +28,6 @@ namespace OrbItProcs
         public Transfer(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.transfer;
             radiusScale = 2f;
         }
 

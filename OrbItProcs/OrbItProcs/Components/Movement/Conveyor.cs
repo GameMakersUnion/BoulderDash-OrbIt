@@ -44,7 +44,6 @@ namespace OrbItProcs
         public Conveyor(Node parent)
         {
             this.parent = parent;
-            this.com = comp.conveyor;
             directionMode = DirectionMode.Relative;
             relativeAngle = 0;
             absoluteX = 0;

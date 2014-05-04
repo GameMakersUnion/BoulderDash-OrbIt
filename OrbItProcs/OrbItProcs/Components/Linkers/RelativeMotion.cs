@@ -31,7 +31,6 @@ namespace OrbItProcs
             {
                 this.parent = parent;
             }
-            com = comp.relativemotion;
         }
 
         public override void AffectOther(Node other) // called when used as a link

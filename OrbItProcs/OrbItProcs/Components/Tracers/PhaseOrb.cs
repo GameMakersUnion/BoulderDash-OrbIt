@@ -52,7 +52,6 @@ namespace OrbItProcs
             {
                 this.parent = parent;
             }
-            com = comp.phaseorb; 
             InitializeLists(); 
             fade = new Toggle<int>(phaserLength);
             
