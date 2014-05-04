@@ -154,6 +154,7 @@
     <Compile Include="Components\Drawers\Runer.cs" />
     <Compile Include="Components\Essential\Meta.cs" />
     <Compile Include="Components\Items\Fist.cs" />
+    <Compile Include="Components\Items\LinkGun.cs" />
     <Compile Include="Components\Items\MagicTorch.cs" />
     <Compile Include="Components\Items\ItemPayload.cs" />
     <Compile Include="Components\Items\Shovel.cs" />
@@ -200,6 +201,7 @@
     <Compile Include="Interface\Views\TitlePanel.cs" />
     <Compile Include="Interface\Views\ToolWindow.cs" />
     <Compile Include="Physics\Collider.cs" />
+    <Compile Include="Processes\AffectAll.cs" />
     <Compile Include="Processes\CameraControl.cs" />
     <Compile Include="Processes\DiodeSpawner.cs" />
     <Compile Include="Processes\DirectedSpawn.cs" />
