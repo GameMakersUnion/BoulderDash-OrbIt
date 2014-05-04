@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
+
+
 namespace OrbItProcs
 {
     public enum Layers
@@ -145,6 +147,14 @@ namespace OrbItProcs
     }
     public class ThreadedCamera
     {
+        static System.Drawing.Pen pen;
+        static ThreadedCamera()
+        {
+            pen = new System.Drawing.Pen(new System.Drawing.Color());
+            //OrbIt.game.GraphicsDevice.DrawPrimitives.
+        }
+
+
         public bool TakeScreenshot { get; set; }
         ManualResetEventSlim CameraWaiting = new ManualResetEventSlim(false);
         Thread _worker;
@@ -327,8 +337,7 @@ namespace OrbItProcs
             nextFrame.Enqueue(new DrawCommand(texture, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, sourceRect, color, rotation, origin, scalevect * zoom, SpriteEffects.None, (((float)Layer) / 10), -1, shaderPack));
         }
 
-
-
+        
         public void DrawLine(Vector2 start, Vector2 end, float thickness, Color color, Layers Layer)
         {
             if (thickness * room.zoom < 1) thickness = 1 / room.zoom;
