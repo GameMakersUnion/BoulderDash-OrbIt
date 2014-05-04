@@ -83,11 +83,6 @@ namespace OrbItProcs {
                 int x = OrbIt.Width - (count.Length * 7) - 20;
                 room.camera.DrawStringScreen(count, new Vector2(x, OrbIt.Height - y1), Color.Black, offset: false, Layer: Layers.Over5);
             }
-
-            if (Movement.WinSpiderGame)
-                room.camera.DrawStringScreen("You Win", new Vector2(OrbIt.Width / 5, OrbIt.Height / 3), Color.White, scale: 3f);
-
-
         }
     }
 }

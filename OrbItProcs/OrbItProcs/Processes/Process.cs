@@ -38,7 +38,7 @@ namespace OrbItProcs
         public Process()
         { 
             // / // / //
-            active = true;
+            //active = true;
         }
         protected void addProcessKeyAction(String name, KeyCodes k1, KeyCodes? k2 = null, KeyCodes? k3 = null, Action OnPress = null, Action OnRelease = null, Action OnHold = null)
         {
@@ -54,9 +54,10 @@ namespace OrbItProcs
 
             processKeyActions.Add(keyAction, keyBundle);
         }
-        //the process manager will invoke OnUpdate and OnDraw
+        protected virtual void Create() { }
         public virtual void Update() { }
         public virtual void Draw() { }
+        public virtual void Destroy() { }
 
         public void InvokeOnCollision(Node me, Node it)
         {

@@ -483,7 +483,7 @@ namespace OrbItProcs
                 //todo: implement selection linking
                 if (rdGroupS.Checked)
                 {
-                    HashSet<Node> groupset = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
+                    HashSet<Node> groupset = game.processManager.GetProcess<GroupSelect>().groupSelectSet;
                     if (groupset != null && groupset.Count > 0)
                     {
                         source = groupset;
@@ -524,7 +524,7 @@ namespace OrbItProcs
                 //todo: implement selection linking
                 if (rdGroupT.Checked)
                 {
-                    HashSet<Node> groupset = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
+                    HashSet<Node> groupset = game.processManager.GetProcess<GroupSelect>().groupSelectSet;
                     if (groupset != null && groupset.Count > 0)
                     {
                         target = groupset;

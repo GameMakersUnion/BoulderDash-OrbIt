@@ -878,8 +878,8 @@ namespace OrbItProcs
                         Keybinds[p.processKeyActions[a]] = a;
                     }
                     TemporaryProcess = p;
-                    if (!ui.game.processManager.processes.Contains(p))
-                        ui.game.processManager.processes.Add(p);
+                    if (!ui.game.processManager.activeProcesses.Contains(p))
+                        ui.game.processManager.activeProcesses.Add(p);
                 }
             }
             else //permanent process
@@ -917,7 +917,7 @@ namespace OrbItProcs
                     Keybinds.Add(tup.Item1, tup.Item2);
                 }
             }
-            ui.game.processManager.processes.Remove(TemporaryProcess);
+            ui.game.processManager.activeProcesses.Remove(TemporaryProcess);
 
             ReplacedBundles.Remove(TemporaryProcess);
             TemporaryProcess = null; //maybe disable temporary process? or should we let caller do that

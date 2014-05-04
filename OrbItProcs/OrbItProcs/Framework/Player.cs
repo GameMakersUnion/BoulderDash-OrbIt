@@ -140,43 +140,63 @@ namespace OrbItProcs
             CreatePlayers(room);
             OrbIt.ui.sidebar.playerView.InitializePlayers();
         }
+
+        public static Player[] players = new Player[5]; //0th for keyboard, 1st-4th for controllers (for now)
+
         public static bool EnablePlayers = true;
         public static void CreatePlayers(Room room)
         {
-            if (!EnablePlayers) return;
+            room.playerGroup.defaultNode = room.masterGroup.defaultNode.CreateClone(room);
             Shooter.MakeBullet(room);
-            Node def = room.masterGroup.defaultNode.CreateClone(room);
+            if (!EnablePlayers) return;
             //def.addComponent(comp.shooter, true);
-            room.playerGroup.defaultNode = def;
+            
             for (int i = 1; i < 5; i++)
             {
-                Player p = Player.GetNew(i);
-                if (p == null) break;
-                double angle = Utils.random.NextDouble() * Math.PI * 2;
-                angle -= Math.PI;
-                float dist = 200;
-                float x = dist * (float)Math.Cos(angle);
-                float y = dist * (float)Math.Sin(angle);
-                Vector2 spawnPos = new Vector2((room.worldWidth / 4) * i - (room.worldWidth / 8), room.worldHeight - 600);// -new Vector2(x, y);
-                Node node = def.CreateClone(room);
-                node.body.pos = spawnPos;
-                
-                node.name = "player" + p.ColorName;
-                node.SetColor(p.pColor);
-                //node.addComponent(comp.shooter, true);
-                //node.addComponent(comp.sword, true);
-                //node.Comp<Sword>().sword.collision.DrawRing = false;
-                p.node = node;
-                room.playerGroup.IncludeEntity(node);
-                node.meta.healthBar = Meta.HealthBarMode.Bar;
-                node.OnSpawn();
-                node.body.velocity = Vector2.Zero;
-                node.body.mass = 0.1f;
-                node.movement.maxVelocity.value = 6f;
-                node.addComponent<Shovel>(true);
-                node.OnSpawn();
-                node.texture = textures.robot1;
+                TryCreatePlayer(room, room.playerGroup.defaultNode, i);
             }
+        }
+
+        public static void CheckForPlayers(Room room)
+        {
+            for (int i = 1; i < 5; i++)
+            {
+                if (players[i] == null && GamePad.GetState((PlayerIndex)(i-1)).IsConnected)
+                {
+                    TryCreatePlayer(room, room.playerGroup.defaultNode, i);
+                }
+            }
+        }
+
+        private static void TryCreatePlayer(Room room, Node defaultNode, int playerIndex)
+        {
+            Player p = Player.GetNew(playerIndex);
+            players[playerIndex] = p;
+            if (p == null) return;
+            double angle = Utils.random.NextDouble() * Math.PI * 2;
+            angle -= Math.PI;
+            float dist = 200;
+            float x = dist * (float)Math.Cos(angle);
+            float y = dist * (float)Math.Sin(angle);
+            Vector2 spawnPos = new Vector2((room.worldWidth / 4) * playerIndex - (room.worldWidth / 8), room.worldHeight - 600);// -new Vector2(x, y);
+            Node node = defaultNode.CreateClone(room);
+            node.body.pos = spawnPos;
+
+            node.name = "player" + p.ColorName;
+            node.SetColor(p.pColor);
+            //node.addComponent(comp.shooter, true);
+            //node.addComponent(comp.sword, true);
+            //node.Comp<Sword>().sword.collision.DrawRing = false;
+            p.node = node;
+            room.playerGroup.IncludeEntity(node);
+            node.meta.healthBar = Meta.HealthBarMode.Bar;
+            //node.OnSpawn();
+            node.body.velocity = Vector2.Zero;
+            node.body.mass = 0.1f;
+            node.movement.maxVelocity.value = 6f;
+            node.addComponent<Shovel>(true);
+            node.OnSpawn();
+            node.texture = textures.robot1;
         }
 
         

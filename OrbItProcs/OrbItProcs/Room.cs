@@ -367,41 +367,30 @@ namespace OrbItProcs {
 
         public float scrollRate = 1.5f;//0.5f;
         public bool skipOutsideGrid = true;
-        public bool scroll = true; //#tojam
+        public bool scroll = false; //#tojam
         public int waitTime = 5000;
         public int waitTimeCounter = 0;
         public bool drawCage = true;
         public void Update(GameTime gametime)
         {
-            int heightCounter = OrbIt.Height / 2;
-            while (drawCage && heightCounter < worldHeight - OrbIt.Height)
-            {
-                //int rand = Utils.random.Next(50);
-                //if (rand < 3)
-                //{
-                //    camera.Draw(textures.cage, new Vector2(worldWidth / 2, heightCounter), Color.Pink, 1f, Layers.Under4);
-                //}
-                //else
-                //{
-                    camera.Draw(textures.goat, new Vector2(worldWidth / 2, heightCounter), Color.Yellow, 0.5f, Layers.Under4);
-                //}
-                heightCounter += OrbIt.Height;
-            }
 
-            FloodFill.boulderFountain();
-            if (scroll && gameStarted)
-            {
-                if (waitTimeCounter < waitTime)
-                {
-                    waitTimeCounter += gametime.ElapsedGameTime.Milliseconds;
-                }
-                else
-                {
-                    if (gridsystemAffect.position.Y > 0) { gridsystemAffect.position.Y -= scrollRate; gridsystemCollision.position.Y -= scrollRate; }
-                    camera.pos = gridsystemCollision.position + new Vector2(gridsystemCollision.gridWidth / 2, gridsystemCollision.gridHeight / 2);
-//#tojam
-                }
-            }
+            //FloodFill.boulderFountain();
+            //if (scroll && gameStarted)
+            //{
+            //    if (waitTimeCounter < waitTime)
+            //    {
+            //        waitTimeCounter += gametime.ElapsedGameTime.Milliseconds;
+            //    }
+            //    else
+            //    {
+            //        if (gridsystemAffect.position.Y > 0) { gridsystemAffect.position.Y -= scrollRate; gridsystemCollision.position.Y -= scrollRate; }
+            //        camera.pos = gridsystemCollision.position + new Vector2(gridsystemCollision.gridWidth / 2, gridsystemCollision.gridHeight / 2);
+            //#tojam    //
+            //    }
+            //}
+
+            Player.CheckForPlayers(this);
+
             camera.RenderAsync();
             long elapsed = 0;
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
@@ -409,18 +398,6 @@ namespace OrbItProcs {
 
             gridSystemLines = new List<Rectangle>();
 
-            //game.processManager.Update();
-            int counter = 0;
-            camera.Draw(textures.endLight, new Vector2(0, 0), Color.White, .5f, Layers.Over4, center: false);
-
-            Assets.Spider.UpdateSpider(this);
-
-            do
-            {
-                camera.Draw(textures.ridgesL, new Vector2(0, counter), Color.DarkGray, .5f, Layers.Under4, center: false);
-                camera.Draw(textures.ridgesR, new Vector2((this.worldWidth - Assets.textureDict[textures.ridgesL].Width * .5f), counter), Color.DarkGray, .5f, Layers.Under4, center: false);
-                counter += Assets.textureDict[textures.ridgesL].Height / 2;
-            } while (counter < worldHeight);
             HashSet<Node> toDelete = new HashSet<Node>();
             //if (affectAlgorithm == 1)//OLD for testing
             //{
@@ -651,7 +628,23 @@ namespace OrbItProcs {
             foreach (Manifold m in contacts)
                 m.PositionalCorrection();
         }
-
+        public void GroupSelectDraw() //todo: make this the draw method in groupselect class
+        {
+            if (game.processManager.processDict.ContainsKey(typeof(GroupSelect)))
+            {
+                HashSet<Node> groupset = game.processManager.GetProcess<GroupSelect>().groupSelectSet;
+                if (groupset != null)
+                {
+                    targetNodeGraphic.body.color = Color.LimeGreen;
+                    foreach (Node n in groupset.ToList())
+                    {
+                        targetNodeGraphic.body.pos = n.body.pos;
+                        targetNodeGraphic.body.scale = n.body.scale * 1.5f;
+                        targetNodeGraphic.Draw();
+                    }
+                }
+            }
+        }
         public void Draw()
         {
             //spritebatch.Draw(game.textureDict[textures.whitepixel], new Vector2(300, 300), null, Color.Black, 0f, Vector2.Zero, 100f, SpriteEffects.None, 0);
@@ -660,17 +653,7 @@ namespace OrbItProcs {
                 updateTargetNodeGraphic();
                 targetNodeGraphic.Draw();
             }
-            HashSet<Node> groupset = (game.processManager.processDict[proc.groupselect] as GroupSelect).groupSelectSet;
-            if (groupset != null)
-            {
-                targetNodeGraphic.body.color = Color.LimeGreen;
-                foreach (Node n in groupset.ToList())
-                {
-                    targetNodeGraphic.body.pos = n.body.pos;
-                    targetNodeGraphic.body.scale = n.body.scale * 1.5f;
-                    targetNodeGraphic.Draw();
-                }
-            }
+            GroupSelectDraw();
             foreach(var n in masterGroup.fullSet.ToList()) //todo:wtfuck threading?
             {
                 //tojam

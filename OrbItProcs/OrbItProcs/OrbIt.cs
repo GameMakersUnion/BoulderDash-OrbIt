@@ -182,7 +182,7 @@ namespace OrbItProcs
             //Sup Tom.
             base.Initialize();
             //Get Roomy
-            mainRoom = new Room(this, Width, Height*8);//*8); //change to height
+            mainRoom = new Room(this, Width, Height);//*8);//*8); //change to height
             tempRoom = new Room(this, 200, 200);
             tempRoom.borderColor = Color.Red;
             room = mainRoom;
@@ -213,10 +213,10 @@ namespace OrbItProcs
             ui.keyManager.addProcessKeyAction("removeall", KeyCodes.Delete, OnPress: () => ui.sidebar.btnRemoveAllNodes_Click(null, null));
 
             MainWindow.TransparentClientArea = true;
-            ui.ToggleSidebar();
+            //ui.ToggleSidebar();
             //Testing.sawtoothTest();
 
-            LoadLevelWindow.StaticLevel("Test.xml");
+            //LoadLevelWindow.StaticLevel("Test.xml");
         }
         Window test;
         public resolutions preferredWindowed;
@@ -267,36 +267,13 @@ namespace OrbItProcs
 
         bool Title = true;
         bool cont = false;
-        
+        //called by tom-shame
         protected override void DrawScene(GameTime gameTime)
         {
             Manager.Renderer.Begin(BlendingMode.Default);
             Microsoft.Xna.Framework.Rectangle frame = new Microsoft.Xna.Framework.Rectangle(0, 0, Width, Height);
 
-            if (!room.gameStarted && Title)
-            {
-                Manager.Renderer.Draw(Assets.textureDict[textures.black], frame, Color.White);
-                Manager.Renderer.Draw(Assets.textureDict[textures.Logo], frame, Color.White);
-                if (GamePad.GetState(Controller.intToPlayerIndex[1]).IsConnected) Manager.Renderer.Draw(Assets.textureDict[textures.Player1_2], frame, Color.White);
-                if (GamePad.GetState(Controller.intToPlayerIndex[2]).IsConnected) Manager.Renderer.Draw(Assets.textureDict[textures.Player2_2], frame, Color.White);
-                if (GamePad.GetState(Controller.intToPlayerIndex[3]).IsConnected) Manager.Renderer.Draw(Assets.textureDict[textures.Player3_2], frame, Color.White);
-                if (GamePad.GetState(Controller.intToPlayerIndex[4]).IsConnected) Manager.Renderer.Draw(Assets.textureDict[textures.Player4_2], frame, Color.White);
-                if (GamePad.GetState(Controller.intToPlayerIndex[1]).Buttons.Start == ButtonState.Pressed) {Title = false;cont =true;}
-                if (GamePad.GetState(Controller.intToPlayerIndex[2]).Buttons.Start == ButtonState.Pressed) {Title = false;cont =true;}
-                if (GamePad.GetState(Controller.intToPlayerIndex[3]).Buttons.Start == ButtonState.Pressed) {Title = false;cont =true;}
-                if (GamePad.GetState(Controller.intToPlayerIndex[4]).Buttons.Start == ButtonState.Pressed) { Title = false; cont = true; }
-            }
-            else if (!room.gameStarted)
-            {
-                Manager.Renderer.Draw(Assets.textureDict[textures.controller], frame, Color.White);
-                if (GamePad.GetState(Controller.intToPlayerIndex[1]).Buttons.A == ButtonState.Pressed) { room.gameStarted = true; }
-                if (GamePad.GetState(Controller.intToPlayerIndex[2]).Buttons.A == ButtonState.Pressed) { room.gameStarted = true; }
-                if (GamePad.GetState(Controller.intToPlayerIndex[3]).Buttons.A == ButtonState.Pressed) { room.gameStarted = true; }
-                if (GamePad.GetState(Controller.intToPlayerIndex[4]).Buttons.A == ButtonState.Pressed) { room.gameStarted = true; }
-            
-            } else{
-                Manager.Renderer.Draw(room.roomRenderTarget, new Microsoft.Xna.Framework.Rectangle(0, 0, Width, Height), Color.White);
-            }
+            Manager.Renderer.Draw(room.roomRenderTarget, new Microsoft.Xna.Framework.Rectangle(0, 0, Width, Height), Color.White);
             
             Manager.Renderer.End();
         }
