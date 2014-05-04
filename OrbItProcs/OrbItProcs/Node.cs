@@ -363,7 +363,7 @@ namespace OrbItProcs {
             affectAction = (source, other) =>
             {
                 //todo: extend to check for every component for finer control if necessary
-                if (source.parent.ExclusionCheck != null && source.parent.ExclusionCheck(other.parent)) return;
+                if (source.parent.AffectExclusionCheck != null && source.parent.AffectExclusionCheck(other.parent)) return;
                 foreach (Type t in source.parent.aOtherProps)
                 {
                     if (!source.parent.comps[t].active) continue;
@@ -490,7 +490,7 @@ namespace OrbItProcs {
         {
             tags.Remove(tag);
         }
-        public Func<Node, bool> ExclusionCheck = null;
+        public Func<Node, bool> AffectExclusionCheck = null;
         public int affectionReach = 180;
         public virtual void Update(GameTime gametime)
         {
@@ -529,7 +529,7 @@ namespace OrbItProcs {
                     }
                     returnObjectsFinal = room.gridsystemAffect.retrieve(body, reach);
                     returnObjectsFinal.Remove(body);
-                    if (ExclusionCheck == null)
+                    if (AffectExclusionCheck == null)
                     {
                         foreach (Collider other in returnObjectsFinal)
                         {
@@ -551,7 +551,7 @@ namespace OrbItProcs {
                             if (room.ColorNodesInReach && this == room.targetNode && other is Body) (other as Body).color = Color.Purple;
                             if (other.parent.active)
                             {
-                                if (ExclusionCheck(other.parent)) continue; //todo: extend to check for every component for finer control if necessary
+                                if (AffectExclusionCheck(other.parent)) continue; //todo: extend to check for every component for finer control if necessary
                                 foreach (Type t in aOtherProps)
                                 {
                                     if (!comps[t].active) continue;

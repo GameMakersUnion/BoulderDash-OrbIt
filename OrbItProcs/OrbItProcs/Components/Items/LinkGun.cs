@@ -82,7 +82,9 @@ namespace OrbItProcs
             shootNode.body.pos = parent.body.pos;
             shootNode.addComponent<ColorChanger>(true);
 
-            shootNode.ExclusionCheck += (node) => node == parent;
+            shootNode.AffectExclusionCheck += (node) => node == parent;
+
+            
 
             parent.room.itemGroup.IncludeEntity(shootNode);
             shootNode.OnSpawn();
@@ -119,10 +121,14 @@ namespace OrbItProcs
             attachGrav.multiplier = 100;
             attachGrav.mode = Gravity.Mode.ConstantForce;
 
-            HashSet<Node> attachedNodes = new HashSet<Node>();
-            Queue<Node> attachedNodesQueue = new Queue<Node>();
-            Link attachLink = new Link(parent, attachedNodes, attachGrav); 
+            Tether aTether = new Tether();
+            aTether.maxdist = 100;
+            aTether.mindist = 100;
+            aTether.activated = true;
 
+            attachedNodesQueue = new Queue<Node>();
+            attachLink = new Link(parent, new HashSet<Node>(), attachGrav);
+            attachLink.AddLinkComponent(aTether, true);
 
             shootNode.body.OnCollisionEnter += (n, other) =>
                 {
@@ -138,25 +144,10 @@ namespace OrbItProcs
                     }
                 };
 
-            unlinkAction = () =>
-                {
-                    if (attachedNodesQueue.Count > 0)
-                    {
-                        Node n = attachedNodesQueue.Dequeue();
-                        if (attachLink.targets.Contains(n))
-                        {
-                            attachLink.targets.Remove(n);
-                        }
-                        if (attachedNodesQueue.Count == 0)
-                        {
-                            attachLink.active = false;
-                        }
-                        attachLink.formation.UpdateFormation();
-                    }
-                };
+            parent.body.ExclusionCheck += (c1, c2) =>
+                attachLink.targets.Contains(c2.parent);
 
         }
-        Action unlinkAction;
 
         public enum GunState
         {
@@ -168,6 +159,8 @@ namespace OrbItProcs
         Gravity grav;
         Spring spring;
         GunState state = GunState.inactive;
+        Queue<Node> attachedNodesQueue;
+        Link attachLink;
         //bool deployed = false;
         public override void PlayerControl(Controller controller)
         {
@@ -214,7 +207,32 @@ namespace OrbItProcs
 
                 if (fc.newGamePadState.Buttons.RightShoulder == ButtonState.Pressed && fc.oldGamePadState.Buttons.RightShoulder == ButtonState.Released)
                 {
-                    unlinkAction();
+                    if (attachedNodesQueue.Count > 0)
+                    {
+                        Node n = attachedNodesQueue.Dequeue();
+                        if (attachLink.targets.Contains(n))
+                        {
+                            attachLink.targets.Remove(n);
+                        }
+                        if (attachedNodesQueue.Count == 0)
+                        {
+                            attachLink.active = false;
+                        }
+                        attachLink.formation.UpdateFormation();
+                    }
+                }
+
+                if (fc.newGamePadState.Buttons.LeftShoulder == ButtonState.Pressed && fc.oldGamePadState.Buttons.LeftShoulder == ButtonState.Released)
+                {
+                    if (attachedNodesQueue.Count > 0)
+                    {
+                        if (attachedNodesQueue.Count != 0)
+                            attachedNodesQueue = new Queue<Node>();
+                        if (attachLink.targets.Count != 0)
+                            attachLink.targets = new ObservableHashSet<Node>();
+
+                        attachLink.active = false;
+                    }
                 }
 
             }
