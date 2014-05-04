@@ -87,7 +87,7 @@ namespace OrbItProcs
 
         public override void AfterCloning()
         {
-            parent.addComponent(comp.lifetime, true);
+            parent.addComponent(typeof(Lifetime), true);
 
             //if (!parent.comps.ContainsKey(comp.modifier)) 
             //    parent.addComponent(comp.modifier, true);

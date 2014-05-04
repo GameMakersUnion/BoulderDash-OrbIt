@@ -62,7 +62,7 @@ namespace OrbItProcs
             cbLinkType = new ComboBox(manager);
             cbLinkType.Init();
             cbLinkType.Left = left;
-            cbLinkType.Width += 20;
+            cbLinkType.Width += 100;
             cbLinkType.Parent = window;
             cbLinkType.MaxItems = 15;
             cbLinkType.Top = HeightCounter3; HeightCounter3 += cbLinkType.Height;
@@ -124,14 +124,14 @@ namespace OrbItProcs
             lblLinkPresets.Left = left + middle;
             lblLinkPresets.Text = "Preset";
             lblLinkPresets.Parent = window;
-            lblLinkPresets.Top = HeightCounter3; HeightCounter3 += lblLinkPresets.Height;
+            lblLinkPresets.Top = lblLinkFormation.Top;
 
             cbLinkPresets = new ComboBox(manager);
             cbLinkPresets.Init();
             cbLinkPresets.Left = left + middle;
             //cbLinkPresets.Width += 20;
             cbLinkPresets.Parent = window;
-            cbLinkPresets.Top = HeightCounter3; HeightCounter3 += cbLinkPresets.Height;
+            cbLinkPresets.Top = cbLinkFormation.Top;
 
             cbLinkPresets.Items.Add("Default");
             cbLinkPresets.ItemIndex = 0;
@@ -143,7 +143,7 @@ namespace OrbItProcs
             btnAddToPalette.Text = "Add to\nPalette";
             btnAddToPalette.Height = btnAddToPalette.Height * 2 - 10;
             btnAddToPalette.Parent = window;
-            btnAddToPalette.Top = HeightCounter3 + 10; HeightCounter3 += btnAddToPalette.Height + 10;
+            btnAddToPalette.Top = chkEntangled.Top + chkEntangled.Height;
             btnAddToPalette.Click += btnAddToPalette_Click;
         }
 
@@ -155,10 +155,7 @@ namespace OrbItProcs
             {
                 //try
                 //{
-                    string ltype = cbLinkType.SelectedItem();
-                    comp c = (comp)Enum.Parse(typeof(comp), ltype);
-                    //System.Console.WriteLine((int)c);
-                    Type t = Utils.GetComponentTypeFromEnum(c);
+                    Type t = (Type)cbLinkType.selected();
 
                     object linkComp = Activator.CreateInstance(t);
 

@@ -188,7 +188,7 @@ namespace OrbItProcs
             }
                 foreach (var dd in levelSave.Diodes)
                 {
-                    var dict = new Dictionary<dynamic, dynamic>() { { comp.diode, true }, { nodeE.texture, textures.gradient1 } };
+                    var dict = new Dictionary<dynamic, dynamic>() { { typeof(Diode), true }, { nodeE.texture, textures.gradient1 } };
                     Node lastSpawnedDiode = Node.ContructLineWall(room, new Vector2(dd.start[0], dd.start[1]), new Vector2(dd.end[0], dd.end[1]), DiodeSpawner.diodeThickness, dict, false);
                     lastSpawnedDiode.SetColor(new Color(255, 255, 255, 255));
                     lastSpawnedDiode.Comp<Diode>().start = new Vector2(dd.start[0], dd.start[1]);

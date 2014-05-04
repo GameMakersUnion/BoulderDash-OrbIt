@@ -35,7 +35,7 @@ namespace OrbItProcs
                 Vector2 diff = UserInterface.WorldMousePos;
                 diff = diff - positionToSpawn;
                 Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
-                            { comp.lifetime, true },
+                            { typeof(Lifetime), true },
                             { nodeE.position, positionToSpawn },
                             { nodeE.velocity, diff },
                         };

@@ -130,13 +130,9 @@ namespace OrbItProcs
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>()
             {
                 { nodeE.radius, 5f},
-                { comp.movement, true},
-                { comp.basicdraw, true},
-                { comp.collision, true},
-                { comp.laser, true},
-                { comp.colorchanger, true},
-                { comp.lifetime, true},
-                //{comp.waver, true},
+                { typeof(Laser), true},
+                { typeof(ColorChanger), true},
+                { typeof(Lifetime), true},
             };
             bulletNode = new Node(room, props);
             bulletNode.Comp<Collision>().isSolid = false;
@@ -293,7 +289,7 @@ namespace OrbItProcs
             //n.body.isSolid = false;
             if (ammo <= 0)
             {
-                parent.RemoveComponent(com);
+                parent.RemoveComponent(typeof(Shooter));
             }
         }
 

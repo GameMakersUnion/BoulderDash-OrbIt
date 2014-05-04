@@ -108,14 +108,12 @@ namespace OrbItProcs
 
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>()
             {
-                {comp.movement, true},
-                {comp.basicdraw, false},
-                {comp.collision, false},
-                {comp.gravity, false},
-                {comp.displace, false},
-                {comp.spring, false},
-                {comp.transfer, false},
-                //{comp.waver, true},
+                {typeof(BasicDraw), false},
+                {typeof(Collision), false},
+                {typeof(Gravity), false},
+                {typeof(Displace), false},
+                {typeof(Spring), false},
+                {typeof(Transfer), false},
             };
 
             torchNode = new Node(parent.room, props);

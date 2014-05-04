@@ -41,9 +41,9 @@ namespace OrbItProcs
 
                     Dictionary<dynamic, dynamic> standardDictionary = new Dictionary<dynamic, dynamic>(){
                     { nodeE.position, v },
-                    {comp.friction, true},
+                    {typeof(Friction), true},
                     { nodeE.radius, 25f * (ratio)},
-                    //{ comp.gravity, true },
+                    //{ typeof(gravity, true },
                 };
                         spawnPoints[v][0]++;
                         Node n = OrbIt.game.room.spawnNode(standardDictionary);

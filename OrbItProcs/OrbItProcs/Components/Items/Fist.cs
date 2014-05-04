@@ -74,17 +74,8 @@ namespace OrbItProcs
             damageMultiplier = 10f;
             parryKnockback = 20f;
             nodeKnockback = 500f;
-            
-
-            Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>()
-            {
-                {comp.movement, true},
-                {comp.basicdraw, false},
-                {comp.collision, true},
-                //{comp.waver, true},
-            };
-
-            fistNode = new Node(parent.room, props);
+            fistNode = new Node(parent.room);
+            fistNode.basicdraw.active = false;
             fistNode.name = "fist";
             fistNode.body.radius = fistRadius;
         }

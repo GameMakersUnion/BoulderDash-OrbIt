@@ -94,15 +94,7 @@ namespace OrbItProcs
             nodeKnockback = 500f;
             parryKnockback = 20f;
 
-            Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>()
-            {
-                {comp.movement, true},
-                {comp.basicdraw, true},
-                {comp.collision, true},
-                //{comp.waver, true},
-            };
-
-            swordNode = new Node(parent.room, props);
+            swordNode = new Node(parent.room);
             swordNode.name = "sword";
         }
 

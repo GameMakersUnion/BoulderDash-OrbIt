@@ -125,7 +125,7 @@ namespace OrbItProcs
         {
             if (mode == Mode.hue)
             {
-                if (!other.HasActiveComponent(comp.colorgravity)) return;
+                if (!other.HasComp<ColorGravity>()) return;
 
                 float dist = 1f;
                 if (distancemod == DistanceMod.color)
@@ -138,7 +138,7 @@ namespace OrbItProcs
                     if (Math.Abs(diff) > 180) force *= -1;
                     if (force > maxhuevel) force = maxhuevel;
                     else if (force < -maxhuevel) force = -maxhuevel;
-                    other[comp.colorgravity].huevelocity += force;
+                    other.Comp<ColorGravity>().huevelocity += force;
                     huevelocity += force;
 
 
@@ -163,7 +163,7 @@ namespace OrbItProcs
                     if (force > maxhuevel) force = maxhuevel;
                     else if (force < -maxhuevel) force = -maxhuevel;
 
-                    other[comp.colorgravity].huevelocity += force;
+                    other.Comp<ColorGravity>().huevelocity += force;
                     huevelocity -= force;
 
                     
@@ -188,7 +188,7 @@ namespace OrbItProcs
                 float mag = multiplier * parent.body.mass * other.body.mass / (dist * dist);
                 Vector3 impulse = mag * direction;
                 impulse /= 10000f;
-                if (other.HasActiveComponent(comp.colorgravity))
+                if (other.HasActiveComponent<ColorGravity>())
                     other.Comp<ColorGravity>().colvelocity += impulse;
                 colvelocity -= impulse;
             }

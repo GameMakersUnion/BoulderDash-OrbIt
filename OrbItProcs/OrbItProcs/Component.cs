@@ -40,7 +40,7 @@ namespace OrbItProcs
             set
             {
                 _active = value;
-                if (parent != null && parent.HasComp(com))
+                if (parent != null && parent.HasComp(this.GetType()))
                 {
                     parent.triggerSortLists();
                 }
@@ -76,7 +76,7 @@ namespace OrbItProcs
             timePassed += OrbIt.gametime.ElapsedGameTime.Milliseconds;
             if (timePassed > maxTime)
             {
-                parent.RemoveComponent(com);
+                parent.RemoveComponent(this.GetType());
             }
         }
         public bool isEssential()

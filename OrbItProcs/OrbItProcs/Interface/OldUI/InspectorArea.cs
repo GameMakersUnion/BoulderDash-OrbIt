@@ -552,7 +552,7 @@ namespace OrbItProcs
             if (item.parentItem.parentItem.obj is Node)
             {
                 component.active = false;
-                editNode.RemoveComponent(component.com);
+                editNode.RemoveComponent(component.GetType());
                 item.RemoveChildren();
                 InsBox.Items.Remove(item);
             }
@@ -612,8 +612,7 @@ namespace OrbItProcs
         private bool AddLinkComponent(object[] o, Link link)
         {
             //bool writeable = false;
-            comp c = (comp)o[1];
-            Type t = Utils.GetComponentTypeFromEnum(c);
+            Type t = (Type)o[1];
 
             object linkComp = Activator.CreateInstance(t);
 

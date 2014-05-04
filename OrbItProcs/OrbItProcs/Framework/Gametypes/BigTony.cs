@@ -16,18 +16,12 @@ namespace OrbItProcs
         {
             { nodeE.position, new Vector2(0,0)},
             { nodeE.texture, textures.blueorb},
-            { comp.movement, true },
-            { comp.basicdraw, true },
-            { comp.collision, true },
         };
         Dictionary<dynamic, dynamic> playerProps = new Dictionary<dynamic, dynamic>()
             {
                 
                 { nodeE.texture, textures.blackorb },
-                { comp.movement, true },
-                { comp.collision, true },
-                { comp.basicdraw, true },
-                { comp.phaseorb, true },
+                { typeof(PhaseOrb), true },
             };
 
         public Vector2 accel;
@@ -112,12 +106,7 @@ namespace OrbItProcs
             {
                 { nodeE.position, new Vector2(room.worldWidth/2,room.worldHeight/2) },
                 { nodeE.texture, textures.blackorb },
-                { comp.movement, true },
-                { comp.collision, true },
-                { comp.basicdraw, true },
-                { comp.phaseorb, true },
-                //{ comp.laser, true },
-                //{ comp.gravity, true },
+                { typeof(PhaseOrb), true },
             };
             Node tony = new Node(room, tonyProps);
             room.scheduler.doEveryXMilliseconds(delegate
@@ -138,7 +127,7 @@ namespace OrbItProcs
             tony.body.velocity *= 100;
             tony.name = "bigTony";
             tony.body.texture = textures.blackorb;
-            tony[comp.queuer].queuecount = 100;
+            tony.Comp<Queuer>().queuecount = 100;
 
             bigtony = tony;
 

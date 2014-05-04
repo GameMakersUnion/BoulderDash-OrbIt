@@ -86,7 +86,7 @@ namespace OrbItProcs
         public override void AfterCloning()
         {
             //if (!parent.comps.ContainsKey(comp.queuer)) parent.addComponent(comp.queuer, true);
-            parent.addComponent(comp.lifetime, true);
+            parent.addComponent(typeof(Lifetime), true);
         }
 
         public override void InitializeLists()

@@ -65,7 +65,7 @@ namespace OrbItProcs {
         {
             var dict = Utils.compTypes;
             int depth = Utils.random.Next(dict.Count);
-            Type t = dict.ElementAt(depth).Value;
+            Type t = dict.ElementAt(depth);
             var props = t.GetProperties();
             int i = Utils.random.Next(props.Length);
             var pinfo = props.ElementAt(i);
@@ -268,15 +268,10 @@ namespace OrbItProcs {
                 default: return "0";
             }
         }
-        public static Dictionary<comp, Type> compTypes;
+        public static HashSet<Type> compTypes;
         public static Dictionary<Type, comp> compEnums;
         public static Dictionary<Type, Info> compInfos;
 
-        public static Type GetComponentTypeFromEnum(comp c)
-        {
-            if (compTypes.ContainsKey(c)) return compTypes[c];
-            return null;
-        }
         public static comp GetComponentCompFromType(Type t)
         {
             if (compEnums.ContainsKey(t)) throw new SystemException("Type was not found in compEnums dictionary.");
@@ -332,49 +327,24 @@ namespace OrbItProcs {
 
         public static void PopulateComponentTypesDictionary()
         {
-            compTypes = new Dictionary<comp, Type>();
-
-            IEnumerable<Type> types = AppDomain.CurrentDomain.GetAssemblies()
+            compTypes = AppDomain.CurrentDomain.GetAssemblies()
                        .SelectMany(assembly => assembly.GetTypes())
-                       .Where(type => type.IsSubclassOf(typeof(Component)));
+                       .Where(type => type.IsSubclassOf(typeof(Component))).ToHashSet();
 
 
-            foreach(Type t in types)
-            {
-                string name = t.ToString().ToLower();
-                name = name.LastWord('.');
-                comp c;
-                if (Enum.TryParse<comp>(name, out c))
-                {
-                    compTypes.Add(c, t);
-                }
-                else
-                {
-                    Console.WriteLine("{0} did not have an equivalent enum value", t.ToString());
-                }
-            }
-            Dictionary<comp, Type> ct = new Dictionary<comp, Type>();
-            foreach(comp c in Enum.GetValues(typeof(comp)))
-            {
-                if (!compTypes.ContainsKey(c)) { Console.WriteLine("Class didn't exist for enum value " + c); continue; }
-                ct[c] = compTypes[c];
-            }
-            compTypes = ct;
-
-            compEnums = new Dictionary<Type, comp>(); //move this later
-            foreach (comp key in Utils.compTypes.Keys.ToList())
-            {
-                compEnums.Add(Utils.GetComponentTypeFromEnum(key), key);
-            }
             compInfos = new Dictionary<Type, Info>();
-            foreach(Type t in compTypes.Values)
+            foreach(Type t in compTypes)
             {
                 Info info = GetInfoType(t);
                 if (info == null) continue;
                 compInfos[t] = info;
             }
         }
-
+        //thanks, skeet!
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)
+        {
+            return new HashSet<T>(source);
+        }
         public static int Sign(int i)
         {
             return (i > 0).ToInt() - (i < 0).ToInt();
@@ -485,6 +455,8 @@ namespace OrbItProcs {
 
 
         public static object selected(this TomShane.Neoforce.Controls.ListBox c) { return c.Items.ElementAt(c.ItemIndex); }
+
+        public static object selected(this TomShane.Neoforce.Controls.ComboBox c) { return c.Items.ElementAt(c.ItemIndex); }
 
         public static void syncToOCDelegate(this ICollection<object> lst, NotifyCollectionChangedEventArgs e)
         {

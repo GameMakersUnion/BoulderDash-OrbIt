@@ -136,7 +136,7 @@ namespace OrbItProcs
                 Room room = OrbIt.game.room;
                 Dictionary<dynamic, dynamic> standardDictionary = new Dictionary<dynamic, dynamic>(){
                     { nodeE.position, new Vector2(room.worldWidth / 2, room.worldHeight / 2) },
-                    //{ comp.gravity, true },
+                    //{ typeof(gravity, true },
                 };
                 for (int i = 0; i < 10; i++)
                     OrbIt.game.room.spawnNode(standardDictionary);
@@ -155,7 +155,7 @@ namespace OrbItProcs
                 Room room = OrbIt.game.room;
                 Dictionary<dynamic, dynamic> standardDictionary = new Dictionary<dynamic, dynamic>(){
                     { nodeE.position, new Vector2(room.worldWidth / 2, room.worldHeight / 2) },
-                    //{ comp.gravity, true },
+                    //{ typeof(gravity, true },
                 };
 
                 OrbIt.game.room.spawnNode(standardDictionary);

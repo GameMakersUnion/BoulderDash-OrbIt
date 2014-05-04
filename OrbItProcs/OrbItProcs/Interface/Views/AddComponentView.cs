@@ -50,12 +50,11 @@ namespace OrbItProcs
         public void InitNode(Node node)
         {
             int heightcounter = 0;
-            foreach(comp c in Utils.compTypes.Keys)
+            foreach (Type ctype in Utils.compTypes)
             {
-                Type ctype = Utils.compTypes[c];
                 Info info = Utils.GetInfoType(ctype);
                 if (info == null || (int)sidebar.userLevel < (int)info.userLevel) continue;
-                if (node.HasComp(c)) continue;
+                if (node.HasComp(ctype)) continue;
                 if ((Utils.GetCompTypes(ctype) & mtypes.exclusiveLinker) == mtypes.exclusiveLinker) continue;
                 DetailedItem ditem = new DetailedItem(manager, this, ctype, backPanel, heightcounter, 0);
                 SetupScroll(ditem);

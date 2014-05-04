@@ -113,19 +113,7 @@ namespace OrbItProcs
                 //new node(s)
                 Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
                                 
-                            //{ node.texture, textures.whitecircle },
-                            //{ node.radius, 12 },
-                            { comp.movement, true },
-                            //{ comp.randvelchange, true },
-                            //{ comp.gravity, false },
-                            { comp.lifetime, true },
-                            //{ comp.transfer, true },
-                            //{ comp.lasertimers, true },
-                            //{ comp.laser, true },
-                            //{ comp.wideray, true },
-                            //{ comp.hueshifter, true },
-                            //{ comp.phaseorb, true },
-                            //{ comp.collision, false },
+                            { typeof(Lifetime), true },
                             { nodeE.position, positionToSpawn },
                             { nodeE.velocity, diff },
                         };

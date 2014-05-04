@@ -29,7 +29,7 @@ namespace OrbItProcs
             else
             {
                 firstclick = true;
-                var dict = new Dictionary<dynamic, dynamic>() { { comp.diode, true },{nodeE.texture, textures.gradient1} };
+                var dict = new Dictionary<dynamic, dynamic>() { { typeof(Diode), true },{nodeE.texture, textures.gradient1} };
                 lastSpawnedDiode = Node.ContructLineWall(room, firstPos, mousePos, diodeThickness, dict, false);
 
                 room.masterGroup.IncludeEntity(lastSpawnedDiode);

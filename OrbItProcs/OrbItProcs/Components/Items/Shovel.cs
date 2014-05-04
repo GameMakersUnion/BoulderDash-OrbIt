@@ -101,14 +101,7 @@ namespace OrbItProcs
             physicsThrow = false;
             throwSpeed = 12;
 
-            Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>()
-            {
-                {comp.movement, true},
-                {comp.basicdraw, true},
-                {comp.collision, true},
-            };
-
-            shovelNode = new Node(parent.room, props);
+            shovelNode = new Node(parent.room);
             shovelNode.name = "shovel";
             shovelNode.body.radius = shovelRadius;
             shovelNode.body.ExclusionCheck += (c1, c2) => c2 == parent.body;

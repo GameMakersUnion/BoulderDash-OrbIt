@@ -277,19 +277,6 @@ namespace OrbItProcs
 
         }
 
-        
-
-        public void ToggleGroupComponent(comp c, bool value)
-        {
-            if (activeGroup != null)
-            {
-                foreach (Node n in activeGroup.fullSet)
-                {
-                    if (n.HasComp(c)) n[c].active = value;
-                }
-            }
-        }
-
         public int SelectComponent(Type t)
         {
             string name = t.ToString().LastWord('.');
@@ -320,55 +307,7 @@ namespace OrbItProcs
             }
             if (rootNode != null) new AddComponentWindow(sidebar, parent, rootNode, this);
             
-            //ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !activeGroup.defaultNode.HasComponent(c))));
-            //List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => activeGroup.defaultNode.HasComponent(c)));
-            //
-            //PopUp.opt[] options = new PopUp.opt[]{
-            //    new PopUp.opt(PopUp.OptType.info, "Add component to: " + activeGroup.Name),
-            //    new PopUp.opt(PopUp.OptType.dropDown, nodecomplist),
-            //    };
-            //
-            //PopUp.makePopup(ui, options, "Add Component", delegate(bool a, object[] o)
-            //{
-            //    if (a) return addComponent(o);
-            //    else return false;
-            //});
         }
 
-        private bool addComponent(object[] o)
-        {
-            if (o[1] == null) return false;
-            comp c = (comp)o[1];
-            foreach (Node n in activeGroup.fullSet)
-            {
-                if (!n.HasComp(c))
-                    n.addComponent(c, true);
-            }
-            Node def = activeGroup.defaultNode;
-            if (!def.HasComp(c))
-                def.addComponent(c, true);
-
-            //refresh view
-            RefreshComponents();
-            int index = SelectComponent(Utils.compTypes[c]);
-
-            //scroll down
-            if (index != -1 && viewItems.Count > 0)
-            {
-                int itemheight = viewItems.ElementAt(0).itemHeight;
-                int visualItemCapacity = backPanel.Height / itemheight;
-                if (index > visualItemCapacity)
-                {
-                    SetScrollPosition((index - visualItemCapacity) * itemheight);
-                }
-            }
-
-            //scroll up
-            else
-            {
-                SetScrollPosition(0);
-            }
-            return true;
-        }
     }
 }

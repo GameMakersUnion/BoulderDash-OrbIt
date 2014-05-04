@@ -141,7 +141,7 @@ namespace OrbItProcs
 
             Layers layer = parent.IsPlayer ? Layers.Player : DrawLayer;
 
-            if (parent.HasComp(comp.shader))
+            if (parent.HasComp<Shader>())
                 parent.room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color * (AlphaPercent / 100f), parent.body.scale, parent.body.orient,layer, parent.Comp<Shader>().shaderPack);
             else
                 parent.room.camera.Draw(parent.body.texture, parent.body.pos, parent.body.color * (AlphaPercent / 100f), parent.body.scale, parent.body.orient, layer);

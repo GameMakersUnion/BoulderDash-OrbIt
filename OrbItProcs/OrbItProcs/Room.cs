@@ -237,9 +237,6 @@ namespace OrbItProcs {
             Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {
                 { nodeE.position, new Vector2(0, 0) },
                 { nodeE.texture, textures.boulder1 },
-                { comp.basicdraw, true },
-                { comp.collision, true },
-                { comp.movement, true },
             };
             #endregion
 
@@ -273,8 +270,7 @@ namespace OrbItProcs {
             }
 
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
-                    { comp.basicdraw, true }, 
-                    { comp.colorchanger, true }, 
+                    { typeof(ColorChanger), true }, 
                     { nodeE.texture, textures.ring } 
             };
 
@@ -313,7 +309,7 @@ namespace OrbItProcs {
         public void MakeItemGroups()
         {
             Node itemDef = defaultNode.CreateClone(this);
-            itemDef.addComponent(comp.itempayload, true);
+            itemDef.addComponent(typeof(ItemPayload), true);
             itemDef.movement.active = false;
 
             var infos = Utils.compInfos;
@@ -699,9 +695,6 @@ namespace OrbItProcs {
         {
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>() {
                     { nodeE.position, new Vector2(0, 0) },
-                    { comp.basicdraw, true },
-                    { comp.collision, true },
-                    //{ comp.movement, true },
             };
             Node left = ConstructWallPoly(props, (int)WallWidth / 2, worldHeight / 2, new Vector2(WallWidth / 2, worldHeight / 2)); left.name = "left wall";
             Node right = ConstructWallPoly(props, (int)WallWidth / 2, worldHeight / 2, new Vector2(worldWidth - WallWidth / 2, worldHeight / 2)); right.name = "right wall";
@@ -712,7 +705,7 @@ namespace OrbItProcs {
         public Node ConstructWallPoly(Dictionary<dynamic, dynamic> props, int hw, int hh, Vector2 pos)
         {
             Node n = new Node(this, props);
-            n[comp.basicdraw].active = false;
+            n.Comp<BasicDraw>().active = false;
             Polygon poly = new Polygon();
             poly.body = n.body;
             poly.body.pos = pos;
@@ -862,7 +855,7 @@ namespace OrbItProcs {
             if (afterSpawnAction != null) afterSpawnAction(newNode);
             if (lifetime != -1)
             {
-                newNode.addComponent(comp.lifetime, true);
+                newNode.addComponent<Lifetime>(true);
                 newNode.Comp<Lifetime>().timeUntilDeath.value = lifetime;
                 newNode.Comp<Lifetime>().timeUntilDeath.enabled = true;
             }

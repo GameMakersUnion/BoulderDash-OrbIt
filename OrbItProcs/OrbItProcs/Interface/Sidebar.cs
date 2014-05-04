@@ -946,66 +946,26 @@ namespace OrbItProcs
                 PopUp.Toast("You haven't selected a Node.");
             else
             {
-                ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !inspectorArea.editNode.HasComp(c))));
-                List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => inspectorArea.editNode.HasComp(c)));
-                
-                PopUp.opt[] options = new PopUp.opt[]{
-                    new PopUp.opt(PopUp.OptType.info, "Add component to: " + inspectorArea.editNode.name),
-                    new PopUp.opt(PopUp.OptType.dropDown, nodecomplist),
-                    new PopUp.opt(PopUp.OptType.checkBox, "Add to all", 
-                        delegate(object s, TomShane.Neoforce.Controls.EventArgs a){
-                            if ((s as CheckBox).Checked) nodecomplist.AddRange(missingcomps);
-                            else nodecomplist.RemoveRange(missingcomps);})};
-                
-                PopUp.makePopup(ui, options, "Add Component", delegate(bool a, object[] o)
-                {
-                    if (a) return addComponent(o);
-                    else return false;
-                });
+                new AddComponentWindow(this, tbcMain, inspectorArea.editNode, null, false);
+                //ObservableCollection<dynamic> nodecomplist = new ObservableCollection<dynamic>((Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => !inspectorArea.editNode.HasComp(c))));
+                //List<dynamic> missingcomps = new List<dynamic>(Enum.GetValues(typeof(comp)).Cast<dynamic>().Where(c => inspectorArea.editNode.HasComp(c)));
+                //
+                //PopUp.opt[] options = new PopUp.opt[]{
+                //    new PopUp.opt(PopUp.OptType.info, "Add component to: " + inspectorArea.editNode.name),
+                //    new PopUp.opt(PopUp.OptType.dropDown, nodecomplist),
+                //    new PopUp.opt(PopUp.OptType.checkBox, "Add to all", 
+                //        delegate(object s, TomShane.Neoforce.Controls.EventArgs a){
+                //            if ((s as CheckBox).Checked) nodecomplist.AddRange(missingcomps);
+                //            else nodecomplist.RemoveRange(missingcomps);})};
+                //
+                //PopUp.makePopup(ui, options, "Add Component", delegate(bool a, object[] o)
+                //{
+                //    if (a) return addComponent(o);
+                //    else return false;
+                //});
             }
         }
 
-        private bool addComponent(object[] o)
-        {
-            bool writeable = false;
-            if ((bool)o[2])
-            {
-                foreach (Node n in ActiveGroup.fullSet)
-                    if (!n.HasComp((comp)o[1]))
-                        n.addComponent((comp)o[1], true);
-
-                Node def = ActiveGroup.defaultNode;
-
-                if (!(def).HasComp((comp)o[1]))
-                    (def).addComponent((comp)o[1], true);
-
-                inspectorArea.ActiveInspectorParent.DoubleClickItem(inspectorArea);
-                return true;
-                
-            }
-            else
-            {
-                comp cc = (comp)o[1];
-                if (!inspectorArea.editNode.comps.ContainsKey(Utils.compTypes[cc]))
-                {
-                    inspectorArea.editNode.addComponent((comp)o[1], true);
-                    inspectorArea.ActiveInspectorParent.DoubleClickItem(inspectorArea);
-                }
-                else PopUp.Prompt("The node already contains this component. Overwrite to default component?", action: delegate(bool k, object ans) { writeable = k; return true; });
-
-                if (writeable)
-                {
-                    inspectorArea.editNode.addComponent((comp)o[1], true);
-                    inspectorArea.ActiveInspectorParent.DoubleClickItem(inspectorArea);
-                    return true;
-                }
-                else
-                {
-                    //return false; //this will prevent popup from closing..
-                    return true;
-                }
-            }
-        }
 
         void btnDefaultNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {

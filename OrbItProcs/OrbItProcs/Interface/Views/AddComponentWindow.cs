@@ -12,6 +12,7 @@ namespace OrbItProcs
 {
     public class AddComponentWindow
     {
+        public bool addToGroup;
         public AddComponentView addCompView;
         public Manager manager;
         public Sidebar sidebar;
@@ -23,11 +24,12 @@ namespace OrbItProcs
         public Node node;
         public DetailedView view;
         public Control under;
-        public AddComponentWindow(Sidebar sidebar, Control under, Node n, DetailedView view)
+        public AddComponentWindow(Sidebar sidebar, Control under, Node n, DetailedView view, bool addToGroup = true)
         {
             this.under = under;
             under.Visible = false;
             sidebar.master.Visible = false;
+            this.addToGroup = addToGroup;
 
             Control par = sidebar.tbcViews.TabPages[0];
             UserInterface.GameInputDisabled = true;
@@ -100,9 +102,9 @@ namespace OrbItProcs
             {
                 if (!(di.obj is Type)) continue;
                 if (!(di.itemControls["checkbox"] as CheckBox).Checked) continue;
-                comp c = Utils.compEnums[(Type)di.obj];
+                Type c =(Type)di.obj;
                 node.addComponent(c, true);
-                if (node.group != null) //todo: more checks about whether to add to everyone in group
+                if (node.group != null && addToGroup) //todo: more checks about whether to add to everyone in group
                 {
                     foreach (Node n in node.group.fullSet)
                     {
@@ -110,9 +112,12 @@ namespace OrbItProcs
                     }
                 }
             }
-            view.RefreshRoot();
-            ComponentView cv = (ComponentView)view;
-            cv.RefreshRoot();
+            if (view != null)
+            {
+                view.RefreshRoot();
+                ComponentView cv = (ComponentView)view;
+                cv.RefreshRoot();
+            }
             Close(null, null);
         }
         public void NewLabel(string s, int left, bool line)

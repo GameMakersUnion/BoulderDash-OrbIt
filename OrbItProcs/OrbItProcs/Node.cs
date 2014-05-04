@@ -242,7 +242,7 @@ namespace OrbItProcs {
             {
                 if (!HasComp<Delegator>())
                 {
-                    addComponent(comp.delegator, true);
+                    addComponent(typeof(Delegator), true);
                 }
                 return Comp<Delegator>();
             }
@@ -259,7 +259,7 @@ namespace OrbItProcs {
             {
                 if (!HasComp<Scheduler>())
                 {
-                    addComponent(comp.scheduler, true);
+                    addComponent(typeof(Scheduler), true);
                 }
                 return Comp<Scheduler>();
             }
@@ -381,10 +381,10 @@ namespace OrbItProcs {
                 foreach (dynamic p in userProps.Keys)
                 {
                     // if the key is a comp type, we need to add the component to comps dict
-                    if (p is comp)
+                    if (p is Type)
                     {
-                        comp c = (comp)p;
-                        fetchComponent(Utils.compTypes[c], userProps[c]);
+                        Type c = (Type)p;
+                        fetchComponent(c, userProps[c]);
                     }
                     // if the key is a node type, we need to update the instance variable value
                     else if (p is nodeE)
@@ -429,19 +429,11 @@ namespace OrbItProcs {
         {
             return comps.ContainsKey(typeof(T));
         }
-        public bool HasComp(comp component)
-        {
-            return comps.ContainsKey(Utils.compTypes[component]);
-        }
         public bool HasComp(Type componentType)
         {
             return comps.ContainsKey(componentType);
         }
-        public bool HasActiveComponent(comp component)
-        {
-            Type t = Utils.compTypes[component];
-            return comps.ContainsKey(t) && comps[t].active;
-        }
+
         public void EnsureContains<T>(bool active = true) where T : Component
         {
             if (!HasComp<T>())
@@ -453,18 +445,7 @@ namespace OrbItProcs {
         {
             return comps.ContainsKey(typeof(T)) && comps[typeof(T)].active;
         }
-        [Info(UserLevel.Never)]
-        public dynamic this[comp component]
-        {
-            get
-            {
-                return comps[Utils.compTypes[component]];
-            }
-            set
-            {
-                comps[Utils.compTypes[component]] = value;
-            }
-        }
+
         public T CheckData<T>(string key)
         {
             if (dataStore.ContainsKey(key))
@@ -693,21 +674,15 @@ namespace OrbItProcs {
                 if (p is nodeE)// && !(userProps[p] is bool))
                     storeInInstance(p, userProps);
                 // if the key is a comp type, we need to add the component to comps dict
-                if (p is comp)
+                if (p is Type)
                 {
-                    Type t = Utils.compTypes[p];
-                    fetchComponent(t, userProps[p]);
-                    if (HasComp(t)) comps[t].active = userProps[p];
+                    fetchComponent(p, userProps[p]);
+                    if (HasComp(p)) comps[p].active = userProps[p];
                 }
             }
             SortComponentLists();
         }
 
-        public void addComponent(comp c, bool active, bool overwrite = false)
-        {
-            bool fetch = fetchComponent(Utils.compTypes[c], active, overwrite);
-            if (fetch) SortComponentLists();
-        }
         public void addComponent(Type t, bool active, bool overwrite = false)
         {
             bool fetch = fetchComponent(t, active, overwrite);
@@ -803,9 +778,8 @@ namespace OrbItProcs {
             return component;
         }
 
-        public void RemoveComponent(comp c)
+        public void RemoveComponent(Type t)
         {
-            Type t = Utils.compTypes[c];
             if (!comps.ContainsKey(t))
             {
                 Console.WriteLine("Component already removed or doesn't exist.");

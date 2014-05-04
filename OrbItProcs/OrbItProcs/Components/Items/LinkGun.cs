@@ -51,14 +51,7 @@ namespace OrbItProcs
             linkNodeRadius = 15;
             linkToPlayers = true;
 
-            Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>()
-            {
-                {comp.movement, true},
-                {comp.basicdraw, true},
-                {comp.collision, true},
-            };
-
-            linkNode = new Node(parent.room, props);
+            linkNode = new Node(parent.room);
             linkNode.name = "shovel";
             linkNode.body.radius = linkNodeRadius;
             linkNode.body.ExclusionCheck += (c1, c2) => c2 == parent.body;

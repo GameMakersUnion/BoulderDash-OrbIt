@@ -798,22 +798,13 @@ namespace OrbItProcs
 
         public static void GetILinkableEnumVals(List<object> list)
         {
-            foreach (comp key in Enum.GetValues(typeof(comp)))
+            foreach (Type compType in Utils.compTypes)
             {
-                Type compType = Utils.GetComponentTypeFromEnum(key);
 
                 if (!typeof(ILinkable).IsAssignableFrom(compType)) continue;
 
-                list.Add(key);
+                list.Add(compType);
 
-                /*
-                MethodInfo mInfo = compType.GetMethod("AffectOther");
-                if (mInfo != null
-                    && mInfo.DeclaringType == compType)
-                {
-                    list.Add(key);
-                }
-                */
             }
         }
 

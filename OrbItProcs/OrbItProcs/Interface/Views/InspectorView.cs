@@ -151,7 +151,7 @@ namespace OrbItProcs
                     {
                         foreach (Node n in activeGroup.fullSet)
                         {
-                            if (n.HasComp(component.com))
+                            if (n.HasComp(component.GetType()))
                                 n.comps[component.GetType()].active = component.active;
                         }
                     }
@@ -161,12 +161,12 @@ namespace OrbItProcs
                     if (ins.obj is Component)
                     {
                         Component component = (Component)ins.obj;
-                        component.parent.RemoveComponent(component.com);
+                        component.parent.RemoveComponent(component.GetType());
                         if (GroupSync)
                         {
                             foreach (Node n in activeGroup.fullSet)
                             {
-                                n.RemoveComponent(component.com);
+                                n.RemoveComponent(component.GetType());
                             }
                         }
                     }
