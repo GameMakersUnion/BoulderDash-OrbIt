@@ -45,11 +45,16 @@ namespace OrbItProcs
     {
         public static OrbIt game;
         public static UserInterface ui;
-        public ProcessManager processManager { get; set; }
-
-        public SharpSerializer serializer = new SharpSerializer();
+        public static GameTime gametime;
+        public static bool soundEnabled = false;
+        public static bool isFullScreen = false;
+        private static bool GraphicsReset = false;
+        public static int ScreenWidth { get { return game.Graphics.PreferredBackBufferWidth; } set { game.Graphics.PreferredBackBufferWidth = value; } }
+        public static int ScreenHeight { get { return game.Graphics.PreferredBackBufferHeight; } set { game.Graphics.PreferredBackBufferHeight = value; } }
 
         public static GlobalGameMode globalGameMode { get; set; }
+
+        public SharpSerializer serializer = new SharpSerializer();
         public Room room
         {
             get { return _activeRoom; }
@@ -62,19 +67,13 @@ namespace OrbItProcs
         }
         private Room _activeRoom;
         public Room mainRoom;
-        public Room tempRoom;
-
-        public static GameTime gametime;
+        //public Room tempRoom;
+        
         public FrameRateCounter frameRateCounter;
         public resolutions? preferredFullScreen;
-        public static bool soundEnabled = false;
-        public static bool isFullScreen = false;
-        public static int Width { get { return game.Graphics.PreferredBackBufferWidth; } set { game.Graphics.PreferredBackBufferWidth = value; } }
-        public static int Height { get { return game.Graphics.PreferredBackBufferHeight; } set { game.Graphics.PreferredBackBufferHeight = value; } }
+        
         public bool IsOldUI { get { return ui != null && ui.sidebar != null && ui.sidebar.activeTabControl == ui.sidebar.tbcMain; } }
-        public static bool Debugging = false;
-        public static bool bigTonyOn = false;
-        private bool GraphicsReset;
+        
         
         public static Action OnUpdate;
         public static bool updateTemp = false;
@@ -82,7 +81,6 @@ namespace OrbItProcs
         private OrbIt() : base(true)
         {
             game = this;
-
             Content.RootDirectory = "Content";
             Graphics.SynchronizeWithVerticalRetrace = true;
             ExitConfirmation = false;
@@ -91,30 +89,31 @@ namespace OrbItProcs
             Graphics.PreferMultiSampling = false;
             SystemBorder = false;
         }
+
         public void setResolution(resolutions r, bool fullScreen, bool resizeRoom = false)
         {
             switch (r)
             {
                 case resolutions.AutoFullScreen:
-                    Width = GraphicsDevice.Adapter.CurrentDisplayMode.Width;
-                    Height = GraphicsDevice.Adapter.CurrentDisplayMode.Height;
+                    ScreenWidth = GraphicsDevice.Adapter.CurrentDisplayMode.Width;
+                    ScreenHeight = GraphicsDevice.Adapter.CurrentDisplayMode.Height;
                     break;
                 case resolutions.FHD_1920x1080:
-                    Width = 1920; Height = 1080; break;
+                    ScreenWidth = 1920; ScreenHeight = 1080; break;
                 case resolutions.HD_1366x768:
-                    Width = 1366; Height = 768; break;
+                    ScreenWidth = 1366; ScreenHeight = 768; break;
                 case resolutions.SVGA_800x600:
-                    Width = 800; Height = 600; break;
+                    ScreenWidth = 800; ScreenHeight = 600; break;
                 case resolutions.SXGA_1280x1024:
-                    Width = 1280; Height = 1024; break;
+                    ScreenWidth = 1280; ScreenHeight = 1024; break;
                 case resolutions.VGA_640x480:
-                    Width = 640; Height = 480; break;
+                    ScreenWidth = 640; ScreenHeight = 480; break;
                 case resolutions.WSXGA_1680x1050:
-                    Width = 1680; Height = 1050; break;
+                    ScreenWidth = 1680; ScreenHeight = 1050; break;
                 case resolutions.WXGA_1280x800:
-                    Width = 1280; Height = 800; break;
+                    ScreenWidth = 1280; ScreenHeight = 800; break;
                 case resolutions.XGA_1024x768:
-                    Width = 1024; Height = 768; break;
+                    ScreenWidth = 1024; ScreenHeight = 768; break;
             }
             Manager.Graphics.IsFullScreen = fullScreen;
             GraphicsReset = true;
@@ -122,15 +121,11 @@ namespace OrbItProcs
         protected override void Initialize()
         {
             //Load Stuff.
-            Utils.PopulateComponentTypesDictionary();
             Assets.LoadAssets(Content);
-            DelegatorMethods.InitializeDelegateMethods();
             //Sup Tom.
             base.Initialize();
             //Get Roomy
-            mainRoom = new Room(this, Width, Height-40);//*8);//*8); //change to height
-            tempRoom = new Room(this, 200, 200);
-            tempRoom.borderColor = Color.Red;
+            mainRoom = new Room(this, ScreenWidth, ScreenHeight-40);//*8);//*8); //change to height
             room = mainRoom;
             //Hi-Definition Orbs:
             setResolution(resolutions.HD_1366x768, false);//(resolutions.HD_1366x768, false);
@@ -140,17 +135,11 @@ namespace OrbItProcs
             ui = UserInterface.Start();
             globalGameMode = new GlobalGameMode(this);
             ui.Initialize();
-            foreach (var tabpage in ui.sidebar.tbcViews.TabPages)
-            {
-                string whitespace = "  ";
-                tabpage.Text = whitespace + tabpage.Text + whitespace;
-            }
+
             //The only important stat in OrbIt.
             frameRateCounter = new FrameRateCounter(this);
 
-            //We put the Procs In OrbItProcs
-            processManager = new ProcessManager(this);
-            processManager.SetProcessKeybinds();
+            mainRoom.attatchToSidbar();
 
             //Keybinds
             ui.keyManager.addProcessKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
@@ -164,24 +153,11 @@ namespace OrbItProcs
 
             //LoadLevelWindow.StaticLevel("Test.xml");
         }
-        Window test;
         public resolutions preferredWindowed;
-        public static string gameMode = "SpiderDiggers";
-
-        private void RoomPanel(Room room)
-        {
-            test = new Window(Manager);
-            test.Init();
-            test.SetPosition(Width / 2, Height / 2);
-            test.Width = 200;
-            test.Height = 300;
-        }
 
         protected override void Update(GameTime gameTime)
         {
-            //Do not write code above this.
             base.Update(gameTime);
-            //Do not move the above lines.
             gametime = gameTime;
             frameRateCounter.Update(gameTime);
             if (IsActive) ui.Update(gameTime);
@@ -195,7 +171,6 @@ namespace OrbItProcs
                 room.camera.RenderAsync();
                 room.Draw();
                 room.camera.CatchUp();
-
             }
             //tempRoom.Update(gameTime);
             frameRateCounter.Draw(Assets.font);
@@ -204,22 +179,20 @@ namespace OrbItProcs
             if (GraphicsReset)
             {
                 Manager.Graphics.ApplyChanges();
-                mainRoom.roomRenderTarget = new RenderTarget2D(GraphicsDevice, Width, Height);
+                mainRoom.roomRenderTarget = new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight);
                 GraphicsReset = false;
             }
             if (OnUpdate!= null)
                 OnUpdate.Invoke();
         }
 
-        bool Title = true;
-        bool cont = false;
         //called by tom-shame
         protected override void DrawScene(GameTime gameTime)
         {
             Manager.Renderer.Begin(BlendingMode.Default);
-            Microsoft.Xna.Framework.Rectangle frame = new Microsoft.Xna.Framework.Rectangle(0, 0, Width, Height);
+            Microsoft.Xna.Framework.Rectangle frame = new Microsoft.Xna.Framework.Rectangle(0, 0, ScreenWidth, ScreenHeight);
 
-            Manager.Renderer.Draw(room.roomRenderTarget, new Microsoft.Xna.Framework.Rectangle(0, 0, Width, Height), Color.White);
+            Manager.Renderer.Draw(room.roomRenderTarget, new Microsoft.Xna.Framework.Rectangle(0, 0, ScreenWidth, ScreenHeight), Color.White);
             
             Manager.Renderer.End();
         }
@@ -227,32 +200,11 @@ namespace OrbItProcs
         {
             //fuck tom shane
         }
-        public void SwitchToMainRoom()
-        {
-            room = mainRoom;
-        }
-        public void SwitchToTempRoom(bool reset = true)
-        {
-            if (tempRoom == null) return;
-            room = tempRoom;
-            if (reset)
-            {
-                room.generalGroups.EmptyGroup();
-            }
-        }
         public static void Start()
         {
             if (game != null) throw new SystemException("Game was already Started");
             game = new OrbIt();
-            //try
-            //{
             game.Run();
-            //}
-            //catch(Exception e)
-            //{
-            //    game.mainRoom.camera.AbortThread();
-            //    throw new SystemException("???", e);
-            //}
         }
 
 

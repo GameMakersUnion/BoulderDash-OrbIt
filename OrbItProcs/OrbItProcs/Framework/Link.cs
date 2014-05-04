@@ -798,7 +798,7 @@ namespace OrbItProcs
 
         public static void GetILinkableEnumVals(List<object> list)
         {
-            foreach (Type compType in Utils.compTypes)
+            foreach (Type compType in Component.compTypes)
             {
 
                 if (!typeof(ILinkable).IsAssignableFrom(compType)) continue;

@@ -75,7 +75,7 @@ namespace OrbItProcs
             };
             HashSet<Type> comps = new HashSet<Type>() { typeof(BasicDraw), typeof(Movement), typeof(Lifetime)};
             List<Type> allComps = new List<Type>();
-            foreach (Type c in Utils.compTypes)
+            foreach (Type c in Component.compTypes)
             {
                 allComps.Add(c);
             }

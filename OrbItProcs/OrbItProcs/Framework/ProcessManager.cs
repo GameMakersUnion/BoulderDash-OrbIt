@@ -32,7 +32,7 @@ namespace OrbItProcs
         public Dictionary<Type, Process> processDict { get; set; }
         public HashSet<Process> activeProcesses;
 
-        public ProcessManager(OrbIt game)
+        public ProcessManager()
         {
             this.processDict = new Dictionary<Type, Process>();
             this.activeProcesses = new HashSet<Process>();
@@ -62,7 +62,7 @@ namespace OrbItProcs
         {
             return delegate
             {
-                OrbIt.ui.keyManager.AddProcess(GetProcess<T>());
+                OrbIt.ui.keyManager.AddProcess(this,GetProcess<T>());
             };
         }
 
@@ -103,8 +103,8 @@ namespace OrbItProcs
             //Keybindset.Add("diodespawner", new KeyBundle(KeyCodes.D8, KeyCodes.LeftShift), enableKeyBinds(proc.diodeSpawner));
             
 
-            Keybindset.AddProcess(GetProcess<CameraControl>(), false);
-            Keybindset.AddProcess(GetProcess<SpawnNodes>());
+            Keybindset.AddProcess(this, GetProcess<CameraControl>(), false);
+            Keybindset.AddProcess(this, GetProcess<SpawnNodes>());
         }
 
         public void Update()

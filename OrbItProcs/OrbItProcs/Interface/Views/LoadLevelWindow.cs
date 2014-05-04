@@ -257,7 +257,7 @@ namespace OrbItProcs
             //    saved.Add(n);
             //}
             //wallGroup.IncludeEntity(holder);
-            Node holder = Node.ContructLineWall(room, new Vector2(0, room.worldHeight - OrbIt.Height), new Vector2(room.worldWidth, room.worldHeight - OrbIt.Height), 20);
+            Node holder = Node.ContructLineWall(room, new Vector2(0, room.worldHeight - OrbIt.ScreenHeight), new Vector2(room.worldWidth, room.worldHeight - OrbIt.ScreenHeight), 20);
             room.loading = true;
             room.boulderize(delegate
             {

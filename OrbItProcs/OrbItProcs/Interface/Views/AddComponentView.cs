@@ -50,7 +50,7 @@ namespace OrbItProcs
         public void InitNode(Node node)
         {
             int heightcounter = 0;
-            foreach (Type ctype in Utils.compTypes)
+            foreach (Type ctype in Component.compTypes)
             {
                 Info info = Utils.GetInfoType(ctype);
                 if (info == null || (int)sidebar.userLevel < (int)info.userLevel) continue;

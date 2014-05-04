@@ -70,16 +70,18 @@ namespace OrbItProcs
                     }
                 }
                 else if (activeTabControl == tbcViews)
-                {
-                    if (CreatingGroup)
-                    {
-                        if (room.game.tempRoom.generalGroups.childGroups.Count == 0) return null;
-                        return room.game.tempRoom.generalGroups.childGroups.ElementAt(0).Value;
-                    }
-                    else
-                    {
+                {   
+                    //Not Sure about this. I feel it was causing bugs, Commented because I'm redoing the tempRoom. -Dante
+                    //
+                    //if (CreatingGroup)
+                    //{
+                    //    if (room.game.tempRoom.generalGroups.childGroups.Count == 0) return null;
+                    //    return room.game.tempRoom.generalGroups.childGroups.ElementAt(0).Value;
+                    //}
+                    //else
+                    //{
                         return GetActiveGroup();
-                    }
+                    //}
                 }
                 return room.masterGroup;
             }

@@ -61,7 +61,7 @@ namespace OrbItProcs
             poop.Top = 0;
             poop.Resizable = false;
             poop.Movable = false;
-            poop.Height = OrbIt.Height;
+            poop.Height = OrbIt.ScreenHeight;
             poop.Text = "Edit";
             manager.Add(poop);
 

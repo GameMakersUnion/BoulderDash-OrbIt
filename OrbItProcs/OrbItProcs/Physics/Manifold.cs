@@ -70,8 +70,6 @@ namespace OrbItProcs
                 //relative velocity
                 Vector2 rv = b.velocity + VMath.Cross(b.angularVelocity, rb) -
                              a.velocity - VMath.Cross(a.angularVelocity, ra);
-                if (OrbIt.Debugging && a.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
-                if (OrbIt.Debugging && b.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
                 //relative velocity along the normal
                 double contactVel = Vector2.Dot(rv, normal);
                 //do not resolve if velocities are seperating
@@ -88,19 +86,14 @@ namespace OrbItProcs
                 j /= (double)contact_count;
                 //apply impulse
                 Vector2 impulse = VMath.MultVectDouble(normal, j); // normal * j;
-                if (OrbIt.Debugging && float.IsNaN(impulse.X)) System.Diagnostics.Debugger.Break();
                 a.ApplyImpulse(-impulse, ra);
                 b.ApplyImpulse(impulse, rb);
                 //friction impulse
                 rv = b.velocity + VMath.Cross(b.angularVelocity, rb) -
                      a.velocity - VMath.Cross(a.angularVelocity, ra);
-                if (OrbIt.Debugging && a.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
-                if (OrbIt.Debugging && b.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
                 Vector2 t = rv - (normal * Vector2.Dot(rv, normal));
-                if (OrbIt.Debugging && float.IsNaN(t.X)) System.Diagnostics.Debugger.Break();
                 //t.Normalize();
                 VMath.NormalizeSafe(ref t);
-                if (OrbIt.Debugging && float.IsNaN(t.X)) System.Diagnostics.Debugger.Break();
                 //j tangent magnitude
                 double jt = -Vector2.Dot(rv, t);
                 jt /= invMassSum;
@@ -129,8 +122,6 @@ namespace OrbItProcs
         }
         void InfinitMassCorrection()
         {
-            if (OrbIt.Debugging && a.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
-            if (OrbIt.Debugging && b.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
             VMath.Set(ref a.velocity, 0, 0);//a.velocity.Set(0, 0);
             VMath.Set(ref b.velocity, 0, 0);//b.velocity.Set(0, 0);
         }
