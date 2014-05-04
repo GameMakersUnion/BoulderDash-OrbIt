@@ -53,7 +53,7 @@ namespace OrbItProcs
             linkToPlayers = true;
             shootNodeSpeed = 5f;
 
-            shootNode = new Node(parent.room, props);
+            shootNode = new Node(parent.room);
             shootNode.name = "linknode";
             shootNode.body.radius = shootNodeRadius;
             shootNode.body.ExclusionCheck += (c1, c2) => c2 == parent.body;

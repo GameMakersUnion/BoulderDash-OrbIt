@@ -754,7 +754,7 @@ namespace OrbItProcs
                 foreach(ILinkable link in components)
                 {
                     Component c = (Component)link;
-                    result += c.com.ToString().Substring(0, 4) + "|";
+                    result += c.GetType().Name.Substring(0, 4) + "|";
                 }
             }
             result += "[" + FormationType + "]";

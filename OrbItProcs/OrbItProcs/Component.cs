@@ -50,11 +50,7 @@ namespace OrbItProcs
         
         [Polenter.Serialization.ExcludeFromSerialization]
         public virtual Node parent { get; set; }
-        //*/
-        //flag as not editable in InspectorBox
-        private comp _com;
-        public comp com { get { return _com; } set { } }
-        //flag as not editable in InspectorBox
+
         private bool _CallDraw = true;
         public bool CallDraw { get { return _CallDraw; } set { _CallDraw = value; } }
 
@@ -82,24 +78,6 @@ namespace OrbItProcs
         public bool isEssential()
         {
             return (compType & mtypes.essential) == mtypes.essential;
-        }
-
-        protected virtual void GetCompEnum()
-        {
-            string s = this.GetType().ToString().ToLower().LastWord('.');
-            foreach(string name in Enum.GetNames(typeof(comp)))
-            {
-                if (name.Equals(s))
-                {
-                    _com = (comp)Enum.Parse(typeof(comp), name);
-                    break;
-                }
-            }
-        }
-
-        public Component()
-        {
-            GetCompEnum();
         }
 
         public virtual void Initialize(Node parent) { this.parent = parent; }

@@ -73,15 +73,14 @@ namespace OrbItProcs
             Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
                                 { nodeE.position, pos },
             };
-            HashSet<comp> comps = new HashSet<comp>() { comp.basicdraw, comp.movement, comp.lifetime };
-            HashSet<comp> allComps = new HashSet<comp>();
-            foreach (comp c in Enum.GetValues(typeof(comp)))
+            HashSet<Type> comps = new HashSet<Type>() { typeof(BasicDraw), typeof(Movement), typeof(Lifetime)};
+            List<Type> allComps = new List<Type>();
+            foreach (Type c in Utils.compTypes)
             {
                 allComps.Add(c);
             }
 
-            int enumsize = allComps.Count;
-            int total = enumsize - comps.Count;
+            int total = allComps.Count - comps.Count;
 
 
             Random random = Utils.random;
@@ -98,9 +97,9 @@ namespace OrbItProcs
             int counter = 0;
             while (compsToAdd > 0)
             {
-                if (counter++ > enumsize) break;
-                int compNum = random.Next(enumsize - 1);
-                comp newcomp = (comp)compNum;
+                if (counter++ > allComps.Count) break;
+                int compNum = random.Next(allComps.Count - 1);
+                Type newcomp = allComps[compNum];
                 if (comps.Contains(newcomp))
                 {
                     continue;
@@ -109,7 +108,7 @@ namespace OrbItProcs
                 compsToAdd--;
             }
 
-            foreach (comp c in comps)
+            foreach (Type c in comps)
             {
                 userP.Add(c, true);
             }

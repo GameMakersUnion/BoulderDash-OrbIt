@@ -269,14 +269,8 @@ namespace OrbItProcs {
             }
         }
         public static HashSet<Type> compTypes;
-        public static Dictionary<Type, comp> compEnums;
         public static Dictionary<Type, Info> compInfos;
 
-        public static comp GetComponentCompFromType(Type t)
-        {
-            if (compEnums.ContainsKey(t)) throw new SystemException("Type was not found in compEnums dictionary.");
-            return compEnums[t];
-        }
         public static mtypes GetCompTypes(Type t)
         {
             FieldInfo pinfo = t.GetField("CompType");
