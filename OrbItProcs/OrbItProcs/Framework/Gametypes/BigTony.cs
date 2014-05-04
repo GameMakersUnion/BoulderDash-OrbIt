@@ -157,10 +157,8 @@ namespace OrbItProcs
             };
             bigtony.OnAffectOthers += updateScores;
 
-            if (OrbIt.bigTonyOn)
-            {
                 room.masterGroup.fullSet.Add(bigtony); //#bigtony
-            }
+            
         }
         public static Color Add(Color c, Color b)
         {

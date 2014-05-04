@@ -175,8 +175,8 @@ namespace OrbItProcs
         public Room room;
         public float zoom;
         
-        public float vWidth{get{return OrbIt.Width - CameraOffsetVect.X - OrbIt.ui.sidebar.toolWindow.toolBar.Width;}}
-        public float vHeight { get { return OrbIt.Height - CameraOffsetVect.Y; } }
+        public float vWidth{get{return OrbIt.ScreenWidth - CameraOffsetVect.X - OrbIt.ui.sidebar.toolWindow.toolBar.Width;}}
+        public float vHeight { get { return OrbIt.ScreenHeight - CameraOffsetVect.Y; } }
 
         public Vector2 virtualTopLeft { get { return pos - new Vector2(room.gridsystemAffect.gridWidth/2, room.gridsystemAffect.gridHeight/ 2) * 1 / zoom; } }// + CameraOffsetVect; } }
         public SpriteBatch batch;

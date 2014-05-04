@@ -47,7 +47,7 @@ namespace OrbItProcs
             poop.Left = sidebar.master.Left;
             poop.Width = sidebar.Width;
             poop.Top = 0;
-            poop.Height = OrbIt.Height;
+            poop.Height = OrbIt.ScreenHeight;
             //poop.Text = "Create Group";
             //poop.Closed += delegate { UserInterface.GameInputDisabled = false; sidebar.CreatingGroup = false; sidebar.ui.game.SwitchToMainRoom(); sidebar.groupsView.createGroupWindow = null; };
             //window.ShowModal();

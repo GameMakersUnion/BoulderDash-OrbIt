@@ -63,7 +63,7 @@ namespace OrbItProcs {
         }
         public static string RandomName(int tries = 0)
         {
-            var dict = Utils.compTypes;
+            var dict = Component.compTypes;
             int depth = Utils.random.Next(dict.Count);
             Type t = dict.ElementAt(depth);
             var props = t.GetProperties();
@@ -268,8 +268,8 @@ namespace OrbItProcs {
                 default: return "0";
             }
         }
-        public static HashSet<Type> compTypes;
-        public static Dictionary<Type, Info> compInfos;
+        
+        
 
         public static mtypes GetCompTypes(Type t)
         {
@@ -319,21 +319,7 @@ namespace OrbItProcs {
             return isGenericType(typeof(Toggle<>), t);
         }
 
-        public static void PopulateComponentTypesDictionary()
-        {
-            compTypes = AppDomain.CurrentDomain.GetAssemblies()
-                       .SelectMany(assembly => assembly.GetTypes())
-                       .Where(type => type.IsSubclassOf(typeof(Component))).ToHashSet();
-
-
-            compInfos = new Dictionary<Type, Info>();
-            foreach(Type t in compTypes)
-            {
-                Info info = GetInfoType(t);
-                if (info == null) continue;
-                compInfos[t] = info;
-            }
-        }
+        
         //thanks, skeet!
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)
         {

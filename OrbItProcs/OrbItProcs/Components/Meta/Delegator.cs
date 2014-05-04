@@ -56,7 +56,7 @@ namespace OrbItProcs
         public static Dictionary<string, dynamic> delegates = new Dictionary<string, dynamic>();
         public static Dictionary<string, Type> delegateTypes = new Dictionary<string, Type>();
 
-        public static void InitializeDelegateMethods()
+        static DelegatorMethods()
         {
             Type type = typeof(DelegatorMethods);
             foreach(var meth in type.GetMethods())

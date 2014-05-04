@@ -19,7 +19,7 @@ using System.IO;
 namespace OrbItProcs {
     public class UserInterface 
     {
-        public static UserInterface ui;
+        private static UserInterface ui;
         public static bool tomShaneWasClicked = false;
         public static readonly Color TomShanePuke = new Color(75, 187, 0);
         public static readonly Color TomDark = new Color(65, 65, 65);
@@ -115,6 +115,11 @@ namespace OrbItProcs {
             ui.sidebar.InitializePlayersPage();
             ui.sidebar.InitializeItemsPage();
             //ui.sidebar.InitializeBulletsPage();
+            foreach (var tabpage in ui.sidebar.tbcViews.TabPages)
+            {
+                string whitespace = "  ";
+                tabpage.Text = whitespace + tabpage.Text + whitespace;
+            }
         }
 
         public void SetSidebarActive(bool active)
@@ -296,7 +301,7 @@ namespace OrbItProcs {
             //ignore mouse clicks outside window
             if (!OrbIt.isFullScreen)
             {
-                if (mouseState.X >= OrbIt.Width || mouseState.X < 0 || mouseState.Y >= OrbIt.Height || mouseState.Y < 0)
+                if (mouseState.X >= OrbIt.ScreenWidth || mouseState.X < 0 || mouseState.Y >= OrbIt.ScreenHeight || mouseState.Y < 0)
                     return;
             }
 

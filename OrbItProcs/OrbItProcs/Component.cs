@@ -28,7 +28,6 @@ namespace OrbItProcs
 
     public abstract class Component {
         public virtual mtypes compType { get; set; }
-
         protected bool _active = false;
         [Info(UserLevel.Developer)]
         public virtual bool active
@@ -270,6 +269,26 @@ namespace OrbItProcs
            //destObject.InitializeLists();
            //destObject.AfterCloning();
        }
+
+
+       public static HashSet<Type> compTypes;
+       public static Dictionary<Type, Info> compInfos;
+       static Component()
+       {
+           compTypes = AppDomain.CurrentDomain.GetAssemblies()
+                      .SelectMany(assembly => assembly.GetTypes())
+                      .Where(type => type.IsSubclassOf(typeof(Component))).ToHashSet();
+
+
+           compInfos = new Dictionary<Type, Info>();
+           foreach (Type t in compTypes)
+           {
+               Info info = Utils.GetInfoType(t);
+               if (info == null) continue;
+               compInfos[t] = info;
+           }
+       }
+
     }
 
     

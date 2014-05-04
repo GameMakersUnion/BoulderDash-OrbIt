@@ -53,7 +53,7 @@ namespace OrbItProcs
 
             this.Left = Left;
             this.Top = Top;
-            this.Height = Height ?? OrbIt.Height / 3;
+            this.Height = Height ?? OrbIt.ScreenHeight / 3;
 
             HeightCounter = Top;
             Width = parent.Width - LeftPadding * 2;

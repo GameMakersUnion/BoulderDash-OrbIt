@@ -309,7 +309,7 @@ namespace OrbItProcs
 
         public static void PopulateDelegatesAll()
         {
-            foreach (Type componentType in Utils.compTypes)
+            foreach (Type componentType in Component.compTypes)
             {
                 PopulateDelegates(componentType);
             }

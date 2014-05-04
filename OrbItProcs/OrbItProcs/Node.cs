@@ -690,8 +690,7 @@ namespace OrbItProcs {
         }
         public void addComponent<T>(bool active, bool overwrite = false) where T : Component
         {
-            bool fetch = fetchComponent(typeof(T), active, overwrite);
-            if (fetch) SortComponentLists();
+            addComponent(typeof(T), active, overwrite);
         }
         public void addComponent(Component component, bool active, bool overwrite = false)
         {

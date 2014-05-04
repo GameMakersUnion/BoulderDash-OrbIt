@@ -19,6 +19,8 @@ namespace OrbItProcs {
         
         public string name;
 
+        public ProcessManager processManager { get; set; }
+
         public int worldWidth { get; set; }
         public int worldHeight { get; set; }
         public int colIterations { get; set; }
@@ -220,11 +222,11 @@ namespace OrbItProcs {
 
 
             // grid System
-            gridsystemAffect = new GridSystem(this, 40, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
-            gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
+            gridsystemAffect = new GridSystem(this, 40, new Vector2(0, worldHeight - OrbIt.ScreenHeight), worldWidth, OrbIt.ScreenHeight);
+            gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX, new Vector2(0, worldHeight - OrbIt.ScreenHeight), worldWidth, OrbIt.ScreenHeight);
             //gridsystemAffect = new GridSystem(this, 40, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
             level = new Level(this, 40, 40, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
-            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, OrbIt.Width, OrbIt.Height);
+            roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, OrbIt.ScreenWidth, OrbIt.ScreenHeight);
             //gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
             camera = new ThreadedCamera(this, 1f);
             DrawLinks = true;
@@ -284,9 +286,16 @@ namespace OrbItProcs {
             MakeItemGroups();
         }
 
+        public void attatchToSidbar()
+        {
+            //We put the Procs In OrbItProcs
+            processManager = new ProcessManager();
+            processManager.SetProcessKeybinds();
+        }
+
         public void MakePresetGroups()
         {
-            var infos = Utils.compInfos;
+            var infos = Component.compInfos;
             int runenum = 0;
             foreach(Type t in infos.Keys)
             {
@@ -312,7 +321,7 @@ namespace OrbItProcs {
             itemDef.addComponent(typeof(ItemPayload), true);
             itemDef.movement.active = false;
 
-            var infos = Utils.compInfos;
+            var infos = Component.compInfos;
             foreach (Type t in infos.Keys)
             {
                 Info info = infos[t];
@@ -626,9 +635,9 @@ namespace OrbItProcs {
         }
         public void GroupSelectDraw() //todo: make this the draw method in groupselect class
         {
-            if (game.processManager.processDict.ContainsKey(typeof(GroupSelect)))
+            if (processManager.processDict.ContainsKey(typeof(GroupSelect)))
             {
-                HashSet<Node> groupset = game.processManager.GetProcess<GroupSelect>().groupSelectSet;
+                HashSet<Node> groupset = processManager.GetProcess<GroupSelect>().groupSelectSet;
                 if (groupset != null)
                 {
                     targetNodeGraphic.body.color = Color.LimeGreen;
@@ -681,7 +690,7 @@ namespace OrbItProcs {
             //player1.Draw(spritebatch);
             //level.Draw(spritebatch);
 
-            game.processManager.Draw();
+            processManager.Draw();
 
             GraphData.DrawGraph();
             //Testing.TestHues();
@@ -878,7 +887,7 @@ namespace OrbItProcs {
             worldWidth = (int)resizeVect.X;
             worldHeight = (int)resizeVect.Y;
             int newCellsX = worldWidth / gridsystemCollision.cellWidth;
-            int gridHeight = fillWithGrid ? worldHeight : OrbIt.Height;
+            int gridHeight = fillWithGrid ? worldHeight : OrbIt.ScreenHeight;
             gridsystemAffect = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - gridHeight), worldWidth, gridHeight);
             level = new Level(this, newCellsX, newCellsX, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
             //roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
@@ -891,13 +900,13 @@ namespace OrbItProcs {
         public bool gameStarted = false;
         internal void boulderize(Action afterFilling)
         {
-            int heightCounter = OrbIt.Height/2;
+            int heightCounter = OrbIt.ScreenHeight/2;
 
             FloodFill.afterFilling += afterFilling;
-            while (heightCounter < worldHeight - OrbIt.Height)
+            while (heightCounter < worldHeight - OrbIt.ScreenHeight)
             {
                 FloodFill.startFill(new Vector2(worldWidth / 2, heightCounter));
-                heightCounter += OrbIt.Height;
+                heightCounter += OrbIt.ScreenHeight;
             }
         }
     }

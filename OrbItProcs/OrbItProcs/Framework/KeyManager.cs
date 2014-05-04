@@ -853,7 +853,7 @@ namespace OrbItProcs
                 }
             }
         }
-        public void AddProcess(Process p, bool Temporary = true)
+        public void AddProcess(ProcessManager pm, Process p, bool Temporary = true)
         {
             if (p == null) throw new SystemException("Process parameter was null"); //well ya see kids...
             if (p.processKeyActions == null) throw new SystemException("Process parameter had no keyactions");
@@ -863,7 +863,7 @@ namespace OrbItProcs
                 if (TemporaryProcess != p)
                 {
                     //remove current temporary process and reinstate the keybinds it had replaced when it was added
-                    RemoveTemporaryProcess();
+                    RemoveTemporaryProcess(pm);
 
                     ReplacedBundles[p] = new List<Tuple<KeyBundle, KeyAction>>();
                     foreach (KeyAction a in p.processKeyActions.Keys)
@@ -878,8 +878,8 @@ namespace OrbItProcs
                         Keybinds[p.processKeyActions[a]] = a;
                     }
                     TemporaryProcess = p;
-                    if (!ui.game.processManager.activeProcesses.Contains(p))
-                        ui.game.processManager.activeProcesses.Add(p);
+                    if (!pm.activeProcesses.Contains(p))
+                        pm.activeProcesses.Add(p);
                 }
             }
             else //permanent process
@@ -896,7 +896,7 @@ namespace OrbItProcs
             }
         }
 
-        public void RemoveTemporaryProcess()
+        public void RemoveTemporaryProcess(ProcessManager pm)
         {
             if (TemporaryProcess == null) return;//throw new SystemException("Temporary process was null");
 
@@ -917,7 +917,7 @@ namespace OrbItProcs
                     Keybinds.Add(tup.Item1, tup.Item2);
                 }
             }
-            ui.game.processManager.activeProcesses.Remove(TemporaryProcess);
+            pm.activeProcesses.Remove(TemporaryProcess);
 
             ReplacedBundles.Remove(TemporaryProcess);
             TemporaryProcess = null; //maybe disable temporary process? or should we let caller do that
