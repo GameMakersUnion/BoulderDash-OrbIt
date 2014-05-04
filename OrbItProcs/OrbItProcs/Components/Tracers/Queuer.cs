@@ -55,7 +55,6 @@ namespace OrbItProcs
         public Queuer(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.queuer;
             InitializeLists();
             
         }

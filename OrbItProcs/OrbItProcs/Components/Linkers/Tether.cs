@@ -93,7 +93,6 @@ namespace OrbItProcs
             {
                 this.parent = parent;
             }
-            com = comp.tether;
         }
 
         public override void InitializeLists()

@@ -357,8 +357,8 @@ namespace OrbItProcs
             if (color2 != null) c2 = (Color)color2;
             Vector2 pos = position * zoom;
             if (offset) pos += CameraOffsetVect;
-            nextFrame.Enqueue(new DrawCommand(text, position * zoom + CameraOffsetVect, c2, scale, layerDepth: (((float)Layer) / 10)));
-            nextFrame.Enqueue(new DrawCommand(text, position * zoom + CameraOffsetVect + new Vector2(1, -1), color, scale, layerDepth: (((float)Layer) / 10)));
+            nextFrame.Enqueue(new DrawCommand(text, ((position - virtualTopLeft) * zoom) + CameraOffsetVect, c2, scale, layerDepth: (((float)Layer) / 10)));
+            nextFrame.Enqueue(new DrawCommand(text, ((position - virtualTopLeft) * zoom) + CameraOffsetVect + new Vector2(1, -1), color, scale, layerDepth: (((float)Layer) / 10)));
         }
         public void DrawStringScreen(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true, Layers Layer = Layers.Over5)
         {

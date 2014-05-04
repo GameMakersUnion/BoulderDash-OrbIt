@@ -105,7 +105,6 @@ namespace OrbItProcs
             appt = new Appointment(managedUpdate, msInterval.value);
             //smartshifting = true;
             if (parent != null) this.parent = parent;
-            com = comp.colorchanger;
             colormode = ColorMode.hueShifter;
             inc = 1;
             phaseSpeed = 10;

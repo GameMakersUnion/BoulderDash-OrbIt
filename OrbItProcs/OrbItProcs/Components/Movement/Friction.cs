@@ -42,7 +42,6 @@ namespace OrbItProcs
         public Friction(Node parent)
         {
             this.parent = parent;
-            this.com = comp.friction;
             force = 0.01f;
         }
 

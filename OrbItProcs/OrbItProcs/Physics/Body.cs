@@ -244,7 +244,6 @@ namespace OrbItProcs
         {
             if (parent != null) this.parent = parent;
             //_texture = textures.rock1;
-            //com = comp.body;
             //methods = mtypes.none;
             this.shape = shape ?? new Circle(25);
             this.shape.body = this;

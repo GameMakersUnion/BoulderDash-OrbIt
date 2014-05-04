@@ -185,7 +185,6 @@ namespace OrbItProcs
         public Delegator(Node parent)
         {
             this.parent = parent;
-            com = comp.delegator;
             datastores = new Dictionary<string, DataStore>();
             delegates = new Dictionary<string, MethodEntry>();
             foreach(string key in DelegatorMethods.delegates.Keys)

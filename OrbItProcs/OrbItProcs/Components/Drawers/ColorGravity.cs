@@ -102,7 +102,6 @@ namespace OrbItProcs
         public ColorGravity(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.colorgravity;
             colvelocity = new Vector3(0f, 0f, 0f);
             multiplier = 1f;
             distancemod = DistanceMod.color;

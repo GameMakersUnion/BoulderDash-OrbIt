@@ -53,7 +53,6 @@ namespace OrbItProcs
             end = OrbIt.game.Content.Load<SoundEffect>("coin");
             fanfare = OrbIt.game.Content.Load<SoundEffect>("fanfare");
             if (parent != null) this.parent = parent;
-            com = comp.scheduler;
         }
 
         public override void OnSpawn()

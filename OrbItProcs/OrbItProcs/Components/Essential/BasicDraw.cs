@@ -57,7 +57,6 @@ namespace OrbItProcs
         public BasicDraw(Node parent = null) 
         {
             if (parent != null) this.parent = parent;
-            com = comp.basicdraw;
             UpdateColor();
             AlphaPercent = 100f;
             DrawLayer = Layers.Under1;

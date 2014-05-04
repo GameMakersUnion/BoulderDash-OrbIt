@@ -29,7 +29,6 @@ namespace OrbItProcs
         public Diode(Node parent)
         {
             this.parent = parent;
-            this.com = comp.diode;
             mode = Mode.neitherBlocked;
             maxTickets = 4;
             usedTickets = 0;

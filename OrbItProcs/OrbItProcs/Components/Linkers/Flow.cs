@@ -78,7 +78,6 @@ namespace OrbItProcs
 
 
             }
-            com = comp.flow;
 
             //InitializeLists();
 

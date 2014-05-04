@@ -61,7 +61,6 @@ namespace OrbItProcs
         public Circler(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.circler;
             angleVelocity = 0.01f;
             angleAcceleration = 0.001f;
             maxVel = 0.3f;

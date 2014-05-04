@@ -43,7 +43,6 @@ namespace OrbItProcs
         public FixedForce() : this(null) { }
         public FixedForce(Node parent)
         {
-            com = comp.fixedforce;
             if (parent != null) this.parent = parent;
             multiplier = 1f;
             terminal = new Toggle<float>(5f, true);

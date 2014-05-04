@@ -147,10 +147,12 @@ namespace OrbItProcs {
             {
                 sidebar.master.Visible = false;
                 sidebar.master.Enabled = false;
-                foreach(Button b in ToolWindow.buttons.Values)
-                {
-                    b.Visible = false;
-                }
+                //foreach(Button b in ToolWindow.buttons.Values)
+                //{
+                //    b.Visible = false;
+                //}
+
+                sidebar.toolWindow.toolBar.Visible = false;
 
             }
             else

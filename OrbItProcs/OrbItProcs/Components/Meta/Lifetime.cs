@@ -33,7 +33,6 @@ namespace OrbItProcs
         public Lifetime(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.lifetime; 
             timeUntilDeath = new Toggle<int>(5000, false);
 
         }

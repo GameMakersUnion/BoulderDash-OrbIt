@@ -19,7 +19,6 @@ namespace OrbItProcs
         public RandomMove(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.randommove; 
         }
 
         public override void AffectSelf()

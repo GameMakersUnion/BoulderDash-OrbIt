@@ -78,7 +78,6 @@ namespace OrbItProcs
             {
                 this.parent = parent;
             }
-            com = comp.waver;
             amp = 20;
             period = 1000;
             composite = 1;

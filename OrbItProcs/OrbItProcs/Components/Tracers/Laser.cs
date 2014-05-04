@@ -70,7 +70,6 @@ namespace OrbItProcs
             {
                 this.parent = parent;
             }
-            com = comp.laser; 
             InitializeLists();
             brightness = new Toggle<float>(1f, false);
             thickness = 5f;

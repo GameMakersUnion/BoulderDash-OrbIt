@@ -268,11 +268,6 @@ namespace OrbItProcs
                //}
 
                 room.resize(v);
-//#tojam
-                foreach (var n in room.masterGroup.fullSet)
-                {
-                    n.body.velocity = Vector2.Zero;
-                }
                 Player.ResetPlayers(OrbIt.game.mainRoom);
                 room.loading = false;
             }); 

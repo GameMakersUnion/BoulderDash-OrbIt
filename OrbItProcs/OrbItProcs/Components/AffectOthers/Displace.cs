@@ -52,7 +52,6 @@ namespace OrbItProcs
         public Displace(Node parent)
         {
             if (parent != null) this.parent = parent;
-            com = comp.displace;
             multiplier = 100f;
             lowerbound = 20;
             radius = 800f;

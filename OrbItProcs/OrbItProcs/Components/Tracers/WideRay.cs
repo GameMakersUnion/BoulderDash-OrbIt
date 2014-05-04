@@ -52,7 +52,6 @@ namespace OrbItProcs
         public WideRay(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.wideray;
             rayscale = 20;
             width = 3;
         }

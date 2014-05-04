@@ -91,7 +91,6 @@ namespace OrbItProcs
         public Shovel(Node parent)
         {
             this.parent = parent;
-            this.com = comp.shovel;
             shovelRadius = 15;
             shovelReach = 100;
             scoopReach = 60;

@@ -14,7 +14,6 @@ namespace OrbItProcs
         public Swap(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.swap;
         }
         public void SwitchPlayerNode(Node n1, Node n2)
         {

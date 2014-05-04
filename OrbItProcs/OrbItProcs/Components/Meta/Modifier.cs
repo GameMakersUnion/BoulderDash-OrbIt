@@ -29,7 +29,6 @@ namespace OrbItProcs
         public Modifier(Node parent)
         {
             if (parent != null) this.parent = parent;
-            com = comp.modifier;
         }
 
         public void UpdateReferences()

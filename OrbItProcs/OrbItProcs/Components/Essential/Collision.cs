@@ -196,7 +196,6 @@ namespace OrbItProcs
         public Collision(Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            com = comp.collision; 
             _AllHandlersEnabled = true;
             UpdateCollisionSet();
         }
