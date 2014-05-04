@@ -111,7 +111,7 @@ namespace OrbItProcs
         Vector2 v;
         public void LoadLevel(LevelSave levelSave)
         {
-            Room room = OrbIt.game.mainRoom;
+            Room room = OrbIt.game.room;
             //room.worldWidth = levelSave.levelWidth;
             //room.worldHeight = levelSave.levelHeight;
             v = new Vector2(levelSave.levelWidth, levelSave.levelHeight);
@@ -122,7 +122,7 @@ namespace OrbItProcs
                 ObservableHashSet<Node> nodes = new ObservableHashSet<Node>();
                 for (int i = 0; i < levelSave.polygonVertices.Count; i++)
                 {
-                    Node newNode = new Node(sidebar.ui.game.mainRoom, ShapeType.ePolygon);
+                    Node newNode = new Node(sidebar.ui.game.room, ShapeType.ePolygon);
                     Polygon poly = (Polygon)newNode.body.shape;
                     //poly.SetCenterOfMass(vertices);
                     float[] list = levelSave.polygonVertices[i];
@@ -157,7 +157,7 @@ namespace OrbItProcs
         }
         public static void LoadLevelSpider(LevelSave levelSave)
         {
-            Room room = OrbIt.game.mainRoom;
+            Room room = OrbIt.game.room;
             //room.worldWidth = levelSave.levelWidth;
             //room.worldHeight = levelSave.levelHeight;
             Vector2 v = new Vector2(levelSave.levelWidth, levelSave.levelHeight);
@@ -166,7 +166,7 @@ namespace OrbItProcs
             ObservableHashSet<Node> nodes = new ObservableHashSet<Node>();
             for (int i = 0; i < levelSave.polygonVertices.Count; i++)
             {
-                Node newNode = new Node(OrbIt.ui.game.mainRoom, ShapeType.ePolygon);
+                Node newNode = new Node(OrbIt.ui.game.room, ShapeType.ePolygon);
                 Polygon poly = (Polygon)newNode.body.shape;
                 //poly.SetCenterOfMass(vertices);
                 float[] list = levelSave.polygonVertices[i];
@@ -268,7 +268,7 @@ namespace OrbItProcs
                //}
 
                 room.resize(v);
-                Player.ResetPlayers(OrbIt.game.mainRoom);
+                Player.ResetPlayers(OrbIt.game.room);
                 room.loading = false;
             }); 
         }

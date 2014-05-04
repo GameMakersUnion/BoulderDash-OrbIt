@@ -92,7 +92,7 @@ namespace OrbItProcs
             toolbar.AddButton("static", enableKeyBinds<GridSpawn>(), "Spawn nodes statically to the grid.");
             toolbar.AddButton("resize", enableKeyBinds<ResizeRoom>(), "Change the size of the Room");
             
-            Keybindset.Add("resetplayers", new KeyBundle(KeyCodes.Home), delegate { Player.ResetPlayers(OrbIt.game.mainRoom); });
+            Keybindset.Add("resetplayers", new KeyBundle(KeyCodes.Home), delegate { Player.ResetPlayers(OrbIt.game.room); });
 
             Keybindset.Add("pausegame", new KeyBundle(KeyCodes.F, KeyCodes.LeftShift), delegate { OrbIt.ui.IsPaused = !OrbIt.ui.IsPaused; });
 

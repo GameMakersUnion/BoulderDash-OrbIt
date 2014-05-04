@@ -104,7 +104,7 @@ namespace OrbItProcs
 
             insView = new InspectorView(sidebar, editTab, Left, lblComponents.Height + 10);
             insView.GroupSync = true;
-            insView.Height = 120;
+            insView.Height = 220;
             OnItemEvent += OnEvent2;
             editTab.Margins = new Margins(0, 0, 0, 0);
 
@@ -112,6 +112,8 @@ namespace OrbItProcs
             bottomArea.TabPages[1].Text = "Preview";
             TabPage previewTab = bottomArea.TabPages[1];
             previewTab.Margins = new Margins(0, 0, 0, 0);
+            previewTab.Height = insView.Height + 60;
+            bottomArea.Height = previewTab.Height;
             //roomPanel = new RoomPanel(sidebar, previewTab, OrbIt.game.tempRoom, true, 10, 15);
 
             //UpdateGroupComboBox();

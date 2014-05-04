@@ -51,26 +51,20 @@ namespace OrbItProcs
         private static bool GraphicsReset = false;
         public static int ScreenWidth { get { return game.Graphics.PreferredBackBufferWidth; } set { game.Graphics.PreferredBackBufferWidth = value; } }
         public static int ScreenHeight { get { return game.Graphics.PreferredBackBufferHeight; } set { game.Graphics.PreferredBackBufferHeight = value; } }
+        public static int GameAreaWidth { get { return ScreenWidth - ui.sidebar.Width - ui.sidebar.toolWindow.toolBar.Width; } }
+        public static int GameAreaHeight { get { return ScreenHeight - 40; } }
 
         public static GlobalGameMode globalGameMode { get; set; }
 
         public SharpSerializer serializer = new SharpSerializer();
-        public Room room
-        {
-            get { return _activeRoom; }
-            set
-            {
-                if (value == null) throw new SystemException("Room was null when reseting room references");
-                _activeRoom = value;
-                if (ui != null) ui.sidebar.UpdateGroupComboBoxes();
-            }
-        }
-        private Room _activeRoom;
+        public Room room{get;set;}
+
         public Room mainRoom;
         //public Room tempRoom;
         
         public FrameRateCounter frameRateCounter;
         public resolutions? preferredFullScreen;
+        public resolutions preferredWindowed;
         
         public bool IsOldUI { get { return ui != null && ui.sidebar != null && ui.sidebar.activeTabControl == ui.sidebar.tbcMain; } }
         
@@ -118,72 +112,49 @@ namespace OrbItProcs
             Manager.Graphics.IsFullScreen = fullScreen;
             GraphicsReset = true;
         }
+        protected override void LoadContent()
+        {
+            Assets.LoadAssets(Content);
+            base.LoadContent();
+        }
         protected override void Initialize()
         {
-            //Load Stuff.
-            Assets.LoadAssets(Content);
-            //Sup Tom.
+           
             base.Initialize();
-            //Get Roomy
-            mainRoom = new Room(this, ScreenWidth, ScreenHeight-40);//*8);//*8); //change to height
-            room = mainRoom;
-            //Hi-Definition Orbs:
-            setResolution(resolutions.HD_1366x768, false);//(resolutions.HD_1366x768, false);
-            //A game need players, no?
-            Player.CreatePlayers(mainRoom);
-            //UI
+            base.MainWindow.TransparentClientArea = true;
+            room = new Room(this, ScreenWidth, ScreenHeight-40);
+            setResolution(resolutions.HD_1366x768, false);
+            Player.CreatePlayers(room);
             ui = UserInterface.Start();
-            globalGameMode = new GlobalGameMode(this);
             ui.Initialize();
-
-            //The only important stat in OrbIt.
+            globalGameMode = new GlobalGameMode(this);
             frameRateCounter = new FrameRateCounter(this);
-
-            mainRoom.attatchToSidbar();
-
-            //Keybinds
-            ui.keyManager.addProcessKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
-            ui.keyManager.addProcessKeyAction("togglesidebar", KeyCodes.OemTilde, OnPress: ui.ToggleSidebar);
-            ui.keyManager.addProcessKeyAction("switchview", KeyCodes.PageDown, OnPress: ui.SwitchView);
-            ui.keyManager.addProcessKeyAction("removeall", KeyCodes.Delete, OnPress: () => ui.sidebar.btnRemoveAllNodes_Click(null, null));
-
-            MainWindow.TransparentClientArea = true;
-            //ui.ToggleSidebar();
-            //Testing.sawtoothTest();
-
-            //LoadLevelWindow.StaticLevel("Test.xml");
+            room.attatchToSidebar();
+            GlobalKeyBinds();
         }
-        public resolutions preferredWindowed;
+
+        int @int = 5;
 
         protected override void Update(GameTime gameTime)
         {
+            
+            OrbIt.gametime = gameTime;
             base.Update(gameTime);
-            gametime = gameTime;
             frameRateCounter.Update(gameTime);
             if (IsActive) ui.Update(gameTime);
 
-            if (!ui.IsPaused)
-            {
-                if (mainRoom != null) mainRoom.Update(gameTime);
-            }
-            else
-            {
-                room.camera.RenderAsync();
-                room.Draw();
-                room.camera.CatchUp();
-            }
-            //tempRoom.Update(gameTime);
-            frameRateCounter.Draw(Assets.font);
+            if (!ui.IsPaused) room.Update(gameTime);
+            else room.drawOnly();
 
             base.Draw(gameTime);
             if (GraphicsReset)
             {
                 Manager.Graphics.ApplyChanges();
-                mainRoom.roomRenderTarget = new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight);
+                room.roomRenderTarget = new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight);
                 GraphicsReset = false;
             }
-            if (OnUpdate!= null)
-                OnUpdate.Invoke();
+
+            if (OnUpdate!= null) OnUpdate.Invoke();
         }
 
         //called by tom-shame
@@ -200,6 +171,7 @@ namespace OrbItProcs
         {
             //fuck tom shane
         }
+
         public static void Start()
         {
             if (game != null) throw new SystemException("Game was already Started");
@@ -207,6 +179,13 @@ namespace OrbItProcs
             game.Run();
         }
 
+        private void GlobalKeyBinds()
+        {
+            ui.keyManager.addGlobalKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
+            ui.keyManager.addGlobalKeyAction("togglesidebar", KeyCodes.OemTilde, OnPress: ui.ToggleSidebar);
+            ui.keyManager.addGlobalKeyAction("switchview", KeyCodes.PageDown, OnPress: ui.SwitchView);
+            ui.keyManager.addGlobalKeyAction("removeall", KeyCodes.Delete, OnPress: () => ui.sidebar.btnRemoveAllNodes_Click(null, null));
+        }
 
         
     }

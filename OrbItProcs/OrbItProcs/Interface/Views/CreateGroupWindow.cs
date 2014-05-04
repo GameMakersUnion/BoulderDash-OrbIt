@@ -117,7 +117,7 @@ namespace OrbItProcs
             cbExisting.Top = HeightCounter;
             cbExisting.Width = width;
             cbExisting.Left = offset;
-            foreach(Group gg in sidebar.game.mainRoom.generalGroups.childGroups.Values)
+            foreach(Group gg in sidebar.game.room.generalGroups.childGroups.Values)
             {
                 cbExisting.Items.Add(gg);
             }
@@ -197,15 +197,15 @@ namespace OrbItProcs
             {
                 if (String.IsNullOrWhiteSpace(txtName.Text))
                     PopUp.Toast("Please enter a group name.");
-                else if(sidebar.game.mainRoom.generalGroups.childGroups.Keys.Contains(txtName.Text))
+                else if(sidebar.game.room.generalGroups.childGroups.Keys.Contains(txtName.Text))
                     PopUp.Toast("Group already exists.");
                 else{                   
                     
-                    OrbIt.game.room = sidebar.game.mainRoom;
-                    Node newNode = tempgroup.defaultNode.CreateClone(sidebar.game.mainRoom);
+                    OrbIt.game.room = sidebar.game.room;
+                    Node newNode = tempgroup.defaultNode.CreateClone(sidebar.game.room);
                     newNode.body.color = ColorChanger.randomColorHue();
                     newNode.basicdraw.UpdateColor();
-                    Group newGroup = new Group(sidebar.game.mainRoom, newNode, sidebar.game.mainRoom.generalGroups, txtName.Text.Trim());
+                    Group newGroup = new Group(sidebar.game.room, newNode, sidebar.game.room.generalGroups, txtName.Text.Trim());
                     newNode.name = txtName.Text.Trim();
                     newNode.group = newGroup;
                     sidebar.groupsView.UpdateGroups();
@@ -249,7 +249,7 @@ namespace OrbItProcs
 
         public void SetGroup(Node n)
         {
-            Node clone = n.CreateClone(OrbIt.game.mainRoom);
+            Node clone = n.CreateClone(OrbIt.game.room);
             Group g = tempgroup;
             //if (g == null)
             //{

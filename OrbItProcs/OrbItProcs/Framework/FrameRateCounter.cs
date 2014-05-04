@@ -36,6 +36,7 @@ namespace OrbItProcs {
                 updateCounter = 0;
 
             }
+            Draw(Assets.font);
         }
 
         public void UpdateElapsed(TimeSpan elapsed)

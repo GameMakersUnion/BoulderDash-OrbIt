@@ -286,11 +286,12 @@ namespace OrbItProcs {
             MakeItemGroups();
         }
 
-        public void attatchToSidbar()
+        public void attatchToSidebar()
         {
             //We put the Procs In OrbItProcs
             processManager = new ProcessManager();
             processManager.SetProcessKeybinds();
+            if (OrbIt.ui != null) OrbIt.ui.sidebar.UpdateGroupComboBoxes();
         }
 
         public void MakePresetGroups()
@@ -335,22 +336,6 @@ namespace OrbItProcs {
                 Group itemgroup = new Group(this, nodeDef, itemGroup, t.ToString().LastWord('.') + " Item");
             }
 
-            //Node gravDef = itemDef.CreateClone(this);
-            //Gravity grav = new Gravity(gravDef);
-            //gravDef.Comp<ItemPayload>().AddComponentItem(grav);
-            //Group gravItems = new Group(this, gravDef, itemGroup, "gravItem");
-            //
-            //Node shooterDef = itemDef.CreateClone(this);
-            //Shooter shoot = new Shooter(shooterDef);
-            ////grav.mode = Gravity.Mode.Strong;
-            //shooterDef.Comp<ItemPayload>().AddComponentItem(shoot);
-            //Group shooterItems = new Group(this, shooterDef, itemGroup, "shooterItem");
-            //
-            //Node swordDef = itemDef.CreateClone(this);
-            //Sword sword = new Sword(swordDef);
-            ////grav.mode = Gravity.Mode.Strong;
-            //swordDef.Comp<ItemPayload>().AddComponentItem(sword);
-            //Group swordItems = new Group(this, swordDef, itemGroup, "swordItem");
         }
         
         public void AddCollider(Collider collider)
@@ -694,6 +679,13 @@ namespace OrbItProcs {
 
             GraphData.DrawGraph();
             //Testing.TestHues();
+        }
+
+        public void drawOnly()
+        {
+            camera.RenderAsync();
+            Draw();
+            camera.CatchUp();
         }
         public void AddManifold(Manifold m)
         {

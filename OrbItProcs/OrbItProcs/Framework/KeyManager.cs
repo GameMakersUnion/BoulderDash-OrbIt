@@ -1217,7 +1217,7 @@ namespace OrbItProcs
         }
 
 
-        public void addProcessKeyAction(String name, KeyCodes k1, KeyCodes? k2 = null, KeyCodes? k3 = null, Action OnPress = null, Action OnRelease = null, Action OnHold = null)
+        public void addGlobalKeyAction(String name, KeyCodes k1, KeyCodes? k2 = null, KeyCodes? k3 = null, Action OnPress = null, Action OnRelease = null, Action OnHold = null)
         {
             KeyBundle keyBundle;
             if (k2 == null) keyBundle = new KeyBundle(k1);
