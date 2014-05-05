@@ -52,7 +52,8 @@ namespace OrbItProcs
         /// The maximum number of children made at every division.
         /// </summary>
         [Info(UserLevel.Advanced, "The maximum number of children made at every division.")]
-        public int maxchilds { get; set ; }
+        public int maxChilds { get { return _maxChilds; } set { _maxChilds = value > 15 ?  15 : value; } }
+        private int _maxChilds;
 
         public Toggle<int> fade { get; set; }
         public Tree() : this(null) { }
@@ -68,7 +69,7 @@ namespace OrbItProcs
             branchStages = 4;
             angleRange = 45;
             randlife = 20;
-            maxchilds = 3;
+            maxChilds = 3;
             LeaveTrunk = true;
         }
 
@@ -140,7 +141,7 @@ namespace OrbItProcs
                 parent.body.velocity = new Vector2(0, 0);
                 //if (parent.comps.ContainsKey(comp.gravity)) parent.comps[comp.gravity].active = false;
 
-                int childcount = Utils.random.Next(maxchilds+1) + 1;
+                int childcount = Utils.random.Next(maxChilds+1) + 1;
                 for(int i = 0; i < childcount; i++)
                 {
                     float childscale = parent.body.scale * scaledown;
@@ -168,7 +169,7 @@ namespace OrbItProcs
                         newTree.original = false;
                     newTree.randlife = randomlife;
                     newTree.lifeleft = 0;
-                    newTree.maxchilds = Math.Max(1, maxchilds - (depth % 2));
+                    newTree.maxChilds = Math.Max(1, maxChilds - (depth % 2));
                     //parent.room.nodesToAdd.Enqueue(newNode);
                     //parent.room.masterGroup.childGroups.Values.ElementAt(1).IncludeEntity(newNode);
                     //Group g = parent.Game1.ui.sidebar.ActiveGroup;

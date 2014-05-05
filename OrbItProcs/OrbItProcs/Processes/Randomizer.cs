@@ -23,9 +23,6 @@ namespace OrbItProcs
         public Randomizer()
             : base()
         {
-            //LeftClick += CreateNode;
-            //KeyEvent += KeyEv;
-            //RightClick += SpawnFromQueue;
             addProcessKeyAction("spawnsemrandom", KeyCodes.LeftClick, OnPress: SpawnSemiRandom);
             addProcessKeyAction("spawnfullyrandom", KeyCodes.MiddleClick, OnPress: SpawnFullyRandom);
             addProcessKeyAction("plus", KeyCodes.OemPlus, OnPress: Plus);
@@ -77,6 +74,8 @@ namespace OrbItProcs
             {
                 foreach (var c in n.comps.Values)
                 {
+                    if (c.GetType() == typeof(Delegator)) continue;
+                    if (c.GetType() == typeof(Modifier)) continue;
                     RandomizeObject(c);
                 }
             }
@@ -181,7 +180,7 @@ namespace OrbItProcs
             }
             else if (ftype == typeof(float))
             {
-                if (info.Name.Contains("scale")) return;
+                if (info.Name.ToLower().Contains("scale")) return;
                 float a = (float)rand.NextDouble() * 500f;
                 info.SetValue(a, o);
             }

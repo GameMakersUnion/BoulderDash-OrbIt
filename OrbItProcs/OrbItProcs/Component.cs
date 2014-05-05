@@ -146,7 +146,7 @@ namespace OrbItProcs
                 {
                     if (!typeof(Delegate).IsAssignableFrom(property.PropertyType) && !(property.PropertyType == typeof(Link)))
                     {
-                        Console.WriteLine("We should be aware of this.");
+                        //Console.WriteLine("We should be aware of this.");
                     }
                 }
                 property.SetValue(destComp, property.GetValue(sourceComp, null), null);

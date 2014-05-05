@@ -407,7 +407,7 @@ namespace OrbItProcs {
             Node n = new Node(room, props, ShapeType.ePolygon);
             Polygon p = (Polygon)n.body.shape;
             n.body.orient = angle;
-            p.SetBox(halfwidth, halfheight);
+            p.SetBox(halfwidth, halfheight, false);
             n.body.pos = (start + end) / 2;
             n.body.DrawPolygonCenter = false;
             

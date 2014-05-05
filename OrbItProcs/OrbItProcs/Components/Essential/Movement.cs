@@ -221,12 +221,12 @@ namespace OrbItProcs
 
             Vector2 pos = parent.body.pos;
 
-            if (parent.HasComp<Queuer>() && (parent.Comp<Queuer>().qs & queues.position) == queues.position)
-            {
-                Queuer q = parent.Comp<Queuer>();
-                Queue<Vector2> positions = ((Queue<Vector2>)(parent.Comp<Queuer>().positions));
-                pos = positions.ElementAt(0);
-            }
+            //if (parent.HasComp<Queuer>() && (parent.Comp<Queuer>().qs & queues.position) == queues.position)
+            //{
+            //    Queuer q = parent.Comp<Queuer>();
+            //    Queue<Vector2> positions = ((Queue<Vector2>)(parent.Comp<Queuer>().positions));
+            //    pos = positions.ElementAt(0);
+            //}
 
             if (pos.X >= (levelwidth + parent.body.radius))
             {
