@@ -44,6 +44,13 @@ namespace OrbItProcs
         public float shootNodeSpeed { get; set; }
         public bool linkToPlayers { get; set; }
         private Link shootLink, parentLink;
+        public enum LinkMode
+        {
+            TargetsToSelf,
+            TargetsToTargets,
+            TargetsChained,
+        }
+        public LinkMode linkMode { get; set; }
         public LinkGun() : this(null) { }
         public LinkGun(Node parent)
         {
@@ -52,6 +59,7 @@ namespace OrbItProcs
             shootNodeRadius = 25; //fill in property later
             linkToPlayers = true;
             shootNodeSpeed = 5f;
+            linkMode = LinkMode.TargetsChained;
 
             shootNode = new Node(parent.room);
             shootNode.name = "linknode";
@@ -69,16 +77,10 @@ namespace OrbItProcs
 
         public override void OnSpawn()
         {
-            //Node.cloneNode(parent.Game1.ui.sidebar.ActiveDefaultNode, sword);
-            //parent.body.texture = textures.orientedcircle;
             shootNode.dataStore["linknodeparent"] = parent;
             shootNode.body.pos = parent.body.pos;
             shootNode.addComponent<ColorChanger>(true);
-
             shootNode.AffectExclusionCheck += (node) => node == parent;
-
-            
-
             parent.room.itemGroup.IncludeEntity(shootNode);
             shootNode.OnSpawn();
             shootNode.body.AddExclusionCheck(parent.body);
@@ -108,6 +110,9 @@ namespace OrbItProcs
 
             shootLink = new Link(parent, shootNode, grav);
             shootLink.AddLinkComponent(spring, true);
+
+
+
             //
             Gravity attachGrav = new Gravity();
             attachGrav.active = true;
@@ -120,25 +125,51 @@ namespace OrbItProcs
             aTether.activated = true;
 
             Spring aSpring = new Spring();
+            aSpring.active = true;
             aSpring.springMode = Spring.mode.PushAndPull;
+            aSpring.multiplier = 1000;
 
             attachedNodesQueue = new Queue<Node>();
-            attachLink = new Link(parent, new HashSet<Node>(), attachGrav);
+            //attachLink = new Link(parent, new HashSet<Node>(), attachGrav); //targetsToSelf
+            attachLink = new Link(new HashSet<Node>(), new HashSet<Node>(), aSpring); //targetsChained
+            attachLink.FormationType = formationtype.Chain;
             //attachLink.AddLinkComponent(aTether, true);
-            attachLink.AddLinkComponent(aSpring, true);
+            //attachLink.AddLinkComponent(attachGrav, true);
 
 
             shootNode.body.OnCollisionEnter += (n, other) =>
                 {
                     if (other == parent) return;
-                    //shootLink.targetNode = o;
-                    //shootLink.active = true;
-                    if (!attachLink.targets.Contains(other))
+                    if (linkMode == LinkMode.TargetsToSelf)
                     {
-                        attachLink.targets.Add(other);
-                        attachedNodesQueue.Enqueue(other);
-                        attachLink.active = true;
+                        if (!attachLink.targets.Contains(other))
+                        {
+                            attachLink.targets.Add(other);
+                            attachedNodesQueue.Enqueue(other);
+                            attachLink.active = true;
+                        }
+                    }
+                    else if (linkMode == LinkMode.TargetsToTargets)
+                    {
+                        if (!attachLink.sources.Contains(other))
+                        {
+                            attachLink.sources.Add(other);
+                            attachedNodesQueue.Enqueue(other);
+                            attachLink.active = true;
+                        }
+                    }
+                    else if (linkMode == LinkMode.TargetsChained)
+                    {
+                        bool sourcesContains = attachLink.sources.Contains(other);
+                        bool chainContains = attachLink.formation.chainList.Contains(other);
+                        if (sourcesContains != chainContains) throw new SystemException("Excepted this node to be contained in both or either lists.");
 
+                        if (!attachLink.sources.Contains(other))
+                        {
+                            attachedNodesQueue.Enqueue(other);
+                            attachLink.formation.AddChainNode(other);
+                            attachLink.active = true;
+                        }
                     }
                 };
 
@@ -147,19 +178,17 @@ namespace OrbItProcs
 
         }
 
-        public enum GunState
+        private enum GunState
         {
             inactive,
             extending,
             retracting,
-            //attached,
         }
         Gravity grav;
         Spring spring;
         GunState state = GunState.inactive;
         Queue<Node> attachedNodesQueue;
         Link attachLink;
-        //bool deployed = false;
         public override void PlayerControl(Controller controller)
         {
             if (controller is FullController)
@@ -212,6 +241,14 @@ namespace OrbItProcs
                         {
                             attachLink.targets.Remove(n);
                         }
+                        if (attachLink.sources.Contains(n))
+                        {
+                            attachLink.sources.Remove(n);
+                        }
+                        if (attachLink.formation.chainList.Contains(n))
+                        {
+                            attachLink.formation.chainList.Remove(n);
+                        }
                         if (attachedNodesQueue.Count == 0)
                         {
                             attachLink.active = false;
@@ -228,6 +265,13 @@ namespace OrbItProcs
                             attachedNodesQueue = new Queue<Node>();
                         if (attachLink.targets.Count != 0)
                             attachLink.targets = new ObservableHashSet<Node>();
+
+                        if (!attachLink.sources.Contains(parent))
+                        {
+                            attachLink.formation.ClearChain();
+                            if (attachLink.sources.Count != 0)
+                                attachLink.sources = new ObservableHashSet<Node>();
+                        }
 
                         attachLink.active = false;
                     }

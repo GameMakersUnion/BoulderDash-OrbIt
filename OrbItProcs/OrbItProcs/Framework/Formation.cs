@@ -11,6 +11,7 @@ namespace OrbItProcs
         AllToAll,
         NearestN,
         FurthestN,
+        Chain,
         //Nearest,
         //Random,
         //Special,
@@ -86,6 +87,9 @@ namespace OrbItProcs
             }
         }
 
+
+        public List<Node> chainList = new List<Node>();
+
         public Formation()
         {
             //..
@@ -152,23 +156,49 @@ namespace OrbItProcs
             {
                 NearestN();
             }
+            else if (FormationType == formationtype.Chain)
+            {
+                Chain();
+            }
         }
 
         public void AllToAll()
         {
-            if (link.sources != null)
+            if (link.sources == null) return;
+            foreach (Node source in link.sources)
             {
-                link.sources.ToList().ForEach(delegate(Node source)
-                {
-                    AffectionSets[source] = link.targets;
-                    //HashSet<Node> set = AffectionSets[source];
-                    //set = new HashSet<Node>();
-                    //link.targets.ToList().ForEach(delegate(Node target) {
-                    //    set.Add(target);
-                    //});
-                });
+                AffectionSets[source] = link.targets;
             }
         }
+
+        public void Chain()
+        {
+            if (chainList.Count < 2) return;
+            for(int i = 0; i < chainList.Count; i++)
+            {
+                if (i == chainList.Count - 1) AffectionSets[chainList[i]] = new ObservableHashSet<Node>() { chainList[0] };
+                else AffectionSets[chainList[i]] = new ObservableHashSet<Node>() { chainList[i + 1] };
+            }
+        }
+
+        public void AddChainNode(Node n)
+        {
+            if (chainList == null) chainList = new List<Node>();
+            chainList.Add(n);
+            link.sources.Add(n);
+            UpdateFormation();
+        }
+        public void ClearChain()
+        {
+            if (chainList.Count != 0)
+                chainList = new List<Node>();
+            foreach(Node n in link.sources.ToList())
+            {
+                link.sources.Remove(link.sources.ElementAt(0));
+            }
+            UpdateFormation();
+        }
+
         //used for NearestN or FurthestN
         public void NearestN()
         {

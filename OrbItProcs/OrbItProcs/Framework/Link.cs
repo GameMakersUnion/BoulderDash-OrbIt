@@ -342,7 +342,10 @@ namespace OrbItProcs
                 this.sources = this.sourceGroup.fullSet;
 
                 room.masterGroup.childGroups["Link Groups"].AddGroup(ss.Name, ss);
-                OrbIt.ui.sidebar.UpdateGroupComboBoxes();
+                if (OrbIt.ui != null)
+                {
+                    OrbIt.ui.sidebar.UpdateGroupComboBoxes();
+                }
 
                 foreach (Node s in this.sources)
                 {

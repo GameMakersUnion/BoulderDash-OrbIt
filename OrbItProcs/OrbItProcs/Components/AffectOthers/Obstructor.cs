@@ -101,7 +101,7 @@ namespace OrbItProcs
         public override void AffectOther(Node other)
         {
             if (onlyObstructors && !other.HasActiveComponent<Obstructor>()) return;
-            if (onlyAvailableObs && !other.Comp<Obstructor>().Available) return;
+            if (onlyAvailableObs && other.HasActiveComponent<Obstructor>() && !other.Comp<Obstructor>().Available) return;
 
             float dist = Vector2.Distance(other.body.pos, parent.body.pos);
             if (dist < radius)
