@@ -50,7 +50,21 @@ namespace OrbItProcs
             TargetsToTargets,
             TargetsChained,
         }
-        public LinkMode linkMode { get; set; }
+        private LinkMode _linkMode;
+        public LinkMode linkMode
+        {
+            get { return _linkMode; }
+            set
+            {
+                if (value != _linkMode) UpdateAttachLink();
+                _linkMode = value;
+            }
+        }
+
+        private void UpdateAttachLink()
+        {
+            //todo: switch between different linkModes here
+        }
         public LinkGun() : this(null) { }
         public LinkGun(Node parent)
         {
@@ -90,7 +104,6 @@ namespace OrbItProcs
             spring = new Spring();
             spring.restdist = 0;
             spring.springMode = Spring.mode.PushOnly;
-            spring.active = true;
             spring.multiplier = 400;
 
             //Tether tether = new Tether();
@@ -103,7 +116,6 @@ namespace OrbItProcs
             ////shovelLink.components.Add(tether);
 
             grav = new Gravity();
-            grav.active = true;
             grav.mode = Gravity.Mode.ConstantForce;
             //grav.Repulsive = true;
             grav.multiplier = 100;
@@ -115,22 +127,22 @@ namespace OrbItProcs
 
             //
             Gravity attachGrav = new Gravity();
-            attachGrav.active = true;
             attachGrav.multiplier = 100;
             attachGrav.mode = Gravity.Mode.ConstantForce;
 
             Tether aTether = new Tether();
             aTether.maxdist = 100;
-            aTether.mindist = 100;
+            aTether.mindist = 0;
             aTether.activated = true;
 
             Spring aSpring = new Spring();
-            aSpring.active = true;
             aSpring.springMode = Spring.mode.PushAndPull;
-            aSpring.multiplier = 1000;
+            aSpring.multiplier = 100;
+            aSpring.restdist = 0;
 
             attachedNodesQueue = new Queue<Node>();
             //attachLink = new Link(parent, new HashSet<Node>(), attachGrav); //targetsToSelf
+
             attachLink = new Link(new HashSet<Node>(), new HashSet<Node>(), aSpring); //targetsChained
             attachLink.FormationType = formationtype.Chain;
             //attachLink.AddLinkComponent(aTether, true);
@@ -154,16 +166,13 @@ namespace OrbItProcs
                         if (!attachLink.sources.Contains(other))
                         {
                             attachLink.sources.Add(other);
+                            attachLink.targets.Add(other);
                             attachedNodesQueue.Enqueue(other);
                             attachLink.active = true;
                         }
                     }
                     else if (linkMode == LinkMode.TargetsChained)
                     {
-                        bool sourcesContains = attachLink.sources.Contains(other);
-                        bool chainContains = attachLink.formation.chainList.Contains(other);
-                        if (sourcesContains != chainContains) throw new SystemException("Excepted this node to be contained in both or either lists.");
-
                         if (!attachLink.sources.Contains(other))
                         {
                             attachedNodesQueue.Enqueue(other);

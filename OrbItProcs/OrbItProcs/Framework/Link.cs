@@ -302,6 +302,7 @@ namespace OrbItProcs
             if (linkComponent != null)
             {
                 linkComponent.link = this;
+                linkComponent.active = true;
                 this.components[linkComponent.GetType()] = linkComponent;
             }
 
@@ -541,6 +542,21 @@ namespace OrbItProcs
                 {
                     n.TargetLinks.Remove(this);
                 }
+            }
+        }
+
+        public void EmptySources()
+        {
+            foreach(Node n in sources.ToList())
+            {
+                sources.Remove(sources.ElementAt(0));
+            }
+        }
+        public void EmptyTargets()
+        {
+            foreach (Node n in targets.ToList())
+            {
+                targets.Remove(targets.ElementAt(0));
             }
         }
 
