@@ -180,7 +180,7 @@ namespace OrbItProcs
             
             int halfheight = (int)(dist / 4);
             int halfwidth = thickness / 2;
-            float angle = Utils.VectorToAngle(parent.body.pos - other.body.pos);
+            float angle = VMath.VectorToAngle(parent.body.pos - other.body.pos);
 
             //Node n = new Node(room, props, ShapeType.ePolygon);
             Polygon p = (Polygon)wall.body.shape;

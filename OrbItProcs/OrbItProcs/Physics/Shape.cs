@@ -489,7 +489,7 @@ namespace OrbItProcs
                 Vector2 face = vertices[i2] - vertices[i1];
 
                 // Ensure no zero-length edges, because that's bad
-                Debug.Assert(face.LengthSquared() > VMath.EPSILON * VMath.EPSILON);
+                Debug.Assert(face.LengthSquared() > GMath.EPSILON * GMath.EPSILON);
 
                 // Calculate normal with 2D cross product between vector and scalar
                 normals[i1] = new Vector2(face.Y, -face.X);

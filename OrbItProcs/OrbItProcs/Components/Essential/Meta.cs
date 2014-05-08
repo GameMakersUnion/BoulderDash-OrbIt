@@ -196,9 +196,9 @@ namespace OrbItProcs
                 Y = (itemSlots & ItemSlots.Y_Yellow) == ItemSlots.Y_Yellow ? textures.itemLight : textures.itemWhisper;
 
                 parent.room.camera.Draw(A, parent.body.pos, Color.ForestGreen, parent.body.scale * 1.7f, lightRotation, Layers.Under2);
-                parent.room.camera.Draw(B, parent.body.pos, Color.Crimson, parent.body.scale * 1.7f, lightRotation + VMath.PIbyTwo, Layers.Under2);
-                parent.room.camera.Draw(X, parent.body.pos, Color.CornflowerBlue, parent.body.scale * 1.7f, lightRotation + VMath.PI, Layers.Under2);
-                parent.room.camera.Draw(Y, parent.body.pos, Color.Gold, parent.body.scale * 1.7f, lightRotation + VMath.PI + VMath.PIbyTwo, Layers.Under2);
+                parent.room.camera.Draw(B, parent.body.pos, Color.Crimson, parent.body.scale * 1.7f, lightRotation + GMath.PIbyTwo, Layers.Under2);
+                parent.room.camera.Draw(X, parent.body.pos, Color.CornflowerBlue, parent.body.scale * 1.7f, lightRotation + GMath.PI, Layers.Under2);
+                parent.room.camera.Draw(Y, parent.body.pos, Color.Gold, parent.body.scale * 1.7f, lightRotation + GMath.PI + GMath.PIbyTwo, Layers.Under2);
 
                 lightRotation += 0.1f;
             }
@@ -208,7 +208,7 @@ namespace OrbItProcs
         public static void drawBar(Node node, float scale, float Ratio, bool Rotate, Color full, Color? threeQuarters = null, Color? half = null, Color? oneQuarter = null)
         {
             float baseRotation = Rotate ? node.body.orient : 0f;
-            float rotation = baseRotation + (1f - Ratio) * VMath.twoPI;
+            float rotation = baseRotation + (1f - Ratio) * GMath.TwoPI;
             float rotation2 = baseRotation;
             Color c;
             Layers hideLayer = Layers.Over1;
@@ -220,13 +220,13 @@ namespace OrbItProcs
             {
                 c = half ?? threeQuarters ?? full;
                 hideLayer = Layers.Over3;
-                rotation2 = rotation - VMath.PI; 
+                rotation2 = rotation - GMath.PI; 
             }
             else 
             {
                 c = oneQuarter ?? half ?? threeQuarters ?? full;
                 hideLayer = Layers.Over3;
-                rotation2 = rotation - VMath.PI;
+                rotation2 = rotation - GMath.PI;
             }
             node.room.camera.Draw(textures.outerL, node.body.pos, Color.Black, node.body.scale*scale, baseRotation, hideLayer);
             node.room.camera.Draw(textures.outerR, node.body.pos, Color.Black, node.body.scale * scale, baseRotation, Layers.Over1);

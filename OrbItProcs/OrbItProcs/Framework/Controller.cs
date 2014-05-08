@@ -13,14 +13,14 @@ namespace OrbItProcs
     public struct Stick
     {
         #region //Directional Vector Constants//
-        static Vector2 v2Up = new Vector2(0, 1);
-        static Vector2 v2UpLeft = new Vector2(-Utils.invRootOfTwo, Utils.invRootOfTwo);
-        static Vector2 v2Left = new Vector2(-1, 0);
-        static Vector2 v2DownLeft = new Vector2(-Utils.invRootOfTwo, -Utils.invRootOfTwo);
-        static Vector2 v2Down = new Vector2(0, -1);
-        static Vector2 v2DownRight = new Vector2(Utils.invRootOfTwo, -Utils.invRootOfTwo);
-        static Vector2 v2Right = new Vector2(1, 0);
-        static Vector2 v2UpRight = new Vector2(Utils.invRootOfTwo, Utils.invRootOfTwo);
+        //static Vector2 v2Up = new Vector2(0, 1);
+        //static Vector2 v2UpLeft = new Vector2(-Utils.invRootOfTwo, Utils.invRootOfTwo);
+        //static Vector2 v2Left = new Vector2(-1, 0);
+        //static Vector2 v2DownLeft = new Vector2(-Utils.invRootOfTwo, -Utils.invRootOfTwo);
+        //static Vector2 v2Down = new Vector2(0, -1);
+        //static Vector2 v2DownRight = new Vector2(Utils.invRootOfTwo, -Utils.invRootOfTwo);
+        //static Vector2 v2Right = new Vector2(1, 0);
+        //static Vector2 v2UpRight = new Vector2(Utils.invRootOfTwo, Utils.invRootOfTwo);
         #endregion
 
         public Vector2 v2;
@@ -57,7 +57,7 @@ namespace OrbItProcs
 
         }
         //const float fourtyfivedegreeratio = 0.70710678118654f;
-          const float fourtyfivedegreeratio = 0.70710678118654752440084436210485f;
+        const float fourtyfivedegreeratio = 0.70710678118654752440084436210485f;
         public Stick(bool up, bool down, bool left, bool right)
         {
             float x = 0, y = 0;
@@ -95,59 +95,10 @@ namespace OrbItProcs
             this.v2 = v;
 
         }
-        public Stick(ButtonState up, ButtonState down, ButtonState left, ButtonState right)
-        {
-            v2 = Vector2.Zero;
-            //this.up = ButtonState.Released;
-            //this.down = ButtonState.Released;
-            //this.left = ButtonState.Released;
-            //this.right = ButtonState.Released;
 
-            this.up = up; this.down = down; this.left = left; this.right = right;
-            if (isCentered()) return;
-            if (up == ButtonState.Pressed && down == ButtonState.Released)
-            {
-                if (right == ButtonState.Pressed && left == ButtonState.Released)
-                {
-                    v2 = v2UpRight; return;
-                }
-                else if (left == ButtonState.Pressed && right == ButtonState.Released)
-                {
-                    v2 = v2UpLeft; return;
-                }
-                else
-                {
-                    v2 = v2Up; return;
-                }
-            }
-            else if (down == ButtonState.Pressed && up == ButtonState.Released)
-            {
-                if (right == ButtonState.Pressed && left == ButtonState.Released)
-                {
-                    v2 = v2DownRight; return;
-                }
-                else if (left == ButtonState.Pressed && right == ButtonState.Released)
-                {
-                    v2 = v2DownLeft; return;
-                }
-                else
-                {
-                    v2 = v2Down; return;
-                }
-            }
-            else if (right == ButtonState.Pressed && left == ButtonState.Released)
-            {
-                v2 = v2Right; return;
-            }
-            else if (left == ButtonState.Pressed && right == ButtonState.Released)
-            {
-                v2 = v2Left; return;
-            }
-            else
-            {
-                v2 = Vector2.Zero;
-            }
-        }
+
+        public Stick(ButtonState up, ButtonState down, ButtonState left, ButtonState right)
+            : this(up.AsBool(), down.AsBool(), left.AsBool(), right.AsBool()) { }
         public static implicit operator Vector2(Stick s)
         {
             return s.v2;

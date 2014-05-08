@@ -339,7 +339,7 @@ namespace OrbItProcs
             Vector2 v2 = B.vertices[i2];
 
             // Check to see if center is within polygon
-            if (separation < VMath.EPSILON)
+            if (separation < GMath.EPSILON)
             {
                 m.contact_count = 1;
                 m.normal = -(B.u * B.normals[faceNormal]);
@@ -537,7 +537,7 @@ namespace OrbItProcs
             Polygon IncPoly; // Incident
 
             // Determine which shape contains reference face
-            if (VMath.BiasGreaterThan(penetrationA, penetrationB))
+            if (GMath.BiasGreaterThan(penetrationA, penetrationB))
             {
                 RefPoly = A;
                 IncPoly = B;
@@ -677,7 +677,7 @@ namespace OrbItProcs
             Vector2 v2 = B.vertices[i2];
 
             // Check to see if center is within polygon
-            if (separation < VMath.EPSILON)
+            if (separation < GMath.EPSILON)
             {
                 //m.contact_count = 1;
                 //m.normal = -(B.u * B.normals[faceNormal]);
@@ -771,7 +771,7 @@ namespace OrbItProcs
             Polygon IncPoly; // Incident
 
             // Determine which shape contains reference face
-            if (VMath.BiasGreaterThan(penetrationA, penetrationB))
+            if (GMath.BiasGreaterThan(penetrationA, penetrationB))
             {
                 RefPoly = A;
                 IncPoly = B;

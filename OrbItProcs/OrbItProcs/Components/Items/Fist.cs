@@ -166,7 +166,7 @@ namespace OrbItProcs
                             //Console.WriteLine(relVel.X + " : " + relVel.Y);
                             //fistNode.body.ApplyForce(relVel);
                             fistNode.body.velocity = relVel * 10f;
-                            fistNode.body.orient = Utils.VectorToAngle(relVel);
+                            fistNode.body.orient = VMath.VectorToAngle(relVel);
                         }
                     }
                 }

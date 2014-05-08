@@ -56,7 +56,7 @@ namespace OrbItProcs
         }
         public void ApplyImpulse()
         {
-            if (VMath.Equal(a.invmass + b.invmass, 0))
+            if (GMath.Equal(a.invmass + b.invmass, 0))
             {
                 InfinitMassCorrection();
                 return;
@@ -99,7 +99,7 @@ namespace OrbItProcs
                 jt /= invMassSum;
                 jt /= (double)contact_count;
                 //don't apply tiny friction impulses
-                if (VMath.Equal(jt, 0.0))
+                if (GMath.Equal(jt, 0.0))
                     return;
                 //coulumbs law
                 Vector2 tangentImpulse;

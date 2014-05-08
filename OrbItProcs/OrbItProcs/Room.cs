@@ -187,7 +187,7 @@ namespace OrbItProcs {
             targetNodeGraphic.name = "TargetNodeGraphic";
 
             //MakeWalls();
-
+            
             MakePresetGroups();
             MakeItemGroups();
         }
@@ -484,7 +484,6 @@ namespace OrbItProcs {
             GroupSelectDraw();
             foreach(var n in masterGroup.fullSet.ToList()) //todo:wtfuck threading?
             {
-                
                 //if (skipOutsideGrid && (n.body.pos.Y < (gridsystemAffect.position.Y - gridsystemAffect.gridHeight /2) || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
                 //Node n = (Node)o;
                 n.Draw();

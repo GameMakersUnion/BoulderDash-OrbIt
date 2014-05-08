@@ -176,7 +176,7 @@ namespace OrbItProcs
                     //enabled = false;
                     Vector2 restPos = new Vector2(parent.body.radius, 0).Rotate(parent.body.orient) + parent.body.pos;
                     swordNode.body.pos = Vector2.Lerp(swordNode.body.pos, restPos, 0.1f);
-                    swordNode.body.orient = Utils.AngleLerp(swordNode.body.orient, parent.body.orient, 0.1f);
+                    swordNode.body.orient = GMath.AngleLerp(swordNode.body.orient, parent.body.orient, 0.1f);
                 }
 
                 //sword.body.pos = position;

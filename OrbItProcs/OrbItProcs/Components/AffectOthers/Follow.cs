@@ -47,9 +47,11 @@ namespace OrbItProcs
             }
             if (result != Vector2.Zero)
             {
-                parent.body.velocity = VMath.Redirect(parent.body.velocity, result);
+                Vector2 newVel = VMath.Redirect(parent.body.velocity, result);
                 if (flee)
-                    parent.body.velocity *= new Vector2(-1, -1);
+                    newVel *= new Vector2(-1, -1);
+
+                //float prevAngle = Utils.
             }
             directions = new List<Vector2>();
         }

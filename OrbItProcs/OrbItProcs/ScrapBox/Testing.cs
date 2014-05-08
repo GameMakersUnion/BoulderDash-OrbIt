@@ -64,7 +64,7 @@ namespace OrbItProcs
             {
 
                 float f = i / 10f;
-                float val = Utils.Sawtooth(f, 1);
+                float val = GMath.Sawtooth(f, 1);
                 Console.WriteLine("st: {0} % 1 = {1}", f, val);
             }
         }

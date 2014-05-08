@@ -189,15 +189,15 @@ namespace OrbItProcs
             
             if (stick2.LengthSquared() > 0.6f * 0.6f)
             {
-                v = Utils.VectorToAngle(stick2).between0and2pi();
+                v = VMath.VectorToAngle(stick2).between0and2pi();
                 if (v == 0f) v = 0.00001f;
             }
             else if (stick.LengthSquared() > 0.6f * 0.6f)
             {
-                v = Utils.VectorToAngle(stick).between0and2pi();
+                v = VMath.VectorToAngle(stick).between0and2pi();
                 if (v == 0f) v = 0.00001f;
             }
-            float result = Utils.AngleLerp(parent.body.orient, v, 0.1f);
+            float result = GMath.AngleLerp(parent.body.orient, v, 0.1f);
 
             parent.body.orient =(result);
 

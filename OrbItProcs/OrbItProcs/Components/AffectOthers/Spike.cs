@@ -116,7 +116,7 @@ namespace OrbItProcs
             Vector2[] verts = new Vector2[3];
             for (int i = 0; i < 3; i++)
             {
-                verts[i] = Utils.AngleToVector(VMath.twoPI / 3f * i) * dist;
+                verts[i] = VMath.AngleToVector(GMath.TwoPI / 3f * i) * dist;
             }
             parent.body.shape = poly;
             poly.Set(verts, 3);

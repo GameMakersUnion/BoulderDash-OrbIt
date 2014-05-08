@@ -12,19 +12,14 @@ namespace OrbItProcs {
 
     public static class Utils {
 
-        public static float Sawtooth(float x, float mod)
+        public static bool AsBool(this int i)
         {
-            float ret = x % mod;
-            if (x >= 0 || ret == 0)
-            {
-                return ret;
-            }
-            else
-            {
-                return mod - (float)Math.Abs(ret);
-            }
+            return i == 0 ? false : true;
         }
-
+        public static bool AsBool(this Microsoft.Xna.Framework.Input.ButtonState bs) 
+        {
+            return ((int)bs).AsBool();
+        }
         public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary,
                                             TKey key, Func<TValue> valueCreator)
         {
@@ -41,21 +36,6 @@ namespace OrbItProcs {
                                                     TKey key) where TValue : new()
         {
             return dictionary.GetOrAdd(key, () => new TValue());
-        }
-        public static float between0and2pi(this float value)
-        {
-            if (value > 2 * VMath.PI) value = value % (2 * VMath.PI);
-            if (value < 0)
-                value = 2 * VMath.PI + value;
-            return value;
-        }
-
-        public const float rootOfTwo = 1.41421356237f;
-        public const float invRootOfTwo = 0.70710678118f;
-
-        public static Vector2 ToVector2(this Point point)
-        {
-            return new Vector2(point.X, point.Y);
         }
         public static Rectangle contract(this Rectangle source, int amount){
 
@@ -75,19 +55,6 @@ namespace OrbItProcs {
             }
             return pinfo.Name;
         }
-
-        public static float Lerp(float start, float end, float amount)
-        {
-            if (amount > 1f) amount = 1f;
-            if (amount < 0f) amount = 0f;
-            if (start > end)
-            {
-                float temp = start;
-                start = end;
-                end = start;
-            }
-            return start + (end - start) * amount;
-        }
         public static Color ToColor(this Vector4 v)
         {
             return new Color(v.X, v.Y, v.Z, v.W);
@@ -99,48 +66,6 @@ namespace OrbItProcs {
         public static string Name(this Type t)
         {
             return t.ToString().LastWord('.');
-        }
-        public static Vector2 AngleToVector(float angle)
-        {
-            return new Vector2((float)Math.Sin(angle), -(float)Math.Cos(angle));
-        }
-        public static float CircularDistance(float x, float v, int t = 360)
-        {
-            int half = t / 2;
-            if (x == v) return 0;
-            if (x > v)
-            {
-                if (v > x - half)
-                {
-                    return x - v;
-                }
-                else
-                {
-                    return t - x + v;
-                }
-            }
-            else
-            {
-                if (v < x + half)
-                {
-                    return v - x;
-                }
-                else
-                {
-                    return x - t + v;
-                }
-            }
-        }
-
-        public static float VectorToAngle(Vector2 vector)
-        {
-            float value = (float)Math.Atan2(vector.X, -vector.Y);
-            if (value > 2f * VMath.PI)
-                value = value % (2 * VMath.PI);
-            if (value < 0)
-                value = 2f * VMath.PI + value;
-
-            return value;
         }
         public static Texture2D Crop(this Texture2D image, Rectangle source)
         {
@@ -177,8 +102,6 @@ namespace OrbItProcs {
                }
            }
            return result;
-           
-            
         }
         public static void notImplementedException() { PopUp.Toast("Zack and Dante are lazy.", "NotImplementedException"); }
         public static object parsePrimitive(Type primitiveType, String value)
@@ -238,7 +161,6 @@ namespace OrbItProcs {
             }
             return null;
         }
-
         public static string increment(this String origin, Type primitiveType, NumBoxMode n)
         {
             dynamic number = parsePrimitive(primitiveType, origin);
@@ -268,17 +190,12 @@ namespace OrbItProcs {
                 default: return "0";
             }
         }
-        
-        
-
         public static mtypes GetCompTypes(Type t)
         {
             FieldInfo pinfo = t.GetField("CompType");
             if (pinfo == null || pinfo.FieldType != typeof(mtypes)) return mtypes.none;
             return (mtypes)pinfo.GetValue(null);
         }
-        
-
         public static Info GetInfoType(Type t)
         {
             var infos = t.GetCustomAttributes(typeof(Info), false);
@@ -318,8 +235,6 @@ namespace OrbItProcs {
         {
             return isGenericType(typeof(Toggle<>), t);
         }
-
-        
         //thanks, skeet!
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)
         {
@@ -358,7 +273,6 @@ namespace OrbItProcs {
             }
             return GuidString;
         }
-
         public static string randomString()
         {
             Guid g = Guid.NewGuid();
@@ -373,8 +287,6 @@ namespace OrbItProcs {
             if (float.IsInfinity(v.X) || float.IsNaN(v.X) || float.IsInfinity(v.Y) || float.IsNaN(v.Y)) return true;
             return false;
         }
-
-
         public static string wordWrap(this string message, int maxCharsPerLine)
         {
             int chars = maxCharsPerLine;
@@ -384,12 +296,10 @@ namespace OrbItProcs {
                             if (message.ElementAt(j).Equals(' ') || message.ElementAt(j).Equals('/'))
                             {
                                 message = message.Insert(j + 1, "\n");
-
                                 break;
                             };
             return message;
         }
-        
         public static float[] toFloatArray(this Vector2 v2)
         {
             float[] result = new float[2];
@@ -417,12 +327,10 @@ namespace OrbItProcs {
         }
 
         public static bool In<T>(this T x, params T[] args) where T : struct, IConvertible {return args.Contains(x);}
-
-        
-
         public static T Pop<T>(this List<T> list)
         {
-            T item = list.ElementAt(list.Count);
+            //error's tomb
+            T item = list.ElementAt(list.Count-1);
             list.Remove(item);
             return item;
         }
@@ -581,26 +489,6 @@ namespace OrbItProcs {
         }
 
 
-        internal static float AngleLerp(float source, float dest, float p)
-        {
-
-            float result = 0f;
-            float pi = VMath.PI;
-
-
-            if (source < pi / 2 && dest > (3 * pi) / 2)
-            {
-                result = MathHelper.Lerp(source, dest - (2 * pi), p);
-            }
-            else if (source > (3 * pi / 2) && dest < pi / 2)
-            {
-                result = MathHelper.Lerp(source, dest + (2 * pi), p);
-            }
-            else
-            {
-                result = MathHelper.Lerp(source, dest, p);
-            }
-            return result;
-        }
+        
     } // end of class.
 }

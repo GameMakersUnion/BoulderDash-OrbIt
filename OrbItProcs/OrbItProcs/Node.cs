@@ -41,6 +41,7 @@ namespace OrbItProcs {
     }
 
     public class Node {
+        public static float defaultNodeSize = 80f;
         public static int nodeCounter = 0;
         private Vector2 tempPosition = new Vector2(0, 0);
         public List<string> nodeHistory = new List<string>();
@@ -278,7 +279,6 @@ namespace OrbItProcs {
         }
 
         public Node(Room room) : this(room, ShapeType.eCircle) { }
-
         public Node(Room room, ShapeType shapetype)
         {
             this.room = room;
@@ -288,22 +288,18 @@ namespace OrbItProcs {
             meta = new Meta(this);
             movement = new Movement(this);
             
-            Shape shape;
+            Shape shape = null;
             if (shapetype == ShapeType.eCircle)
             {
-                shape = new Circle(15);
+                shape = new Circle(defaultNodeSize);
             }
             else if (shapetype == ShapeType.ePolygon)
             {
                 shape = new Polygon();
             }
-            else
-            {
-                shape = new Circle(15); //in case there are more shapes
-            }
 
             body = new Body(shape: shape, parent: this);
-            body.radius = 15;
+            body.radius = defaultNodeSize;
             collision = new Collision(this);
             basicdraw = new BasicDraw(this);
             movement.active = true; collision.active = true; basicdraw.active = true;
@@ -350,7 +346,7 @@ namespace OrbItProcs {
             float dist = Vector2.Distance(start, end);
             int halfheight = (int)(dist / 2);
             int halfwidth = thickness / 2;
-            float angle = Utils.VectorToAngle(start - end);
+            float angle = VMath.VectorToAngle(start - end);
 
             Node n = new Node(room, props, ShapeType.ePolygon);
             Polygon p = (Polygon)n.body.shape;

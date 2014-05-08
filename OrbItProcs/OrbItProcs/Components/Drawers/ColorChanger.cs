@@ -215,8 +215,14 @@ namespace OrbItProcs
                     {
                         tempinc /= 2f;
                     }
-                    float dist = Utils.CircularDistance(hue, permaHue);
+                    float dist = GMath.CircularDistance(hue, permaHue);
                     //todo:finish algorithm
+
+
+
+
+
+
 
                     parent.body.color = getColorFromHSV(hue, saturation, value);
                     hue = (hue + tempinc) % 360;

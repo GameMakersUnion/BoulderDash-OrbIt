@@ -223,7 +223,7 @@ namespace OrbItProcs
             
             torchNode.body.color = col;
             parent.room.camera.Draw(textures.ring, position, Color.Black, torchNode.body.scale, torchNode.body.orient, Layers.Over4);
-            parent.room.camera.Draw(MagicToRune[magicType], position, col, torchNode.body.scale, Utils.VectorToAngle(position - parent.body.pos) + VMath.PIbyTwo, Layers.Over3);
+            parent.room.camera.Draw(MagicToRune[magicType], position, col, torchNode.body.scale, VMath.VectorToAngle(position - parent.body.pos) + GMath.PIbyTwo, Layers.Over3);
         }
 
 

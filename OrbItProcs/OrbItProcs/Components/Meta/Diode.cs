@@ -110,10 +110,10 @@ namespace OrbItProcs
         public bool IsOnCorrectSide(Node wall, Node other, bool belowPi)
         {
             Vector2 direction = other.body.pos - wall.body.pos;
-            float dirAngle = Utils.VectorToAngle(direction);
+            float dirAngle = VMath.VectorToAngle(direction);
             float resAngle = (parent.body.orient - dirAngle).between0and2pi();
-            if (belowPi) return resAngle < VMath.PI;
-            return resAngle >= VMath.PI;
+            if (belowPi) return resAngle < GMath.PI;
+            return resAngle >= GMath.PI;
         }
 
     }

@@ -6,12 +6,105 @@ using Microsoft.Xna.Framework;
 
 namespace OrbItProcs
 {
-    public static class VMath
+    public static class GMath
     {
         public static float EPSILON = 0.0001f;
         public const float PI = (float)Math.PI;
-        public const float twoPI = (float)(Math.PI *2);
+        public const float TwoPI = (float)(Math.PI * 2);
         public const float PIbyTwo = (float)(Math.PI / 2);
+        public const float rootOfTwo = 1.41421356237f;
+        public const float invRootOfTwo = 0.70710678118f;
+        public static float between0and2pi(this float value)
+        {
+            if (value > 2 * GMath.PI) value = value % (2 * GMath.PI);
+            if (value < 0)
+                value = 2 * GMath.PI + value;
+            return value;
+        }
+        public static float Sawtooth(float x, float mod)
+        {
+            float ret = x % mod;
+            if (x >= 0 || ret == 0)
+            {
+                return ret;
+            }
+            else
+            {
+                return mod - (float)Math.Abs(ret);
+            }
+        }
+        internal static float AngleLerp(float source, float dest, float percent)
+        {
+            float result = 0f;
+            float pi = PI;
+
+            if (source < pi && dest > source + pi)
+            {
+                result = MathHelper.Lerp(source, dest - (2 * pi), percent);
+            }
+            else if (source > pi && dest < source - pi)
+            {
+                result = MathHelper.Lerp(source, dest + (2 * pi), percent);
+            }
+            else
+            {
+                result = MathHelper.Lerp(source, dest, percent);
+            }
+            return result;
+        }
+        public static float Lerp(float start, float end, float amount)
+        {
+            if (amount > 1f) amount = 1f;
+            else if (amount < 0f) amount = 0f;
+            if (start > end)
+            {
+                float temp = start;
+                start = end;
+                end = start;
+            }
+            return start + (end - start) * amount;
+        }
+        public static bool Equal(double a, double b)
+        {
+            return Math.Abs(a - b) <= EPSILON;
+        }
+        public static bool BiasGreaterThan(double a, double b)
+        {
+            double k_biasRelative = 0.95;
+            double k_biasAbsolute = 0.01;
+            return a >= b * k_biasRelative + a * k_biasAbsolute;
+        }
+        public static float CircularDistance(float x, float v, int t = 360)
+        {
+            int half = t / 2;
+            if (x == v) return 0;
+            if (x > v)
+            {
+                if (v > x - half)
+                {
+                    return v - x; //negative
+                }
+                else
+                {
+                    return t - x + v;
+                }
+            }
+            else
+            {
+                if (v < x + half)
+                {
+                    return v - x;
+                }
+                else
+                {
+                    return v - t - x; //negative
+                }
+            }
+        }
+    }
+    public static class VMath
+    {
+        
         #region /// Existing Classes ///
         public static void Test()
         {
@@ -51,6 +144,20 @@ namespace OrbItProcs
         public static void Set(ref Vector2 v, float x, float y)
         {
             v.X = x; v.Y = y;
+        }
+        public static Vector2 AngleToVector(float angle)
+        {
+            return new Vector2((float)Math.Sin(angle), -(float)Math.Cos(angle));
+        }
+
+        public static float VectorToAngle(Vector2 vector)
+        {
+            float value = (float)Math.Atan2(vector.X, -vector.Y);
+            if (value > 2f * GMath.PI)
+                value = value % (2 * GMath.PI);
+            if (value < 0)
+                value = 2f * GMath.PI + value;
+            return value;
         }
 
         public static bool isWithin(this Vector2 v, Vector2 TopLeft, Vector2 BottomRight)
@@ -121,16 +228,9 @@ namespace OrbItProcs
                 v.Y *= invLen;
             }
         }
-
-        public static bool Equal(double a, double b)
+        public static Vector2 ToVector2(this Point point)
         {
-            return Math.Abs(a - b) <= EPSILON;
-        }
-        public static bool BiasGreaterThan(double a, double b)
-        {
-            double k_biasRelative = 0.95;
-            double k_biasAbsolute = 0.01;
-            return a >= b * k_biasRelative + a * k_biasAbsolute;
+            return new Vector2(point.X, point.Y);
         }
     }
 }

@@ -68,7 +68,7 @@ namespace OrbItProcs
                 //int mode = (int)d.mode;
                 //int countModes = Enum.GetValues(typeof(Diode.Mode)).Length;
                 //d.mode = (Diode.Mode)((mode + 1) % countModes);
-                found.body.orient += VMath.PI;
+                found.body.orient += GMath.PI;
             }
         }
         public void AddTickets()

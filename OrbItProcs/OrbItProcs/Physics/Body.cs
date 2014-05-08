@@ -349,13 +349,13 @@ namespace OrbItProcs
 
         public void SetOrientV2(Vector2 direction)
         {
-            float radians = Utils.VectorToAngle(direction);
+            float radians = VMath.VectorToAngle(direction);
             orient = radians;
             shape.SetOrient(radians);
         }
         public Vector2 getOrientV2()
         {
-            return Utils.AngleToVector(orient);
+            return VMath.AngleToVector(orient);
         }
 
         public virtual Texture2D getTexture()
