@@ -26,7 +26,6 @@ namespace OrbItProcs
         /// Sets the length of the wave.
         /// </summary>
         [Info(UserLevel.User, "Sets the length of the wave. ")]
-        [Polenter.Serialization.ExcludeFromSerialization]
         public int waveLength 
         { 
             get 

@@ -11,9 +11,6 @@ namespace OrbItProcs {
     public class GridSystem {
         public Room room;
         public Vector2 position;
-        //{
-        //    return room.camera.pos - new Vector2((float)gridWidth / 2, (float)gridHeight / 2); 
-        //} }
         public int cellsX { get; set; }
         public int cellsY { get; set; }
 

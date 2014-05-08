@@ -153,8 +153,9 @@ namespace OrbItProcs
             
             for (int i = 1; i < 5; i++)
             {
-                TryCreatePlayer(room, room.playerGroup.defaultNode, i);
+                TryCreatePlayer(room, room.playerGroup.defaultNode, i, false);
             }
+            OrbIt.ui.sidebar.playerView.InitializePlayers();
         }
 
         public static void CheckForPlayers(Room room)
@@ -163,12 +164,12 @@ namespace OrbItProcs
             {
                 if (players[i] == null && GamePad.GetState((PlayerIndex)(i-1)).IsConnected)
                 {
-                    TryCreatePlayer(room, room.playerGroup.defaultNode, i);
+                    TryCreatePlayer(room, room.playerGroup.defaultNode, i, true);
                 }
             }
         }
 
-        private static void TryCreatePlayer(Room room, Node defaultNode, int playerIndex)
+        private static void TryCreatePlayer(Room room, Node defaultNode, int playerIndex, bool updateUI)
         {
             Player p = Player.GetNew(playerIndex);
             players[playerIndex] = p;
@@ -197,6 +198,11 @@ namespace OrbItProcs
             node.addComponent<LinkGun>(true);
             node.OnSpawn();
             node.texture = textures.robot1;
+
+            if (updateUI)
+            {
+                OrbIt.ui.sidebar.playerView.InitializePlayers();
+            }
         }
 
         

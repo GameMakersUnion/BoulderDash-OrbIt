@@ -277,8 +277,6 @@ namespace OrbItProcs {
             if (val == nodeE.color) body.color = dict[val];
         }
 
-        public Node() : this(null,ShapeType.eCircle) { }
-
         public Node(Room room) : this(room, ShapeType.eCircle) { }
 
         public Node(Room room, ShapeType shapetype)

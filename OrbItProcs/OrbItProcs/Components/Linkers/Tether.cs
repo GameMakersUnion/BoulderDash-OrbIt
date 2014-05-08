@@ -47,10 +47,8 @@ namespace OrbItProcs
         [Info(UserLevel.Advanced, "Determines the state of the node. If activated, it actively applies tether's effect. Middle click in select mode to toggle.")]
         public bool activated { get { return _activated; } set { _activated = value; } }
         private HashSet<Node> _outgoing = new HashSet<Node>();
-        [Polenter.Serialization.ExcludeFromSerialization]
         public HashSet<Node> outgoing { get { return _outgoing; } set { _outgoing = value; } }
         private HashSet<Node> _incoming = new HashSet<Node>();
-        [Polenter.Serialization.ExcludeFromSerialization]
         public HashSet<Node> incoming { get { return _incoming; } set { _incoming = value; } }
 
         private bool _lockedAngle = false;

@@ -9,13 +9,10 @@ namespace OrbItProcs
     public class FPInfo
     {
         private FieldInfo _fieldInfo;
-        [Polenter.Serialization.ExcludeFromSerialization]
         public FieldInfo fieldInfo { get { return _fieldInfo; } set { _fieldInfo = value; } }
 
         private PropertyInfo _propertyInfo;
-        [Polenter.Serialization.ExcludeFromSerialization]
         public PropertyInfo propertyInfo { get { return _propertyInfo; } set { _propertyInfo = value; } }
-        //[Polenter.Serialization.ExcludeFromSerialization]
         public object ob;
 
         public string DeclaringTypeName { get; set; }
@@ -37,9 +34,6 @@ namespace OrbItProcs
             }
             set { }
         }
-
-
-        public FPInfo () { /*serializeationiantiszeatned;*/ }
         public FPInfo (FieldInfo fieldInfo)
         {
             this.fieldInfo = fieldInfo;

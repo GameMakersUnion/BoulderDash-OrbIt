@@ -22,7 +22,6 @@ namespace OrbItProcs
         public string id { get { return _id; } set { _id = value; } }    
     
         private Queue<object> _queue = new Queue<object>();
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Queue<object> queue { get { return _queue; } set { _queue = value; } }
 
         private Type _elementType = typeof(object);
@@ -30,15 +29,8 @@ namespace OrbItProcs
 
         private FPInfo _fpInfo;
         public FPInfo fpInfo { get { return _fpInfo; } set { _fpInfo = value; } }
+        public object obj { get { return obj; } set { obj = value; } }
 
-        //private object _obj;
-        [Polenter.Serialization.ExcludeFromSerialization]
-        public object obj { get { return obj; } set { obj = value; } } //probably work
-
-        public QueueInfo()
-        {
-
-        }
         public QueueInfo(
             FPInfo fpInfo,
             object obj,

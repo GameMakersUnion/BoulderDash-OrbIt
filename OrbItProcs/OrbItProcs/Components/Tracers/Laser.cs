@@ -21,7 +21,6 @@ namespace OrbItProcs
         /// Sets the length of the laser.
         /// </summary>
         [Info(UserLevel.User, "Sets the length of the laser. ")]
-        [Polenter.Serialization.ExcludeFromSerialization]
         public int laserLength 
         {
             get

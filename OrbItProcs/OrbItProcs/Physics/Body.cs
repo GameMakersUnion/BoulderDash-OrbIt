@@ -13,8 +13,6 @@ namespace OrbItProcs
     [Info(UserLevel.User, "The Body holds the node's size, position and other properties used in physics and gravity calculations.")]
     public class Body : Collider
     {
-        //public Shape shape;
-        //public Vector2 pos = new Vector2(0, 0);
         public Vector2 velocity = new Vector2(0, 0);
         [Info(UserLevel.Developer)]
         public override bool HandlersEnabled
@@ -26,14 +24,6 @@ namespace OrbItProcs
                 if (parent != null && OrbIt.ui != null && parent.collision.active)
                 {
                     parent.collision.UpdateCollisionSet();
-                    //if (!_HandlersEnabled && value && !parent.IsDefault)
-                    //{
-                    //    parent.room.AddCollider(this);
-                    //}
-                    //else if (_HandlersEnabled && !value && !_ResolveCollision)
-                    //{
-                    //    parent.room.RemoveCollider(this);
-                    //}
                 }
             }
         }
@@ -52,14 +42,6 @@ namespace OrbItProcs
                 if (parent != null && OrbIt.ui != null && parent.collision.active)
                 {
                     parent.collision.UpdateCollisionSet();
-                    //if (value && !parent.IsDefault)
-                    //{
-                    //    parent.room.AddCollider(this);
-                    //}
-                    //else if (!value && !_HandlersEnabled)
-                    //{
-                    //    parent.room.RemoveCollider(this);
-                    //}
                 }
             }
         }
@@ -155,20 +137,7 @@ namespace OrbItProcs
         public Color permaColor = new Color(255, 255, 255);
         private textures _texture;
 
-        [Info(UserLevel.Never)]
-        public float[] positionP { get { return pos.toFloatArray(); }
-            set { pos = new Vector2(value[0], value[1]); } }
-        [Info(UserLevel.Never)]
-        public float[] velocityP { get { return velocity.toFloatArray(); }
-            set { velocity = new Vector2(value[0], value[1]); } }
-        [Info(UserLevel.Never)]
         public Vector2 effvelocity = new Vector2(0, 0);
-        [Info(UserLevel.Never)]
-        public float[] effvelocityP
-        {
-            get { return effvelocity.toFloatArray(); }
-            set { effvelocity = new Vector2(value[0], value[1]); }
-        }
         public Vector2 force = new Vector2(0, 0);
 
         private float _angularVelocity = 0;
@@ -199,27 +168,16 @@ namespace OrbItProcs
                 if (shape != null) shape.SetOrient(value);
             }
         }
-        [Info(UserLevel.Never)]
-        public Color colorP
-        {
-            get { return color; }
-            set { color = value; }
-        }
-        
-        
         public float invmass
         {
             get;
             protected set;
         }
-
-        
         public float invinertia
         {
             get;
             protected set;
         }
-
         /// <summary>
         /// The texture that the node will use to render. (This is the picture of the node.)
         /// </summary>
@@ -228,15 +186,6 @@ namespace OrbItProcs
         {
             get { return _texture; }
             set { _texture = value; radius = radius; }
-        }
-        [Info(UserLevel.Never)]
-        public bool PolenterHack
-        {
-            get { return true; }
-            set
-            {
-                if (shape != null) shape.body = this;
-            }
         }
 
         public Body() : this(shape: null) { }

@@ -49,10 +49,8 @@ namespace OrbItProcs
         }
 
         private HashSet<Node> _outgoing = new HashSet<Node>();
-        [Polenter.Serialization.ExcludeFromSerialization]
         public HashSet<Node> outgoing { get { return _outgoing; } set { _outgoing = value; } }
         private HashSet<Node> _incoming = new HashSet<Node>();
-        [Polenter.Serialization.ExcludeFromSerialization]
         public HashSet<Node> incoming { get { return _incoming; } set { _incoming = value; } }
 
         private bool _activated = false;
