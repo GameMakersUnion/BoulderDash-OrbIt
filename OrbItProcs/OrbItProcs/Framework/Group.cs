@@ -274,7 +274,7 @@ namespace OrbItProcs
 
         public void EmptyGroup()
         {
-            bool isold = room.game.IsOldUI && OrbIt.ui.sidebar.cbListPicker.Text.Equals(Name);
+            bool isold = OrbIt.ui.sidebar.cbListPicker.Text.Equals(Name); // if there is a crash in this line, we removed (room.game.IsOldUI && 
             foreach(Node n in fullSet.ToList())
             {
                 DeleteEntity(n);
@@ -305,7 +305,7 @@ namespace OrbItProcs
                 //room.CollisionSet.Add(entity);
                 entity.collision.UpdateCollisionSet();
             }
-            if (room.game.IsOldUI && OrbIt.ui.sidebar.cbListPicker.Text.Equals(Name))
+            if (OrbIt.ui.sidebar.cbListPicker.Text.Equals(Name)) // if there is a crash in this line, we removed (room.game.IsOldUI && 
             {
                 OrbIt.ui.sidebar.lstMain.Items.Add(entity);
                 OrbIt.ui.sidebar.SyncTitleNumber(this);

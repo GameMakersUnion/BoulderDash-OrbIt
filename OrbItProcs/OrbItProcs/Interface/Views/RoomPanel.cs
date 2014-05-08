@@ -18,7 +18,6 @@ namespace OrbItProcs
         private void refresh()
         {
  	        panel.Refresh();
-            OrbIt.updateTemp = true;
         }
         
         public RoomPanel(Sidebar sidebar, Control parent, Room room, bool interactive, int Top = 0, int Padding = 5)

@@ -128,8 +128,8 @@ namespace OrbItProcs
             {
                 OrbIt.game.setResolution((resolutions)cbResolutions.ItemIndex, OrbIt.game.Graphics.IsFullScreen);
                 if (OrbIt.game.Graphics.IsFullScreen)
-                    OrbIt.game.preferredFullScreen = (resolutions)cbResolutions.ItemIndex;
-                else OrbIt.game.preferredWindowed = (resolutions)cbResolutions.ItemIndex;
+                    OrbIt.game.prefFullScreenResolution = (resolutions)cbResolutions.ItemIndex;
+                else OrbIt.game.prefWindowedResolution = (resolutions)cbResolutions.ItemIndex;
 
             };
 
