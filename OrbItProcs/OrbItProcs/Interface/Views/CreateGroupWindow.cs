@@ -33,7 +33,7 @@ namespace OrbItProcs
             sidebar.CreatingGroup = true;
             //sidebar.ui.game.SwitchToTempRoom();
             //temproom = sidebar.ui.game.tempRoom;
-            //tempgroup = g;// sidebar.ActiveGroup;//temproom.generalGroups.childGroups.ElementAt(0).Value;
+            //tempgroup = g;// sidebar.ActiveGroup;//temproom.groups.generalGroups.childGroups.ElementAt(0).Value;
 
             poop = new Poop(manager);
             poop.Init();
@@ -117,7 +117,7 @@ namespace OrbItProcs
             cbExisting.Top = HeightCounter;
             cbExisting.Width = width;
             cbExisting.Left = offset;
-            foreach(Group gg in sidebar.game.room.generalGroups.childGroups.Values)
+            foreach(Group gg in sidebar.game.room.groups.generalGroups.childGroups.Values)
             {
                 cbExisting.Items.Add(gg);
             }
@@ -197,7 +197,7 @@ namespace OrbItProcs
             {
                 if (String.IsNullOrWhiteSpace(txtName.Text))
                     PopUp.Toast("Please enter a group name.");
-                else if(sidebar.game.room.generalGroups.childGroups.Keys.Contains(txtName.Text))
+                else if(sidebar.game.room.groups.generalGroups.childGroups.Keys.Contains(txtName.Text))
                     PopUp.Toast("Group already exists.");
                 else{                   
                     
@@ -205,7 +205,7 @@ namespace OrbItProcs
                     Node newNode = tempgroup.defaultNode.CreateClone(sidebar.game.room);
                     newNode.body.color = ColorChanger.randomColorHue();
                     newNode.basicdraw.UpdateColor();
-                    Group newGroup = new Group(sidebar.game.room, newNode, sidebar.game.room.generalGroups, txtName.Text.Trim());
+                    Group newGroup = new Group(sidebar.game.room, newNode, sidebar.game.room.groups.generalGroups, txtName.Text.Trim());
                     newNode.name = txtName.Text.Trim();
                     newNode.group = newGroup;
                     sidebar.groupsView.UpdateGroups();
@@ -253,7 +253,7 @@ namespace OrbItProcs
             Group g = tempgroup;
             //if (g == null)
             //{
-            //    g = new Group(clone, parentGroup: sidebar.room.generalGroups);
+            //    g = new Group(clone, parentGroup: sidebar.room.groups.generalGroups);
             //}
             //else
             //{

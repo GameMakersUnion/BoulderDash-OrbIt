@@ -28,11 +28,11 @@ namespace OrbItProcs
                     parent.collision.UpdateCollisionSet();
                     //if (!_HandlersEnabled && value && !parent.IsDefault)
                     //{
-                    //    parent.room.AddCollider(this);
+                    //    room.AddCollider(this);
                     //}
                     //else if (_HandlersEnabled && !value && !_ResolveCollision)
                     //{
-                    //    parent.room.RemoveCollider(this);
+                    //    room.RemoveCollider(this);
                     //}
                 }
             }
@@ -54,11 +54,11 @@ namespace OrbItProcs
                     parent.collision.UpdateCollisionSet();
                     //if (value && !parent.IsDefault)
                     //{
-                    //    parent.room.AddCollider(this);
+                    //    room.AddCollider(this);
                     //}
                     //else if (!value && !_HandlersEnabled)
                     //{
-                    //    parent.room.RemoveCollider(this);
+                    //    room.RemoveCollider(this);
                     //}
                 }
             }
@@ -310,7 +310,7 @@ namespace OrbItProcs
                 }
                 if (DoExclusionCheckResolution(other)) return;
                 if (isSolid && other.isSolid)
-                    parent.room.AddManifold(m);
+                    room.AddManifold(m);
             }
         }
 

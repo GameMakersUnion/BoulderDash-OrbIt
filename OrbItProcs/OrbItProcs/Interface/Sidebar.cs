@@ -75,8 +75,8 @@ namespace OrbItProcs
                     //
                     //if (CreatingGroup)
                     //{
-                    //    if (room.game.tempRoom.generalGroups.childGroups.Count == 0) return null;
-                    //    return room.game.tempRoom.generalGroups.childGroups.ElementAt(0).Value;
+                    //    if (room.game.tempRoom.groups.generalGroups.childGroups.Count == 0) return null;
+                    //    return room.game.tempRoom.groups.generalGroups.childGroups.ElementAt(0).Value;
                     //}
                     //else
                     //{
@@ -93,7 +93,7 @@ namespace OrbItProcs
             {
                 if (groupsView == null || presetsView == null)// groupsView.selectedItem == null)
                 {
-                    return room.generalGroups.childGroups.ElementAt(0).Value;
+                    return room.groups.generalGroups.childGroups.ElementAt(0).Value;
                 }
                 else
                 {
@@ -117,7 +117,7 @@ namespace OrbItProcs
             {
                 if (itemsView == null || itemsView.selectedItem == null)
                 {
-                    return room.itemGroup.childGroups.ElementAt(0).Value;
+                    return room.groups.itemGroup.childGroups.ElementAt(0).Value;
                 }
                 else
                 {
@@ -585,7 +585,7 @@ namespace OrbItProcs
                 {
                     lstMain.Items.Remove(o);
                 }
-                lstMain.Items.Add(room.game);
+                lstMain.Items.Add(OrbIt.game);
                 lstMain.Items.Add(room);
                 lstMain.Items.Add(room.masterGroup);
             }

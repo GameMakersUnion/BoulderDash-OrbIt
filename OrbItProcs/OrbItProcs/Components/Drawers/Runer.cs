@@ -46,7 +46,7 @@ namespace OrbItProcs
             int g = (parent.body.color.G + 128) % 255;
             int b = (parent.body.color.B + 128) % 255;
             Color col = new Color(r, g, b);
-            parent.room.camera.Draw(runeTexture, parent.body.pos, col, parent.body.scale, parent.body.orient,Layers.Over1);
+            room.camera.Draw(runeTexture, parent.body.pos, col, parent.body.scale, parent.body.orient,Layers.Over1);
         }
 
     }

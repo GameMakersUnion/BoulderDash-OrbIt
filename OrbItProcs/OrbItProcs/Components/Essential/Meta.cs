@@ -187,7 +187,7 @@ namespace OrbItProcs
                     default: Q = Color.Black; break;
                 }
                 
-                parent.room.camera.Draw(textures.pointer, parent.body.pos, Q, parent.body.scale, parent.body.orient, Layers.Over4);
+                room.camera.Draw(textures.pointer, parent.body.pos, Q, parent.body.scale, parent.body.orient, Layers.Over4);
                 ItemSlots itemSlots = parent.player.occupiedSlots;
                 textures A, B, X, Y;
                 A = (itemSlots & ItemSlots.A_Green) == ItemSlots.A_Green ? textures.itemLight : textures.itemWhisper;
@@ -195,10 +195,10 @@ namespace OrbItProcs
                 X = (itemSlots & ItemSlots.X_Blue) == ItemSlots.X_Blue ? textures.itemLight : textures.itemWhisper;
                 Y = (itemSlots & ItemSlots.Y_Yellow) == ItemSlots.Y_Yellow ? textures.itemLight : textures.itemWhisper;
 
-                parent.room.camera.Draw(A, parent.body.pos, Color.ForestGreen, parent.body.scale * 1.7f, lightRotation, Layers.Under2);
-                parent.room.camera.Draw(B, parent.body.pos, Color.Crimson, parent.body.scale * 1.7f, lightRotation + VMath.PIbyTwo, Layers.Under2);
-                parent.room.camera.Draw(X, parent.body.pos, Color.CornflowerBlue, parent.body.scale * 1.7f, lightRotation + VMath.PI, Layers.Under2);
-                parent.room.camera.Draw(Y, parent.body.pos, Color.Gold, parent.body.scale * 1.7f, lightRotation + VMath.PI + VMath.PIbyTwo, Layers.Under2);
+                room.camera.Draw(A, parent.body.pos, Color.ForestGreen, parent.body.scale * 1.7f, lightRotation, Layers.Under2);
+                room.camera.Draw(B, parent.body.pos, Color.Crimson, parent.body.scale * 1.7f, lightRotation + VMath.PIbyTwo, Layers.Under2);
+                room.camera.Draw(X, parent.body.pos, Color.CornflowerBlue, parent.body.scale * 1.7f, lightRotation + VMath.PI, Layers.Under2);
+                room.camera.Draw(Y, parent.body.pos, Color.Gold, parent.body.scale * 1.7f, lightRotation + VMath.PI + VMath.PIbyTwo, Layers.Under2);
 
                 lightRotation += 0.1f;
             }

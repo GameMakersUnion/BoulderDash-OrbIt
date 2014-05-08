@@ -80,7 +80,7 @@ namespace OrbItProcs
                         {
                             t.movement.active = false;
                             AppointmentDelegate ad = (n, d) => t.movement.active = true;
-                            parent.room.scheduler.AddAppointment(new Appointment(ad, (int)(stunSeconds.value * 1000)));
+                            room.scheduler.AddAppointment(new Appointment(ad, (int)(stunSeconds.value * 1000)));
                         }
                     }
                 }
@@ -103,7 +103,7 @@ namespace OrbItProcs
                         {
                             t.movement.active = false;
                             AppointmentDelegate ad = (n, d) => t.movement.active = true;
-                            parent.room.scheduler.AddAppointment(new Appointment(ad, (int)(stunSeconds.value * 1000)));
+                            room.scheduler.AddAppointment(new Appointment(ad, (int)(stunSeconds.value * 1000)));
                         }
                     }
                 }

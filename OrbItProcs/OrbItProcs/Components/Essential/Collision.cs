@@ -109,19 +109,19 @@ namespace OrbItProcs
                 //    if (value)
                 //    {
                 //        if (parent.body.HandlersEnabled) 
-                //            parent.room.AddCollider(parent.body);
+                //            room.AddCollider(parent.body);
                 //        foreach (Collider col in colliders.Values)
                 //        {
-                //            if (col.HandlersEnabled) parent.room.AddCollider(col);
+                //            if (col.HandlersEnabled) room.AddCollider(col);
                 //        }
                 //    }
                 //    else
                 //    {
                 //        if (!parent.body.isSolid) 
-                //            parent.room.RemoveCollider(parent.body);
+                //            room.RemoveCollider(parent.body);
                 //        foreach (Collider col in colliders.Values)
                 //        {
-                //            parent.room.RemoveCollider(col);
+                //            room.RemoveCollider(col);
                 //        }
                 //    }
                 //}
@@ -141,10 +141,10 @@ namespace OrbItProcs
                 //    if (value)
                 //    {
                 //        if (parent.body.isSolid || parent.body.HandlersEnabled) 
-                //            parent.room.AddCollider(parent.body);
+                //            room.AddCollider(parent.body);
                 //        foreach (Collider col in colliders.Values)
                 //        {
-                //            if (col.HandlersEnabled) parent.room.AddCollider(col);
+                //            if (col.HandlersEnabled) room.AddCollider(col);
                 //        }
                 //    }
                 //    else
@@ -162,18 +162,18 @@ namespace OrbItProcs
         {
             if (parent != null && !parent.IsDefault)
             {
-                if (parent.room.masterGroup == null || !parent.room.masterGroup.fullSet.Contains(parent)) return;
+                if (room.masterGroup == null || !room.masterGroup.fullSet.Contains(parent)) return;
                 if (active && AllHandlersEnabled)
                 {
                     if (parent.body.isSolid || parent.body.HandlersEnabled)
-                        parent.room.AddCollider(parent.body);
+                        room.AddCollider(parent.body);
                     else
-                        parent.room.RemoveCollider(parent.body);
+                        room.RemoveCollider(parent.body);
 
                     foreach (Collider col in colliders.Values)
                     {
-                        if (col.HandlersEnabled) parent.room.AddCollider(col);
-                        else parent.room.RemoveCollider(col);
+                        if (col.HandlersEnabled) room.AddCollider(col);
+                        else room.RemoveCollider(col);
                     }
                 }
                 else
@@ -185,10 +185,10 @@ namespace OrbItProcs
 
         public void RemoveCollidersFromSet()
         {
-            parent.room.RemoveCollider(parent.body);
+            room.RemoveCollider(parent.body);
             foreach (Collider col in colliders.Values)
             {
-                parent.room.RemoveCollider(col);
+                room.RemoveCollider(col);
             }
         }
 
@@ -212,7 +212,7 @@ namespace OrbItProcs
             m.Solve();
             if (m.contact_count > 0)
             {
-                parent.room.AddManifold(m);
+                room.AddManifold(m);
             }
         }
 
@@ -234,14 +234,14 @@ namespace OrbItProcs
         {
             if (!DrawRing) return;
             //Console.WriteLine(Utils.random.Next(10));
-            parent.room.camera.Draw(textures.ring, parent.body.pos, Color.Red, parent.body.scale, Layers.Under2);
+            room.camera.Draw(textures.ring, parent.body.pos, Color.Red, parent.body.scale, Layers.Under2);
 
             foreach (Collider cc in colliders.Values)
             {
                 if (cc.HandlersEnabled)
                 {
                     float scale = cc.radius / parent.getTexture().Width * 2;
-                    parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color, scale, Layers.Under2);
+                    room.camera.Draw(textures.ring, parent.body.pos, parent.body.color, scale, Layers.Under2);
                 }
             }
         }

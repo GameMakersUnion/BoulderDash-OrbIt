@@ -41,6 +41,7 @@ namespace OrbItProcs
 
         [Polenter.Serialization.ExcludeFromSerialization]
         public Node parent { get; set; }
+        public Room room {get{return parent.room;}}
 
         protected bool _HandlersEnabled = true;
         public virtual bool HandlersEnabled
@@ -54,11 +55,11 @@ namespace OrbItProcs
                     parent.collision.UpdateCollisionSet();
                     //if (value && !parent.IsDefault)
                     //{
-                    //    parent.room.AddCollider(this);
+                    //    room.AddCollider(this);
                     //}
                     //else if (!value)
                     //{
-                    //    parent.room.RemoveCollider(this);
+                    //    room.RemoveCollider(this);
                     //}
                 }
             }

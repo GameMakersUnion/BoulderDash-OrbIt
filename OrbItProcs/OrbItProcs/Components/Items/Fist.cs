@@ -74,7 +74,7 @@ namespace OrbItProcs
             damageMultiplier = 10f;
             parryKnockback = 20f;
             nodeKnockback = 500f;
-            fistNode = new Node(parent.room);
+            fistNode = new Node(room);
             fistNode.basicdraw.active = false;
             fistNode.name = "fist";
             fistNode.body.radius = fistRadius;
@@ -83,8 +83,8 @@ namespace OrbItProcs
         public override void AfterCloning()
         {
             if (fistNode == null) return;
-            fistNode = fistNode.CreateClone(parent.room);
-            //sword = new Node(parent.room, props);
+            fistNode = fistNode.CreateClone(room);
+            //sword = new Node(room, props);
         }
 
         public override void OnSpawn()
@@ -95,7 +95,7 @@ namespace OrbItProcs
             fistNode.body.pos = parent.body.pos;
             
 
-            parent.room.itemGroup.IncludeEntity(fistNode);
+            room.groups.itemGroup.IncludeEntity(fistNode);
             fistNode.OnSpawn();
             fistNode.body.AddExclusionCheck(parent.body);
             fistNode.body.ExclusionCheck += delegate(Collider p, Collider o) { return !movingStick; };
@@ -210,11 +210,11 @@ namespace OrbItProcs
             if (position == Vector2.Zero) position = parent.body.pos;
             else
             {
-                //Utils.DrawLine(parent.room, position, parent.body.pos, 2f, parent.body.color, Layers.Under2);
-                //Utils.DrawLine(parent.room, target, parent.body.pos, 2f, Color.Red, Layers.Under2);
+                //Utils.DrawLine(room, position, parent.body.pos, 2f, parent.body.color, Layers.Under2);
+                //Utils.DrawLine(room, target, parent.body.pos, 2f, Color.Red, Layers.Under2);
             }
 
-            parent.room.camera.Draw(textures.fist, position, Color.White, fistNode.body.scale, fistNode.body.orient, Layers.Over2);//layers don't work
+            room.camera.Draw(textures.fist, position, Color.White, fistNode.body.scale, fistNode.body.orient, Layers.Over2);//layers don't work
 
 
         }

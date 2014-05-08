@@ -143,7 +143,7 @@ namespace OrbItProcs
             bulletNode.Comp<Laser>().thickness = 5f;
             bulletNode.Comp<Laser>().laserLength = 20;
             bulletNode.Comp<Movement>().randInitialVel.enabled = false;
-            bulletNode.group = room.bulletGroup;
+            bulletNode.group = room.groups.bulletGroup;
             
             
         }
@@ -208,7 +208,7 @@ namespace OrbItProcs
                 
                 float nearest = float.MaxValue;
                 Node nearNode = null;
-                foreach (Node n in parent.room.playerGroup.entities)
+                foreach (Node n in room.groups.playerGroup.entities)
                 {
                     float dist = Vector2.Distance(parent.body.pos, n.body.pos);
                     if (dist < nearest)
@@ -235,7 +235,7 @@ namespace OrbItProcs
         {
             ammo--;
             if (!useStickVelocity) VMath.NormalizeSafe(ref dir);
-            Node n = bulletNode.CreateClone(parent.room);
+            Node n = bulletNode.CreateClone(room);
             n.Comp<Lifetime>().timeUntilDeath.value = bulletLife;
             dir.Y *= -1;
             n.body.velocity = dir * speed;
@@ -252,7 +252,7 @@ namespace OrbItProcs
                 n.Comp<ColorChanger>().colormode = ColorChanger.ColorMode.none;
                 n.SetColor(parent.player.pColor);
             }
-            parent.room.spawnNode(n, g: parent.room.bulletGroup);
+            room.spawnNode(n, g: room.groups.bulletGroup);
             Action<Node, Node> bulletHit = (n1, n2) =>
             {
                 Node bullet, them;

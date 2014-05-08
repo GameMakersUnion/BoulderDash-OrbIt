@@ -179,49 +179,49 @@ namespace OrbItProcs
             playerTeammates = new Dictionary<Player, HashSet<Player>>();
             if (gameMode == GameModes.tAllvs1)
             {
-                if (game.room.playerGroup.entities.Count <= 2)
+                if (game.room.groups.playerGroup.entities.Count <= 2)
                 {
                     gameMode = GameModes.FreeForAll;
                     return;
                 }
-                else if (game.room.playerGroup.entities.Count == 3)
+                else if (game.room.groups.playerGroup.entities.Count == 3)
                 {
-                    var hs = new HashSet<Player>() { game.room.playerGroup.entities.ElementAt(0).player, game.room.playerGroup.entities.ElementAt(1).player };
-                    playerTeammates[game.room.playerGroup.entities.ElementAt(0).player] = hs;
-                    playerTeammates[game.room.playerGroup.entities.ElementAt(1).player] = hs;
-                    playerTeammates[game.room.playerGroup.entities.ElementAt(2).player] = new HashSet<Player>() { game.room.playerGroup.entities.ElementAt(2).player };
+                    var hs = new HashSet<Player>() { game.room.groups.playerGroup.entities.ElementAt(0).player, game.room.groups.playerGroup.entities.ElementAt(1).player };
+                    playerTeammates[game.room.groups.playerGroup.entities.ElementAt(0).player] = hs;
+                    playerTeammates[game.room.groups.playerGroup.entities.ElementAt(1).player] = hs;
+                    playerTeammates[game.room.groups.playerGroup.entities.ElementAt(2).player] = new HashSet<Player>() { game.room.groups.playerGroup.entities.ElementAt(2).player };
                 }
-                else if (game.room.playerGroup.entities.Count == 4)
+                else if (game.room.groups.playerGroup.entities.Count == 4)
                 {
-                    var hs = new HashSet<Player>() { game.room.playerGroup.entities.ElementAt(0).player, game.room.playerGroup.entities.ElementAt(1).player, game.room.playerGroup.entities.ElementAt(2).player };
-                    playerTeammates[game.room.playerGroup.entities.ElementAt(0).player] = hs;
-                    playerTeammates[game.room.playerGroup.entities.ElementAt(1).player] = hs;
-                    playerTeammates[game.room.playerGroup.entities.ElementAt(2).player] = hs;
-                    playerTeammates[game.room.playerGroup.entities.ElementAt(3).player] = new HashSet<Player>() { game.room.playerGroup.entities.ElementAt(3).player };
+                    var hs = new HashSet<Player>() { game.room.groups.playerGroup.entities.ElementAt(0).player, game.room.groups.playerGroup.entities.ElementAt(1).player, game.room.groups.playerGroup.entities.ElementAt(2).player };
+                    playerTeammates[game.room.groups.playerGroup.entities.ElementAt(0).player] = hs;
+                    playerTeammates[game.room.groups.playerGroup.entities.ElementAt(1).player] = hs;
+                    playerTeammates[game.room.groups.playerGroup.entities.ElementAt(2).player] = hs;
+                    playerTeammates[game.room.groups.playerGroup.entities.ElementAt(3).player] = new HashSet<Player>() { game.room.groups.playerGroup.entities.ElementAt(3).player };
                 }
             }
             else if (gameMode == GameModes.t2vs2)
             {
-                if (game.room.playerGroup.entities.Count <= 3)
+                if (game.room.groups.playerGroup.entities.Count <= 3)
                 {
                     gameMode = GameModes.tAllvs1;
                     return;
                 }
-                var hs1 = new HashSet<Player>() { game.room.playerGroup.entities.ElementAt(0).player, game.room.playerGroup.entities.ElementAt(1).player };
-                var hs2 = new HashSet<Player>() { game.room.playerGroup.entities.ElementAt(2).player, game.room.playerGroup.entities.ElementAt(3).player };
-                playerTeammates[game.room.playerGroup.entities.ElementAt(0).player] = hs1;
-                playerTeammates[game.room.playerGroup.entities.ElementAt(1).player] = hs1;
-                playerTeammates[game.room.playerGroup.entities.ElementAt(2).player] = hs2;
-                playerTeammates[game.room.playerGroup.entities.ElementAt(3).player] = hs2;
+                var hs1 = new HashSet<Player>() { game.room.groups.playerGroup.entities.ElementAt(0).player, game.room.groups.playerGroup.entities.ElementAt(1).player };
+                var hs2 = new HashSet<Player>() { game.room.groups.playerGroup.entities.ElementAt(2).player, game.room.groups.playerGroup.entities.ElementAt(3).player };
+                playerTeammates[game.room.groups.playerGroup.entities.ElementAt(0).player] = hs1;
+                playerTeammates[game.room.groups.playerGroup.entities.ElementAt(1).player] = hs1;
+                playerTeammates[game.room.groups.playerGroup.entities.ElementAt(2).player] = hs2;
+                playerTeammates[game.room.groups.playerGroup.entities.ElementAt(3).player] = hs2;
             }
             else if (gameMode == GameModes.Cooperative)
             {
                 HashSet<Player> playerset = new HashSet<Player>();
-                foreach (Node n in game.room.playerGroup.entities)
+                foreach (Node n in game.room.groups.playerGroup.entities)
                 {
                     playerset.Add(n.player);
                 }
-                foreach (Node n in game.room.playerGroup.entities)
+                foreach (Node n in game.room.groups.playerGroup.entities)
                 {
                     playerTeammates[n.player] = playerset;
                 }

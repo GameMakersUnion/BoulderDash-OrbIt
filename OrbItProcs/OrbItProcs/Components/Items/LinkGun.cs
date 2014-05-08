@@ -75,7 +75,7 @@ namespace OrbItProcs
             shootNodeSpeed = 5f;
             linkMode = LinkMode.TargetsChained;
 
-            shootNode = new Node(parent.room);
+            shootNode = new Node(room);
             shootNode.name = "linknode";
             shootNode.body.radius = shootNodeRadius;
             shootNode.body.ExclusionCheck += (c1, c2) => c2 == parent.body;
@@ -86,7 +86,7 @@ namespace OrbItProcs
         public override void AfterCloning()
         {
             if (shootNode == null) return;
-            shootNode = shootNode.CreateClone(parent.room);
+            shootNode = shootNode.CreateClone(room);
         }
 
         public override void OnSpawn()
@@ -95,7 +95,7 @@ namespace OrbItProcs
             shootNode.body.pos = parent.body.pos;
             shootNode.addComponent<ColorChanger>(true);
             shootNode.AffectExclusionCheck += (node) => node == parent;
-            parent.room.itemGroup.IncludeEntity(shootNode);
+            room.groups.itemGroup.IncludeEntity(shootNode);
             shootNode.OnSpawn();
             shootNode.body.AddExclusionCheck(parent.body);
             shootNode.active = false;
@@ -314,7 +314,7 @@ namespace OrbItProcs
             //}
             //if (deployed)
             //{
-            //    //parent.room.camera.DrawLine(position, parent.body.pos, 2f, col, Layers.Under2);
+            //    //room.camera.DrawLine(position, parent.body.pos, 2f, col, Layers.Under2);
             //}
         }
 

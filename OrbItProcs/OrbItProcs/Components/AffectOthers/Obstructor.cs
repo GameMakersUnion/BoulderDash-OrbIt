@@ -81,7 +81,7 @@ namespace OrbItProcs
 
         public Node CreateBlankWallPoly()
         {
-            Node wall = Node.ContructLineWall(parent.room, parent.body.pos, parent.body.pos, thickness, addToWallGroup: false);
+            Node wall = Node.ContructLineWall(room, parent.body.pos, parent.body.pos, thickness, addToWallGroup: false);
             wall.active = false;
             wall.body.ExclusionCheck += (a, b) => b.parent == parent || walls.Contains(b.parent);
             return wall;
@@ -93,7 +93,7 @@ namespace OrbItProcs
             {
                 foreach(Node n in walls)
                 {
-                    parent.room.masterGroup.childGroups["Wall Group"].IncludeEntity(n);
+                    room.masterGroup.childGroups["Wall Group"].IncludeEntity(n);
                 }
             }
         }

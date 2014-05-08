@@ -158,7 +158,7 @@ namespace OrbItProcs
                     //userP[node.velocity] = childvel;
                     //userP[node.name] = "node" + Node.nodeCounter;
 
-                    Node newNode = new Node(parent.room);
+                    Node newNode = new Node(room);
                     Node.cloneNode(parent, newNode);
                     newNode.body.velocity = childvel;
                     newNode.name = "node" + Node.nodeCounter;
@@ -170,8 +170,8 @@ namespace OrbItProcs
                     newTree.randlife = randomlife;
                     newTree.lifeleft = 0;
                     newTree.maxChilds = Math.Max(1, maxChilds - (depth % 2));
-                    //parent.room.nodesToAdd.Enqueue(newNode);
-                    //parent.room.masterGroup.childGroups.Values.ElementAt(1).IncludeEntity(newNode);
+                    //room.nodesToAdd.Enqueue(newNode);
+                    //room.masterGroup.childGroups.Values.ElementAt(1).IncludeEntity(newNode);
                     //Group g = parent.Game1.ui.sidebar.ActiveGroup;
                     if (parent.group != null)
                     {
@@ -192,13 +192,12 @@ namespace OrbItProcs
         public override void Draw()
         {
             if (!LeaveTrunk || !original) return;
-            parent.room.camera.AddPermanentDraw(parent.texture, parent.body.pos, parent.body.color, parent.body.scale, 0, 200); //trunk doesn't die. (make 500?)
+            room.camera.AddPermanentDraw(parent.texture, parent.body.pos, parent.body.color, parent.body.scale, 0, 200); //trunk doesn't die. (make 500?)
         }
 
         public void DrawOld()
         {
             if (!LeaveTrunk) return;
-            Room room = parent.room;
             float mapzoom = room.zoom;
 
             Color col = new Color(0, 0, 0, 0.3f);

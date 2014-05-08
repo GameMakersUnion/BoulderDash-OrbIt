@@ -189,7 +189,7 @@ namespace OrbItProcs {
 
                 if (ShowForceLines)
                 {
-                    parent.room.camera.DrawLine(other.body.pos, other.body.pos + (delta * 100), 2, parent.body.color, Layers.Over4);
+                    room.camera.DrawLine(other.body.pos, other.body.pos + (delta * 100), 2, parent.body.color, Layers.Over4);
                 }
                 //other.body.velocity += delta;
                 //other.body.velocity /= other.body.mass; //creates snakelike effect when put below increments
@@ -225,13 +225,13 @@ namespace OrbItProcs {
         }
         public void DrawOutwards()
         {
-            parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.2f, drawscale / 50f, Layers.Under2);
+            room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.2f, drawscale / 50f, Layers.Under2);
             drawscale -= 2f;
             if (drawscale < 10) drawscale = radius / 10;
         }
         public void DrawInwards()
         {
-            parent.room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.2f, drawscale / 50f, Layers.Under2);
+            room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.2f, drawscale / 50f, Layers.Under2);
             drawscale += 2f;
             if (drawscale > radius / 10) drawscale = 5f;
         }

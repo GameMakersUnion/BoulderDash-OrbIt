@@ -647,7 +647,6 @@ namespace OrbItProcs {
         // color the nodes that targetnode is affecting
         public void colorEffectedNodes()
         {
-            OrbIt game = room.game;
             // coloring the nodes
             if (room.targetNode != null)
             {

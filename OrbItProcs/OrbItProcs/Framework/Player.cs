@@ -135,7 +135,7 @@ namespace OrbItProcs
         //
         public static void ResetPlayers(Room room)
         {
-            room.playerGroup.EmptyGroup();
+            room.groups.playerGroup.EmptyGroup();
             Controller.ResetControllers();
             CreatePlayers(room);
             OrbIt.ui.sidebar.playerView.InitializePlayers();
@@ -146,14 +146,14 @@ namespace OrbItProcs
         public static bool EnablePlayers = true;
         public static void CreatePlayers(Room room)
         {
-            room.playerGroup.defaultNode = room.masterGroup.defaultNode.CreateClone(room);
+            room.groups.playerGroup.defaultNode = room.masterGroup.defaultNode.CreateClone(room);
             Shooter.MakeBullet(room);
             if (!EnablePlayers) return;
             //def.addComponent(comp.shooter, true);
             
             for (int i = 1; i < 5; i++)
             {
-                TryCreatePlayer(room, room.playerGroup.defaultNode, i);
+                TryCreatePlayer(room, room.groups.playerGroup.defaultNode, i);
             }
         }
 
@@ -163,7 +163,7 @@ namespace OrbItProcs
             {
                 if (players[i] == null && GamePad.GetState((PlayerIndex)(i-1)).IsConnected)
                 {
-                    TryCreatePlayer(room, room.playerGroup.defaultNode, i);
+                    TryCreatePlayer(room, room.groups.playerGroup.defaultNode, i);
                 }
             }
         }
@@ -188,7 +188,7 @@ namespace OrbItProcs
             //node.addComponent(comp.sword, true);
             //node.Comp<Sword>().sword.collision.DrawRing = false;
             p.node = node;
-            room.playerGroup.IncludeEntity(node);
+            room.groups.playerGroup.IncludeEntity(node);
             node.meta.healthBar = Meta.HealthBarMode.Bar;
             //node.OnSpawn();
             node.body.velocity = Vector2.Zero;

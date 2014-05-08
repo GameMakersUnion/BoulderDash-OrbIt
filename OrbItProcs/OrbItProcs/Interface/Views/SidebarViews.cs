@@ -78,7 +78,7 @@ namespace OrbItProcs
 
             tbcGroups.AddPage("Custom");
             TabPage customPage = tbcGroups.TabPages[0];
-            groupsView = new GroupsView(this, customPage, 0, -20, room.generalGroups);
+            groupsView = new GroupsView(this, customPage, 0, -20, room.groups.generalGroups);
             groupsView.btnCreateGroup.Text = "     Create \nCustom  Group";
             groupsView.lblGroupLabel.Text = "Custom Groups";
             groupsView.UpdateGroups();
@@ -87,7 +87,7 @@ namespace OrbItProcs
             tbcGroups.AddPage("Presets");
             tbcGroups.SelectedIndex = 1;
             TabPage presetsPage = tbcGroups.TabPages[1];
-            presetsView = new GroupsView(this, presetsPage, 0, -20, room.presetGroups);
+            presetsView = new GroupsView(this, presetsPage, 0, -20, room.groups.presetGroups);
             presetsView.btnCreateGroup.Text = "     Create \nPreset  Group";
             presetsView.lblGroupLabel.Text = "Preset Groups";
             presetsView.UpdateGroups();
@@ -197,7 +197,7 @@ namespace OrbItProcs
 
         void btnSaveLevel_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            Group g = room.wallGroup;
+            Group g = room.groups.wallGroup;
 
             if (g.fullSet.Count == 0)
                 PopUp.Toast("Unable to save: there are no walls.");
@@ -210,9 +210,9 @@ namespace OrbItProcs
 
 
             //string filename = Assets.levelsFilepath + "/" + "name" + ".xml";//"Presets//Rooms//room1.bin";
-            //sidebar.room.game.serializer = new Polenter.Serialization.SharpSerializer(true);
+            //Orbit.game.serializer = new Polenter.Serialization.SharpSerializer(true);
 
-            //sidebar.room.game.serializer.Serialize(sidebar.room, filename);
+            //Orbit.game.serializer.Serialize(sidebar.room, filename);
         }
 
         void btnLoadLevel_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
@@ -249,7 +249,7 @@ namespace OrbItProcs
 
             TitlePanel titlePanelItems = new TitlePanel(this, itemsTab, "Items", false);
 
-            itemsView = new GroupsView(this, itemsTab, 0, titlePanelItems.Height, room.itemGroup);
+            itemsView = new GroupsView(this, itemsTab, 0, titlePanelItems.Height, room.groups.itemGroup);
             
             itemsView.UpdateGroups();
 
@@ -266,7 +266,7 @@ namespace OrbItProcs
 
             TitlePanel titlePanelBullets = new TitlePanel(this, bulletsTab, "Bullets", false);
 
-            //itemsView = new GroupsView(this, testingTab, 0, 0, room.itemGroup);
+            //itemsView = new GroupsView(this, testingTab, 0, 0, room.groups.itemGroup);
             //itemsView.lblGroupLabel.Text = "Testing";
             //itemsView.UpdateGroups();
 

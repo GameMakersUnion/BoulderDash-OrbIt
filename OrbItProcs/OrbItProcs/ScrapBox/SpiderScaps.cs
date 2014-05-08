@@ -189,16 +189,17 @@ namespace OrbItProcs.ScrapBox
         {
             //this is meant to be integrated into movement
             Node parent = null;
+            Room room = null;
             if (parent.body.pos.Y < parent.body.radius)
             {
-                parent.body.pos.Y = DelegateManager.Triangle(parent.body.pos.Y - parent.body.radius, parent.room.worldHeight) + parent.body.radius;
+                parent.body.pos.Y = DelegateManager.Triangle(parent.body.pos.Y - parent.body.radius, room.worldHeight) + parent.body.radius;
                 parent.body.velocity.Y *= -1;
                 parent.body.InvokeOnCollisionStay(null);
                 if (parent.IsPlayer)
                 {
                     try
                     {
-                        LoadLevelWindow.StaticLevel(parent.room.levelList.Dequeue());
+                        LoadLevelWindow.StaticLevel("NameofLevel");
                     }
                     catch (Exception e)
                     {
@@ -215,14 +216,14 @@ namespace OrbItProcs.ScrapBox
                 }
             }
             
-            int levelLeft = (int)parent.room.gridsystemAffect.position.X, levelTop = (int)parent.room.gridsystemAffect.position.Y;
-            int levelwidth = parent.room.gridsystemAffect.gridWidth;
-            int levelheight = parent.room.gridsystemAffect.gridHeight;
+            int levelLeft = (int)room.gridsystemAffect.position.X, levelTop = (int)room.gridsystemAffect.position.Y;
+            int levelwidth = room.gridsystemAffect.gridWidth;
+            int levelheight = room.gridsystemAffect.gridHeight;
 
             if (parent.body.pos.X >= (levelLeft + levelwidth - parent.body.radius))
             {
                 //float off = parent.body.pos.X - (levelwidth - parent.body.radius);
-                //parent.body.pos.X = (levelwidth - parent.body.radius - off) % parent.room.worldWidth;
+                //parent.body.pos.X = (levelwidth - parent.body.radius - off) % room.worldWidth;
                 parent.body.pos.X = DelegateManager.Triangle(parent.body.pos.X, levelwidth - (int)parent.body.radius) + levelLeft;
                 parent.body.velocity.X *= -1;
                 parent.body.InvokeOnCollisionStay(null); //todo: find out why we needed null, fix this
@@ -231,7 +232,7 @@ namespace OrbItProcs.ScrapBox
             else if (parent.body.pos.X < levelLeft + parent.body.radius)
             {
                 //float off = parent.body.radius - parent.body.pos.X;
-                //parent.body.pos.X = (parent.body.radius + off) % parent.room.worldWidth;
+                //parent.body.pos.X = (parent.body.radius + off) % room.worldWidth;
                 parent.body.pos.X = DelegateManager.Triangle(parent.body.pos.X - parent.body.radius, levelwidth) + parent.body.radius + levelLeft;
                 parent.body.velocity.X *= -1;
                 parent.body.InvokeOnCollisionStay(null);
@@ -251,19 +252,19 @@ namespace OrbItProcs.ScrapBox
             else if (!parent.IsPlayer && parent.body.texture == textures.boulder1)
             {
                 float y = finalpos.Y;
-                float distFromCenter = parent.body.pos.X - parent.room.gridsystemAffect.gridWidth / 2;
+                float distFromCenter = parent.body.pos.X - room.gridsystemAffect.gridWidth / 2;
                 distFromCenter = (float)Math.Abs(distFromCenter);
                 float maxDistFromCenter = 120;
 
                 float distFromSpiderhead = Vector2.Distance(parent.body.pos, spiderHead);
-                if (distFromSpiderhead < 120 && !parent.room.loading)
+                if (distFromSpiderhead < 120 && !room.loading)
                 {
                     spiderPos -= 10;
                     parent.texture = textures.boulderShine;
                     parent.collision.active = false;
                 }
 
-                if (!parent.room.loading && parent.body.pos.Y >= y + 200 && distFromCenter > maxDistFromCenter)
+                if (!room.loading && parent.body.pos.Y >= y + 200 && distFromCenter > maxDistFromCenter)
                 {
                     parent.texture = textures.boulderShine;
                     parent.collision.active = false;
@@ -279,12 +280,12 @@ namespace OrbItProcs.ScrapBox
             if (parent.IsPlayer)
             {
                 float y = finalpos.Y;
-                float distFromCenter = parent.body.pos.X - parent.room.gridsystemAffect.gridWidth / 2;
+                float distFromCenter = parent.body.pos.X - room.gridsystemAffect.gridWidth / 2;
                 int sign = -1;
                 if (distFromCenter < 0) sign = 1;
                 distFromCenter = (float)Math.Abs(distFromCenter);
                 float maxDistFromCenter = 120;
-                if (!parent.room.loading && parent.body.pos.Y >= y + 200 && distFromCenter > maxDistFromCenter)
+                if (!room.loading && parent.body.pos.Y >= y + 200 && distFromCenter > maxDistFromCenter)
                 {
                     parent.movement.maxVelocity.value = 30f;
                     parent.body.velocity = new Vector2(20 * sign, 0);

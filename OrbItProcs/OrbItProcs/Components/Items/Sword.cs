@@ -94,15 +94,15 @@ namespace OrbItProcs
             nodeKnockback = 500f;
             parryKnockback = 20f;
 
-            swordNode = new Node(parent.room);
+            swordNode = new Node(room);
             swordNode.name = "sword";
         }
 
         public override void AfterCloning()
         {
             if (swordNode == null) return;
-            swordNode = swordNode.CreateClone(parent.room);
-            //sword = new Node(parent.room, props);
+            swordNode = swordNode.CreateClone(room);
+            //sword = new Node(room, props);
         }
 
         public override void OnSpawn()
@@ -118,9 +118,9 @@ namespace OrbItProcs
             swordNode.body.pos = parent.body.pos;
             swordNode.body.DrawPolygonCenter = false;
             swordNode.basicdraw.active = false;
-            ///parent.room.spawnNode(sword);
+            ///room.spawnNode(sword);
 
-            parent.room.itemGroup.IncludeEntity(swordNode);
+            room.groups.itemGroup.IncludeEntity(swordNode);
             swordNode.OnSpawn();
             swordNode.body.AddExclusionCheck(parent.body);
             swordNode.body.ExclusionCheck += delegate(Collider p, Collider o) { return !movingStick; };
@@ -188,7 +188,7 @@ namespace OrbItProcs
         {
             Vector2 position = swordNode.body.pos;
             if (position == Vector2.Zero) position = parent.body.pos;
-            parent.room.camera.Draw(textures.sword, position, parent.body.color, swordNode.body.scale * 2, swordNode.body.orient, Layers.Over3);
+            room.camera.Draw(textures.sword, position, parent.body.color, swordNode.body.scale * 2, swordNode.body.orient, Layers.Over3);
         }
         public override void OnRemove(Node other)
         {
