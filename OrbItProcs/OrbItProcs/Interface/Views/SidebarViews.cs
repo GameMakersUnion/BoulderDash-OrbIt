@@ -143,11 +143,11 @@ namespace OrbItProcs
                 if (btnFullScreen.Text == "FullScreen")
                 {
                     btnFullScreen.Text = "Windowed";
-                    game.setResolution(game.preferredFullScreen ?? resolutions.AutoFullScreen, true);
+                    game.setResolution(game.prefFullScreenResolution ?? resolutions.AutoFullScreen, true);
                 }
                 else
                 {
-                    game.setResolution(game.preferredFullScreen ?? resolutions.WSXGA_1680x1050, false);
+                    game.setResolution(game.prefFullScreenResolution ?? resolutions.WSXGA_1680x1050, false);
                     btnFullScreen.Text = "FullScreen";
                 }
             };

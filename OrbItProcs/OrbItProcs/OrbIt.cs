@@ -43,32 +43,40 @@ namespace OrbItProcs
 
     public class OrbIt : Application
     {
+
+        #region ///////////////////// FIELDS ///////////////////
         public static OrbIt game;
         public static UserInterface ui;
         public static GameTime gametime;
         public static bool soundEnabled = false;
         public static bool isFullScreen = false;
         private static bool GraphicsReset = false;
+        public SharpSerializer serializer = new SharpSerializer();
+        private FrameRateCounter frameRateCounter;
+        #endregion
+
+
+
+        #region ///////////////////// PROPERTIES ///////////////////
         public static int ScreenWidth { get { return game.Graphics.PreferredBackBufferWidth; } set { game.Graphics.PreferredBackBufferWidth = value; } }
         public static int ScreenHeight { get { return game.Graphics.PreferredBackBufferHeight; } set { game.Graphics.PreferredBackBufferHeight = value; } }
         public static int GameAreaWidth { get { return ScreenWidth - ui.sidebar.Width - ui.sidebar.toolWindow.toolBar.Width; } }
         public static int GameAreaHeight { get { return ScreenHeight - 40; } }
-
+        public resolutions? prefFullScreenResolution{ get; set; }
+        public resolutions prefWindowedResolution { get; set; }
         public static GlobalGameMode globalGameMode { get; set; }
-
-        public SharpSerializer serializer = new SharpSerializer();
         public Room room { get; set; }
-        
-        public FrameRateCounter frameRateCounter;
-        public resolutions? preferredFullScreen;
-        public resolutions preferredWindowed;
-        
-        public bool IsOldUI { get { return ui != null && ui.sidebar != null && ui.sidebar.activeTabControl == ui.sidebar.tbcMain; } }
-        
-        
-        public static Action OnUpdate;
-        public static bool updateTemp = false;
+        #endregion
 
+
+
+        #region ///////////////////// EVENTS ///////////////////
+        public static Action OnUpdate;
+        #endregion
+
+
+
+        #region ///////////////////// INITIALIZATION ///////////////////
         private OrbIt() : base(true)
         {
             game = this;
@@ -76,51 +84,19 @@ namespace OrbItProcs
             Graphics.SynchronizeWithVerticalRetrace = true;
             ExitConfirmation = false;
             Manager.Input.InputMethods = InputMethods.Mouse | InputMethods.Keyboard;
+            prefWindowedResolution = resolutions.HD_1366x768;
             Manager.AutoCreateRenderTarget = false;
             Graphics.PreferMultiSampling = false;
             SystemBorder = false;
         }
 
-        public void setResolution(resolutions r, bool fullScreen, bool resizeRoom = false)
-        {
-            switch (r)
-            {
-                case resolutions.AutoFullScreen:
-                    ScreenWidth = GraphicsDevice.Adapter.CurrentDisplayMode.Width;
-                    ScreenHeight = GraphicsDevice.Adapter.CurrentDisplayMode.Height;
-                    break;
-                case resolutions.FHD_1920x1080:
-                    ScreenWidth = 1920; ScreenHeight = 1080; break;
-                case resolutions.HD_1366x768:
-                    ScreenWidth = 1366; ScreenHeight = 768; break;
-                case resolutions.SVGA_800x600:
-                    ScreenWidth = 800; ScreenHeight = 600; break;
-                case resolutions.SXGA_1280x1024:
-                    ScreenWidth = 1280; ScreenHeight = 1024; break;
-                case resolutions.VGA_640x480:
-                    ScreenWidth = 640; ScreenHeight = 480; break;
-                case resolutions.WSXGA_1680x1050:
-                    ScreenWidth = 1680; ScreenHeight = 1050; break;
-                case resolutions.WXGA_1280x800:
-                    ScreenWidth = 1280; ScreenHeight = 800; break;
-                case resolutions.XGA_1024x768:
-                    ScreenWidth = 1024; ScreenHeight = 768; break;
-            }
-            Manager.Graphics.IsFullScreen = fullScreen;
-            GraphicsReset = true;
-        }
-        protected override void LoadContent()
-        {
-            Assets.LoadAssets(Content);
-            base.LoadContent();
-        }
         protected override void Initialize()
         {
-           
+            Assets.LoadAssets(Content);
             base.Initialize();
             base.MainWindow.TransparentClientArea = true;
             room = new Room(this, ScreenWidth, ScreenHeight-40);
-            setResolution(resolutions.HD_1366x768, false);
+            setResolution(prefWindowedResolution, false);
             Player.CreatePlayers(room);
             ui = UserInterface.Start();
             ui.Initialize();
@@ -129,7 +105,11 @@ namespace OrbItProcs
             room.attatchToSidebar();
             GlobalKeyBinds();
         }
+        #endregion
 
+
+
+        #region ///////////////////// GAME LOOP ///////////////////
         protected override void Update(GameTime gameTime)
         {
             
@@ -166,7 +146,11 @@ namespace OrbItProcs
         {
             //fuck tom shane
         }
+        #endregion
 
+
+
+        #region ///////////////////// HELPER METHODS ///////////////////
         public static void Start()
         {
             if (game != null) throw new SystemException("Game was already Started");
@@ -181,7 +165,34 @@ namespace OrbItProcs
             ui.keyManager.addGlobalKeyAction("switchview", KeyCodes.PageDown, OnPress: ui.SwitchView);
             ui.keyManager.addGlobalKeyAction("removeall", KeyCodes.Delete, OnPress: () => ui.sidebar.btnRemoveAllNodes_Click(null, null));
         }
-
-        
-    }
+        public void setResolution(resolutions r, bool fullScreen, bool resizeRoom = false)
+        {
+            switch (r)
+            {
+                case resolutions.AutoFullScreen:
+                    ScreenWidth = GraphicsDevice.Adapter.CurrentDisplayMode.Width;
+                    ScreenHeight = GraphicsDevice.Adapter.CurrentDisplayMode.Height;
+                    break;
+                case resolutions.FHD_1920x1080:
+                    ScreenWidth = 1920; ScreenHeight = 1080; break;
+                case resolutions.HD_1366x768:
+                    ScreenWidth = 1366; ScreenHeight = 768; break;
+                case resolutions.SVGA_800x600:
+                    ScreenWidth = 800; ScreenHeight = 600; break;
+                case resolutions.SXGA_1280x1024:
+                    ScreenWidth = 1280; ScreenHeight = 1024; break;
+                case resolutions.VGA_640x480:
+                    ScreenWidth = 640; ScreenHeight = 480; break;
+                case resolutions.WSXGA_1680x1050:
+                    ScreenWidth = 1680; ScreenHeight = 1050; break;
+                case resolutions.WXGA_1280x800:
+                    ScreenWidth = 1280; ScreenHeight = 800; break;
+                case resolutions.XGA_1024x768:
+                    ScreenWidth = 1024; ScreenHeight = 768; break;
+            }
+            Manager.Graphics.IsFullScreen = fullScreen;
+            GraphicsReset = true;
+        }
+        #endregion
+    }           
 }
