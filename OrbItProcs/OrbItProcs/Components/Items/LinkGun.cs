@@ -143,7 +143,7 @@ namespace OrbItProcs
             attachedNodesQueue = new Queue<Node>();
             //attachLink = new Link(parent, new HashSet<Node>(), attachGrav); //targetsToSelf
 
-            attachLink = new Link(new HashSet<Node>(), new HashSet<Node>(), aSpring); //targetsChained
+            attachLink = new Link(new HashSet<Node>(), new HashSet<Node>(), aTether); //targetsChained
             attachLink.FormationType = formationtype.Chain;
             //attachLink.AddLinkComponent(aTether, true);
             //attachLink.AddLinkComponent(attachGrav, true);

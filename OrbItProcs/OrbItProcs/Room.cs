@@ -335,7 +335,6 @@ namespace OrbItProcs {
                 nodeDef.Comp<ItemPayload>().AddComponentItem(c);
                 Group itemgroup = new Group(this, nodeDef, itemGroup, t.ToString().LastWord('.') + " Item");
             }
-
         }
         
         public void AddCollider(Collider collider)
@@ -452,21 +451,10 @@ namespace OrbItProcs {
             }
         }
 
-        
-
         static int algorithm = 7;
         private void UpdateCollision()
         {
             Testing.modInc();
-            //Testing.w("insertion").Start();
-            //if (algorithm <= 4)
-            //{
-            //    gridsystemCollision.clear();
-            //    foreach (var c in CollisionSetCircle) //.ToList()
-            //    {
-            //        gridsystemCollision.insert(c);
-            //    }
-            //}
             if (algorithm >= 5)
             {
                 gridsystemCollision.clearBuckets();
@@ -520,62 +508,6 @@ namespace OrbItProcs {
                             collideAction(c, otherCol);
                         }
                     }
-                    //else if (algorithm == 5)
-                    //{
-                    //    var bucketBag = gridsystemCollision.retrieveBucketBags(c);
-                    //    if (bucketBag != null)
-                    //    {
-                    //        if (c is Body)
-                    //        {
-                    //            Body b = (Body)c;
-                    //            for (int i = 0; i < bucketBag.index; i++)
-                    //            {
-                    //                for (int j = 0; j < bucketBag.array[i].index; j++)
-                    //                {
-                    //                    Collider cc = bucketBag.array[i].array[j];
-                    //                    if (cc.parent == b.parent) continue;
-                    //                    if (c.parent == targetNode) cc.parent.body.color = Color.Purple;
-                    //                    if (gridsystemCollision.alreadyVisited.Contains(cc))
-                    //                        continue;
-                    //                    if (cc is Body)
-                    //                    {
-                    //                        Body bb = (Body)cc;
-                    //                        //if (!b.exclusionList.Contains(bb)) 
-                    //                            b.CheckCollisionBody(bb);
-                    //                    }
-                    //                    else
-                    //                    {
-                    //                        b.CheckCollisionCollider(cc);
-                    //                    }
-                    //                }
-                    //            }
-                    //        }
-                    //        else
-                    //        {
-                    //            for (int i = 0; i < bucketBag.index; i++)
-                    //            {
-                    //                for (int j = 0; j < bucketBag.array[i].index; j++)
-                    //                {
-                    //                    Collider cc = bucketBag.array[i].array[j];
-                    //                    if (cc.parent == c.parent) continue;
-                    //                    if (cc.parent == targetNode) cc.parent.body.color = Color.Purple;
-                    //                    if (gridsystemCollision.alreadyVisited.Contains(cc))
-                    //                    continue;
-                    //                    if (cc is Body)
-                    //                    {
-                    //                        Body bb = (Body)cc;
-                    //                        //if (!c.exclusionList.Contains(bb)) 
-                    //                            c.CheckCollisionBody(bb);
-                    //                    }
-                    //                    else
-                    //                    {
-                    //                        //c.CheckCollision(cc);
-                    //                    }
-                    //                }
-                    //            }
-                    //        }
-                    //    }
-                    //}
                     else if (algorithm == 7)
                     {
                         gridsystemCollision.retrieveOffsetArraysCollision(c, collideAction, c.radius * 2);
@@ -647,7 +579,7 @@ namespace OrbItProcs {
             foreach(var n in masterGroup.fullSet.ToList()) //todo:wtfuck threading?
             {
                 
-                if (skipOutsideGrid && (n.body.pos.Y < (gridsystemAffect.position.Y - gridsystemAffect.gridHeight /2) || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
+                //if (skipOutsideGrid && (n.body.pos.Y < (gridsystemAffect.position.Y - gridsystemAffect.gridHeight /2) || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
                 //Node n = (Node)o;
                 n.Draw();
             }

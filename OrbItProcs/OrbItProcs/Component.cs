@@ -46,10 +46,8 @@ namespace OrbItProcs
             }
         }
         //*
-        
         [Polenter.Serialization.ExcludeFromSerialization]
         public virtual Node parent { get; set; }
-
         private bool _CallDraw = true;
         public bool CallDraw { get { return _CallDraw; } set { _CallDraw = value; } }
 

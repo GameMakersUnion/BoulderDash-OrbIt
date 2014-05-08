@@ -28,7 +28,7 @@ namespace OrbItProcs
         }
         static public void boulderFountain()
         {
-            List<Vector2> removeLst = new List<Vector2>();
+            List<Vector2> removeList = new List<Vector2>();
             foreach (var v in spawnPoints.Keys)
             {
 
@@ -39,26 +39,27 @@ namespace OrbItProcs
                 {
                     float ratio = (float)Utils.random.NextDouble() + .5f;
 
-                    Dictionary<dynamic, dynamic> standardDictionary = new Dictionary<dynamic, dynamic>(){
-                    { nodeE.position, v },
-                    {typeof(Friction), true},
-                    { nodeE.radius, 25f * (ratio)},
-                    //{ typeof(gravity, true },
-                };
-                        spawnPoints[v][0]++;
-                        Node n = OrbIt.game.room.spawnNode(standardDictionary);
-                        spawnedNodes.GetOrAdd(v).Add(n);
-                        n.SetData("Filling", v);
-                        n.body.OnCollisionEnter += add;
-                        n.body.OnCollisionExit += rem;
+                    Dictionary<dynamic, dynamic> standardDictionary = new Dictionary<dynamic, dynamic>()
+                    {
+                        { nodeE.position, v },
+                        {typeof(Friction), true},
+                        { nodeE.radius, 25f * (ratio)},
+                        //{ typeof(gravity, true },
+                    };
+                    spawnPoints[v][0]++;
+                    Node n = OrbIt.game.room.spawnNode(standardDictionary);
+                    spawnedNodes.GetOrAdd(v).Add(n);
+                    n.SetData("Filling", v);
+                    n.body.OnCollisionEnter += add;
+                    n.body.OnCollisionExit += rem;
                     
                 }
                 else
                 {
-                    removeLst.Add(v);
+                    removeList.Add(v);
                 }
             }
-            foreach (var v in removeLst)
+            foreach (var v in removeList)
             {
                 finish(v);
             }

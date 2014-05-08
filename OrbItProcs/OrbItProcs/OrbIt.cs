@@ -57,10 +57,7 @@ namespace OrbItProcs
         public static GlobalGameMode globalGameMode { get; set; }
 
         public SharpSerializer serializer = new SharpSerializer();
-        public Room room{get;set;}
-
-        public Room mainRoom;
-        //public Room tempRoom;
+        public Room room { get; set; }
         
         public FrameRateCounter frameRateCounter;
         public resolutions? preferredFullScreen;
@@ -132,8 +129,6 @@ namespace OrbItProcs
             room.attatchToSidebar();
             GlobalKeyBinds();
         }
-
-        int @int = 5;
 
         protected override void Update(GameTime gameTime)
         {

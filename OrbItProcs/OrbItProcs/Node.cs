@@ -218,23 +218,12 @@ namespace OrbItProcs {
         public bool IsPlayer { get { return player != null; } }
 
         private ObservableHashSet<Link> _SourceLinks = new ObservableHashSet<Link>();
-        [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> SourceLinks { get { return _SourceLinks; } set { _SourceLinks = value; } }
         private ObservableHashSet<Link> _TargetLinks = new ObservableHashSet<Link>();
-        [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> TargetLinks { get { return _TargetLinks; } set { _TargetLinks = value; } }
-        [Polenter.Serialization.ExcludeFromSerialization]
-        public Group group
-        {
-            get { return _group; }
-            set
-            {
-                _group = value;
-            }
-        }
         private Group _group;
-
-        [Polenter.Serialization.ExcludeFromSerialization]
+        public Group group { get { return _group; } set { _group = value; } }
+        
         [Info(UserLevel.Never)]
         public Delegator delegator
         {
@@ -473,6 +462,7 @@ namespace OrbItProcs {
         }
         public Func<Node, bool> AffectExclusionCheck = null;
         public int affectionReach = 180;
+        public Vector2 previousFramePosition = new Vector2();
         public virtual void Update(GameTime gametime)
         {
             if (IsPlayer)
@@ -485,6 +475,7 @@ namespace OrbItProcs {
                 body.pos = tempPosition;
                 body.velocity = Vector2.Zero;
             }
+            previousFramePosition = tempPosition;
             body.effvelocity = body.pos - tempPosition;
             tempPosition = body.pos;
             

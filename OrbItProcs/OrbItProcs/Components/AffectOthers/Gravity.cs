@@ -105,6 +105,7 @@ namespace OrbItProcs {
         public Gravity(Node parent)
         {
             if (parent != null) this.parent = parent;
+            affectDirection = AffectDirection.AffectsOthers;
             multiplier = 40f;
             radius = 800f;
             lowerbound = 20;

@@ -89,8 +89,6 @@ namespace OrbItProcs
         public static ObservableCollection<object> NodePresets = new ObservableCollection<object>();
         public static Effect shaderEffect; // Shader code
 
-
-        
         public static void LoadAssets(ContentManager content)
         {
             if (!Directory.Exists(filepath)) Directory.CreateDirectory(filepath);
