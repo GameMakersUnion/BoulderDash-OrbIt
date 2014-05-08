@@ -340,7 +340,7 @@ namespace OrbItProcs
         
         public void DrawLine(Vector2 start, Vector2 end, float thickness, Color color, Layers Layer)
         {
-            if (thickness * room.zoom < 1) thickness = 1 / room.zoom;
+            if (thickness * zoom < 1) thickness = 1 / zoom;
             Vector2 diff = (end - start);// *mapzoom;
             Vector2 centerpoint = (end + start) / 2;
             //centerpoint *= mapzoom;
@@ -397,6 +397,14 @@ namespace OrbItProcs
         {
             try { _worker.Abort(); }
             catch { }
+        }
+        public void drawGrid(List<Rectangle> linesToDraw, Color color)
+        {
+            foreach (Rectangle rect in linesToDraw)
+            {
+                Rectangle maprect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
+                DrawLine(new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), 2, color, Layers.Under5);
+            }
         }
     }
 }

@@ -10,16 +10,14 @@ namespace OrbItProcs
     {
         public HashSet<Collider> collisions1 = new HashSet<Collider>();
         public HashSet<Collider> collisions2 = new HashSet<Collider>();
-        [Polenter.Serialization.ExcludeFromSerialization]
         public HashSet<Collider> currentCollision
         {
             get
             {
                 return currentIsCol1 ? collisions1 : collisions2;
             }
-            set { }
+            set { } //maybe we should make [DoNotClone]...
         }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public HashSet<Collider> previousCollision
         {
             get
@@ -34,12 +32,6 @@ namespace OrbItProcs
         public Vector2 pos = new Vector2(0, 0);
         public Vector2 objectSpacePos = new Vector2(0, 0);
 
-
-        //public HashSet<Collider> exclusionList = new HashSet<Collider>();
-        
-        //public Vector2 velocity = new Vector2(0, 0);
-
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Node parent { get; set; }
         public Room room {get{return parent.room;}}
 
@@ -53,20 +45,9 @@ namespace OrbItProcs
                 if (parent != null && OrbIt.ui != null && parent.collision.active)
                 {
                     parent.collision.UpdateCollisionSet();
-                    //if (value && !parent.IsDefault)
-                    //{
-                    //    room.AddCollider(this);
-                    //}
-                    //else if (!value)
-                    //{
-                    //    room.RemoveCollider(this);
-                    //}
                 }
             }
         }
-        [Info(UserLevel.Never)]
-        public Shape shapeP { get { return shape; } set { shape = value.Clone(); } }
-
         public virtual float radius { get { return shape.radius; } set { shape.radius = value; } }
 
         public Action<Node, Node> OnCollisionEnter;

@@ -11,9 +11,6 @@ namespace OrbItProcs {
     public class GridSystem {
         public Room room;
         public Vector2 position;
-        //{
-        //    return room.camera.pos - new Vector2((float)gridWidth / 2, (float)gridHeight / 2); 
-        //} }
         public int cellsX { get; set; }
         public int cellsY { get; set; }
 
@@ -24,9 +21,10 @@ namespace OrbItProcs {
 
         public List<Collider>[,] grid;
         public HashSet<Collider> alreadyVisited;
+        public List<Rectangle> linesToDraw = new List<Rectangle>();
         public GridSystem(Room room, int cellsX, Vector2 position, int? GridWidth = null, int? GridHeight = null)
         {
-
+            linesToDraw = new List<Rectangle>();
             this.position = position;
             this.room = room;
             
@@ -664,6 +662,37 @@ namespace OrbItProcs {
                 }
                 room.targetNode.body.color = Color.Red;
             }
+        }
+
+
+        public void DrawGrid(Room room, Color color)
+        {
+            room.camera.drawGrid(linesToDraw, color);
+        }
+
+        //draw grid lines
+        public void addGridSystemLines(GridSystem gs)
+        {
+            for (int i = 0; i <= gs.cellsX; i++)
+            {
+                int x = i * gs.cellWidth + (int)gs.position.X;
+                linesToDraw.Add(new Rectangle(x, (int)gs.position.Y, x, gs.gridHeight + (int)gs.position.Y));
+            }
+            for (int i = 0; i <= gs.cellsY; i++)
+            {
+                int y = i * gs.cellHeight + (int)gs.position.Y;
+                linesToDraw.Add(new Rectangle((int)gs.position.X, y, gs.gridWidth + (int)gs.position.X, y));
+            }
+        }
+
+        
+
+        public void addRectangleLines(int x, int y, int width, int height)
+        {
+            linesToDraw.Add(new Rectangle(x, y, width, y));
+            linesToDraw.Add(new Rectangle(x, y, x, height));
+            linesToDraw.Add(new Rectangle(x, height, width, height));
+            linesToDraw.Add(new Rectangle(width, y, width, height));
         }
     }
 }

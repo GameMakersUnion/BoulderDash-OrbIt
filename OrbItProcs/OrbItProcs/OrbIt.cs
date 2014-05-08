@@ -43,7 +43,6 @@ namespace OrbItProcs
 
     public class OrbIt : Application
     {
-
         #region ///////////////////// FIELDS ///////////////////
         public static OrbIt game;
         public static UserInterface ui;
@@ -54,8 +53,6 @@ namespace OrbItProcs
         public SharpSerializer serializer = new SharpSerializer();
         private FrameRateCounter frameRateCounter;
         #endregion
-
-
 
         #region ///////////////////// PROPERTIES ///////////////////
         public static int ScreenWidth { get { return game.Graphics.PreferredBackBufferWidth; } set { game.Graphics.PreferredBackBufferWidth = value; } }
@@ -97,13 +94,14 @@ namespace OrbItProcs
             base.MainWindow.TransparentClientArea = true;
             room = new Room(this, ScreenWidth, ScreenHeight-40);
             setResolution(prefWindowedResolution, false);
-            Player.CreatePlayers(room);
+            
             ui = UserInterface.Start();
             ui.Initialize();
             globalGameMode = new GlobalGameMode(this);
             frameRateCounter = new FrameRateCounter(this);
             room.attatchToSidebar();
             GlobalKeyBinds();
+            Player.CreatePlayers(room);
         }
         #endregion
 

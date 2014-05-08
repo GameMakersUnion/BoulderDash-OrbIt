@@ -22,7 +22,6 @@ namespace OrbItProcs
         /// Sets the length of the phaser.
         /// </summary>
         [Info(UserLevel.User, "Sets the length of the phaser. ")]
-        [Polenter.Serialization.ExcludeFromSerialization]
         public int phaserLength
         {
             get
@@ -31,19 +30,11 @@ namespace OrbItProcs
             }
             set
             {
-                //if (parent != null && parent.HasComp<Queuer>() && parent.Comp<Queuer>().queuecount < value)
-                //{
-                //    parent.Comp<Queuer>().queuecount = value;
-                //}
                 _phaserLength = value;
             }
         }
 
         public Toggle<int> fade { get; set; }
-        private int r1;
-        private int g1;
-        private int b1;
-        //private int timer = 0;
 
         public PhaseOrb() : this(null) { }
         public PhaseOrb(Node parent = null)

@@ -45,9 +45,6 @@ namespace OrbItProcs
                 }
             }
         }
-
-        //*
-        [Polenter.Serialization.ExcludeFromSerialization]
         public virtual Node parent { get; set; }
         public Room room { get { return parent.room; } }
         private bool _CallDraw = true;
@@ -58,7 +55,6 @@ namespace OrbItProcs
         protected float timePassed = 0;
         protected float maxTime = -1;
         protected bool IsDecaying = false;
-
 
         public void SetDecayMaxTime(int seconds, bool isDecaying = true)
         {
@@ -150,7 +146,7 @@ namespace OrbItProcs
                     }
                 }
                 if (property.GetSetMethod() != null)
-                    property.SetValue(destComp, property.GetValue(sourceComp, null), null);
+                property.SetValue(destComp, property.GetValue(sourceComp, null), null);
             }
             foreach (FieldInfo field in fields)
             {
@@ -232,8 +228,8 @@ namespace OrbItProcs
                if (property.PropertyType == typeof(Node)) continue;
                if (property.GetSetMethod() != null)
                {
-                   property.SetValue(destObject, property.GetValue(sourceObject, null), null);
-               }
+               property.SetValue(destObject, property.GetValue(sourceObject, null), null);
+           }
            }
            foreach (FieldInfo field in fields)
            {

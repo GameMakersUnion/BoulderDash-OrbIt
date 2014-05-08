@@ -15,19 +15,13 @@ namespace OrbItProcs {
     public class Room
     {
         //////Collision
+        //Move to own class Later
 
         public int colIterations { get; set; }
         public HashSet<Collider> CollisionSetCircle { get; set; }
         public HashSet<Collider> CollisionSetPolygon { get; set; }
-
         private List<Manifold> contacts = new List<Manifold>();
-
         public GridSystem gridsystemCollision { get; set; }
-
-        ///GridSystem
-
-
-        public List<Rectangle> gridSystemLines = new List<Rectangle>();
 
 
         ////Room
@@ -39,6 +33,7 @@ namespace OrbItProcs {
         public int timertimer = 0;
         public int timermax = 60;
         public Node targetNodeGraphic = null;
+        private bool resizeRoomSignal = false;
 
         //props
 
@@ -60,30 +55,24 @@ namespace OrbItProcs {
         public HashSet<Player> players { get; set; }
         [Info(UserLevel.Never)]
         public HashSet<Node> playerNodes { get { return players.Select(p => p.node).ToHashSet(); } }
+        public ObservableHashSet<Link> AllActiveLinks { get; set; }
+        public ObservableHashSet<Link> AllInactiveLinks { get; set; }
 
+        public List<Rectangle> linesToDraw = new List<Rectangle>();
 
         //Values
         public int worldWidth { get; set; }
         public int worldHeight { get; set; }
         public bool DrawLinks { get; set; }
         public Node targetNode { get; set; }
-        
-
-
-
-
-        public event EventHandler AfterIteration;
-        public float zoom { get { return camera.zoom; } set { camera.zoom = value; } }
-
         public Color borderColor { get; set; }
+        public bool DrawAffectGrid { get; set; }
+        public bool DrawCollisionGrid { get; set; }
 
-        #region // Links // ------------------------------------------------------
-        public ObservableHashSet<Link> AllActiveLinks { get; set; }
-        public ObservableHashSet<Link> AllInactiveLinks { get; set; }
-        #endregion
-
-        private bool resizeRoomSignal = false;
+        //Events
+        public event EventHandler AfterIteration;
         Action<Collider, Collider> collideAction;
+
         public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true)
         {
             groups = new RoomGroups(this);
@@ -292,7 +281,7 @@ namespace OrbItProcs {
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
             totalElapsedMilliseconds += elapsed;
 
-            gridSystemLines = new List<Rectangle>();
+            
 
             HashSet<Node> toDelete = new HashSet<Node>();
             //if (affectAlgorithm == 1)//OLD for testing
@@ -349,6 +338,14 @@ namespace OrbItProcs {
             camera.CatchUp();
         }
 
+
+        public void addBorderLines()
+        {
+            linesToDraw.Add(new Rectangle(0, 0, worldWidth, 0));
+            linesToDraw.Add(new Rectangle(0, 0, 0, worldHeight));
+            linesToDraw.Add(new Rectangle(0, worldHeight, worldWidth, worldHeight));
+            linesToDraw.Add(new Rectangle(worldWidth, 0, worldWidth, worldHeight));
+        }
         private void CheckForRoomResize()
         {
             if (resizeRoomSignal)
@@ -490,7 +487,11 @@ namespace OrbItProcs {
                 //Node n = (Node)o;
                 n.Draw();
             }
-            int linecount = 0;
+
+            camera.drawGrid(linesToDraw, borderColor);
+
+            if (DrawCollisionGrid) gridsystemCollision.DrawGrid(this, Color.Orange);
+            if (DrawAffectGrid) gridsystemAffect.DrawGrid(this, Color.LightBlue);
 
             if (DrawLinks)
             {
@@ -502,14 +503,7 @@ namespace OrbItProcs {
             OrbIt.globalGameMode.Draw();
             //if (linkTest != null) linkTest.GenericDraw(spritebatch);
 
-            foreach (Rectangle rect in gridSystemLines)
-            {
-                //float scale = 1 / mapzoom;
-                Rectangle maprect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
-                //spritebatch.DrawLine((new Vector2(maprect.X, maprect.Y) - camera.pos) * zoom, (new Vector2(maprect.Width, maprect.Height) - camera.pos) * zoom, Color.Green, 2);
-                camera.DrawLine(new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), 2, borderColor, Layers.Under5);
-                linecount++;
-            }
+
 
             //player1.Draw(spritebatch);
             //level.Draw(spritebatch);
@@ -581,50 +575,7 @@ namespace OrbItProcs {
             }
             
         }
-        //draw grid lines
-        public void addGridSystemLines(GridSystem gs)
-        {
-            for (int i = 0; i <= gs.cellsX; i++)
-            {
-                int x = i * gs.cellWidth + (int)gs.position.X;
-                gridSystemLines.Add(new Rectangle(x, (int)gs.position.Y, x, gs.gridHeight + (int)gs.position.Y));
-            }
-            for (int i = 0; i <= gs.cellsY; i++)
-            {
-                int y = i * gs.cellHeight + (int)gs.position.Y;
-                gridSystemLines.Add(new Rectangle((int)gs.position.X, y, gs.gridWidth + (int)gs.position.X, y));
-            }
-        }
 
-        public void addLevelLines(Level lev)
-        {
-            for (int i = 0; i <= lev.cellsX; i++)
-            {
-                int x = i * lev.cellWidth;
-                gridSystemLines.Add(new Rectangle(x, 0, x, worldHeight));
-            }
-            for (int i = 0; i <= lev.cellsY; i++)
-            {
-                int y = i * lev.cellHeight;
-                gridSystemLines.Add(new Rectangle(0, y, worldWidth, y));
-            }
-        }
-
-        public void addBorderLines()
-        {
-            gridSystemLines.Add(new Rectangle(0, 0, worldWidth, 0));
-            gridSystemLines.Add(new Rectangle(0, 0, 0, worldHeight));
-            gridSystemLines.Add(new Rectangle(0, worldHeight, worldWidth, worldHeight));
-            gridSystemLines.Add(new Rectangle(worldWidth, 0, worldWidth, worldHeight));
-        }
-
-        public void addRectangleLines(int x, int y, int width, int height)
-        {
-            gridSystemLines.Add(new Rectangle(x, y, width, y));
-            gridSystemLines.Add(new Rectangle(x, y, x, height));
-            gridSystemLines.Add(new Rectangle(x, height, width, height));
-            gridSystemLines.Add(new Rectangle(width, y, width, height));
-        }
         public void addRectangleLines(float x, float y, float width, float height)
         {
             addRectangleLines((int)x, (int)y, (int)width, (int)height);
@@ -736,6 +687,8 @@ namespace OrbItProcs {
             public Group wallGroup { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Wall Group"]; } }
             public RoomGroups(Room room) { this.room = room; }
         }
+
+
     }
 
 }

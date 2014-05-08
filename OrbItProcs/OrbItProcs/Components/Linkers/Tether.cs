@@ -47,10 +47,8 @@ namespace OrbItProcs
         [Info(UserLevel.Advanced, "Determines the state of the node. If activated, it actively applies tether's effect. Middle click in select mode to toggle.")]
         public bool activated { get { return _activated; } set { _activated = value; } }
         private HashSet<Node> _outgoing = new HashSet<Node>();
-        [Polenter.Serialization.ExcludeFromSerialization]
         public HashSet<Node> outgoing { get { return _outgoing; } set { _outgoing = value; } }
         private HashSet<Node> _incoming = new HashSet<Node>();
-        [Polenter.Serialization.ExcludeFromSerialization]
         public HashSet<Node> incoming { get { return _incoming; } set { _incoming = value; } }
 
         private bool _lockedAngle = false;
@@ -277,12 +275,7 @@ namespace OrbItProcs
 
         public override void Draw()
         {
-            
-            float mapzoom = room.zoom;
 
-            //int count = 0;
-            //Queue<float> scales = parent.comps[comp.queuer].scales;
-            //Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
             Color col;
             if (activated)
                 col = Color.Blue;
@@ -306,19 +299,11 @@ namespace OrbItProcs
 
                 Vector2 center = (receiver.body.pos + parent.body.pos) / 2;
                 
-                //Utils.DrawLine(spritebatch, center + perp, receiver.transform.position, 1f, col, room);
-                //Utils.DrawLine(spritebatch, center - perp, receiver.transform.position, 1f, col, room);
 
                 Vector2 point = receiver.body.pos - (diff / 5);
                 room.camera.DrawLine(point + perp, receiver.body.pos, 2f, col, Layers.Under3);
                 room.camera.DrawLine(point - perp, receiver.body.pos, 2f, col, Layers.Under3);
             }
-
-            //spritebatch.DrawString(room.game.font, gatestring, parent.transform.position / mapzoom, Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-            //spriteBatch.DrawString(spriteFont, fps, new Vector2(1, 1), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-            //spritebatch.DrawString(room.game.font, gatestring, new Vector2(2, Game1.sHeight - 40), Color.White, 0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
-
-            //spritebatch.Draw(parent.getTexture(), parent.transform.position / mapzoom, null, parent.transform.color, 0, parent.TextureCenter(), parent.transform.scale / mapzoom, SpriteEffects.None, 0);
 
         }
 
