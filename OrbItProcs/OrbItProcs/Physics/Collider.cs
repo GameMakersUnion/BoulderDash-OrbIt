@@ -33,6 +33,7 @@ namespace OrbItProcs
         public Vector2 objectSpacePos = new Vector2(0, 0);
 
         public Node parent { get; set; }
+        public Room room {get{return parent.room;}}
 
         protected bool _HandlersEnabled = true;
         public virtual bool HandlersEnabled

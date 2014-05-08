@@ -14,77 +14,68 @@ namespace OrbItProcs {
 
     public class Room
     {
-        public bool DrawLinks { get; set; }
-        public float WallWidth { get; set; }
+        //////Collision
+        //Move to own class Later
         
-        public string name;
-
-        public ProcessManager processManager { get; set; }
-
-        public int worldWidth { get; set; }
-        public int worldHeight { get; set; }
         public int colIterations { get; set; }
-
-        #region // References // --------------------------------------------
-        public OrbIt game { get { return OrbIt.game; } }
-        public event EventHandler AfterIteration;
-        #endregion
-
-        #region // Lists // --------------------------------------------\
         public HashSet<Collider> CollisionSetCircle { get; set; }
         public HashSet<Collider> CollisionSetPolygon { get; set; }
-        public List<Rectangle> gridSystemLines = new List<Rectangle>();
         private List<Manifold> contacts = new List<Manifold>();
-        #endregion
-        public GridSystem gridsystemAffect { get; set; }
         public GridSystem gridsystemCollision { get; set; }
-        public Level level { get; set; }
-        public Queue<String> levelList = new Queue<string>();
 
+
+        ////Room
+        //consts
+        public const float WallWidth = 10;
+
+        //Fields
+        public static long totalElapsedMilliseconds = 0;
         public int timertimer = 0;
         public int timermax = 60;
-
-        public static long totalElapsedMilliseconds = 0;
-        public RenderTarget2D roomRenderTarget;
-        
-        public ThreadedCamera camera;
-        public Group masterGroup { get; set; }
-        public Group generalGroups { get { if (masterGroup == null) return null; return masterGroup.childGroups["General Groups"]; } }
-        public Group presetGroups { get { if (masterGroup == null) return null; return masterGroup.childGroups["Preset Groups"]; } }
-        public Group playerGroup { get { if (masterGroup == null) return null; return masterGroup.childGroups["Player Group"]; } }
-        public Group itemGroup { get { if (masterGroup == null) return null; return masterGroup.childGroups["Item Group"]; } }
-        public Group bulletGroup { get { if (masterGroup == null) return null; return masterGroup.childGroups["Bullet Group"]; } }
-        public Group wallGroup { get { if (masterGroup == null) return null; return masterGroup.childGroups["Wall Group"]; } }
-        public Node defaultNode { get; set; }
-
         public Node targetNodeGraphic = null;
-        public Node targetNode { get; set; }
-        public HashSet<Player> players { get; set; }
-        [Info(UserLevel.Never)]
-        public IEnumerable<Node> playerNodes { get { return players.Select(p => p.node); } }
-
-        public Scheduler scheduler { get; set; }
-
-        public float zoom { get { return camera.zoom; } set { camera.zoom = value; } }
-
-        public Color borderColor { get; set; }
-
-        #region // Links // ------------------------------------------------------
-        public ObservableHashSet<Link> AllActiveLinks { get; set; }
-        public ObservableHashSet<Link> AllInactiveLinks { get; set; }
-        #endregion
-
         private bool resizeRoomSignal = false;
 
-        public Room() { }
-        Action<Collider, Collider> collideAction;
-        public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true) : this()
-        {
-            levelList.Enqueue("Level1");
-            levelList.Enqueue("Level2");
-            levelList.Enqueue("Level3");
-            levelList.Enqueue("Level4");
+        //props
+        
 
+        //Components
+        public ProcessManager processManager { get; set; }
+        public GridSystem gridsystemAffect { get; set; }
+        public Level level { get; set; }
+        public RenderTarget2D roomRenderTarget { get; set; }
+        public ThreadedCamera camera { get; set; }
+        public Scheduler scheduler { get; set; }
+
+
+        //Entities
+
+        public Group masterGroup { get; set; }
+        public RoomGroups groups { get; private set; }
+        public Node defaultNode { get; set; }
+        public HashSet<Player> players { get; set; }
+        [Info(UserLevel.Never)]
+        public HashSet<Node> playerNodes { get { return players.Select(p => p.node).ToHashSet(); } }
+        public ObservableHashSet<Link> AllActiveLinks { get; set; }
+        public ObservableHashSet<Link> AllInactiveLinks { get; set; }
+
+        public List<Rectangle> linesToDraw = new List<Rectangle>();
+
+        //Values
+        public int worldWidth { get; set; }
+        public int worldHeight { get; set; }
+        public bool DrawLinks { get; set; }
+        public Node targetNode { get; set; }
+        public Color borderColor { get; set; }
+        public bool DrawAffectGrid { get; set; }
+        public bool DrawCollisionGrid { get; set; }
+
+        //Events
+        public event EventHandler AfterIteration;
+        Action<Collider, Collider> collideAction;
+
+        public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true)
+        {
+            groups = new RoomGroups(this);
             AllActiveLinks = new ObservableHashSet<Link>();
             AllInactiveLinks = new ObservableHashSet<Link>();
 
@@ -136,7 +127,6 @@ namespace OrbItProcs {
             //gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
             camera = new ThreadedCamera(this, 1f);
             DrawLinks = true;
-            WallWidth = 10;
             scheduler = new Scheduler();
 
             players = new HashSet<Player>();
@@ -167,14 +157,14 @@ namespace OrbItProcs {
             masterGroup = new Group(this, defaultNode, null, defaultNode.name, false);
             if (Groups)
             {
-                Group generalGroup = new Group(this, defaultNode, masterGroup, "General Groups", false);
-                Group presetsGroup = new Group(this, defaultNode, masterGroup, "Preset Groups", false);
-                Group playerGroup = new Group(this, defaultNode.CreateClone(this), masterGroup, "Player Group", false);
-                Group itemGroup = new Group(this, defaultNode, masterGroup, "Item Group", false);
-                Group linkGroup = new Group(this, defaultNode, masterGroup, "Link Groups", false);
-                Group bulletGroup = new Group(this, defaultNode.CreateClone(this), masterGroup, "Bullet Group", true);
-                Group wallGroup = new Group(this, defaultNode, masterGroup, "Wall Group", true);
-                Group firstGroup = new Group(this, firstdefault, generalGroup, "Group1");
+                new Group(this, defaultNode, masterGroup, "General Groups", false);
+                new Group(this, defaultNode, masterGroup, "Preset Groups", false);
+                new Group(this, defaultNode.CreateClone(this), masterGroup, "Player Group", false);
+                new Group(this, defaultNode, masterGroup, "Item Group", false);
+                new Group(this, defaultNode, masterGroup, "Link Groups", false);
+                new Group(this, defaultNode.CreateClone(this), masterGroup, "Bullet Group", true);
+                new Group(this, defaultNode, masterGroup, "Wall Group", true);
+                new Group(this, firstdefault, groups.generalGroups, "Group1");
             }
 
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
@@ -186,8 +176,8 @@ namespace OrbItProcs {
             
             targetNodeGraphic.name = "TargetNodeGraphic";
 
-            //MakeWalls();
-            
+            //MakeWalls(WallWidth);
+
             MakePresetGroups();
             MakeItemGroups();
         }
@@ -218,7 +208,7 @@ namespace OrbItProcs {
                 nodeDef.addComponent(t, true);
                 nodeDef.addComponent(typeof(Rune), true);
                 nodeDef.Comp<Rune>().runeTexture = (textures)runenum++;
-                Group presetgroup = new Group(this, nodeDef, presetGroups, t.ToString().LastWord('.') + " Group");
+                Group presetgroup = new Group(this, nodeDef, groups.presetGroups, t.ToString().LastWord('.') + " Group");
             }
         }
 
@@ -239,7 +229,7 @@ namespace OrbItProcs {
                 //nodeDef.addComponent(t, true);
                 Component c = Node.MakeComponent(t, true, nodeDef);
                 nodeDef.Comp<ItemPayload>().AddComponentItem(c);
-                Group itemgroup = new Group(this, nodeDef, itemGroup, t.ToString().LastWord('.') + " Item");
+                new Group(this, nodeDef, groups.itemGroup, t.ToString().LastWord('.') + " Item");
             }
         }
         
@@ -291,7 +281,7 @@ namespace OrbItProcs {
             if (gametime != null) elapsed = (long)Math.Round(gametime.ElapsedGameTime.TotalMilliseconds);
             totalElapsedMilliseconds += elapsed;
 
-            gridSystemLines = new List<Rectangle>();
+            
 
             HashSet<Node> toDelete = new HashSet<Node>();
             //if (affectAlgorithm == 1)//OLD for testing
@@ -348,6 +338,14 @@ namespace OrbItProcs {
             camera.CatchUp();
         }
 
+
+        public void addBorderLines()
+        {
+            linesToDraw.Add(new Rectangle(0, 0, worldWidth, 0));
+            linesToDraw.Add(new Rectangle(0, 0, 0, worldHeight));
+            linesToDraw.Add(new Rectangle(0, worldHeight, worldWidth, worldHeight));
+            linesToDraw.Add(new Rectangle(worldWidth, 0, worldWidth, worldHeight));
+        }
         private void CheckForRoomResize()
         {
             if (resizeRoomSignal)
@@ -488,7 +486,11 @@ namespace OrbItProcs {
                 //Node n = (Node)o;
                 n.Draw();
             }
-            int linecount = 0;
+
+            camera.drawGrid(linesToDraw, borderColor);
+
+            if (DrawCollisionGrid) gridsystemCollision.DrawGrid(this, Color.Orange);
+            if (DrawAffectGrid) gridsystemAffect.DrawGrid(this, Color.LightBlue);
 
             if (DrawLinks)
             {
@@ -500,14 +502,7 @@ namespace OrbItProcs {
             OrbIt.globalGameMode.Draw();
             //if (linkTest != null) linkTest.GenericDraw(spritebatch);
 
-            foreach (Rectangle rect in gridSystemLines)
-            {
-                //float scale = 1 / mapzoom;
-                Rectangle maprect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
-                //spritebatch.DrawLine((new Vector2(maprect.X, maprect.Y) - camera.pos) * zoom, (new Vector2(maprect.Width, maprect.Height) - camera.pos) * zoom, Color.Green, 2);
-                camera.DrawLine(new Vector2(maprect.X, maprect.Y), new Vector2(maprect.Width, maprect.Height), 2, borderColor, Layers.Under5);
-                linecount++;
-            }
+
 
             //player1.Draw(spritebatch);
             //level.Draw(spritebatch);
@@ -529,7 +524,7 @@ namespace OrbItProcs {
             contacts.Add(m);
         }
 
-        public void MakeWalls()
+        public void MakeWalls(float WallWidth)
         {
             Dictionary<dynamic, dynamic> props = new Dictionary<dynamic, dynamic>() {
                     { nodeE.position, new Vector2(0, 0) },
@@ -576,53 +571,10 @@ namespace OrbItProcs {
                 //}
                 targetNodeGraphic.body.scale = targetNode.body.scale * 1.5f;
 
-            }
-            
-        }
-        //draw grid lines
-        public void addGridSystemLines(GridSystem gs)
-        {
-            for (int i = 0; i <= gs.cellsX; i++)
-            {
-                int x = i * gs.cellWidth + (int)gs.position.X;
-                gridSystemLines.Add(new Rectangle(x, (int)gs.position.Y, x, gs.gridHeight + (int)gs.position.Y));
-            }
-            for (int i = 0; i <= gs.cellsY; i++)
-            {
-                int y = i * gs.cellHeight + (int)gs.position.Y;
-                gridSystemLines.Add(new Rectangle((int)gs.position.X, y, gs.gridWidth + (int)gs.position.X, y));
-            }
         }
 
-        public void addLevelLines(Level lev)
-        {
-            for (int i = 0; i <= lev.cellsX; i++)
-            {
-                int x = i * lev.cellWidth;
-                gridSystemLines.Add(new Rectangle(x, 0, x, worldHeight));
-            }
-            for (int i = 0; i <= lev.cellsY; i++)
-            {
-                int y = i * lev.cellHeight;
-                gridSystemLines.Add(new Rectangle(0, y, worldWidth, y));
-            }
         }
 
-        public void addBorderLines()
-        {
-            gridSystemLines.Add(new Rectangle(0, 0, worldWidth, 0));
-            gridSystemLines.Add(new Rectangle(0, 0, 0, worldHeight));
-            gridSystemLines.Add(new Rectangle(0, worldHeight, worldWidth, worldHeight));
-            gridSystemLines.Add(new Rectangle(worldWidth, 0, worldWidth, worldHeight));
-        }
-
-        public void addRectangleLines(int x, int y, int width, int height)
-        {
-            gridSystemLines.Add(new Rectangle(x, y, width, y));
-            gridSystemLines.Add(new Rectangle(x, y, x, height));
-            gridSystemLines.Add(new Rectangle(x, height, width, height));
-            gridSystemLines.Add(new Rectangle(width, y, width, height));
-        }
         public void addRectangleLines(float x, float y, float width, float height)
         {
             addRectangleLines((int)x, (int)y, (int)width, (int)height);
@@ -723,5 +675,19 @@ namespace OrbItProcs {
                 heightCounter += OrbIt.ScreenHeight;
             }
         }
+        public class RoomGroups
+        {
+            private Room room;
+            public Group generalGroups { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["General Groups"]; } }
+            public Group presetGroups { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Preset Groups"]; } }
+            public Group playerGroup { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Player Group"]; } }
+            public Group itemGroup { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Item Group"]; } }
+            public Group bulletGroup { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Bullet Group"]; } }
+            public Group wallGroup { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Wall Group"]; } }
+            public RoomGroups(Room room) { this.room = room; }
+        }
+
+
     }
+
 }

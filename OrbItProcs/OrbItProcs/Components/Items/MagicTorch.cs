@@ -116,7 +116,7 @@ namespace OrbItProcs
                 {typeof(Transfer), false},
             };
 
-            torchNode = new Node(parent.room, props);
+            torchNode = new Node(room, props);
             torchNode.name = "magictorch";
             torchNode.body.radius = torchRadius;
 
@@ -127,8 +127,8 @@ namespace OrbItProcs
         public override void AfterCloning()
         {
             if (torchNode == null) return;
-            torchNode = torchNode.CreateClone(parent.room);
-            //sword = new Node(parent.room, props);
+            torchNode = torchNode.CreateClone(room);
+            //sword = new Node(room, props);
             magicType = magicType;
         }
 
@@ -141,7 +141,7 @@ namespace OrbItProcs
 
             torchNode.AffectExclusionCheck += (node) => node == parent;
 
-            parent.room.itemGroup.IncludeEntity(torchNode);
+            room.groups.itemGroup.IncludeEntity(torchNode);
             torchNode.OnSpawn();
             torchNode.body.AddExclusionCheck(parent.body);
             torchNode.body.OnCollisionEnter += (p, o) =>
@@ -218,12 +218,12 @@ namespace OrbItProcs
             if (position == Vector2.Zero) position = parent.body.pos;
             else
             {
-                parent.room.camera.DrawLine(position, parent.body.pos, 2f, col, Layers.Over3);
+                room.camera.DrawLine(position, parent.body.pos, 2f, col, Layers.Over3);
             }
             
             torchNode.body.color = col;
-            parent.room.camera.Draw(textures.ring, position, Color.Black, torchNode.body.scale, torchNode.body.orient, Layers.Over4);
-            parent.room.camera.Draw(MagicToRune[magicType], position, col, torchNode.body.scale, VMath.VectorToAngle(position - parent.body.pos) + GMath.PIbyTwo, Layers.Over3);
+            room.camera.Draw(textures.ring, position, Color.Black, torchNode.body.scale, torchNode.body.orient, Layers.Over4);
+            room.camera.Draw(MagicToRune[magicType], position, col, torchNode.body.scale, VMath.VectorToAngle(position - parent.body.pos) + GMath.PIbyTwo, Layers.Over3);
         }
 
 

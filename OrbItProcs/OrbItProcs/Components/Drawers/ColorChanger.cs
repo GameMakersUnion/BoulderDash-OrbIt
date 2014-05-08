@@ -138,9 +138,9 @@ namespace OrbItProcs
                 }
                 else if (colormode == ColorMode.position)
                 {
-                    float r = parent.body.pos.X / (float)parent.room.worldWidth;
-                    float g = parent.body.pos.Y / (float)parent.room.worldHeight;
-                    float b = (parent.body.pos.X / parent.body.pos.Y) / ((float)parent.room.worldWidth / (float)parent.room.worldHeight);
+                    float r = parent.body.pos.X / (float)room.worldWidth;
+                    float g = parent.body.pos.Y / (float)room.worldHeight;
+                    float b = (parent.body.pos.X / parent.body.pos.Y) / ((float)room.worldWidth / (float)room.worldHeight);
                     parent.body.color = new Color(r, g, b);
                 }
                 else if (colormode == ColorMode.velocity)

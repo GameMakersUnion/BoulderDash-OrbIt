@@ -81,14 +81,14 @@ namespace OrbItProcs
                 scaleRateTemp = scaleRate;
                 scale = min;
             }
-            parent.room.camera.Draw(textures.whitecircle, parent.body.pos, color * (transparencyPercent / 100f), scale, drawLayer);
+            room.camera.Draw(textures.whitecircle, parent.body.pos, color * (transparencyPercent / 100f), scale, drawLayer);
             if (shadowCount.enabled)
             {
                 float totalScaleDifference = 0.5f;
                 float singleScaleDifference = totalScaleDifference / shadowCount.value;
                 for(int i = 0; i < shadowCount.value; i++)
                 {
-                    parent.room.camera.Draw(textures.whitecircle, parent.body.pos, color * (transparencyPercent / 100f), scale * (1f - (singleScaleDifference * (i + 1))), drawLayer);
+                    room.camera.Draw(textures.whitecircle, parent.body.pos, color * (transparencyPercent / 100f), scale * (1f - (singleScaleDifference * (i + 1))), drawLayer);
                 }
             }
         }

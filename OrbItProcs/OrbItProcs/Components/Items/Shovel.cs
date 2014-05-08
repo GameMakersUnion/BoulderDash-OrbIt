@@ -101,7 +101,7 @@ namespace OrbItProcs
             physicsThrow = false;
             throwSpeed = 12;
 
-            shovelNode = new Node(parent.room);
+            shovelNode = new Node(room);
             shovelNode.name = "shovel";
             shovelNode.body.radius = shovelRadius;
             shovelNode.body.ExclusionCheck += (c1, c2) => c2 == parent.body;
@@ -112,7 +112,7 @@ namespace OrbItProcs
         public override void AfterCloning()
         {
             if (shovelNode == null) return;
-            shovelNode = shovelNode.CreateClone(parent.room);
+            shovelNode = shovelNode.CreateClone(room);
         }
 
         public override void OnSpawn()
@@ -124,7 +124,7 @@ namespace OrbItProcs
 
             shovelNode.AffectExclusionCheck += (node) => node == parent;
 
-            parent.room.itemGroup.IncludeEntity(shovelNode);
+            room.groups.itemGroup.IncludeEntity(shovelNode);
             shovelNode.OnSpawn();
             shovelNode.body.AddExclusionCheck(parent.body);
             Spring spring = new Spring();
@@ -305,7 +305,7 @@ namespace OrbItProcs
             if (position == Vector2.Zero) position = parent.body.pos;
             else
             {
-                parent.room.camera.DrawLine(position, parent.body.pos, 2f, col, Layers.Over3);
+                room.camera.DrawLine(position, parent.body.pos, 2f, col, Layers.Over3);
             }
         }
 

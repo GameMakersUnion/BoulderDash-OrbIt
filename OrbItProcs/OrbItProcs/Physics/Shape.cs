@@ -217,7 +217,7 @@ namespace OrbItProcs
         {
             DrawPolygon(body.pos, body.color);
             if (testTexture != null)
-                body.parent.room.camera.Draw(testTexture, body.pos + (trueOffset.Rotate(body.orient)) + (offset.Rotate(body.orient)), body.color, 1f, body.orient, Layers.Over1);
+                body.room.camera.Draw(testTexture, body.pos + (trueOffset.Rotate(body.orient)) + (offset.Rotate(body.orient)), body.color, 1f, body.orient, Layers.Over1);
         }
 
         public void DrawPolygon(Vector2 position, Color color)
@@ -239,7 +239,7 @@ namespace OrbItProcs
 
                 Vector2 v1 = position + a1;
                 Vector2 v2 = position + a2;
-                body.parent.room.camera.DrawLine(v1, v2, LineThickness, color, Layers.Over2);
+                body.room.camera.DrawLine(v1, v2, LineThickness, color, Layers.Over2);
 
                 if (RecurseDrawEnabled)
                 {
@@ -265,7 +265,7 @@ namespace OrbItProcs
 
                 Vector2 v1 = pos + a1;
                 Vector2 v2 = pos + a2;
-                body.parent.room.camera.DrawLine(v1, v2, LineThickness, body.color, Layers.Under5);
+                body.room.camera.DrawLine(v1, v2, LineThickness, body.color, Layers.Under5);
 
                 //Draw(pos, count, scale, scalediff);
             }
@@ -286,7 +286,7 @@ namespace OrbItProcs
 
                 Vector2 v1 = pos + a1;
                 Vector2 v2 = pos + a2;
-                body.parent.room.camera.DrawLine(v1, v2, 1f, body.color, Layers.Under5);
+                body.room.camera.DrawLine(v1, v2, 1f, body.color, Layers.Under5);
 
                 DrawRecurse(pos + a1, count, scale);
             }

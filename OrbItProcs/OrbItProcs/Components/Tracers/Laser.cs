@@ -97,22 +97,22 @@ namespace OrbItProcs
             if (parent.movement.mode == movemode.screenwrap)
             {
                 float diffx = prevPos.X - start.X;
-                if (diffx > parent.room.worldWidth / 2)
+                if (diffx > room.worldWidth / 2)
                 {
-                    start.X += parent.room.worldWidth;
+                    start.X += room.worldWidth;
                 }
-                else if (diffx < -parent.room.worldWidth / 2)
+                else if (diffx < -room.worldWidth / 2)
                 {
-                    start.X -= parent.room.worldWidth;
+                    start.X -= room.worldWidth;
                 }
                 float diffy = prevPos.Y - start.Y;
-                if (diffy > parent.room.worldHeight / 2)
+                if (diffy > room.worldHeight / 2)
                 {
-                    start.Y += parent.room.worldHeight;
+                    start.Y += room.worldHeight;
                 }
-                else if (diffy < -parent.room.worldHeight / 2)
+                else if (diffy < -room.worldHeight / 2)
                 {
-                    start.Y -= parent.room.worldHeight;
+                    start.Y -= room.worldHeight;
                 }
             }
 
@@ -153,7 +153,7 @@ namespace OrbItProcs
             {
                 coll = new Color(parent.body.color.R, parent.body.color.G, parent.body.color.B, alpha);
             }
-            parent.room.camera.AddPermanentDraw(textures.whitepixel, centerpoint, parent.body.color, scalevect, testangle, laserLength);
+            room.camera.AddPermanentDraw(textures.whitepixel, centerpoint, parent.body.color, scalevect, testangle, laserLength);
             prevPos = start;
         }
     }

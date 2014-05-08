@@ -179,8 +179,8 @@ namespace OrbItProcs
 
         private void ItemCreatorDelegate(DetailedItem item, object obj)
         {
-            //editGroupWindow = new EditNodeWindow(sidebar, "All Players", room.playerGroup.Name);
-            //editGroupWindow.componentView.SwitchGroup(room.playerGroup);
+            //editGroupWindow = new EditNodeWindow(sidebar, "All Players", room.groups.playerGroup.Name);
+            //editGroupWindow.componentView.SwitchGroup(room.groups.playerGroup);
             //editGroupWindow.componentView.SwitchNode(n, false);
 
             if (obj == null) return;

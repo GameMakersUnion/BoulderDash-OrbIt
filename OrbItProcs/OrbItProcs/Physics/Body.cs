@@ -259,7 +259,7 @@ namespace OrbItProcs
                 }
                 if (DoExclusionCheckResolution(other)) return;
                 if (isSolid && other.isSolid)
-                    parent.room.AddManifold(m);
+                    room.AddManifold(m);
             }
         }
 

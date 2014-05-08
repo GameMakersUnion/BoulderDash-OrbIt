@@ -89,7 +89,7 @@ namespace OrbItProcs
         {
             foreach(Group g in room.masterGroup.childGroups.Values)
             {
-                if (g == room.playerGroup) continue;
+                if (g == room.groups.playerGroup) continue;
                 g.EmptyGroup();
             }
         }
@@ -160,7 +160,7 @@ namespace OrbItProcs
                 EventHandler editgroup = (s, e) =>
                 {
                     item.isSelected = true;
-                    if (parentGroup == room.itemGroup)
+                    if (parentGroup == room.groups.itemGroup)
                     {
                         editGroupWindow = new EditNodeWindow(sidebar, "Item Group", g.Name);
                     }

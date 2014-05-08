@@ -48,7 +48,7 @@ namespace OrbItProcs
             tomShaneSidebar.BackColor = new Color(30, 60, 30);
             manager.Add(tomShaneSidebar);
 
-            wallGroup = sidebar.room.wallGroup;
+            wallGroup = sidebar.room.groups.wallGroup;
             foreach(Node n in wallGroup.entities)
             {
                 previousWallNodes.Add(n);
@@ -202,16 +202,16 @@ namespace OrbItProcs
                 }
             
             ObservableHashSet<Node> incomingNodes = nodes;
-            foreach (Node n in room.wallGroup.entities.ToList())
+            foreach (Node n in room.groups.wallGroup.entities.ToList())
             {
-                room.wallGroup.DiscludeEntity(n);
+                room.groups.wallGroup.DiscludeEntity(n);
             }
 
             foreach (Node n in incomingNodes)
             {
-                room.wallGroup.IncludeEntity(n);
+                room.groups.wallGroup.IncludeEntity(n);
             }
-            foreach (Node n in room.wallGroup.entities)
+            foreach (Node n in room.groups.wallGroup.entities)
             {
                 n.collision.UpdateCollisionSet();
             }
@@ -261,7 +261,7 @@ namespace OrbItProcs
             room.loading = true;
             room.boulderize(delegate
             {
-                room.wallGroup.DiscludeEntity(holder);
+                room.groups.wallGroup.DiscludeEntity(holder);
                //foreach (Node n in saved)
                //{
                //    wallGroup.IncludeEntity(n);

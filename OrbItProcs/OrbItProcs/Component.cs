@@ -46,6 +46,7 @@ namespace OrbItProcs
             }
         }
         public virtual Node parent { get; set; }
+        public Room room { get { return parent.room; } }
         private bool _CallDraw = true;
         public bool CallDraw { get { return _CallDraw; } set { _CallDraw = value; } }
 
@@ -54,7 +55,7 @@ namespace OrbItProcs
         protected float timePassed = 0;
         protected float maxTime = -1;
         protected bool IsDecaying = false;
-        
+
         public void SetDecayMaxTime(int seconds, bool isDecaying = true)
         {
             IsDecaying = isDecaying;
@@ -124,7 +125,7 @@ namespace OrbItProcs
                     if (cust.Length > 0)
                     {
                         Node n = (Node)property.GetValue(sourceComp, null);
-                        Node nclone = n.CreateClone(sourceComp.parent.room);
+                        Node nclone = n.CreateClone(sourceComp.room);
                         property.SetValue(destComp, nclone, null);
                         //Console.WriteLine("CLONING : " + property.Name);
                     }
@@ -144,6 +145,7 @@ namespace OrbItProcs
                         //Console.WriteLine("We should be aware of this.");
                     }
                 }
+                if (property.GetSetMethod() != null)
                 property.SetValue(destComp, property.GetValue(sourceComp, null), null);
             }
             foreach (FieldInfo field in fields)
@@ -224,8 +226,10 @@ namespace OrbItProcs
            {
                if (property.PropertyType == typeof(ModifierInfo)) continue;
                if (property.PropertyType == typeof(Node)) continue;
-
+               if (property.GetSetMethod() != null)
+               {
                property.SetValue(destObject, property.GetValue(sourceObject, null), null);
+           }
            }
            foreach (FieldInfo field in fields)
            {

@@ -115,7 +115,7 @@ namespace OrbItProcs
             };
 
             if (parent == null) return;
-            payloadNode = new Node(parent.room);
+            payloadNode = new Node(room);
             payloadNode.comps.Remove(typeof(Movement));
             payloadNode.comps.Remove(typeof(Collision));
             payloadNode.comps.Remove(typeof(BasicDraw));
@@ -174,7 +174,7 @@ namespace OrbItProcs
             {
                 foreach (var pack in particlePacks)
                 {
-                    pack.Draw(parent.room, parent.body.pos, parent.body.color);
+                    pack.Draw(room, parent.body.pos, parent.body.color);
                 }
             }
             foreach (Component c in payloadNode.comps.Values)

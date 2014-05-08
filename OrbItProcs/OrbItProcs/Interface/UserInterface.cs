@@ -224,7 +224,7 @@ namespace OrbItProcs {
                 if (!isShiftDown)
                 { 
                     MouseState ms = Mouse.GetState();
-                    spawnPos = new Vector2(ms.X, ms.Y) / room.zoom;
+                    spawnPos = new Vector2(ms.X, ms.Y) / room.camera.zoom;
                 }
                 isShiftDown = true;
             }
@@ -297,7 +297,7 @@ namespace OrbItProcs {
             //    System.Console.WriteLine("X2");
 
             MousePos = new Vector2(mouseState.X, mouseState.Y) - OrbIt.game.room.camera.CameraOffsetVect;
-            WorldMousePos = (MousePos / room.zoom) + room.camera.virtualTopLeft;
+            WorldMousePos = (MousePos / room.camera.zoom) + room.camera.virtualTopLeft;
             //ignore mouse clicks outside window
             if (!OrbIt.isFullScreen)
             {
@@ -351,11 +351,11 @@ namespace OrbItProcs {
 
             if (mouseState.ScrollWheelValue < oldMouseScrollValue)
             {
-                room.zoom *= zoomfactor;
+                room.camera.zoom *= zoomfactor;
             }
             else if (mouseState.ScrollWheelValue > oldMouseScrollValue)
             {
-                room.zoom /= zoomfactor;
+                room.camera.zoom /= zoomfactor;
             }
 
             oldMouseScrollValue = mouseState.ScrollWheelValue;

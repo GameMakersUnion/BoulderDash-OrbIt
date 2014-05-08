@@ -158,7 +158,7 @@ namespace OrbItProcs
                     //userP[node.velocity] = childvel;
                     //userP[node.name] = "node" + Node.nodeCounter;
 
-                    Node newNode = new Node(parent.room);
+                    Node newNode = new Node(room);
                     Node.cloneNode(parent, newNode);
                     newNode.body.velocity = childvel;
                     newNode.name = "node" + Node.nodeCounter;
@@ -170,8 +170,8 @@ namespace OrbItProcs
                     newTree.randlife = randomlife;
                     newTree.lifeleft = 0;
                     newTree.maxChilds = Math.Max(1, maxChilds - (depth % 2));
-                    //parent.room.nodesToAdd.Enqueue(newNode);
-                    //parent.room.masterGroup.childGroups.Values.ElementAt(1).IncludeEntity(newNode);
+                    //room.nodesToAdd.Enqueue(newNode);
+                    //room.masterGroup.childGroups.Values.ElementAt(1).IncludeEntity(newNode);
                     //Group g = parent.Game1.ui.sidebar.ActiveGroup;
                     if (parent.group != null)
                     {
@@ -192,38 +192,30 @@ namespace OrbItProcs
         public override void Draw()
         {
             if (!LeaveTrunk || !original) return;
-            parent.room.camera.AddPermanentDraw(parent.texture, parent.body.pos, parent.body.color, parent.body.scale, 0, 200); //trunk doesn't die. (make 500?)
+            room.camera.AddPermanentDraw(parent.texture, parent.body.pos, parent.body.color, parent.body.scale, 0, 200); //trunk doesn't die. (make 500?)
         }
 
         public void DrawOld()
         {
             if (!LeaveTrunk) return;
-            Room room = parent.room;
-            float mapzoom = room.zoom;
 
             Color col = new Color(0, 0, 0, 0.3f);
             float a, b, c;
             a = b = c = 0;
-
-            //Vector2 screenPos = parent.transform.position / mapzoom;
             int count = 0;
             foreach (Vector2 pos in positions)
             {
-                //color = new Color(color.R, color.G, color.B, 255/queuecount * count);
                 a += r1 / fade;
                 b += g1 / fade;
                 c += b1 / fade;
                 col = new Color(a, b, c, 0.8f);
                 if (!fade) col = parent.body.color;
 
-                //spritebatch.Draw(parent.getTexture(), pos * mapzoom, null, col, 0, parent.TextureCenter(), scales.ElementAt(count) * mapzoom, SpriteEffects.None, 0);
                 room.camera.Draw(parent.texture, pos, col, scales.ElementAt(count), 0);
                 count++;
             }
 
-            //float testangle = (float)(Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2));
             if (!fade) col = parent.body.color;
-            //spritebatch.Draw(parent.getTexture(), parent.body.pos * mapzoom, null, col, 0, parent.TextureCenter(), parent.body.scale * mapzoom, SpriteEffects.None, 0);
             room.camera.Draw(parent.texture, parent.body.pos, col, parent.body.scale, 0);
 
         }

@@ -67,7 +67,7 @@ namespace OrbItProcs
             Vector2 pos = parent.body.pos;
             Vector2 scalevect = new Vector2(rayscale, width);
             float angle = (float)(Math.Atan2(parent.body.velocity.Y, parent.body.velocity.X) + Math.PI / 2);
-            parent.room.camera.AddPermanentDraw(textures.whitepixel, pos, parent.body.color, scalevect, angle, rayLength);
+            room.camera.AddPermanentDraw(textures.whitepixel, pos, parent.body.color, scalevect, angle, rayLength);
         }
 
         public void onCollision(Dictionary<dynamic, dynamic> args)

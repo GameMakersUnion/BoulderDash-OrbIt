@@ -19,6 +19,8 @@ namespace OrbItProcs
         public int gridWidth { get { return cellsX * cellWidth; } }
         public int gridHeight { get { return cellsY * cellWidth; } }
 
+        public List<Rectangle> linesToDraw = new List<Rectangle>();
+
         public Level() { }
 
         public Level(Room room, int cellsX, int cellsY, int cellWidth, int? cellHeight = null)
@@ -43,5 +45,19 @@ namespace OrbItProcs
 
         }
 
+
+        public void addLevelLines()
+        {
+            for (int i = 0; i <= cellsX; i++)
+            {
+                int x = i * cellWidth;
+                linesToDraw.Add(new Rectangle(x, 0, x, cellHeight*cellsY));
+            }
+            for (int i = 0; i <= cellsY; i++)
+            {
+                int y = i * cellHeight;
+                linesToDraw.Add(new Rectangle(0, y, cellWidth*cellsX, y));
+            }
+        }
     }
 }

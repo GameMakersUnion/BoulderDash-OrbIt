@@ -177,13 +177,13 @@ namespace OrbItProcs
             metapos *= yval;
             Vector2 metaposfinal = parent.body.pos + metapos;
 
-            parent.room.camera.AddPermanentDraw(parent.texture, metaposfinal, parent.body.color, parent.body.scale * waveScale, 0, waveLength);
+            room.camera.AddPermanentDraw(parent.texture, metaposfinal, parent.body.color, parent.body.scale * waveScale, 0, waveLength);
             //metapositions.Enqueue(metaposfinal);
 
             if (reflective)
             {
                 Vector2 reflectfinal = parent.body.pos - metapos;
-                parent.room.camera.AddPermanentDraw(parent.texture, reflectfinal, parent.body.color, parent.body.scale * waveScale, 0, waveLength);
+                room.camera.AddPermanentDraw(parent.texture, reflectfinal, parent.body.color, parent.body.scale * waveScale, 0, waveLength);
                 //reflectpositions.Enqueue(reflectfinal);
             }
         }

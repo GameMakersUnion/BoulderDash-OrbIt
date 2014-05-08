@@ -188,12 +188,7 @@ namespace OrbItProcs
 
         public override void Draw()
         {
-            Room room = parent.room;
-            float mapzoom = room.zoom;
 
-            //int count = 0;
-            //Queue<float> scales = parent.comps[comp.queuer].scales;
-            //Queue<Vector2> positions = ((Queue<Vector2>)(parent.comps[comp.queuer].positions));
             Color col;
             if (activated)
                 col = Color.Green;
