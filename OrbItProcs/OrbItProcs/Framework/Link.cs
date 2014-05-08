@@ -82,132 +82,13 @@ namespace OrbItProcs
         public bool DrawTips { get { return _DrawTips; } set { _DrawTips = value; } }
         public float _AngleInc = 0.02f;
         public float AngleInc { get { return _AngleInc; } set { _AngleInc = value; } }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Node sourceNode { get; set; }
-        public string sourceNodeHash
-        {
-            get
-            {
-                if (sourceNode != null) return sourceNode.nodeHash;
-                return "";
-            }
-            set
-            {
-                if (room.masterGroup == null) return;
-                Node n = room.masterGroup.FindNodeByHash(value);
-                sourceNode = n;
-            }
-        }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Node targetNode { get; set; }
-        public string targetNodeHash
-        {
-            get
-            {
-                if (targetNode != null) return targetNode.nodeHash;
-                return "";
-            }
-            set
-            {
-                if (room.masterGroup == null) return;
-                Node n = room.masterGroup.FindNodeByHash(value);
-                targetNode = n;
-            }
-        }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Node> sources { get; set; }
-        public ObservableHashSet<string> sourcesHashes { 
-            get 
-            {
-                if (sources == null) return null;
-                ObservableHashSet<string> hashes = new ObservableHashSet<string>();
-                foreach(Node n in sources)
-                {
-                    hashes.Add(n.nodeHash);
-                }
-                return hashes;
-            }
-            set
-            {
-                if (sources == null) throw new SystemException("sources was expected to be non-null when deserializing.");
-                else if (sources.Count > 0) throw new SystemException("sources was expected to be empty when deserializing.");
-                room.masterGroup.FindNodeByHashes(value, sources);
-            }
-        }
-
-
-        [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Node> targets { get; set; }
-        public ObservableHashSet<string> targetsHashes
-        {
-            get
-            {
-                if (targets == null) return null;
-                ObservableHashSet<string> hashes = new ObservableHashSet<string>();
-                foreach (Node n in targets)
-                {
-                    hashes.Add(n.nodeHash);
-                }
-                return hashes;
-            }
-            set
-            {
-                if (targets == null) throw new SystemException("targets was expected to be non-null when deserializing.");
-                else if (targets.Count > 0) throw new SystemException("targets was expected to be empty when deserializing.");
-                room.masterGroup.FindNodeByHashes(value, targets);
-            }
-        }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Node> exclusions { get; set; }
-        public ObservableHashSet<string> exclusionsHashes
-        {
-            get
-            {
-                if (exclusions == null) return null;
-                ObservableHashSet<string> hashes = new ObservableHashSet<string>();
-                foreach (Node n in exclusions)
-                {
-                    hashes.Add(n.nodeHash);
-                }
-                return hashes;
-            }
-            set
-            {
-                if (exclusions == null) throw new SystemException("exclusions was expected to be non-null when deserializing.");
-                else if (exclusions.Count > 0) throw new SystemException("exclusions was expected to be empty when deserializing.");
-                room.masterGroup.FindNodeByHashes(value, exclusions);
-            }
-        }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Group sourceGroup { get; set; }
-        public string sourceGroupHash
-        {
-            get
-            {
-                if (sourceGroup == null) return "";
-                return sourceGroup.groupHash;
-            }
-            set
-            {
-                Group g = room.findGroupByHash(value);
-                sourceGroup = g;
-            }
-        }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Group targetGroup { get; set; }
-        public string targetGroupHash
-        {
-            get
-            {
-                if (targetGroup == null) return "";
-                return targetGroup.groupHash;
-            }
-            set
-            {
-                Group g = room.findGroupByHash(value);
-                targetGroup = g;
-            }
-        }
         public bool _IsEntangled = false;
         public bool IsEntangled
         {
@@ -217,33 +98,7 @@ namespace OrbItProcs
                 _IsEntangled = value;
             }
         }
-
         private float anglestep = 0;
-
-        public bool PolenterHack
-        {
-            get { return true; }
-            set
-            {
-                if (formation != null)
-                    formation.link = this;
-
-                if (sources != null)
-                {
-                    foreach (Node n in sources)
-                    {
-                        n.OnAffectOthers += NodeToGroupHandler;
-                        n.SourceLinks.Add(this);
-                    }
-                    foreach (Node n in targets)
-                    {
-                        n.TargetLinks.Add(this);
-                    }
-                }
-            }
-        }
-
-
         public Link()
         {
             //..

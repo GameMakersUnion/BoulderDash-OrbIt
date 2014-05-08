@@ -43,14 +43,7 @@ namespace OrbItProcs {
     public class Node {
         public static int nodeCounter = 0;
         private Vector2 tempPosition = new Vector2(0, 0);
-        private string _nodeHash = "";
         public List<string> nodeHistory = new List<string>();
-        public string nodeHash { get { return _nodeHash; } set 
-        {
-            room.nodeHashes.Remove(_nodeHash);
-            _nodeHash = value;
-            room.nodeHashes.Add(value);
-        } }
 
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;
         private Dictionary<Type, bool> tempCompActiveValues = new Dictionary<Type, bool>();
@@ -240,7 +233,6 @@ namespace OrbItProcs {
                 comps[typeof(Delegator)] = value;
             }
         }
-        [Polenter.Serialization.ExcludeFromSerialization]
         [Info(UserLevel.Never)]
         public Scheduler scheduler
         {
@@ -267,24 +259,6 @@ namespace OrbItProcs {
             }
         }
 
-        public bool DebugFlag { get; set; }
-
-        public bool PolenterHack
-        {
-            get { return true; }
-            set 
-            {
-                foreach (Type c in comps.Keys.ToList())
-                {
-                    comps[c].parent = this;
-                }
-                body.parent = this;
-                collision.parent = this;
-                movement.parent = this;
-                body.shape.body = body;
-            }
-        }
-
         [Info(UserLevel.Never)]
         public DataStore dataStore = new DataStore();
 
@@ -305,19 +279,13 @@ namespace OrbItProcs {
 
         public Node() : this(null,ShapeType.eCircle) { }
 
-        public Node(Room room, bool createHash = true) : this(room, ShapeType.eCircle, createHash) { }
+        public Node(Room room) : this(room, ShapeType.eCircle) { }
 
-        public Node(Room room, ShapeType shapetype, bool createHash = true)
+        public Node(Room room, ShapeType shapetype)
         {
             this.room = room;
-            //if (room == null) throw new NotImplementedException
-            //    ("Polenter is benched for now. Everyone else must use the Parameterized constructor and pass a room reference.");
-            //if (lifetime > 0) name = "temp|" + name + Guid.NewGuid().GetHashCode().ToString().Substring(0, 5);
+            //("Everyone else must use the Parameterized constructor and pass a room reference.");
             name = name + nodeCounter;
-            if (createHash)
-            {
-                nodeHash = Utils.uniqueString(room.nodeHashes);
-            }
             nodeCounter++;
             meta = new Meta(this);
             movement = new Movement(this);
@@ -342,13 +310,6 @@ namespace OrbItProcs {
             basicdraw = new BasicDraw(this);
             movement.active = true; collision.active = true; basicdraw.active = true;
             IsAI = false;
-            //name = "blankname";
-
-            //comps.Add(comp.body, body);
-            //comps.Add(comp.movement, movement);
-            //comps.Add(comp.collision, collision);
-
-            //room.gridsystemAffect.retrieveOffsetArrays()
             affectAction = (source, other) =>
             {
                 //todo: extend to check for every component for finer control if necessary
@@ -361,8 +322,8 @@ namespace OrbItProcs {
             };
         }
         Action<Collider, Collider> affectAction;
-        public Node(Room room, Dictionary<dynamic, dynamic> userProps, ShapeType shapetype = ShapeType.eCircle, bool createHash = true)
-            : this(room, shapetype, createHash)
+        public Node(Room room, Dictionary<dynamic, dynamic> userProps, ShapeType shapetype = ShapeType.eCircle)
+            : this(room, shapetype)
         {
             if (userProps != null)
             {
@@ -991,8 +952,6 @@ namespace OrbItProcs {
 
         public void OnDelete()
         {
-            room.nodeHashes.Remove(nodeHash);
-
             //active = false;
 
             //if (this == room.targetNode) room.targetNode = null;
@@ -1006,17 +965,16 @@ namespace OrbItProcs {
             OnDeath(null, false);
         }
 
-        public Node CreateClone(Room room = null, bool CloneHash = false)
+        public Node CreateClone(Room room = null)
         {
             Room r = room ?? this.room;
-            Node newNode = new Node(r, !CloneHash);
-            cloneNode(this, newNode, CloneHash);
+            Node newNode = new Node(r);
+            cloneNode(this, newNode);
             return newNode;
         }
 
-        public static void cloneNode(Node sourceNode, Node destNode, bool CloneHash = false) //they must be the same type
+        public static void cloneNode(Node sourceNode, Node destNode)
         {
-            //dynamic returnval;
             List<FieldInfo> fields = sourceNode.GetType().GetFields().ToList();
             fields.AddRange(sourceNode.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance).ToList());
             List<PropertyInfo> properties = sourceNode.GetType().GetProperties().ToList();
@@ -1031,13 +989,6 @@ namespace OrbItProcs {
             //do not copy parent field
             foreach (FieldInfo field in fields)
             {
-                if (field.Name.Equals("_nodeHash"))
-                {
-                    if (!CloneHash)
-                    {
-                        continue;
-                    }
-                }
                 if (field.Name.Equals("_comps"))
                 {
                     Dictionary<Type, Component> dict = sourceNode.comps;

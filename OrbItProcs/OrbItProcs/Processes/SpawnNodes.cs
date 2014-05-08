@@ -23,24 +23,13 @@ namespace OrbItProcs
             //addProcessKeyAction("DirectionalLaunch", KeyCodes.LeftShift, KeyCodes.RightClick, OnHold: DirectionalLaunch);
             
             addProcessKeyAction("testing", KeyCodes.OemPipe, OnPress: TestingStuff);
-
-            addProcessKeyAction("serial1", KeyCodes.F1, OnPress: Serailize_Entities);
-            addProcessKeyAction("deserial2", KeyCodes.F2, OnPress: Deserailize_Entities);
-            addProcessKeyAction("serial1", KeyCodes.F3, OnPress: Serailize_Group);
-            addProcessKeyAction("deserial2", KeyCodes.F4, OnPress: Deserailize_Group);
-            addProcessKeyAction("serial1", KeyCodes.F5, OnPress: Serailize_Link);
-            addProcessKeyAction("deserial2", KeyCodes.F6, OnPress: Deserailize_Link);
-            addProcessKeyAction("serial1", KeyCodes.F7, OnPress: Serialize_Room);
-            addProcessKeyAction("deserial2", KeyCodes.F8, OnPress: Deserialize_Room);
-            addProcessKeyAction("serial1", KeyCodes.F9, OnPress: Serialize_Room_Binary);
-            addProcessKeyAction("deserial2", KeyCodes.F10, OnPress: Deserialize_Room_Binary);
         }
         public void SpawnNode()
         {
             ///
             room.spawnNode((int)UserInterface.WorldMousePos.X, (int)UserInterface.WorldMousePos.Y);
         }
-
+        #region Testing Region
         public void TestingStuff()
         {
             //
@@ -76,15 +65,12 @@ namespace OrbItProcs
             //Testing.IndexsGridsystem();
             Testing.TestCountArray();
         }
+        #endregion
 
-        
         public void SetSpawnPosition()
         {
             spawnPos = UserInterface.WorldMousePos;
         }
-
-        
-
         public void BatchSpawn()
         {
             int rad = 100;
@@ -134,118 +120,5 @@ namespace OrbItProcs
                 rightClickCount = 0;
             }
         }
-
-        public void Serailize_Entities()//F1
-        {
-            string filename = "Presets//Rooms//entities.xml";
-            room.game.serializer = new Polenter.Serialization.SharpSerializer();
-            room.game.serializer.Serialize(room.masterGroup.fullSet, filename);
-
-        }
-        public void Deserailize_Entities()//F2
-        {
-            string filename = "Presets//Rooms//entities.xml";
-            room.game.serializer = new Polenter.Serialization.SharpSerializer();
-            ObservableHashSet<Node> ents = (ObservableHashSet<Node>)room.game.serializer.Deserialize(filename);
-
-            Group g = OrbIt.ui.sidebar.ActiveGroup;
-            //g.EmptyGroup();
-
-            foreach (Node n in ents)
-            {
-                Node newNode = n.CreateClone(room, true);
-                g.IncludeEntity(newNode);
-            }
-        }
-        public void Serailize_Group()//F3
-        {
-            string filename = "Presets//Rooms//group1.xml";
-            room.game.serializer = new Polenter.Serialization.SharpSerializer();
-            room.game.serializer.Serialize(room.masterGroup, filename);
-
-        }
-        public void Deserailize_Group()//F4
-        {
-            string filename = "Presets//Rooms//group1.xml";
-            room.game.serializer = new Polenter.Serialization.SharpSerializer();
-            room.masterGroup.EmptyGroup();
-            Group master = (Group)room.game.serializer.Deserialize(filename);
-            room.masterGroup = master;
-
-            OrbIt.ui.sidebar.UpdateGroupComboBoxes();
-        }
-
-        public void Serailize_Link()//F5
-        {
-            string filename = "Presets//Rooms//link1.xml";
-            room.game.serializer = new Polenter.Serialization.SharpSerializer();
-            room.game.serializer.Serialize(room._AllActiveLinks.ElementAt(0), filename);
-        }
-        public void Deserailize_Link()//F6
-        {
-            string filename = "Presets//Rooms//link1.xml";
-            room.game.serializer = new Polenter.Serialization.SharpSerializer();
-            try
-            {
-                Link lnk = (Link)room.game.serializer.Deserialize(filename);
-                //room._AllActiveLinks = new ObservableHashSet<Link>();
-                room._AllActiveLinks.Add(lnk);
-                Console.WriteLine(room._AllActiveLinks.Count);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                //if (e.InnerException != null)
-                //{
-                //    if (e.InnerException.InnerException != null)
-                //    {
-                //        throw e.InnerException.InnerException;
-                //    }
-                //    else
-                //    {
-                //        throw e.InnerException;
-                //    }
-                //}
-                //else
-                //{
-                //    throw e;
-                //}
-            }
-        }
-        public void Serialize_Room()//F7
-        {
-            string filename = "Presets//Rooms//room1.xml";
-            room.game.serializer = new Polenter.Serialization.SharpSerializer();
-            room.game.serializer.Serialize(room, filename);
-        }
-        public void Deserialize_Room()//F8
-        {
-            Group.GroupNumber = 0;
-            Node.nodeCounter = 0;
-
-            string filename = "Presets//Rooms//room1.xml";
-            room.game.serializer = new Polenter.Serialization.SharpSerializer();
-            Room rm = (Room)room.game.serializer.Deserialize(filename);
-            room.game.room = rm;
-            
-
-        }
-        public void Serialize_Room_Binary()//F9
-        {
-            string filename = "Presets//Rooms//room1.bin";
-            room.game.serializer = new Polenter.Serialization.SharpSerializer(true);
-            room.game.serializer.Serialize(room, filename);
-        }
-        public void Deserialize_Room_Binary()//F10
-        {
-            string filename = "Presets//Rooms//room1.bin";
-            room.game.serializer = new Polenter.Serialization.SharpSerializer(true);
-            Room rm = (Room)room.game.serializer.Deserialize(filename);
-            room.game.room = rm;
-
-        }
-        //==============================================================================
-
-        
     }
 }
