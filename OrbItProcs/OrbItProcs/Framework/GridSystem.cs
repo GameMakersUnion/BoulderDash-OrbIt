@@ -22,25 +22,8 @@ namespace OrbItProcs {
         public int gridWidth { get; set; }
         public int gridHeight { get; set; }
 
-        //private int _cellReach;
-        //public int cellReach { get { return _cellReach; } set { if (value < 1) return; _cellReach = value; } }
-
         public List<Collider>[,] grid;
         public HashSet<Collider> alreadyVisited;
-
-        public bool PolenterHack { get { return false; } 
-            set 
-            {
-                grid = new List<Collider>[cellsX, cellsY];
-                for (int i = 0; i < cellsX; i++)
-                {
-                    for (int j = 0; j < cellsY; j++)
-                    {
-                        grid[i, j] = new List<Collider>();
-                    }
-                }
-            } 
-        }
         public GridSystem(Room room, int cellsX, Vector2 position, int? GridWidth = null, int? GridHeight = null)
         {
 

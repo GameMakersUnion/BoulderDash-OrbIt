@@ -48,67 +48,13 @@ namespace OrbItProcs {
         public RenderTarget2D roomRenderTarget;
         
         public ThreadedCamera camera;
-
-        private Group _masterGroup;
-        public Group masterGroup
-        {
-            get
-            {
-                return _masterGroup;
-            }
-            set
-            {
-                _masterGroup = value;
-            }
-        }
-        public Group generalGroups
-        {
-            get
-            {
-                if (masterGroup == null) return null;
-                return masterGroup.childGroups["General Groups"];
-            }
-        }
-        public Group presetGroups
-        {
-            get
-            {
-                if (masterGroup == null) return null;
-                return masterGroup.childGroups["Preset Groups"];
-            }
-        }
-        public Group playerGroup
-        {
-            get
-            {
-                if (masterGroup == null) return null;
-                return masterGroup.childGroups["Player Group"];
-            }
-        }
-        public Group itemGroup
-        {
-            get
-            {
-                if (masterGroup == null) return null;
-                return masterGroup.childGroups["Item Group"];
-            }
-        }
-        public Group bulletGroup
-        {
-            get
-            {
-                if (masterGroup == null) return null;
-                return masterGroup.childGroups["Bullet Group"];
-            }
-        }
-        public Group wallGroup
-        {
-            get
-            {
-                if (masterGroup == null) return null;
-                return masterGroup.childGroups["Wall Group"];
-            }
-        }
+        public Group masterGroup { get; set; }
+        public Group generalGroups { get { if (masterGroup == null) return null; return masterGroup.childGroups["General Groups"]; } }
+        public Group presetGroups { get { if (masterGroup == null) return null; return masterGroup.childGroups["Preset Groups"]; } }
+        public Group playerGroup { get { if (masterGroup == null) return null; return masterGroup.childGroups["Player Group"]; } }
+        public Group itemGroup { get { if (masterGroup == null) return null; return masterGroup.childGroups["Item Group"]; } }
+        public Group bulletGroup { get { if (masterGroup == null) return null; return masterGroup.childGroups["Bullet Group"]; } }
+        public Group wallGroup { get { if (masterGroup == null) return null; return masterGroup.childGroups["Wall Group"]; } }
         public Node defaultNode { get; set; }
 
         public Node targetNodeGraphic = null;
@@ -130,13 +76,8 @@ namespace OrbItProcs {
 
         private bool resizeRoomSignal = false;
 
-        public Room()
-        {
-            
-        }
+        public Room() { }
         Action<Collider, Collider> collideAction;
-
-        
         public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true) : this()
         {
             levelList.Enqueue("Level1");
@@ -184,15 +125,8 @@ namespace OrbItProcs {
                         //if (!c1.exclusionList.Contains(bb)) 
                             c1.CheckCollisionBody(bb);
                     }
-                    //else
-                    //{
-                    //    //c.CheckCollision(c2);
-                    //}
                 }
             };
-            //this.mapzoom = 2f;
-
-
             // grid System
             gridsystemAffect = new GridSystem(this, 40, new Vector2(0, worldHeight - OrbIt.ScreenHeight), worldWidth, OrbIt.ScreenHeight);
             gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX, new Vector2(0, worldHeight - OrbIt.ScreenHeight), worldWidth, OrbIt.ScreenHeight);
