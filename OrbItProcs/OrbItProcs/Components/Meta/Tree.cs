@@ -107,7 +107,7 @@ namespace OrbItProcs
             original = true;
             //angle = Math.Atan2(parent.transform.velocity.Y, parent.transform.velocity.X) + (Math.PI / 2);
             float scaledown = 1.0f - 0.01f;
-            parent.body.scale *= scaledown;
+            parent.body.radius *= scaledown;
             //if (LeaveTrunk && lifeleft > 0)
             //{
             //    if (positions.Count < queuecount)

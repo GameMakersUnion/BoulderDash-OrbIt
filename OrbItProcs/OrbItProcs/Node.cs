@@ -19,7 +19,6 @@ namespace OrbItProcs {
         velocity,
         radius,
         mass,
-        scale,
         texture,
         name,
         lifetime,
@@ -41,7 +40,7 @@ namespace OrbItProcs {
     }
 
     public class Node {
-        public static float defaultNodeSize = 80f;
+        public static float defaultNodeSize = 15f;
         public static int nodeCounter = 0;
         private Vector2 tempPosition = new Vector2(0, 0);
         public List<string> nodeHistory = new List<string>();
@@ -273,12 +272,11 @@ namespace OrbItProcs {
             if (val == nodeE.velocity) body.velocity = dict[val];
             if (val == nodeE.radius) body.radius = dict[val];
             if (val == nodeE.mass) body.mass = dict[val];
-            if (val == nodeE.scale) body.scale = dict[val];
             if (val == nodeE.texture) body.texture = dict[val];
             if (val == nodeE.color) body.color = dict[val];
         }
 
-        public Node(Room room) : this(room, ShapeType.eCircle) { }
+        public Node(Room room) : this(room, ShapeType.Circle) { }
         public Node(Room room, ShapeType shapetype)
         {
             this.room = room;
@@ -289,11 +287,11 @@ namespace OrbItProcs {
             movement = new Movement(this);
             
             Shape shape = null;
-            if (shapetype == ShapeType.eCircle)
+            if (shapetype == ShapeType.Circle)
             {
                 shape = new Circle(defaultNodeSize);
             }
-            else if (shapetype == ShapeType.ePolygon)
+            else if (shapetype == ShapeType.Polygon)
             {
                 shape = new Polygon();
             }
@@ -316,7 +314,7 @@ namespace OrbItProcs {
             };
         }
         Action<Collider, Collider> affectAction;
-        public Node(Room room, Dictionary<dynamic, dynamic> userProps, ShapeType shapetype = ShapeType.eCircle)
+        public Node(Room room, Dictionary<dynamic, dynamic> userProps, ShapeType shapetype = ShapeType.Circle)
             : this(room, shapetype)
         {
             if (userProps != null)
@@ -324,13 +322,13 @@ namespace OrbItProcs {
                 // add the userProps to the props
                 foreach (dynamic p in userProps.Keys)
                 {
-                    // if the key is a comp type, we need to add the component to comps dict
+                    // if the key is a Type, we need to add the component to comps dict
                     if (p is Type)
                     {
                         Type c = (Type)p;
                         fetchComponent(c, userProps[c]);
                     }
-                    // if the key is a node type, we need to update the instance variable value
+                    // if the key is a nodeE, we need to update the instance variable value
                     else if (p is nodeE)
                     {
                         nodeE nn = (nodeE)p;
@@ -348,7 +346,7 @@ namespace OrbItProcs {
             int halfwidth = thickness / 2;
             float angle = VMath.VectorToAngle(start - end);
 
-            Node n = new Node(room, props, ShapeType.ePolygon);
+            Node n = new Node(room, props, ShapeType.Polygon);
             Polygon p = (Polygon)n.body.shape;
             n.body.orient = angle;
             p.SetBox(halfwidth, halfheight, false);
@@ -898,12 +896,6 @@ namespace OrbItProcs {
             body.color = c;
             body.permaColor = c;
             basicdraw.UpdateColor();
-        }
-
-        public void changeRadius(float newRadius)
-        {
-            body.radius = newRadius;
-            body.scale = body.radius / (getTexture().Width / 2);
         }
         public float diameter()
         {

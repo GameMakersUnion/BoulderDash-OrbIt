@@ -54,10 +54,8 @@ namespace OrbItProcs
             get { return shape.radius; }
             set
             {
-                float halfwidth = getTexture() != null ? (parent.getTexture().Width / 2f) : 128f;
-                if (_scale != (float)value / halfwidth) _scale = value / halfwidth;
-                //_radius = value;
                 shape.radius = value;
+                EvaluateScale();
             }
         }
         /// <summary>
@@ -67,13 +65,12 @@ namespace OrbItProcs
         public float scale
         {
             get { return _scale; }
-            set 
-            {
-                float halfwidth = getTexture() != null ? (parent.getTexture().Width / 2f) : 128f;
-                //_radius = value * halfwidth;
-                shape.radius = value * halfwidth;
-                _scale = value;
-            }
+            //set 
+            //{
+            //    float halfwidth = getTexture() != null ? (parent.getTexture().Width / 2f) : 128f;
+            //    shape.radius = value * halfwidth;
+            //    _scale = value;
+            //}
         }
         /// <summary>
         /// Controls how heavy the node is. Mass is used in collision, gravity, and other velocity based calculations.
@@ -185,26 +182,24 @@ namespace OrbItProcs
         public textures texture
         {
             get { return _texture; }
-            set { _texture = value; radius = radius; }
+            set { _texture = value; EvaluateScale(); }
         }
 
         public Body() : this(shape: null) { }
         public Body(Shape shape = null, Node parent = null)
         {
             if (parent != null) this.parent = parent;
-            //_texture = textures.rock1;
-            //methods = mtypes.none;
-            this.shape = shape ?? new Circle(25);
+            this.shape = shape ?? new Circle(Node.defaultNodeSize);
             this.shape.body = this;
             this.shape.Initialize();
             DrawPolygonCenter = true;
-
             AfterCloning();
-
-            
         }
-
-
+        public void EvaluateScale()
+        {
+            float halfwidth = getTexture() != null ? (parent.getTexture().Width / 2f) : 128f;
+            if (_scale != (float)radius / halfwidth) _scale = radius / halfwidth;
+        }
         public override void CheckCollisionBody(Body other)
         {
             //if (!active || !other.active) { return; }

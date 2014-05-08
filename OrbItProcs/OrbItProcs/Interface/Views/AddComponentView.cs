@@ -50,12 +50,20 @@ namespace OrbItProcs
         public void InitNode(Node node)
         {
             int heightcounter = 0;
+            List<Type> compTypes = new List<Type>();
             foreach (Type ctype in Component.compTypes)
             {
                 Info info = Utils.GetInfoType(ctype);
                 if (info == null || (int)sidebar.userLevel < (int)info.userLevel) continue;
                 if (node.HasComp(ctype)) continue;
                 if ((Utils.GetCompTypes(ctype) & mtypes.exclusiveLinker) == mtypes.exclusiveLinker) continue;
+                compTypes.Add(ctype);
+            }
+
+            compTypes.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+
+            foreach(Type ctype in compTypes)
+            {
                 DetailedItem ditem = new DetailedItem(manager, this, ctype, backPanel, heightcounter, 0);
                 SetupScroll(ditem);
                 ditem.label.Text = ditem.label.Text;
@@ -63,6 +71,7 @@ namespace OrbItProcs
                 CreateItem(ditem);
                 heightcounter += ditem.panel.Height;
             }
+
             backPanel.Refresh();
         }
         public void Creator(DetailedItem item, object obj)

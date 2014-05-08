@@ -122,7 +122,7 @@ namespace OrbItProcs
                 ObservableHashSet<Node> nodes = new ObservableHashSet<Node>();
                 for (int i = 0; i < levelSave.polygonVertices.Count; i++)
                 {
-                    Node newNode = new Node(sidebar.ui.game.room, ShapeType.ePolygon);
+                    Node newNode = new Node(sidebar.ui.game.room, ShapeType.Polygon);
                     Polygon poly = (Polygon)newNode.body.shape;
                     //poly.SetCenterOfMass(vertices);
                     float[] list = levelSave.polygonVertices[i];
@@ -166,7 +166,7 @@ namespace OrbItProcs
             ObservableHashSet<Node> nodes = new ObservableHashSet<Node>();
             for (int i = 0; i < levelSave.polygonVertices.Count; i++)
             {
-                Node newNode = new Node(OrbIt.ui.game.room, ShapeType.ePolygon);
+                Node newNode = new Node(OrbIt.ui.game.room, ShapeType.Polygon);
                 Polygon poly = (Polygon)newNode.body.shape;
                 //poly.SetCenterOfMass(vertices);
                 float[] list = levelSave.polygonVertices[i];

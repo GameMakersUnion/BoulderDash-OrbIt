@@ -12,8 +12,8 @@ namespace OrbItProcs
 
     public enum ShapeType
     {
-        eCircle,
-        ePolygon,
+        Circle,
+        Polygon,
     }
 
     public abstract class Shape
@@ -40,9 +40,6 @@ namespace OrbItProcs
 
     public class Circle : Shape
     {
-        public Circle()
-        {
-        }
         public Circle(float r)
         {
             radius = r;
@@ -62,7 +59,7 @@ namespace OrbItProcs
         }
         public override ShapeType GetShapeType()
         {
-            return ShapeType.eCircle;
+            return ShapeType.Circle;
         }
         public override void SetOrient(float radians)
         { }
@@ -294,7 +291,7 @@ namespace OrbItProcs
 
         public override ShapeType GetShapeType()
         {
-            return ShapeType.ePolygon;
+            return ShapeType.Polygon;
         }
 
         //Highlight something and then use [Shift *] to put it in a comment block!---------------------------------

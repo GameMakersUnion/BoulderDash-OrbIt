@@ -967,8 +967,6 @@ namespace OrbItProcs
                 //});
             }
         }
-
-
         void btnDefaultNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             SetDefaultNodeAsEdit();
@@ -986,7 +984,6 @@ namespace OrbItProcs
             //lblEditNodeName.Text = inspectorArea.editNode.name + "(DEFAULT)";
             //inspectorArea.lblInspectorAddress.Text = "/" + activeDef.ToString();
         }
-
         public void btnRemoveAllNodes_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             if (sender != null)

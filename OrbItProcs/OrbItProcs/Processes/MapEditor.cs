@@ -46,7 +46,7 @@ namespace OrbItProcs
         {
             if (verts.Count < 3) return;
             Vector2[] vertices = verts.ToArray();
-            Node newNode = new Node(room, ShapeType.ePolygon);
+            Node newNode = new Node(room, ShapeType.Polygon);
             Polygon poly = (Polygon)newNode.body.shape;
             poly.SetCenterOfMass(vertices);
             newNode.body.SetStatic();

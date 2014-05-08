@@ -228,8 +228,8 @@ namespace OrbItProcs
                if (property.PropertyType == typeof(Node)) continue;
                if (property.GetSetMethod() != null)
                {
-               property.SetValue(destObject, property.GetValue(sourceObject, null), null);
-           }
+                   property.SetValue(destObject, property.GetValue(sourceObject, null), null);
+               }
            }
            foreach (FieldInfo field in fields)
            {

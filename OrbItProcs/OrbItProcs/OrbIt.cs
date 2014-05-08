@@ -146,14 +146,12 @@ namespace OrbItProcs
         }
         #endregion
 
-
-
         #region ///////////////////// HELPER METHODS ///////////////////
         public static void Start()
         {
             if (game != null) throw new SystemException("Game was already Started");
             game = new OrbIt();
-            game.Run();
+            game.Run(); ///XNA LOGIC HAPPENS. IT HAPPENS.
         }
 
         private void GlobalKeyBinds()

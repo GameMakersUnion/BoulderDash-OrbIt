@@ -16,9 +16,9 @@ namespace OrbItProcs
         public const float invRootOfTwo = 0.70710678118f;
         public static float between0and2pi(this float value)
         {
+            //sawtooth?
             if (value > 2 * GMath.PI) value = value % (2 * GMath.PI);
-            if (value < 0)
-                value = 2 * GMath.PI + value;
+            if (value < 0) value = 2 * GMath.PI + value;
             return value;
         }
         public static float Sawtooth(float x, float mod)
@@ -33,22 +33,22 @@ namespace OrbItProcs
                 return mod - (float)Math.Abs(ret);
             }
         }
-        internal static float AngleLerp(float source, float dest, float percent)
+        internal static float AngleLerp(float source, float dest, float amount)
         {
             float result = 0f;
             float pi = PI;
 
             if (source < pi && dest > source + pi)
             {
-                result = MathHelper.Lerp(source, dest - (2 * pi), percent);
+                result = MathHelper.Lerp(source, dest - (2 * pi), amount);
             }
             else if (source > pi && dest < source - pi)
             {
-                result = MathHelper.Lerp(source, dest + (2 * pi), percent);
+                result = MathHelper.Lerp(source, dest + (2 * pi), amount);
             }
             else
             {
-                result = MathHelper.Lerp(source, dest, percent);
+                result = MathHelper.Lerp(source, dest, amount);
             }
             return result;
         }
@@ -105,7 +105,7 @@ namespace OrbItProcs
     public static class VMath
     {
         
-        #region /// Existing Classes ///
+        #region /// Existing Methods ///
         public static void Test()
         {
             //Vector2.Add;
@@ -136,11 +136,6 @@ namespace OrbItProcs
         }
         #endregion
 
-        //public bool WereShit(this entity)
-        //{
-        //    if (entity.In(JonSkeet, JohnCarmack, JonBlow)) return false;
-        //    else return entity.WereShit();
-        //}
         public static void Set(ref Vector2 v, float x, float y)
         {
             v.X = x; v.Y = y;
@@ -152,11 +147,11 @@ namespace OrbItProcs
 
         public static float VectorToAngle(Vector2 vector)
         {
-            float value = (float)Math.Atan2(vector.X, -vector.Y);
-            if (value > 2f * GMath.PI)
-                value = value % (2 * GMath.PI);
+            float value = (float)Math.Atan2(vector.X, -vector.Y);//should the components be swapped here?
+            if (value > GMath.TwoPI)//should this be a sawtooth?
+                value = value % GMath.TwoPI;
             if (value < 0)
-                value = 2f * GMath.PI + value;
+                value = GMath.TwoPI + value;
             return value;
         }
 

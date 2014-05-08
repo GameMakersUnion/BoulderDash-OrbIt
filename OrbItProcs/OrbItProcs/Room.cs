@@ -134,7 +134,7 @@ namespace OrbItProcs {
             #region ///Default User props///
             Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {
                 { nodeE.position, new Vector2(0, 0) },
-                { nodeE.texture, textures.boulderShine },
+                { nodeE.texture, textures.blackorb },
             };
             #endregion
 
@@ -143,12 +143,12 @@ namespace OrbItProcs {
             defaultNode.name = "master";
             //defaultNode.IsDefault = true;
 
-            defaultNode.comps.Keys.ToList().ForEach(delegate(Type c)
+            foreach(Component c in defaultNode.comps.Values)
             {
-                defaultNode.comps[c].AfterCloning();
-            });
+                c.AfterCloning();
+            }
 
-            Node firstdefault = new Node(this, ShapeType.eCircle);
+            Node firstdefault = new Node(this, ShapeType.Circle);
             //firstdefault.addComponent(comp.itempayload, true);
             Node.cloneNode(defaultNode, firstdefault);
             firstdefault.name = "[G0]0";
@@ -465,7 +465,7 @@ namespace OrbItProcs {
                     foreach (Node n in groupset.ToList())
                     {
                         targetNodeGraphic.body.pos = n.body.pos;
-                        targetNodeGraphic.body.scale = n.body.scale * 1.5f;
+                        targetNodeGraphic.body.radius = n.body.radius * 1.5f;
                         targetNodeGraphic.Draw();
                     }
                 }
@@ -488,6 +488,7 @@ namespace OrbItProcs {
             }
 
             camera.drawGrid(linesToDraw, borderColor);
+            linesToDraw = new List<Rectangle>();
 
             if (DrawCollisionGrid) gridsystemCollision.DrawGrid(this, Color.Orange);
             if (DrawAffectGrid) gridsystemAffect.DrawGrid(this, Color.LightBlue);
@@ -564,15 +565,8 @@ namespace OrbItProcs {
             {
                 targetNodeGraphic.Comp<ColorChanger>().AffectSelf();
                 targetNodeGraphic.body.pos = targetNode.body.pos;
-                //if (game.targetNode.comps.ContainsKey(comp.gravity))
-                //{
-                //    float rad = game.targetNode.GetComponent<Gravity>().radius;
-                //    targetNodeGraphic.transform.radius = rad;
-                //}
-                targetNodeGraphic.body.scale = targetNode.body.scale * 1.5f;
-
-        }
-
+                targetNodeGraphic.body.radius = targetNode.body.radius * 1.5f;
+            }
         }
 
         public void addRectangleLines(float x, float y, float width, float height)
@@ -597,7 +591,7 @@ namespace OrbItProcs {
             Group activegroup = OrbIt.ui.sidebar.ActiveGroup;
             if (activegroup == null || !activegroup.Spawnable) return null;
 
-            Node newNode = new Node(this, ShapeType.eCircle);
+            Node newNode = new Node(this, ShapeType.Circle);
             if (!blank)
             {
                 Node.cloneNode(OrbIt.ui.sidebar.ActiveDefaultNode, newNode);

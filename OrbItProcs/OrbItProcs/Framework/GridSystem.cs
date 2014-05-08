@@ -668,6 +668,7 @@ namespace OrbItProcs {
         public void DrawGrid(Room room, Color color)
         {
             room.camera.drawGrid(linesToDraw, color);
+            linesToDraw = new List<Rectangle>();
         }
 
         //draw grid lines

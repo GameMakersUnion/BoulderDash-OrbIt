@@ -162,7 +162,7 @@ namespace OrbItProcs
         {
             for (int i = 1; i < 5; i++)
             {
-                if (players[i] == null && GamePad.GetState((PlayerIndex)(i-1)).IsConnected)
+                if (players[i] == null)// && GamePad.GetState((PlayerIndex)(i-1)).IsConnected)
                 {
                     TryCreatePlayer(room, room.groups.playerGroup.defaultNode, i, true);
                 }
@@ -171,6 +171,9 @@ namespace OrbItProcs
 
         private static void TryCreatePlayer(Room room, Node defaultNode, int playerIndex, bool updateUI)
         {
+            GamePadState gamePadState = GamePad.GetState((PlayerIndex)(playerIndex - 1));
+            if (!gamePadState.IsConnected || gamePadState.Buttons.A == ButtonState.Released) return;
+
             Player p = Player.GetNew(playerIndex);
             players[playerIndex] = p;
             if (p == null) return;

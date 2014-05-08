@@ -46,7 +46,7 @@ namespace OrbItProcs
             {
                 vel *= 0.70710678118f;
             }
-
+            //Stick Class?
             room.camera.pos += vel;
 
 
