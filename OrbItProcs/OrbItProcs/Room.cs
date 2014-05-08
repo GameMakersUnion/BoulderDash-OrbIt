@@ -31,21 +31,14 @@ namespace OrbItProcs {
         #endregion
 
         #region // Lists // --------------------------------------------\
-        [Polenter.Serialization.ExcludeFromSerialization]
         public HashSet<Collider> CollisionSetCircle { get; set; }
         public HashSet<Collider> CollisionSetPolygon { get; set; }
-        //[Polenter.Serialization.ExcludeFromSerialization]
-        public List<Rectangle> gridSystemLines = new List<Rectangle>(); //dns
-        //[Polenter.Serialization.ExcludeFromSerialization]
-        private List<Manifold> contacts = new List<Manifold>(); //dns
+        public List<Rectangle> gridSystemLines = new List<Rectangle>();
+        private List<Manifold> contacts = new List<Manifold>();
         #endregion
         public GridSystem gridsystemAffect { get; set; }
         public GridSystem gridsystemCollision { get; set; }
-        //[Polenter.Serialization.ExcludeFromSerialization]
         public Level level { get; set; }
-        [Polenter.Serialization.ExcludeFromSerialization]
-        public ObservableHashSet<string> groupHashes { get; set; }
-        public ObservableHashSet<string> nodeHashes { get; set; }
         public Queue<String> levelList = new Queue<string>();
 
         public int timertimer = 0;
@@ -68,7 +61,6 @@ namespace OrbItProcs {
                 _masterGroup = value;
             }
         }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Group generalGroups
         {
             get
@@ -77,7 +69,6 @@ namespace OrbItProcs {
                 return masterGroup.childGroups["General Groups"];
             }
         }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Group presetGroups
         {
             get
@@ -86,7 +77,6 @@ namespace OrbItProcs {
                 return masterGroup.childGroups["Preset Groups"];
             }
         }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Group playerGroup
         {
             get
@@ -95,7 +85,6 @@ namespace OrbItProcs {
                 return masterGroup.childGroups["Player Group"];
             }
         }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Group itemGroup
         {
             get
@@ -104,7 +93,6 @@ namespace OrbItProcs {
                 return masterGroup.childGroups["Item Group"];
             }
         }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Group bulletGroup
         {
             get
@@ -113,7 +101,6 @@ namespace OrbItProcs {
                 return masterGroup.childGroups["Bullet Group"];
             }
         }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Group wallGroup
         {
             get
@@ -122,27 +109,14 @@ namespace OrbItProcs {
                 return masterGroup.childGroups["Wall Group"];
             }
         }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Node defaultNode { get; set; }
-        public string defaultNodeHash
-        {
-            get { if (defaultNode == null) return ""; else return defaultNode.nodeHash; }
-            set
-            {
-                defaultNode = masterGroup.FindNodeByHash(value);
-            }
-        }
 
         public Node targetNodeGraphic = null;
         public Node targetNode { get; set; }
-
-        [Polenter.Serialization.ExcludeFromSerialization]
-        //public Player player1 { get; set; }
         public HashSet<Player> players { get; set; }
         [Info(UserLevel.Never)]
         public IEnumerable<Node> playerNodes { get { return players.Select(p => p.node); } }
 
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Scheduler scheduler { get; set; }
 
         public float zoom { get { return camera.zoom; } set { camera.zoom = value; } }
@@ -150,11 +124,8 @@ namespace OrbItProcs {
         public Color borderColor { get; set; }
 
         #region // Links // ------------------------------------------------------
-        public ObservableHashSet<Link> _AllActiveLinks = new ObservableHashSet<Link>();
-        public ObservableHashSet<Link> AllActiveLinks { get { return _AllActiveLinks; } set { _AllActiveLinks = value; } }
-
-        public ObservableHashSet<Link> _AllInactiveLinks = new ObservableHashSet<Link>();
-        public ObservableHashSet<Link> AllInactiveLinks { get { return _AllInactiveLinks; } set { _AllInactiveLinks = value; } }
+        public ObservableHashSet<Link> AllActiveLinks { get; set; }
+        public ObservableHashSet<Link> AllInactiveLinks { get; set; }
         #endregion
 
         private bool resizeRoomSignal = false;
@@ -173,10 +144,11 @@ namespace OrbItProcs {
             levelList.Enqueue("Level3");
             levelList.Enqueue("Level4");
 
+            AllActiveLinks = new ObservableHashSet<Link>();
+            AllInactiveLinks = new ObservableHashSet<Link>();
+
             this.worldWidth = worldWidth;
             this.worldHeight = worldHeight;
-            groupHashes = new ObservableHashSet<string>();
-            nodeHashes = new ObservableHashSet<string>();
             CollisionSetCircle = new HashSet<Collider>();
             CollisionSetPolygon = new HashSet<Collider>();
             colIterations = 1;
@@ -238,7 +210,7 @@ namespace OrbItProcs {
             #region ///Default User props///
             Dictionary<dynamic, dynamic> userPr = new Dictionary<dynamic, dynamic>() {
                 { nodeE.position, new Vector2(0, 0) },
-                { nodeE.texture, textures.boulder1 },
+                { nodeE.texture, textures.boulderShine },
             };
             #endregion
 
@@ -721,21 +693,6 @@ namespace OrbItProcs {
         public void addRectangleLines(float x, float y, float width, float height)
         {
             addRectangleLines((int)x, (int)y, (int)width, (int)height);
-        }
-        public Group findGroupByHash(string value)
-        {
-            if (masterGroup == null) return null;
-            return findGroupByHashRecurse(masterGroup, value);
-        }
-        private Group findGroupByHashRecurse(Group g, string value)
-        {
-            if (g.groupHash.Equals(value)) return g;
-            foreach(Group child in g.childGroups.Values)
-            {
-                Group ret = findGroupByHashRecurse(child, value);
-                if (ret != null) return ret;
-            }
-            return null;
         }
 
         public Node spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)

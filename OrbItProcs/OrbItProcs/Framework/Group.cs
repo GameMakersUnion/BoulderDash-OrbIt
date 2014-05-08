@@ -28,52 +28,12 @@ namespace OrbItProcs
             { 9, Color.Violet },
         };
 
-        private string _groupHash = "";
-        public string groupHash
-        {
-            get { return _groupHash; }
-            set
-            {
-                room.groupHashes.Remove(_groupHash);
-                _groupHash = value;
-
-                if (room.groupHashes.Contains(value))
-                    room.findGroupByHash(value).groupHash =
-                        Utils.uniqueString(room.groupHashes);
-
-                room.groupHashes.Add(value);
-            }
-        }
-        
         public int GroupId { get; set; }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public Group parentGroup { get; set; }
         //
-        public ObservableHashSet<Node> fullSet;
-        [Polenter.Serialization.ExcludeFromSerialization]
-        public ObservableHashSet<Node> fullSetP
-        {
-            get { return fullSet; }
-            set {
-                fullSet = value; ;
-            }
-        }
-        public ObservableHashSet<Node> entities;// { get; set; }
-        public ObservableHashSet<Node> inherited;// { get; set; }
-        public ObservableHashSet<Node> entitiesP { get { return entities; }
-            set
-            {
-                if (entities == null || entities.Count > 0) throw new SystemException("Entities was null was setting entitiesP");
-
-                foreach (Node n in value.ToList()) // another coke -dante
-                {
-                    room.nodeHashes.Remove(n.nodeHash);
-                    Node newNode = n.CreateClone(room, true);
-                    //entities.Add(newNode);
-                    IncludeEntity(newNode);
-                }
-            }
-        }
+        public ObservableHashSet<Node> fullSet { get; set; }
+        public ObservableHashSet<Node> entities { get; set; }
+        public ObservableHashSet<Node> inherited { get; set; }
         private Dictionary<string, Group> _childGroups;
         public Dictionary<string, Group> childGroups
         {
@@ -145,36 +105,10 @@ namespace OrbItProcs
         }
 
         private ObservableHashSet<Link> _SourceLinks = new ObservableHashSet<Link>();
-        [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> SourceLinks { get { return _SourceLinks; } set { _SourceLinks = value; } }
 
         private ObservableHashSet<Link> _TargetLinks = new ObservableHashSet<Link>();
-        [Polenter.Serialization.ExcludeFromSerialization]
         public ObservableHashSet<Link> TargetLinks { get { return _TargetLinks; } set { _TargetLinks = value; } }
-
-        public bool PolenterHack { get { return true; }
-            set
-            {
-                if (fullSet == null) fullSet = new ObservableHashSet<Node>();
-                foreach(Node n in entities)
-                {
-                    fullSet.Add(n);
-                    n.group = this;
-                }
-                foreach(Node n in inherited)
-                {
-                    fullSet.Add(n);
-                }
-                foreach(Group g in childGroups.Values)
-                {
-                    foreach(Node n in g.fullSet)
-                    {
-                        fullSet.Add(n);
-                    }
-                }
-            }
-        }
-        [Polenter.Serialization.ExcludeFromSerialization]
         public List<Group> groupPath { get; set; }
 
         public Group()
@@ -187,7 +121,6 @@ namespace OrbItProcs
             this.room = room ?? OrbIt.game.room;
 
             GroupId = -1;
-            groupHash = Utils.uniqueString(this.room.groupHashes);
             this.defaultNode = defaultNode ?? this.room.defaultNode;
             this.entities = entities ?? new ObservableHashSet<Node>();
             this.inherited = new ObservableHashSet<Node>();
@@ -214,16 +147,6 @@ namespace OrbItProcs
             }
             this.Name = Name;
 
-            /*threads[0] = new Thread(new ThreadStart(ThreadStartAction));
-            threads[1] = new Thread(new ThreadStart(ThreadStartAction));
-            threads[2] = new Thread(new ThreadStart(ThreadStartAction));
-            threads[3] = new Thread(new ThreadStart(ThreadStartAction));*/
-            //threads[0] = new Thread(new ThreadStart(Thread1));
-            //threads[1] = new Thread(new ThreadStart(Thread2));
-            //threads[2] = new Thread(new ThreadStart(Thread3));
-
-            //threads[4] = new Thread(new ThreadStart(ThreadStartAction));
-            //threads[5] = new Thread(new ThreadStart(ThreadStartAction));
             groupPath = new List<Group>();
 
             if (parentGroup != null)
@@ -517,152 +440,5 @@ namespace OrbItProcs
                 });
             });
         }
-
-
-        public Node FindNodeByHash(string value)
-        {
-            foreach(Node n in fullSet)
-            {
-                if (n.nodeHash.Equals(value)) return n;
-            }
-            return null;
-        }
-
-        public void FindNodeByHashes(ObservableHashSet<string> hashes, ObservableHashSet<Node> nodeSet)
-        {
-            ObservableHashSet<string> alreadyFound = new ObservableHashSet<string>();
-            foreach(Node n in fullSet)
-            {
-                if (hashes.Contains(n.nodeHash) && !alreadyFound.Contains(n.nodeHash))
-                {
-                    nodeSet.Add(n);
-                    alreadyFound.Add(n.nodeHash);
-                }
-            }
-            Console.WriteLine("hashes:{0}  |  alreadyfound:{1}", hashes.Count, alreadyFound.Count);
-        }
     }
 }
-
-//Thread experiment=============================
-
-//private int counter = 0;
-//private static int ThreadCount = 3;
-//private static bool ThreadStarted = false;
-//public Node[] nodes;
-//Thread[] threads = new Thread[ThreadCount];
-///*Thread t1;
-//Thread t2;
-//Thread t3;
-//Thread t4;
-//Thread t5;
-//Thread t6;*/
-
-/*public void ForEachThreading(GameTime gameTime)
-{
-    nodes = fullSet.ToArray();
-
-    / *foreach(Node n in nodes)
-    {
-        if (n.active)
-        {
-            n.Update(gameTime);
-        }
-    }
-    return;* /
-
-    //Thread t1 = new Thread(new ThreadStart(ThreadStartAction));
-    //Thread t2 = new Thread(new ThreadStart(ThreadStartAction));
-    //Thread t3 = new Thread(new ThreadStart(ThreadStartAction));
-    //Thread t4 = new Thread(new ThreadStart(ThreadStartAction));
-    //Thread t5 = new Thread(new ThreadStart(ThreadStartAction));
-    //Thread t6 = new Thread(new ThreadStart(ThreadStartAction));
-    //Thread t7 = new Thread(new ThreadStart(ThreadStartAction));
-    //Thread t8 = new Thread(new ThreadStart(ThreadStartAction));
-
-            
-    / *for (int i = 0; i < ThreadCount; i++)
-    {
-        threads[i] = new Thread(new ThreadStart(ThreadStartAction));
-    }* /
-
-    / *if (!ThreadStarted)
-    {
-        for (int i = 0; i < ThreadCount; i++)
-        {
-            threads[i].Start();
-        }
-        ThreadStarted = true;
-    }
-    else
-    {
-        for (int i = 0; i < ThreadCount; i++)
-        {
-            Thread.Sleep(1);
-            //threads[i].
-        }
-    }* /
-
-    if (!ThreadStarted)
-    {
-
-        threads[0].Start();
-        threads[1].Start();
-        threads[2].Start();
-
-        ThreadStarted = true;
-    }
-
-    / *for (int i = 0; i < ThreadCount; i++)
-    {
-        threads[i].Join();
-    }* /
-
-}
-
-
-public void Thread1()
-{
-    for(int i = 0; i < 100; i++)
-    {
-        Console.WriteLine("{0} : {1}", 1, i);
-    }
-}
-public void Thread2()
-{
-    for (int i = 0; i < 100; i++)
-    {
-        Console.WriteLine("{0} : {1}", 2, i);
-    }
-}
-public void Thread3()
-{
-    for (int i = 0; i < 100; i++)
-    {
-        Console.WriteLine("{0} : {1}", 3, i);
-    }
-}
-
-public void ThreadStartAction()
-{
-    int min = (nodes.Length / ThreadCount) * counter;
-    int max = (nodes.Length / ThreadCount + 1) * counter;
-
-    counter++;
-    //for (int i = min; i <= max - (nodes.Length % ThreadCount) - 1; i++)
-    //for (int i = min; i <= max - (nodes.Length % ThreadCount) - 1; i++)
-    while(true)
-    {
-        Console.WriteLine("COUNT1:" + counter);
-        if (nodes[counter - 1].active)
-        {
-            Console.WriteLine("COUNT2:" + counter);
-            lock (nodes[counter - 1])
-            {
-                Console.WriteLine("COUNT3:" + counter);
-                nodes[counter - 1].Update(Game1.GlobalGameTime);
-            }
-        }
-    }
-    //counter++; 
-}*/
