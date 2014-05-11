@@ -602,7 +602,15 @@ namespace OrbItProcs {
 
             return SpawnNodeHelper(newNode, afterSpawnAction, activegroup, lifetime);
         }
-
+        public Node spawnNode(Group group, Dictionary<dynamic, dynamic> userProperties = null)
+        {
+            if (group == null) return null;
+            Node newNode = group.defaultNode.CreateClone(this);
+            newNode.group = group;
+            newNode.name = group.Name + Node.nodeCounter;
+            if (userProperties != null) newNode.acceptUserProps(userProperties);
+            return SpawnNodeHelper(newNode, null, group, -1);
+        }
         private Node SpawnNodeHelper(Node newNode, Action<Node> afterSpawnAction = null, Group g = null, int lifetime = -1)
         {
             //newNode.addComponent(comp.itempayload, true);

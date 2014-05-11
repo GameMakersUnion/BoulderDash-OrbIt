@@ -198,7 +198,7 @@ namespace OrbItProcs
             node.body.velocity = Vector2.Zero;
             //node.body.mass = 0.1f;
             node.movement.maxVelocity.value = 6f;
-            node.addComponent<LinkGun>(true);
+            //node.addComponent<LinkGun>(true);
             node.OnSpawn();
             node.texture = textures.robot1;
 

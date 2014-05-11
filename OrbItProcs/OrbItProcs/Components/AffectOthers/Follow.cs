@@ -9,7 +9,7 @@ namespace OrbItProcs
     /// <summary>
     /// The follow component causes this node to follow other nodes. If it is following two nodes, it will go in the average direction of the two.
     /// </summary>
-    [Info(UserLevel.User, "The follow component causes this node to follow other nodes. If it is following two nodes, it will go in the average direction of the two.")]
+    [Info(UserLevel.User, "The follow component causes this node to follow other nodes. If it is following two nodes, it will go in the average direction of the two.", CompType)]
     public class Follow : Component
     {
         public const mtypes CompType = mtypes.affectother | mtypes.affectself;
@@ -25,7 +25,13 @@ namespace OrbItProcs
         [Info(UserLevel.User, "If enabled, the node will flee from others rather than follow.")]
         public bool flee { get; set; }
         public float LerpPercent { get; set; }
-        public bool FollowNearest { get; set; }
+        public enum followMode
+        {
+            FollowAll,
+            FollowNearest,
+            FollowTarget,
+        }
+        public followMode mode { get; set; }
         public Follow() : this(null) { }
         public Follow(Node parent)
         {
@@ -33,7 +39,7 @@ namespace OrbItProcs
             radius = 600;
             flee = false;
             LerpPercent = 10f;
-            FollowNearest = true;
+            mode = followMode.FollowNearest;
         }
         List<Vector2> directions = new List<Vector2>();
         float nearestDistSqrd = float.MaxValue;
@@ -43,7 +49,7 @@ namespace OrbItProcs
             Vector2 dir = other.body.pos - parent.body.pos;
             float distSquared = dir.LengthSquared();
             if (distSquared > radius * radius) return;
-            if (FollowNearest)
+            if (mode == followMode.FollowNearest)
             {
                 if (distSquared < nearestDistSqrd)
                 {
@@ -51,14 +57,14 @@ namespace OrbItProcs
                     nearestDirection = dir;
                 }
             }
-            else
+            else if (mode == followMode.FollowAll)
             {
                 directions.Add(dir.NormalizeSafe());
             }
         }
         public override void AffectSelf()
         {
-            if (FollowNearest)
+            if (mode == followMode.FollowNearest)
             {
                 if (nearestDistSqrd == float.MaxValue) return;
                 if (flee) nearestDirection *= new Vector2(-1, -1);
@@ -70,7 +76,7 @@ namespace OrbItProcs
 
                 nearestDistSqrd = float.MaxValue;
             }
-            else
+            else if (mode == followMode.FollowAll)
             {
                 if (directions.Count == 0) return;
                 Vector2 result = new Vector2();
@@ -80,7 +86,6 @@ namespace OrbItProcs
                 }
                 if (result != Vector2.Zero)
                 {
-                    //Vector2 newVel = VMath.Redirect(parent.body.velocity, result);
                     if (flee) result *= new Vector2(-1, -1);
                     float oldAngle = VMath.VectorToAngle(parent.body.velocity);
                     float newAngle = VMath.VectorToAngle(result);

@@ -159,6 +159,7 @@
     <Compile Include="Components\Items\MagicTorch.cs" />
     <Compile Include="Components\Items\ItemPayload.cs" />
     <Compile Include="Components\Items\Shovel.cs" />
+    <Compile Include="Components\Items\NodeGun.cs" />
     <Compile Include="Components\Linkers\Orbiter.cs" />
     <Compile Include="Components\AffectOthers\Spring.cs" />
     <Compile Include="Components\Meta\Delegator.cs" />

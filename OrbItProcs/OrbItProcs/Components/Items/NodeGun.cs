@@ -1,0 +1,111 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Microsoft.Xna.Framework;
+
+namespace OrbItProcs
+{
+    /// <summary>
+    /// The NodeGun allows players to shoot nodes outwards. The player can use the bumpers the cycle through the custom groups to shoot different types of nodes.
+    /// </summary>
+    [Info(UserLevel.User, "The NodeGun allows players to shoot nodes outwards. The player can use the bumpers the cycle through the custom groups to shoot different types of nodes.", CompType)]
+    public class NodeGun : Component
+    {
+        public const mtypes CompType = mtypes.playercontrol | mtypes.item;
+        public override mtypes compType { get { return CompType; } set { } }
+        public enum mode
+        {
+            SingleFire,
+            AutoFire,
+        }
+        public mode fireMode { get; set; }
+        public float nodeSpeed { get; set; }
+        public float nodeRadius { get; set; }
+        public int shootingDelay { get; set; }
+        private int shootingDelayCount = 0;
+        public NodeGun() : this(null) { }
+        public NodeGun(Node parent)
+        {
+            this.parent = parent;
+            this.fireMode = mode.SingleFire;
+            this.shootingDelay = 2;
+            this.nodeSpeed = 5f;
+            this.nodeRadius = 10f;
+        }
+        float deadZone = 0.5f;
+        Group currentGroup;
+        public override void OnSpawn()
+        {
+            currentGroup = room.groups.generalGroups.childGroups.ElementAt(0).Value;
+        }
+        public override void PlayerControl(Controller controller)
+        {
+            if (controller is FullController)
+            {
+                FullController fc = (FullController)controller;
+                if (fireMode == mode.SingleFire)
+                {
+                    if (fc.newGamePadState.Triggers.Right > deadZone && fc.oldGamePadState.Triggers.Right < deadZone)
+                    {
+                        FireNode(fc.GetRightStick());
+                    }
+                }
+                else if (fireMode == mode.AutoFire)
+                {
+                    if (fc.newGamePadState.Triggers.Right > deadZone)
+                    {
+                        if (shootingDelayCount++ % shootingDelay == 0)
+                        {
+                            FireNode(fc.GetRightStick());
+                        }
+                    }
+                }
+
+                if (fc.newGamePadState.Buttons.RightShoulder == Microsoft.Xna.Framework.Input.ButtonState.Pressed
+                    && fc.oldGamePadState.Buttons.RightShoulder == Microsoft.Xna.Framework.Input.ButtonState.Released)
+                {
+                    if (room.groups.generalGroups.childGroups.Values.Count < 2) return;
+                    bool next = false;
+                    var tempGroup = room.groups.generalGroups.childGroups;
+                    for (int i = 0; i < tempGroup.Values.Count; i++)
+                    {
+                        Group g = tempGroup.Values.ElementAt(i);
+                        if (next)
+                        {
+                            currentGroup = g;
+                            break;
+                        }
+                        if (g == currentGroup)
+                        {
+                            if (i == tempGroup.Values.Count - 1)
+                            {
+                                currentGroup = tempGroup.Values.ElementAt(0);
+                                break;
+                            }
+                            next = true;
+                        }
+                    }
+                }
+            }
+        }
+        public void FireNode(Vector2 dir)
+        {
+            if (currentGroup == null) return;
+            Node n = room.spawnNode(currentGroup);
+            if (n == null) return;
+            n.body.velocity = dir * nodeSpeed;
+            n.body.pos = parent.body.pos + parent.body.velocity * Math.Sign(nodeSpeed);
+            n.body.radius = nodeRadius;
+            Func<Collider, Collider, bool> excludeParent = (c1, c2) => c2.parent == n;
+            parent.body.ExclusionCheckResolution += excludeParent;
+            Action<Node, Node> onExit = null;
+            onExit = (n1, n2) =>
+                {
+                    parent.body.OnCollisionExit -= onExit;
+                    parent.body.ExclusionCheckResolution -= excludeParent;
+                };
+            parent.body.OnCollisionExit += onExit;
+        }
+    }
+}

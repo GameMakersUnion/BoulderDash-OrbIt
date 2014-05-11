@@ -13,7 +13,6 @@ namespace OrbItProcs
             this.addProcessKeyAction("PlaceDiode", KeyCodes.LeftClick, OnPress: PlaceDiode);
             this.addProcessKeyAction("ChangeDiodeMode", KeyCodes.MiddleClick, OnPress: ChangeDiodeMode);
             this.addProcessKeyAction("AddTickets", KeyCodes.RightClick, OnPress: AddTickets);
-
         }
         bool firstclick = true;
         Vector2 firstPos = Vector2.Zero;
