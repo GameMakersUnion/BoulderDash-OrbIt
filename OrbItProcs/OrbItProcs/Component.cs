@@ -74,7 +74,10 @@ namespace OrbItProcs
         {
             return (compType & mtypes.essential) == mtypes.essential;
         }
-
+        public bool hasCompType(mtypes methodtype)
+        {
+            return (compType & methodtype) == methodtype;
+        }
         public virtual void Initialize(Node parent) { this.parent = parent; }
         public virtual void AfterCloning() { }
         public virtual void OnSpawn() { }

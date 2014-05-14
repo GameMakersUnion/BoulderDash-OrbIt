@@ -29,7 +29,7 @@ namespace OrbItProcs
         {
             FollowAll,
             FollowNearest,
-            FollowTarget,
+            //FollowTarget,
         }
         public followMode mode { get; set; }
         public Follow() : this(null) { }

@@ -554,28 +554,33 @@ namespace OrbItProcs {
         public void Draw()
         {
             if (nodeState == state.off || nodeState == state.updateOnly) return;
-
             foreach (Type c in drawProps)
             {
                 if (!comps[c].CallDraw) continue;
                 if (!comps[c].active) continue;
                 comps[c].Draw();
-                //if (!comps[c].compType.HasFlag(mtypes.minordraw))
-                //    break; //only executes the most significant draw component
             }
-
             if (triggerSortComponentsDraw)
             {
                 SortComponentListsDraw();
                 triggerSortComponentsDraw = false;
             }
-
             if (triggerRemoveComponent)
             {
                 RemoveComponentTriggered();
             }
         }
-
+        public void DrawSlow()
+        {
+            foreach(Component c in comps.Values)
+            {
+                if (!c.active) continue;
+                if (c.hasCompType(mtypes.draw) || c.hasCompType(mtypes.minordraw))
+                {
+                    c.Draw();
+                }
+            }
+        }
         public override string ToString()
         {
             //return base.ToString();
@@ -583,7 +588,6 @@ namespace OrbItProcs {
             if (IsDefault) ret += "(DEF)";
             return ret;
         }
-
         public void setCompActive(Type c, bool Active)
         {
             if (comps.ContainsKey(c))
@@ -864,14 +868,14 @@ namespace OrbItProcs {
 
             foreach (Type c in clist)
             {
-                if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].compType & mtypes.minordraw) == mtypes.minordraw))
+                if (comps.ContainsKey(c) && isCompActive(c) && comps[c].hasCompType(mtypes.minordraw))
                 {
                     drawProps.Add(c);
                 }
             }
             foreach (Type c in clist)
             {
-                if (comps.ContainsKey(c) && isCompActive(c) && ((comps[c].compType & mtypes.draw) == mtypes.draw))
+                if (comps.ContainsKey(c) && isCompActive(c) && comps[c].hasCompType(mtypes.draw))
                 {
                     drawProps.Add(c);
                 }

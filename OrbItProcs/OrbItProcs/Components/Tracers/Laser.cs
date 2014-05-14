@@ -16,7 +16,7 @@ namespace OrbItProcs
         public const mtypes CompType = mtypes.draw | mtypes.tracer;
         public override mtypes compType { get { return CompType; } set { } }
 
-        public int _laserLength = 10;
+        private int _laserLength = 10;
         /// <summary>
         /// Sets the length of the laser.
         /// </summary>

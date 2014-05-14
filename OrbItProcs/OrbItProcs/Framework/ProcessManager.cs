@@ -101,7 +101,7 @@ namespace OrbItProcs
 
             Keybindset.Add("polygonspawner", new KeyBundle(KeyCodes.D9, KeyCodes.LeftShift), enableKeyBinds<PolygonSpawner>());
             //Keybindset.Add("diodespawner", new KeyBundle(KeyCodes.D8, KeyCodes.LeftShift), enableKeyBinds(proc.diodeSpawner));
-            
+            Keybindset.Add("screenshot", new KeyBundle(KeyCodes.PrintScreen), () => { OrbIt.game.room.camera.TakeScreenshot = true; });
 
             Keybindset.AddProcess(this, GetProcess<CameraControl>(), false);
             Keybindset.AddProcess(this, GetProcess<SpawnNodes>());

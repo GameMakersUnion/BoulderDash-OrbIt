@@ -33,7 +33,7 @@ namespace OrbItProcs
                 return mod - (float)Math.Abs(ret);
             }
         }
-        internal static float AngleLerp(float source, float dest, float amount)
+        public static float AngleLerp(float source, float dest, float amount)
         {
             float result = 0f;
             float pi = PI;
@@ -154,6 +154,15 @@ namespace OrbItProcs
                 value = GMath.TwoPI + value;
             return value;
         }
+        public static Vector2 VectorRotateLerp(Vector2 source, Vector2 direction, float amount)
+        {
+            float oldAngle = VMath.VectorToAngle(source);
+            float newAngle = VMath.VectorToAngle(direction);
+            float lerpedAngle = GMath.AngleLerp(oldAngle, newAngle, amount);
+            //Vector2 finalDir = VMath.AngleToVector(lerpedAngle);
+            return VMath.Redirect(source, VMath.AngleToVector(lerpedAngle));
+        }
+
 
         public static bool isWithin(this Vector2 v, Vector2 TopLeft, Vector2 BottomRight)
         {

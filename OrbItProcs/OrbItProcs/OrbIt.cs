@@ -126,7 +126,6 @@ namespace OrbItProcs
                 room.roomRenderTarget = new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight);
                 GraphicsReset = false;
             }
-
             if (OnUpdate!= null) OnUpdate.Invoke();
         }
 
@@ -137,8 +136,16 @@ namespace OrbItProcs
             Microsoft.Xna.Framework.Rectangle frame = new Microsoft.Xna.Framework.Rectangle(0, 0, ScreenWidth, ScreenHeight);
 
             Manager.Renderer.Draw(room.roomRenderTarget, new Microsoft.Xna.Framework.Rectangle(0, 0, ScreenWidth, ScreenHeight), Color.White);
+
+            if (room.camera.TakeScreenshot)
+            {
+                room.camera.Screenshot();
+                room.camera.TakeScreenshot = false;
+            }
             
             Manager.Renderer.End();
+
+            
         }
         protected override void Draw(GameTime gameTime)
         {

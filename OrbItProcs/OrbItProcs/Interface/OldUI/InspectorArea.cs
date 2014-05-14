@@ -399,7 +399,9 @@ namespace OrbItProcs
 
         void applyToAllNodesMenuItem_Click(object sender, TomShane.Neoforce.Controls.EventArgs e) //TODO: fix the relection copying reference types
         {
-            ApplyToAllNodes(sidebar.ActiveGroup);
+            Group g = sidebar.GetActiveGroup();
+            if (g == null) return;
+            ApplyToAllNodes(g);
         }
 
         public void ApplyToAllNodes(Group group)

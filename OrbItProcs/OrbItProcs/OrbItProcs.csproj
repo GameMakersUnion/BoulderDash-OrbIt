@@ -171,6 +171,7 @@
     <Compile Include="Components\Meta\Swap.cs" />
     <Compile Include="Components\Meta\Scheduler.cs" />
     <Compile Include="Components\Drawers\Shader.cs" />
+    <Compile Include="Components\Meta\Symmetry.cs" />
     <Compile Include="Components\Movement\Conveyor.cs" />
     <Compile Include="Components\Movement\Friction.cs" />
     <Compile Include="Framework\Gametypes\BigTony.cs" />

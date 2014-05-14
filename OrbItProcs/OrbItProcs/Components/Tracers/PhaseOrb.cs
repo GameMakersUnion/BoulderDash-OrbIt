@@ -17,7 +17,7 @@ namespace OrbItProcs
         public const mtypes CompType = mtypes.minordraw | mtypes.tracer;
         public override mtypes compType { get { return CompType; } set { } }
 
-        public int _phaserLength = 10;
+        private int _phaserLength = 10;
         /// <summary>
         /// Sets the length of the phaser.
         /// </summary>
@@ -33,9 +33,7 @@ namespace OrbItProcs
                 _phaserLength = value;
             }
         }
-
         public Toggle<int> fade { get; set; }
-
         public PhaseOrb() : this(null) { }
         public PhaseOrb(Node parent = null)
         {
@@ -45,7 +43,6 @@ namespace OrbItProcs
             }
             InitializeLists(); 
             fade = new Toggle<int>(phaserLength);
-            
         }
 
         public override void AfterCloning()

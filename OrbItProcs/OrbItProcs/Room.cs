@@ -299,7 +299,7 @@ namespace OrbItProcs {
                 gridsystemAffect.clearBuckets();
                 foreach (var n in masterGroup.fullSet)
                 {
-                    if (skipOutsideGrid && (n.body.pos.Y < gridsystemAffect.position.Y || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
+                    //if (skipOutsideGrid && (n.body.pos.Y < gridsystemAffect.position.Y || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
 
                     if (ColorNodesInReach) n.body.color = Color.White;
                     if (masterGroup.childGroups["Wall Group"].fullSet.Contains(n)) continue;
@@ -312,9 +312,9 @@ namespace OrbItProcs {
 
             foreach(Node n in masterGroup.fullSet.ToList())
             {
-                if (skipOutsideGrid && (n.body.pos.Y < gridsystemAffect.position.Y || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
+                //if (skipOutsideGrid && (n.body.pos.Y < gridsystemAffect.position.Y || n.body.pos.Y > gridsystemAffect.position.Y + gridsystemAffect.gridHeight)) continue;
 
-                if (skipOutsideGrid && !n.body.pos.isWithin(gridsystemAffect.position, gridsystemAffect.position + new Vector2(gridsystemAffect.gridWidth, gridsystemAffect.gridHeight))) continue;
+                //if (skipOutsideGrid && !n.body.pos.isWithin(gridsystemAffect.position, gridsystemAffect.position + new Vector2(gridsystemAffect.gridWidth, gridsystemAffect.gridHeight))) continue;
                 
                 if (n.active)
                 {
@@ -364,7 +364,7 @@ namespace OrbItProcs {
                 gridsystemCollision.clearBuckets();
                 foreach (var c in CollisionSetCircle) //.ToList()
                 {
-                    if (skipOutsideGrid && (c.pos.Y < gridsystemCollision.position.Y || c.pos.Y > gridsystemCollision.position.Y + gridsystemCollision.gridHeight)) continue;
+                    //if (skipOutsideGrid && (c.pos.Y < gridsystemCollision.position.Y || c.pos.Y > gridsystemCollision.position.Y + gridsystemCollision.gridHeight)) continue;
 
                     //if (ColorNodesInReach) c.parent.body.color = Color.White;
                     if (!c.parent.active) continue;
@@ -399,7 +399,7 @@ namespace OrbItProcs {
 
             foreach (var c in CollisionSetCircle.ToList()) //.ToList() 
             {
-                if (skipOutsideGrid && (c.pos.Y < gridsystemCollision.position.Y || c.pos.Y > gridsystemCollision.position.Y + gridsystemCollision.gridHeight)) continue;
+                //if (skipOutsideGrid && (c.pos.Y < gridsystemCollision.position.Y || c.pos.Y > gridsystemCollision.position.Y + gridsystemCollision.gridHeight)) continue;
                 if (c.parent.active)
                 {
                     gridsystemCollision.alreadyVisited.Add(c);
@@ -443,13 +443,10 @@ namespace OrbItProcs {
             }
             foreach (Node n in masterGroup.fullSet.ToList())
             {
-                if (n.body.pos.isWithin(gridsystemAffect.position, gridsystemAffect.position + new Vector2(gridsystemAffect.gridWidth, gridsystemAffect.gridHeight)))
-                {
+                if (skipOutsideGrid && n.body.pos.isWithin(gridsystemAffect.position, gridsystemAffect.position + new Vector2(gridsystemAffect.gridWidth, gridsystemAffect.gridHeight))) continue;
                 n.movement.IntegrateVelocity();
-
                 VMath.Set(ref n.body.force, 0, 0);
                 n.body.torque = 0;
-            }
             }
             foreach (Manifold m in contacts)
                 m.PositionalCorrection();
@@ -576,7 +573,7 @@ namespace OrbItProcs {
 
         public Node spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)
         {
-            Group spawngroup = g ?? OrbIt.ui.sidebar.ActiveGroup;
+            Group spawngroup = g ?? OrbIt.ui.sidebar.GetActiveGroup();
             if (spawngroup == null || !spawngroup.Spawnable) return null;
             if (g != null)
             {
@@ -588,7 +585,7 @@ namespace OrbItProcs {
         }
         public Node spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null, bool blank = false, int lifetime = -1)
         {
-            Group activegroup = OrbIt.ui.sidebar.ActiveGroup;
+            Group activegroup = OrbIt.ui.sidebar.GetActiveGroup();
             if (activegroup == null || !activegroup.Spawnable) return null;
 
             Node newNode = new Node(this, ShapeType.Circle);

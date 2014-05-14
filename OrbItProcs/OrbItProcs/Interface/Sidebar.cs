@@ -58,37 +58,18 @@ namespace OrbItProcs
             }
         }
         public bool CreatingGroup = false;
-        public Group ActiveGroup { 
-            get 
+        public Group GetActiveGroup()
+        {
+            if (activeTabControl == tbcMain)
             {
-                if (activeTabControl == tbcMain)
+                if (cbListPicker != null && cbListPicker.ItemIndex != -1 && room != null && room.masterGroup != null)
                 {
-                    if (cbListPicker != null && cbListPicker.ItemIndex != -1 && room != null && room.masterGroup != null)
-                    {
-                        string name = cbListPicker.Text;
-                        return room.masterGroup.FindGroup(name);
-                    }
-                }
-                else if (activeTabControl == tbcViews)
-                {   
-                    //Not Sure about this. I feel it was causing bugs, Commented because I'm redoing the tempRoom. -Dante
-                    //
-                    //if (CreatingGroup)
-                    //{
-                    //    if (room.game.tempRoom.groups.generalGroups.childGroups.Count == 0) return null;
-                    //    return room.game.tempRoom.groups.generalGroups.childGroups.ElementAt(0).Value;
-                    //}
-                    //else
-                    //{
-                        return GetActiveGroup();
-                    //}
+                    string name = cbListPicker.Text;
+                    return room.masterGroup.FindGroup(name);
                 }
                 return room.masterGroup;
             }
-        }
 
-        public Group GetActiveGroup()
-        {
             if (tbcViews.SelectedIndex == 0) //groups
             {
                 if (groupsView == null || presetsView == null)// groupsView.selectedItem == null)
@@ -136,7 +117,7 @@ namespace OrbItProcs
         {
             get
             {
-                Group g = ActiveGroup;
+                Group g = GetActiveGroup();
                 if (g != null && g.defaultNode != null)
                     return g.defaultNode;
                 return null;
@@ -444,7 +425,8 @@ namespace OrbItProcs
             }
             else if (!item.Equals(""))
             {
-                Group g = ActiveGroup;
+                Group g = GetActiveGroup();
+                if (g == null) return;
                 if (g.Name.Equals("[G0]")) return;
 
                 foreach (object o in lstMain.Items.ToList())
@@ -501,7 +483,8 @@ namespace OrbItProcs
         {
             Node n = (Node)lstMain.Items.ElementAt(lstMain.ItemIndex);
             Node newdefault = n.CreateClone(n.room);
-            Group g = ActiveGroup;
+            Group g = GetActiveGroup();
+            if (g == null) return;
             g.defaultNode = newdefault;
             g.fullSet.Remove(n);
             SetDefaultNodeAsEdit();
@@ -524,7 +507,8 @@ namespace OrbItProcs
             //room.masterGroup.UpdateComboBox();
             UpdateGroupComboBoxes();
 
-            Group active = ActiveGroup;
+            Group active = GetActiveGroup();
+            if (active == null) return;
             //active.fullSet.Remove(n);
             active.DeleteEntity(n);
 
@@ -615,18 +599,13 @@ namespace OrbItProcs
             lstPresets.Items.syncToOCDelegate(e);
         }
 
-        void nodes_Sync(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            int count = ActiveGroup == null ? 0 : ActiveGroup.entities.Count;
-            title1.Text = "Node List : " + count;
-            if (cbListPicker.Text.Equals("Nodes"))
-                lstMain.Items.syncToOCDelegate(e);
-            
-        }
-
         public void SyncTitleNumber(Group group = null)
         {
-            if (group == null) group = ActiveGroup;
+            if (group == null)
+            {
+                group = GetActiveGroup();
+                if (group == null) return;
+            }
 
             int count = group == null ? 0 : group.entities.Count;
             title1.Text = group.Name + " : " + count;
@@ -652,7 +631,8 @@ namespace OrbItProcs
 
             BuildItemsPath(item, itemspath);
 
-            Group activeGroup = ActiveGroup;
+            Group activeGroup = GetActiveGroup();
+            if (activeGroup == null) return;
             activeGroup.ForEachAllSets(delegate(Node o)
             {
                 Node n = (Node)o;
@@ -989,7 +969,8 @@ namespace OrbItProcs
             if (sender != null)
                 (sender as Button).Focused = false;
 
-            Group g = ActiveGroup;
+            Group g = GetActiveGroup();
+            if (g == null) return;
             if (room.targetNode != null)
                 if (g.fullSet.Contains(room.targetNode)) room.targetNode = null;
             if (g.fullSet.Contains(inspectorArea.editNode) && inspectorArea.editNode != g.defaultNode)
@@ -1006,7 +987,8 @@ namespace OrbItProcs
 
         void btnRemoveNode_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            Group g = ActiveGroup;
+            Group g = GetActiveGroup();
+            if (g == null) return;
             if (g != null && g.fullSet.Contains(room.targetNode))
                 g.DeleteEntity(room.targetNode);
             if (room.targetNode != null)

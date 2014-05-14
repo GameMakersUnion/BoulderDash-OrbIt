@@ -172,7 +172,7 @@ namespace OrbItProcs
         private static void TryCreatePlayer(Room room, Node defaultNode, int playerIndex, bool updateUI)
         {
             GamePadState gamePadState = GamePad.GetState((PlayerIndex)(playerIndex - 1));
-            if (!gamePadState.IsConnected || gamePadState.Buttons.A == ButtonState.Released) return;
+            if (!gamePadState.IsConnected || gamePadState.Buttons.Back == ButtonState.Released) return;
 
             Player p = Player.GetNew(playerIndex);
             players[playerIndex] = p;

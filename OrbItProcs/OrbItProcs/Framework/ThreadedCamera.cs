@@ -298,11 +298,7 @@ namespace OrbItProcs
                     batch.End();
                     batch.GraphicsDevice.SetRenderTarget(null);
                 }
-                if (TakeScreenshot)
-                {
-                    Screenshot();
-                    TakeScreenshot = false;
-                }
+                //
                 TomShaneWaiting.Set();
                 CameraWaiting.Wait();         // No more tasks - wait for a signal
             }
@@ -369,7 +365,6 @@ namespace OrbItProcs
             nextFrame.Enqueue(new DrawCommand(text, pos, c2, scale, layerDepth: (((float)Layer) / 10)));
             nextFrame.Enqueue(new DrawCommand(text, pos + new Vector2(1, -1), color, scale, layerDepth: (((float)Layer) / 10)));
         }
-
         public void Screenshot()
         {
             Texture2D t2d = room.roomRenderTarget;
@@ -380,19 +375,17 @@ namespace OrbItProcs
                 name = "..//..//..//Screenshots//SS_" + date + "_#" + i + ".png";
                 i += 1;
             } while (File.Exists(name));
-            Scheduler.fanfare.Play();
+            //Scheduler.fanfare.Play();
             Stream st = new FileStream(name, FileMode.Create);
             t2d.SaveAsPng(st, t2d.Width, t2d.Height);
             st.Close();
-            t2d.Dispose();
+            //t2d.Dispose();
         }
-
         internal void CatchUp()
         {
             TomShaneWaiting.Wait();
             TomShaneWaiting.Reset();
         }
-
         internal void AbortThread()
         {
             try { _worker.Abort(); }

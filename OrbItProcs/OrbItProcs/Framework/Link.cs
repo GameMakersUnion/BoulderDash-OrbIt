@@ -76,6 +76,7 @@ namespace OrbItProcs
                 
             }
         }
+        public bool DrawLinkLines { get; set; }
         public bool _Reversed = false;
         public bool Reversed { get { return _Reversed; } set { _Reversed = value; } }
         public bool _DrawTips = false;
@@ -149,6 +150,7 @@ namespace OrbItProcs
         private void Initialize(dynamic src, dynamic trg, ILinkable linkComponent, dynamic formation)
         {
             this.room = OrbIt.game.room;
+            this.DrawLinkLines = true;
             
             if (components == null)
             {
@@ -490,9 +492,11 @@ namespace OrbItProcs
                 }
             }
         }
+        
         public void GenericDraw()
         {
             if (!active) return;
+            if (!DrawLinkLines) return;
             //if (!linkComponent.active)
                 //return;
 

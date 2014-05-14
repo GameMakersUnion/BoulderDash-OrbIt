@@ -12,7 +12,7 @@ namespace OrbItProcs
     [Info(UserLevel.User, "The NodeGun allows players to shoot nodes outwards. The player can use the bumpers the cycle through the custom groups to shoot different types of nodes.", CompType)]
     public class NodeGun : Component
     {
-        public const mtypes CompType = mtypes.playercontrol | mtypes.item;
+        public const mtypes CompType = mtypes.playercontrol | mtypes.item | mtypes.draw;
         public override mtypes compType { get { return CompType; } set { } }
         public enum mode
         {
@@ -23,6 +23,9 @@ namespace OrbItProcs
         public float nodeSpeed { get; set; }
         public float nodeRadius { get; set; }
         public int shootingDelay { get; set; }
+        public bool steerNode { get; set; }
+        public bool drawCenterNode { get; set; }
+
         private int shootingDelayCount = 0;
         public NodeGun() : this(null) { }
         public NodeGun(Node parent)
@@ -32,6 +35,8 @@ namespace OrbItProcs
             this.shootingDelay = 2;
             this.nodeSpeed = 5f;
             this.nodeRadius = 10f;
+            this.steerNode = true;
+            this.drawCenterNode = true;
         }
         float deadZone = 0.5f;
         Group currentGroup;
@@ -39,6 +44,7 @@ namespace OrbItProcs
         {
             currentGroup = room.groups.generalGroups.childGroups.ElementAt(0).Value;
         }
+        Node lastFired = null;
         public override void PlayerControl(Controller controller)
         {
             if (controller is FullController)
@@ -46,9 +52,16 @@ namespace OrbItProcs
                 FullController fc = (FullController)controller;
                 if (fireMode == mode.SingleFire)
                 {
-                    if (fc.newGamePadState.Triggers.Right > deadZone && fc.oldGamePadState.Triggers.Right < deadZone)
+                    if (fc.newGamePadState.Triggers.Right > deadZone)// && fc.oldGamePadState.Triggers.Right < deadZone)
                     {
-                        FireNode(fc.GetRightStick());
+                        if (fc.oldGamePadState.Triggers.Right < deadZone)
+                        {
+                            FireNode(fc.GetRightStick());
+                        }
+                        else if (steerNode && lastFired != null)
+                        {
+                            lastFired.body.velocity = VMath.VectorRotateLerp(lastFired.body.velocity, fc.GetRightStick(), 0.02f);
+                        }
                     }
                 }
                 else if (fireMode == mode.AutoFire)
@@ -89,6 +102,21 @@ namespace OrbItProcs
                 }
             }
         }
+        public override void Draw()
+        {
+            if (!drawCenterNode) return;
+            if (currentGroup != null && currentGroup.defaultNode != null)
+            {
+                currentGroup.defaultNode.body.pos = parent.body.pos;
+                currentGroup.defaultNode.body.radius = parent.body.radius * 0.7f;
+                Layers templayer = currentGroup.defaultNode.basicdraw.DrawLayer;
+                currentGroup.defaultNode.basicdraw.DrawLayer = parent.basicdraw.DrawLayer + 1;
+                currentGroup.defaultNode.DrawSlow();
+                currentGroup.defaultNode.body.radius /= 0.7f;
+                currentGroup.defaultNode.basicdraw.DrawLayer = templayer;
+            }
+        }
+
         public void FireNode(Vector2 dir)
         {
             if (currentGroup == null) return;
@@ -106,6 +134,7 @@ namespace OrbItProcs
                     parent.body.ExclusionCheckResolution -= excludeParent;
                 };
             parent.body.OnCollisionExit += onExit;
+            lastFired = n;
         }
     }
 }
