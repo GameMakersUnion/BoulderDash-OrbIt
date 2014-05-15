@@ -278,6 +278,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="OrbIt.cs" />
     <Compile Include="Room.cs" />
+    <Compile Include="RoomComponents\CollisionManager.cs" />
+    <Compile Include="RoomComponents\RoomComponent.cs" />
     <Compile Include="ScrapBox\CollisionDelegates.cs" />
     <Compile Include="ScrapBox\Misc.cs" />
     <Compile Include="ScrapBox\PlayerHealthBars.cs" />

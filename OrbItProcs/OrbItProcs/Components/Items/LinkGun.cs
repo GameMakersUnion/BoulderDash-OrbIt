@@ -95,7 +95,7 @@ namespace OrbItProcs
             shootNode.body.pos = parent.body.pos;
             shootNode.addComponent<ColorChanger>(true);
             shootNode.AffectExclusionCheck += (node) => node == parent;
-            room.groups.itemGroup.IncludeEntity(shootNode);
+            room.groups.items.IncludeEntity(shootNode);
             shootNode.OnSpawn();
             shootNode.body.AddExclusionCheck(parent.body);
             shootNode.active = false;

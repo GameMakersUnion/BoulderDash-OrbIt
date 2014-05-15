@@ -95,7 +95,7 @@ namespace OrbItProcs
             fistNode.body.pos = parent.body.pos;
             
 
-            room.groups.itemGroup.IncludeEntity(fistNode);
+            room.groups.items.IncludeEntity(fistNode);
             fistNode.OnSpawn();
             fistNode.body.AddExclusionCheck(parent.body);
             fistNode.body.ExclusionCheck += delegate(Collider p, Collider o) { return !movingStick; };

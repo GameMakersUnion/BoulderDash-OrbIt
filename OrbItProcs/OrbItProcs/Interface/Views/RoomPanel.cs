@@ -60,7 +60,8 @@ namespace OrbItProcs
             panel.Click += (s, e) =>
             {
                 Point innerpos = (e as MouseEventArgs).Position;
-                room.spawnNode(innerpos.X, innerpos.Y);
+                //room.spawnNode(innerpos.X, innerpos.Y);
+                Utils.notImplementedException();
             };
 
 

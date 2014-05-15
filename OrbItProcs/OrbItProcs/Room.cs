@@ -14,15 +14,8 @@ namespace OrbItProcs {
 
     public class Room
     {
-        //////Collision
-        //Move to own class Later
-        
-        public int colIterations { get; set; }
-        public HashSet<Collider> CollisionSetCircle { get; set; }
-        public HashSet<Collider> CollisionSetPolygon { get; set; }
-        private List<Manifold> contacts = new List<Manifold>();
-        public GridSystem gridsystemCollision { get; set; }
 
+        
 
         ////Room
         //consts
@@ -30,13 +23,8 @@ namespace OrbItProcs {
 
         //Fields
         public static long totalElapsedMilliseconds = 0;
-        public int timertimer = 0;
-        public int timermax = 60;
         public Node targetNodeGraphic = null;
-        private bool resizeRoomSignal = false;
 
-        //props
-        
 
         //Components
         public ProcessManager processManager { get; set; }
@@ -45,6 +33,7 @@ namespace OrbItProcs {
         public RenderTarget2D roomRenderTarget { get; set; }
         public ThreadedCamera camera { get; set; }
         public Scheduler scheduler { get; set; }
+        public CollisionManager collisionManager { get; set; }
 
 
         //Entities
@@ -71,7 +60,7 @@ namespace OrbItProcs {
 
         //Events
         public event EventHandler AfterIteration;
-        Action<Collider, Collider> collideAction;
+        private Action PendingRoomResize;
 
         public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true)
         {
@@ -81,46 +70,14 @@ namespace OrbItProcs {
 
             this.worldWidth = worldWidth;
             this.worldHeight = worldHeight;
-            CollisionSetCircle = new HashSet<Collider>();
-            CollisionSetPolygon = new HashSet<Collider>();
-            colIterations = 1;
-            
+
             
             scheduler = new Scheduler();
             borderColor = Color.DarkGray;
-            collideAction = (c1, c2) =>
-            {
-                if (c1.parent == c2.parent) return;
-                if (c1 is Body)
-                {
-                    Body b = (Body)c1;
-                    
-                    if (gridsystemCollision.alreadyVisited.Contains(c2)) return;
-                    if (c2 is Body)
-                    {
-                        Body bb = (Body)c2;
-                        //if (!b.exclusionList.Contains(bb)) 
-                            b.CheckCollisionBody(bb);
-                    }
-                    else
-                    {
-                        b.CheckCollisionCollider(c2);
-                    }
-                }
-                else
-                {
-                    if (gridsystemCollision.alreadyVisited.Contains(c2)) return;
-                    if (c2 is Body)
-                    {
-                        Body bb = (Body)c2;
-                        //if (!c1.exclusionList.Contains(bb)) 
-                            c1.CheckCollisionBody(bb);
-                    }
-                }
-            };
+            
             // grid System
             gridsystemAffect = new GridSystem(this, 40, new Vector2(0, worldHeight - OrbIt.ScreenHeight), worldWidth, OrbIt.ScreenHeight);
-            gridsystemCollision = new GridSystem(this, gridsystemAffect.cellsX, new Vector2(0, worldHeight - OrbIt.ScreenHeight), worldWidth, OrbIt.ScreenHeight);
+            collisionManager = new CollisionManager(this);
             //gridsystemAffect = new GridSystem(this, 40, new Vector2(0, worldHeight - OrbIt.Height), worldWidth, OrbIt.Height);
             level = new Level(this, 40, 40, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
             roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, OrbIt.ScreenWidth, OrbIt.ScreenHeight);
@@ -164,7 +121,7 @@ namespace OrbItProcs {
                 new Group(this, defaultNode, masterGroup, "Link Groups", false);
                 new Group(this, defaultNode.CreateClone(this), masterGroup, "Bullet Group", true);
                 new Group(this, defaultNode, masterGroup, "Wall Group", true);
-                new Group(this, firstdefault, groups.generalGroups, "Group1");
+                new Group(this, firstdefault, groups.general, "Group1");
             }
 
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
@@ -208,7 +165,7 @@ namespace OrbItProcs {
                 nodeDef.addComponent(t, true);
                 nodeDef.addComponent(typeof(Rune), true);
                 nodeDef.Comp<Rune>().runeTexture = (textures)runenum++;
-                Group presetgroup = new Group(this, nodeDef, groups.presetGroups, t.ToString().LastWord('.') + " Group");
+                Group presetgroup = new Group(this, nodeDef, groups.preset, t.ToString().LastWord('.') + " Group");
             }
         }
 
@@ -229,24 +186,11 @@ namespace OrbItProcs {
                 //nodeDef.addComponent(t, true);
                 Component c = Node.MakeComponent(t, true, nodeDef);
                 nodeDef.Comp<ItemPayload>().AddComponentItem(c);
-                new Group(this, nodeDef, groups.itemGroup, t.ToString().LastWord('.') + " Item");
+                new Group(this, nodeDef, groups.items, t.ToString().LastWord('.') + " Item");
             }
         }
         
-        public void AddCollider(Collider collider)
-        {
-            if (collider.shape is Circle)
-                CollisionSetCircle.Add(collider);
-            else if (collider.shape is Polygon)
-                CollisionSetPolygon.Add(collider);
-        }
-        public void RemoveCollider(Collider collider)
-        {
-            if (CollisionSetCircle.Contains(collider))
-                CollisionSetCircle.Remove(collider);
-            if (CollisionSetPolygon.Contains(collider))
-                CollisionSetPolygon.Remove(collider);
-        }
+        
         public int affectAlgorithm = 2;
         public bool ColorNodesInReach = false;
 
@@ -307,8 +251,7 @@ namespace OrbItProcs {
                 }
             }
 
-            UpdateCollision();
-            if (contacts.Count > 0) contacts = new List<Manifold>();
+            collisionManager.Update();
 
             foreach(Node n in masterGroup.fullSet.ToList())
             {
@@ -332,7 +275,11 @@ namespace OrbItProcs {
 
             scheduler.AffectSelf();
 
-            CheckForRoomResize();
+            if (PendingRoomResize != null)
+            {
+                PendingRoomResize();
+                PendingRoomResize = null;
+            }
 
             Draw();
             camera.CatchUp();
@@ -346,111 +293,8 @@ namespace OrbItProcs {
             linesToDraw.Add(new Rectangle(0, worldHeight, worldWidth, worldHeight));
             linesToDraw.Add(new Rectangle(worldWidth, 0, worldWidth, worldHeight));
         }
-        private void CheckForRoomResize()
-        {
-            if (resizeRoomSignal)
-            {
-                triggerResizeRoom();
-                resizeRoomSignal = false;
-            }
-        }
 
-        static int algorithm = 7;
-        private void UpdateCollision()
-        {
-            Testing.modInc();
-            if (algorithm >= 5)
-            {
-                gridsystemCollision.clearBuckets();
-                foreach (var c in CollisionSetCircle) //.ToList()
-                {
-                    //if (skipOutsideGrid && (c.pos.Y < gridsystemCollision.position.Y || c.pos.Y > gridsystemCollision.position.Y + gridsystemCollision.gridHeight)) continue;
 
-                    //if (ColorNodesInReach) c.parent.body.color = Color.White;
-                    if (!c.parent.active) continue;
-                    gridsystemCollision.insertToBuckets(c);
-                }
-            }
-
-            Testing.PrintTimer("insertion");//oh, mama.
-
-            gridsystemCollision.alreadyVisited = new HashSet<Collider>();
-
-            foreach (var c in CollisionSetPolygon.ToList())
-            {
-                if (c.parent.active)
-                {
-                    gridsystemCollision.alreadyVisited.Add(c);
-                    int reach = (int)c.radius * 2;
-                    if (c.shape is Circle)//todo fix the fact that circles are in the polygons list
-                    {
-                        reach = (int)(c.shape as Polygon).polyReach;
-                    }
-                    foreach (var otherCol in CollisionSetPolygon.ToList())
-                    {
-                        collideAction(c, otherCol);
-                    }
-                    foreach (var otherCol in CollisionSetCircle.ToList())
-                    {
-                        collideAction(c, otherCol);
-                    }
-                }
-            }
-
-            foreach (var c in CollisionSetCircle.ToList()) //.ToList() 
-            {
-                //if (skipOutsideGrid && (c.pos.Y < gridsystemCollision.position.Y || c.pos.Y > gridsystemCollision.position.Y + gridsystemCollision.gridHeight)) continue;
-                if (c.parent.active)
-                {
-                    gridsystemCollision.alreadyVisited.Add(c);
-                    int reach = (int)c.radius * 2;
-                    if (c.shape is Polygon)
-                    {
-                        reach = (int)(c.shape as Polygon).polyReach; //shouldnt have a polygon in the circle list
-                        foreach (var otherCol in CollisionSetCircle.ToList())
-                        {
-                            collideAction(c, otherCol);
-                        }
-                    }
-                    else if (algorithm == 7)
-                    {
-                        gridsystemCollision.retrieveOffsetArraysCollision(c, collideAction, c.radius * 2);
-                    }
-                    //else if (algorithm == 6)
-                    //{
-                    //    gridsystemCollision.retrieveFromAllOffsets(c, reach, collideAction);
-                    //}
-                }
-            }
-            //Testing.PrintTimer("insertion");
-            //Testing.PrintTimer("retrieve");
-            //Testing.PrintTimer("manifolds");
-            //COLLISION
-            foreach (Manifold m in contacts)
-            {
-                m.Initialize();
-            }
-            // \COLLISION
-            //update velocity
-            for (int ii = 0; ii < colIterations; ii++)
-            {
-                foreach (Manifold m in contacts)
-                {
-                    m.ApplyImpulse();
-                    //m.a.parent.SetColor(Color.Green);
-                    //m.b.parent.SetColor(Color.Yellow);
-                }
-            }
-            foreach (Node n in masterGroup.fullSet.ToList())
-            {
-                if (skipOutsideGrid && n.body.pos.isWithin(gridsystemAffect.position, gridsystemAffect.position + new Vector2(gridsystemAffect.gridWidth, gridsystemAffect.gridHeight))) continue;
-                n.movement.IntegrateVelocity();
-                VMath.Set(ref n.body.force, 0, 0);
-                n.body.torque = 0;
-            }
-            foreach (Manifold m in contacts)
-                m.PositionalCorrection();
-        }
         public void GroupSelectDraw() //todo: make this the draw method in groupselect class
         {
             if (processManager.processDict.ContainsKey(typeof(GroupSelect)))
@@ -487,7 +331,7 @@ namespace OrbItProcs {
             camera.drawGrid(linesToDraw, borderColor);
             linesToDraw = new List<Rectangle>();
 
-            if (DrawCollisionGrid) gridsystemCollision.DrawGrid(this, Color.Orange);
+            
             if (DrawAffectGrid) gridsystemAffect.DrawGrid(this, Color.LightBlue);
 
             if (DrawLinks)
@@ -516,10 +360,6 @@ namespace OrbItProcs {
             //camera.RenderAsync();
             //Draw();
             //camera.CatchUp();
-        }
-        public void AddManifold(Manifold m)
-        {
-            contacts.Add(m);
         }
 
         public void MakeWalls(float WallWidth)
@@ -644,13 +484,7 @@ namespace OrbItProcs {
             return newNode;
         }
 
-        public Node spawnNode()
-        {
-            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
-                                { nodeE.position, UserInterface.WorldMousePos },
-            };
-            return spawnNode(userP);
-        }
+
 
         public Node spawnNode(int worldMouseX, int worldMouseY)
         {
@@ -660,51 +494,36 @@ namespace OrbItProcs {
             return spawnNode(userP);
         }
 
-        bool fillWithGrid = false;
-        internal void resize(Vector2 vector2, bool fillWithGrid = false)
+        internal void resize(Vector2 resizeVect, bool fillWithGrid = false)
         {
-            resizeVect = vector2;
-            resizeRoomSignal = true;
-            this.fillWithGrid = fillWithGrid;
-        }
-        private void triggerResizeRoom()
-        {
-            worldWidth = (int)resizeVect.X;
-            worldHeight = (int)resizeVect.Y;
-            int newCellsX = worldWidth / gridsystemCollision.cellWidth;
-            int gridHeight = fillWithGrid ? worldHeight : OrbIt.ScreenHeight;
-            gridsystemAffect = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - gridHeight), worldWidth, gridHeight);
-            level = new Level(this, newCellsX, newCellsX, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
-            //roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
-            gridsystemCollision = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - gridHeight), worldWidth, gridHeight);
-            fillWithGrid = false;
 
-            camera.pos = new Vector2(worldWidth / 2, worldHeight / 2);
-        }
-
-        private Vector2 resizeVect; //in the land down under
-        public bool loading;
-        public bool gameStarted = false;
-        internal void boulderize(Action afterFilling)
-        {
-            int heightCounter = OrbIt.ScreenHeight/2;
-
-            FloodFill.afterFilling += afterFilling;
-            while (heightCounter < worldHeight - OrbIt.ScreenHeight)
+            PendingRoomResize = delegate
             {
-                FloodFill.startFill(new Vector2(worldWidth / 2, heightCounter));
-                heightCounter += OrbIt.ScreenHeight;
-            }
+
+                worldWidth = (int)resizeVect.X;
+                worldHeight = (int)resizeVect.Y;
+                int newCellsX = worldWidth / gridsystemAffect.cellWidth;
+                int gridHeight = fillWithGrid ? worldHeight : OrbIt.ScreenHeight;
+                gridsystemAffect = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - gridHeight), worldWidth, gridHeight);
+                level = new Level(this, newCellsX, newCellsX, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
+                //roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
+                collisionManager.gridsystemCollision = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - gridHeight), worldWidth, gridHeight);
+                fillWithGrid = false;
+
+                camera.pos = new Vector2(worldWidth / 2, worldHeight / 2);
+            };
         }
+
+
         public class RoomGroups
         {
             private Room room;
-            public Group generalGroups { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["General Groups"]; } }
-            public Group presetGroups { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Preset Groups"]; } }
-            public Group playerGroup { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Player Group"]; } }
-            public Group itemGroup { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Item Group"]; } }
-            public Group bulletGroup { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Bullet Group"]; } }
-            public Group wallGroup { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Wall Group"]; } }
+            public Group general { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["General Groups"]; } }
+            public Group preset { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Preset Groups"]; } }
+            public Group player { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Player Group"]; } }
+            public Group items { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Item Group"]; } }
+            public Group bullets { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Bullet Group"]; } }
+            public Group walls { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Wall Group"]; } }
             public RoomGroups(Room room) { this.room = room; }
         }
 

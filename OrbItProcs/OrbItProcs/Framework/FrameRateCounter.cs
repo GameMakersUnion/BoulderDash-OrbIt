@@ -80,7 +80,7 @@ namespace OrbItProcs {
 
             if (room.masterGroup != null)
             {
-                string count = room.groups.generalGroups.fullSet.Count.ToString();
+                string count = room.groups.general.fullSet.Count.ToString();
                 int x = OrbIt.ScreenWidth - (count.Length * 7) - 20;
                 room.camera.DrawStringScreen(count, new Vector2(x, OrbIt.ScreenHeight - y1), Color.Black, offset: false, Layer: Layers.Over5);
             }

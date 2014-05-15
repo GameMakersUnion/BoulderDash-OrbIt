@@ -45,7 +45,7 @@ namespace OrbItProcs
         public PlayerView(Sidebar sidebar, Control parent, int Left, int Top)
             : base(sidebar, parent, Left, Top, false)
         {
-            playerGroup = sidebar.room.groups.playerGroup;
+            playerGroup = sidebar.room.groups.player;
 
             btnEditAllPlayers = new Button(manager);
             btnEditAllPlayers.Init();
@@ -57,8 +57,8 @@ namespace OrbItProcs
             HeightCounter +=  btnEditAllPlayers.Height * 2;
             btnEditAllPlayers.Click += (s, e) =>
             {
-                editGroupWindow = new EditNodeWindow(sidebar, "All Players", room.groups.playerGroup.Name);
-                editGroupWindow.componentView.SwitchGroup(room.groups.playerGroup);
+                editGroupWindow = new EditNodeWindow(sidebar, "All Players", room.groups.player.Name);
+                editGroupWindow.componentView.SwitchGroup(room.groups.player);
                 //editGroupWindow.componentView.SwitchNode(n, false);
 
             };

@@ -166,14 +166,14 @@ namespace OrbItProcs
                 if (active && AllHandlersEnabled)
                 {
                     if (parent.body.isSolid || parent.body.HandlersEnabled)
-                        room.AddCollider(parent.body);
+                        room.collisionManager.AddCollider(parent.body);
                     else
-                        room.RemoveCollider(parent.body);
+                        room.collisionManager.RemoveCollider(parent.body);
 
                     foreach (Collider col in colliders.Values)
                     {
-                        if (col.HandlersEnabled) room.AddCollider(col);
-                        else room.RemoveCollider(col);
+                        if (col.HandlersEnabled) room.collisionManager.AddCollider(col);
+                        else room.collisionManager.RemoveCollider(col);
                     }
                 }
                 else
@@ -185,10 +185,10 @@ namespace OrbItProcs
 
         public void RemoveCollidersFromSet()
         {
-            room.RemoveCollider(parent.body);
+            room.collisionManager.RemoveCollider(parent.body);
             foreach (Collider col in colliders.Values)
             {
-                room.RemoveCollider(col);
+                room.collisionManager.RemoveCollider(col);
             }
         }
 
@@ -212,7 +212,7 @@ namespace OrbItProcs
             m.Solve();
             if (m.contact_count > 0)
             {
-                room.AddManifold(m);
+                room.collisionManager.AddManifold(m);
             }
         }
 

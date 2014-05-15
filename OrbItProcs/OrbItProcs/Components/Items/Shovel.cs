@@ -124,7 +124,7 @@ namespace OrbItProcs
 
             shovelNode.AffectExclusionCheck += (node) => node == parent;
 
-            room.groups.itemGroup.IncludeEntity(shovelNode);
+            room.groups.items.IncludeEntity(shovelNode);
             shovelNode.OnSpawn();
             shovelNode.body.AddExclusionCheck(parent.body);
             Spring spring = new Spring();

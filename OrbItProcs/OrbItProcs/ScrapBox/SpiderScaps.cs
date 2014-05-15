@@ -38,7 +38,7 @@ namespace OrbItProcs.ScrapBox
         public static Vector2 finalpos, spiderHead;
         public static void UpdateSpider(Room room)
         {
-            if (room.loading) return;
+            if (false/*room.loading*/) return;
             finalpos = room.gridsystemAffect.position + new Vector2((room.worldWidth - Wait.Width * scale) / 2, room.gridsystemAffect.gridHeight - (Wait.Height / 2) - spiderPos + 400);
 
             room.camera.Draw(currentTexture, finalpos, Color.White, scale, Layers.Over4, center: false);
@@ -257,14 +257,14 @@ namespace OrbItProcs.ScrapBox
                 float maxDistFromCenter = 120;
 
                 float distFromSpiderhead = Vector2.Distance(parent.body.pos, spiderHead);
-                if (distFromSpiderhead < 120 && !room.loading)
+                if (distFromSpiderhead < 120 && !false/*room.loading*/)
                 {
                     spiderPos -= 10;
                     parent.texture = textures.boulderShine;
                     parent.collision.active = false;
                 }
 
-                if (!room.loading && parent.body.pos.Y >= y + 200 && distFromCenter > maxDistFromCenter)
+                if (!false/*room.loading*/ && parent.body.pos.Y >= y + 200 && distFromCenter > maxDistFromCenter)
                 {
                     parent.texture = textures.boulderShine;
                     parent.collision.active = false;
@@ -285,7 +285,7 @@ namespace OrbItProcs.ScrapBox
                 if (distFromCenter < 0) sign = 1;
                 distFromCenter = (float)Math.Abs(distFromCenter);
                 float maxDistFromCenter = 120;
-                if (!room.loading && parent.body.pos.Y >= y + 200 && distFromCenter > maxDistFromCenter)
+                if (!false/*room.loading*/ && parent.body.pos.Y >= y + 200 && distFromCenter > maxDistFromCenter)
                 {
                     parent.movement.maxVelocity.value = 30f;
                     parent.body.velocity = new Vector2(20 * sign, 0);

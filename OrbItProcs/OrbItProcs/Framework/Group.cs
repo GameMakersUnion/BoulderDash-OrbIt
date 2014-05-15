@@ -83,8 +83,8 @@ namespace OrbItProcs
                         foreach (Node n in fullSet)
                         {
                             if (parentGroup.inherited.Contains(n)) parentGroup.inherited.Remove(n);
-                            if (room.CollisionSetCircle.Contains(n.body)) room.CollisionSetCircle.Remove(n.body);
-                            if (room.CollisionSetPolygon.Contains(n.body)) room.CollisionSetPolygon.Remove(n.body);
+                            if (room.collisionManager.CollisionSetCircle.Contains(n.body)) room.collisionManager.CollisionSetCircle.Remove(n.body);
+                            if (room.collisionManager.CollisionSetPolygon.Contains(n.body)) room.collisionManager.CollisionSetPolygon.Remove(n.body);
                         }
                         Spawnable = false;
                     }

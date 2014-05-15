@@ -59,7 +59,7 @@ namespace OrbItProcs
         Queue<Link> links = new Queue<Link>();
         public void RandomizeSymmetry()
         {
-            Group group = room.groups.generalGroups.childGroups.Values.ElementAt(0);
+            Group group = room.groups.general.childGroups.Values.ElementAt(0);
             Color color = Utils.randomColor();
             Vector2 center = parent.body.pos;
             float dist = (float)Utils.random.NextDouble() * 100f + 20f;
