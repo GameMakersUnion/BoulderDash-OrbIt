@@ -62,7 +62,19 @@ namespace OrbItProcs
         public static int GameAreaHeight { get { return ScreenHeight - 40; } }
         public resolutions? prefFullScreenResolution{ get; set; }
         public resolutions prefWindowedResolution { get; set; }
-        public static GlobalGameMode globalGameMode { get; set; }
+        private static GlobalGameMode _globalGameMode = null;
+
+        public static GlobalGameMode globalGameMode
+        {
+            get { return OrbIt._globalGameMode; }
+            set { OrbIt._globalGameMode = value; 
+                if (ui != null && ui.sidebar != null)
+                {
+                    ui.sidebar.gamemodeWindow = new GamemodeWindow(ui.sidebar);
+                }
+            }
+        }
+        
         public Room room { get; set; }
         #endregion
 
@@ -96,14 +108,19 @@ namespace OrbItProcs
             base.MainWindow.TransparentClientArea = true;
             room = new Room(this, ScreenWidth, ScreenHeight-40);
             setResolution(prefWindowedResolution, false);
+
+            globalGameMode = new GlobalGameMode(this);
             
+            
+
+            frameRateCounter = new FrameRateCounter(this);
+            
+            
+            Player.CreatePlayers(room);
             ui = UserInterface.Start();
             ui.Initialize();
-            globalGameMode = new GlobalGameMode(this);
-            frameRateCounter = new FrameRateCounter(this);
-            room.attatchToSidebar();
-            GlobalKeyBinds();
-            Player.CreatePlayers(room);
+            room.attatchToSidebar(ui);
+            GlobalKeyBinds(ui);
         }
         #endregion
 
@@ -163,7 +180,7 @@ namespace OrbItProcs
             game.Run(); ///XNA LOGIC HAPPENS. IT HAPPENS.
         }
 
-        private void GlobalKeyBinds()
+        private void GlobalKeyBinds(UserInterface ui)
         {
             ui.keyManager.addGlobalKeyAction("exitgame", KeyCodes.Escape, OnPress: () => Exit());
             ui.keyManager.addGlobalKeyAction("togglesidebar", KeyCodes.OemTilde, OnPress: ui.ToggleSidebar);

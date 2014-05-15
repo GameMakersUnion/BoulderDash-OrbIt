@@ -22,6 +22,15 @@ namespace OrbItProcs
             backColor = UserInterface.TomDark;
             textColor = Color.Black;
         }
+        public void ClearView()
+        {
+            selectedItem = null;
+            viewItems = new List<ViewItem>();
+            foreach(Control c in backPanel.Controls.ToList())
+            {
+                //backPanel.Remove(c);
+            }
+        }
         public void AddObject(object o)
         {
             if (o == null) return;
@@ -45,6 +54,25 @@ namespace OrbItProcs
                     InvokeOnSelectionChanged(newItem);
                 }
             };
+        }
+        public void RemoveObject(object o)
+        {
+            bool found = false;
+            foreach(var viewItem in viewItems.ToList())
+            {
+                if (found)
+                {
+                    viewItem.panel.Top -= viewItem.panel.Height;
+                }
+                else if (viewItem.obj == o)
+                {
+                    if (selectedItem == viewItem) selectedItem = null;
+                    int height = viewItem.panel.Height;
+                    backPanel.Remove(viewItem.panel);
+                    viewItems.Remove(viewItem);
+                    found = true;
+                }
+            }
         }
         public void InvokeOnSelectionChanged(ViewItem item)
         {

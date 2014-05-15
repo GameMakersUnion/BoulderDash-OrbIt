@@ -42,7 +42,7 @@ namespace OrbItProcs {
         public Room room { get { return game.room; } }
 
 
-        public KeyManager keyManager;
+        public KeyManager keyManager { get; set; }
 
         
         public static KeyboardState keybState, oldKeyBState;
@@ -114,6 +114,7 @@ namespace OrbItProcs {
             ui.sidebar.InitializeGroupsPage();
             ui.sidebar.InitializePlayersPage();
             ui.sidebar.InitializeItemsPage();
+            ui.sidebar.InitializeProcessesPage();
             //ui.sidebar.InitializeBulletsPage();
             foreach (var tabpage in ui.sidebar.tbcViews.TabPages)
             {

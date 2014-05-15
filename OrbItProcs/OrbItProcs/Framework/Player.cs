@@ -155,7 +155,7 @@ namespace OrbItProcs
             {
                 TryCreatePlayer(room, room.groups.playerGroup.defaultNode, i, false);
             }
-            OrbIt.ui.sidebar.playerView.InitializePlayers();
+            //OrbIt.ui.sidebar.playerView.InitializePlayers();
         }
 
         public static void CheckForPlayers(Room room)

@@ -46,9 +46,6 @@ namespace OrbItProcs
                     room.targetNode.Comp<Tether>().AddToOutgoing(found);
                 }
             }
-            else
-            {
-            }
         }
         public void StartLink()
         {

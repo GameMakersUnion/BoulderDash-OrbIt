@@ -220,7 +220,7 @@ namespace OrbItProcs
             LoadLevelWindow loadLevelWindow = new LoadLevelWindow(this);
         }
 
-        GamemodeWindow gamemodeWindow;
+        public GamemodeWindow gamemodeWindow;
         public PlayerView playerView;
         public void InitializePlayersPage()
         {
@@ -255,7 +255,36 @@ namespace OrbItProcs
 
             tbcViews.SelectedIndex = 0;
         }
+        NormalView processesView;
+        public void InitializeProcessesPage()
+        {
+            tbcViews.AddPage();
+            TabPage processTab = tbcViews.TabPages[3];
+            processTab.Text = "Processes";
+            tbcViews.SelectedIndex = 3;
+            activeTabControl = tbcViews;
 
+            TitlePanel titlePanelProcesses = new TitlePanel(this, processTab, "Processes", false);
+
+            processesView = new NormalView(this, processTab, 0, titlePanelProcesses.Height, Height: 400);
+            //UpdateProcessView();
+            processesView.AddObject("hey");
+            
+
+            tbcViews.SelectedIndex = 0;
+        }
+
+        public void UpdateProcessView()
+        {
+            
+            foreach(Process p in room.processManager.activeProcesses)
+            {
+                processesView.AddObject(p);
+            }
+            //processesView.ClearView();
+        }
+
+        /*
         public void InitializeBulletsPage()
         {
             tbcViews.AddPage();
@@ -273,6 +302,6 @@ namespace OrbItProcs
 
             tbcViews.SelectedIndex = 0;
         }
-
+        */
     }
 }

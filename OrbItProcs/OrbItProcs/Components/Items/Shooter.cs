@@ -115,7 +115,6 @@ namespace OrbItProcs
             useStickVelocity = false;
             maxAmmo = new Toggle<int>(50, true);
             TurretTimerSeconds = 1;
-            
         }
         public override void OnSpawn()
         {

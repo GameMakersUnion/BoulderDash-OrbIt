@@ -75,7 +75,7 @@ namespace OrbItProcs
             backPanel.Left = Left + LeftPadding;
             backPanel.Top = HeightCounter;
             backPanel.Width = Width;
-            backPanel.Parent = parent;
+            //backPanel.Parent = parent;
             backPanel.Height = Height;
             backPanel.Text = "";
             backPanel.AutoScroll = true;
@@ -163,11 +163,10 @@ namespace OrbItProcs
         {
             //this.listView = listView;
             this.obj = obj;
-
-
             panel = new Panel(manager);
             panel.Init();
-            panel.Parent = parent;
+            //panel.Parent = parent;
+            parent.Add(panel);
             panel.Top = Top;
             panel.Height = itemHeight;
             panel.Click += textPanel_Click;
@@ -220,11 +219,5 @@ namespace OrbItProcs
                 }
             }
         }
-
-        
-
-        
     }
-
-    
 }

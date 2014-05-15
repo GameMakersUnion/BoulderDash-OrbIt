@@ -182,12 +182,12 @@ namespace OrbItProcs {
             MakeItemGroups();
         }
 
-        public void attatchToSidebar()
+        public void attatchToSidebar(UserInterface ui)
         {
             //We put the Procs In OrbItProcs
             processManager = new ProcessManager();
             processManager.SetProcessKeybinds();
-            if (OrbIt.ui != null) OrbIt.ui.sidebar.UpdateGroupComboBoxes();
+            ui.sidebar.UpdateGroupComboBoxes();
         }
 
         public void MakePresetGroups()

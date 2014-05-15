@@ -108,6 +108,8 @@ namespace OrbItProcs
 
             Keybindset.AddProcess(this, GetProcess<CameraControl>(), false);
             Keybindset.AddProcess(this, GetProcess<SpawnNodes>());
+
+            OrbIt.ui.sidebar.UpdateProcessView();
         }
         
         public void Update()
