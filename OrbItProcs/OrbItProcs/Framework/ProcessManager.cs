@@ -39,7 +39,7 @@ namespace OrbItProcs
             //OrbIt.ui.groupSelectSet = GetProcess<GroupSelect>().groupSelectSet;
         }
 
-        public T GetProcess<T>() where T : Process
+        public T GetProcess<T>() where T : Process, new()
         {
             Type t = typeof(T);
             if (processDict.ContainsKey(t))
@@ -48,7 +48,8 @@ namespace OrbItProcs
             }
             else
             {
-                Process p = (Process)Activator.CreateInstance(t);
+                //Process p = (Process)Activator.CreateInstance(t);
+                Process p = new T();
                 //p.Create();
                 p.InvokeOnCreate();
                 processDict.Add(t, p);
@@ -58,7 +59,7 @@ namespace OrbItProcs
 
 
 
-        Action enableKeyBinds<T>() where T : Process
+        Action enableKeyBinds<T>() where T : Process, new()
         {
             return delegate
             {
@@ -103,10 +104,12 @@ namespace OrbItProcs
             //Keybindset.Add("diodespawner", new KeyBundle(KeyCodes.D8, KeyCodes.LeftShift), enableKeyBinds(proc.diodeSpawner));
             Keybindset.Add("screenshot", new KeyBundle(KeyCodes.PrintScreen), () => { OrbIt.game.room.camera.TakeScreenshot = true; });
 
+
+
             Keybindset.AddProcess(this, GetProcess<CameraControl>(), false);
             Keybindset.AddProcess(this, GetProcess<SpawnNodes>());
         }
-
+        
         public void Update()
         {
             /*foreach (Process p in processes)

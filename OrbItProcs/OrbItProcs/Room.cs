@@ -505,7 +505,7 @@ namespace OrbItProcs {
             //player1.Draw(spritebatch);
             //level.Draw(spritebatch);
 
-            processManager.Draw();
+            processManager.Draw(); //find out why we needed this and generalize later
 
             GraphData.DrawGraph();
             //Testing.TestHues();
@@ -513,9 +513,9 @@ namespace OrbItProcs {
 
         public void drawOnly()
         {
-            camera.RenderAsync();
-            Draw();
-            camera.CatchUp();
+            //camera.RenderAsync();
+            //Draw();
+            //camera.CatchUp();
         }
         public void AddManifold(Manifold m)
         {
@@ -569,6 +569,26 @@ namespace OrbItProcs {
         public void addRectangleLines(float x, float y, float width, float height)
         {
             addRectangleLines((int)x, (int)y, (int)width, (int)height);
+        }
+        public Node SelectNodeAt(Vector2 pos)
+        {
+            Node found = null;
+            float shortedDistance = Int32.MaxValue;
+            for (int i = masterGroup.fullSet.Count - 1; i >= 0; i--)
+            {
+                Node n = (Node)masterGroup.fullSet.ElementAt(i);
+                // find node that has been clicked, starting from the most recently placed nodes
+                float distsquared = Vector2.DistanceSquared(n.body.pos, pos);
+                if (distsquared < n.body.radius * n.body.radius)
+                {
+                    if (distsquared < shortedDistance)
+                    {
+                        found = n;
+                        shortedDistance = distsquared;
+                    }
+                }
+            }
+            return found;
         }
 
         public Node spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)
@@ -658,6 +678,8 @@ namespace OrbItProcs {
             //roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
             gridsystemCollision = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - gridHeight), worldWidth, gridHeight);
             fillWithGrid = false;
+
+            camera.pos = new Vector2(worldWidth / 2, worldHeight / 2);
         }
 
         private Vector2 resizeVect; //in the land down under

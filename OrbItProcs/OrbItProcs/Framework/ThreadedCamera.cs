@@ -347,6 +347,20 @@ namespace OrbItProcs
             Draw(textures.whitepixel, centerpoint, null, color, angle, Assets.textureCenters[textures.whitepixel], scalevect, Layer);
         }
 
+        public void DrawLinePermanent(Vector2 start, Vector2 end, float thickness, Color color, int life)//, Layers Layer)
+        {
+            if (thickness * zoom < 1) thickness = 1 / zoom;
+            Vector2 diff = (end - start);// *mapzoom;
+            Vector2 centerpoint = (end + start) / 2;
+            //centerpoint *= mapzoom;
+            float len = diff.Length();
+            //thickness *= 2f * mapzoom;
+            Vector2 scalevect = new Vector2(len, thickness);
+            float angle = (float)(Math.Atan2(diff.Y, diff.X));
+            //Draw(textures.whitepixel, centerpoint, null, color, angle, Assets.textureCenters[textures.whitepixel], scalevect, Layer);
+            AddPermanentDraw(textures.whitepixel, centerpoint, color, scalevect, angle, life);
+        }
+
         public void DrawStringWorld(string text, Vector2 position, Color color, Color? color2 = null, float scale = 0.5f, bool offset = true, Layers Layer = Layers.Over5)
         {
             Color c2 = Color.Red;

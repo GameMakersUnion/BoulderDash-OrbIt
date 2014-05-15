@@ -858,6 +858,7 @@ namespace OrbItProcs
             if (p == null) throw new SystemException("Process parameter was null"); //well ya see kids...
             if (p.processKeyActions == null) throw new SystemException("Process parameter had no keyactions");
 
+            p.active = true;
             if (Temporary)
             {
                 if (TemporaryProcess != p)
@@ -899,7 +900,7 @@ namespace OrbItProcs
         public void RemoveTemporaryProcess(ProcessManager pm)
         {
             if (TemporaryProcess == null) return;//throw new SystemException("Temporary process was null");
-
+            TemporaryProcess.active = false;
             foreach(KeyAction ka in TemporaryProcess.processKeyActions.Keys)
             {
                 KeyBundle kb = TemporaryProcess.processKeyActions[ka];

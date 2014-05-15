@@ -37,6 +37,11 @@ namespace OrbItProcs
             }
         }
         /// <summary>
+        /// Increasing this number increases performance, but causes flashing.
+        /// </summary>
+        [Info(UserLevel.Advanced, "Increasing this number increases performance, but causes flashing.")]
+        public int onceEveryAmount { get; set; }
+        /// <summary>
         /// Cool effect where the laser changes color depending on which way it's travelling. Consider using ColorChanger component and setting this to false.
         /// </summary>
         [Info(UserLevel.User, "Cool effect where the laser changes color depending on which way it's travelling. Consider using ColorChanger component and setting this to false.")]
@@ -73,6 +78,7 @@ namespace OrbItProcs
             brightness = new Toggle<float>(1f, false);
             thickness = 5f;
             beamRatio = 0.7f;
+            onceEveryAmount = 1;
             IsColorByAngle = true;
             beamCount = 1;
         }
@@ -83,7 +89,8 @@ namespace OrbItProcs
             //parent.Comp<Queuer>().qs = parent.Comp<Queuer>().qs | queues.scale | queues.position;// | queues.angle;
         }
         private Vector2 prevPos = Vector2.Zero;
-        private int counter = 0, onceEveryAmount = 3;
+        private int counter = 0;
+            
         public override void Draw()
         {
             if (++counter % onceEveryAmount != 0) return; 

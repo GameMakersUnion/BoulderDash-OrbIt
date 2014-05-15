@@ -41,7 +41,7 @@ namespace OrbItProcs
         [Info(UserLevel.User, "Sets the mode of the spring. Pull means with will pull nodes beyond the restdist. Push means it will push nodes within the restdist.")]
         public mode springMode { get; set; }
 
-        public int _restdist;
+        private int _restdist;
         /// <summary>
         /// The distance at which no force is applied.
         /// </summary>

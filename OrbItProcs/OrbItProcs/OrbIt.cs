@@ -50,6 +50,7 @@ namespace OrbItProcs
         public static bool soundEnabled = false;
         public static bool isFullScreen = false;
         private static bool GraphicsReset = false;
+        private static bool redrawWhenPaused = false;
         public SharpSerializer serializer = new SharpSerializer();
         private FrameRateCounter frameRateCounter;
         #endregion
@@ -69,6 +70,7 @@ namespace OrbItProcs
 
         #region ///////////////////// EVENTS ///////////////////
         public static Action OnUpdate;
+        
         #endregion
 
 
@@ -117,7 +119,7 @@ namespace OrbItProcs
             if (IsActive) ui.Update(gameTime);
 
             if (!ui.IsPaused) room.Update(gameTime);
-            else room.drawOnly();
+            else if(redrawWhenPaused) room.drawOnly();
 
             base.Draw(gameTime);
             if (GraphicsReset)

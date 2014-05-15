@@ -18,8 +18,8 @@ namespace OrbItProcs
         public Room room { get { return OrbIt.game.room; } }
         public bool active { get; set; }
 
-        public event Action OnUpdate;
-        public event Action OnDraw;
+        //public event Action OnUpdate;
+        //public event Action OnDraw;
         public event ProcessMethod OnCreate;
         public event ProcessMethod OnDestroy;
         public event Action<Node,Node> OnCollision;

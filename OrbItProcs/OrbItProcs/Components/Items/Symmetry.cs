@@ -93,15 +93,26 @@ namespace OrbItProcs
                 //n.addComponent<PhaseOrb>(true);
                 //n.Comp<PhaseOrb>().phaserLength = 200;
 
-                n.addComponent<Laser>(true);
-                n.Comp<Laser>().laserLength = 200;
+                //n.addComponent<Laser>(true);
+                //n.Comp<Laser>().laserLength = 200;
+
+                n.addComponent<Waver>(true);
+                n.Comp<Waver>().waveLength = 200;
+                n.Comp<Waver>().reflective = true;
 
                 n.addComponent<ColorChanger>(true);
             }
             centerNode.movement.active = false;
+            centerNode.basicdraw.active = false;
+
             Gravity grav = new Gravity();
             grav.multiplier = 20f;
             grav.radius = float.MaxValue;
+
+            Spring spring = new Spring();
+            spring.restdist = 100;
+            spring.radius = float.MaxValue;
+
             Link link = new Link(centerNode, outerNodes, grav);
             link.active = true;
             link.DrawLinkLines = false;

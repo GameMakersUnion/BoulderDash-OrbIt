@@ -12,7 +12,6 @@ namespace OrbItProcs
         public List<Vector2> verts;
         public MapEditor() : base()
         {
-            OnDraw += DrawEditor;
             verts = new List<Vector2>();
             addProcessKeyAction("placevertice", KeyCodes.LeftClick, OnPress: PlaceVertice);
             addProcessKeyAction("FinishWall", KeyCodes.Enter, OnPress: FinishWall);
@@ -63,7 +62,7 @@ namespace OrbItProcs
             room.masterGroup.childGroups["Wall Group"].EmptyGroup();
         }
 
-        public void DrawEditor()
+        public override void Draw()
         {
             int vertX = 0, vertY = 0;
             MouseToGrid(ref vertX, ref vertY);
