@@ -48,7 +48,7 @@ namespace OrbItProcs
             tomShaneSidebar.BackColor = new Color(30, 60, 30);
             manager.Add(tomShaneSidebar);
 
-            wallGroup = sidebar.room.groups.wallGroup;
+            wallGroup = sidebar.room.groups.walls;
             foreach(Node n in wallGroup.entities)
             {
                 previousWallNodes.Add(n);
@@ -202,16 +202,16 @@ namespace OrbItProcs
                 }
             
             ObservableHashSet<Node> incomingNodes = nodes;
-            foreach (Node n in room.groups.wallGroup.entities.ToList())
+            foreach (Node n in room.groups.walls.entities.ToList())
             {
-                room.groups.wallGroup.DiscludeEntity(n);
+                room.groups.walls.DiscludeEntity(n);
             }
 
             foreach (Node n in incomingNodes)
             {
-                room.groups.wallGroup.IncludeEntity(n);
+                room.groups.walls.IncludeEntity(n);
             }
-            foreach (Node n in room.groups.wallGroup.entities)
+            foreach (Node n in room.groups.walls.entities)
             {
                 n.collision.UpdateCollisionSet();
             }
@@ -258,19 +258,8 @@ namespace OrbItProcs
             //}
             //wallGroup.IncludeEntity(holder);
             Node holder = Node.ContructLineWall(room, new Vector2(0, room.worldHeight - OrbIt.ScreenHeight), new Vector2(room.worldWidth, room.worldHeight - OrbIt.ScreenHeight), 20);
-            room.loading = true;
-            room.boulderize(delegate
-            {
-                room.groups.wallGroup.DiscludeEntity(holder);
-               //foreach (Node n in saved)
-               //{
-               //    wallGroup.IncludeEntity(n);
-               //}
-
-                room.resize(v);
-                Player.ResetPlayers(OrbIt.game.room);
-                room.loading = false;
-            }); 
+            Player.ResetPlayers(OrbIt.game.room);
+            
         }
         public void CloseWindow()
         {

@@ -119,7 +119,7 @@ namespace OrbItProcs
         }
         public override void OnSpawn()
         {
-            AppointmentDelegate ap = (n,d) => 
+            Action<Node> ap = (n) => 
                 {
                     if (ammo < maxAmmo) ammo++;
                 };
@@ -143,7 +143,7 @@ namespace OrbItProcs
             bulletNode.Comp<Laser>().thickness = 5f;
             bulletNode.Comp<Laser>().laserLength = 20;
             bulletNode.Comp<Movement>().randInitialVel.enabled = false;
-            bulletNode.group = room.groups.bulletGroup;
+            bulletNode.group = room.groups.bullets;
             
             
         }
@@ -208,7 +208,7 @@ namespace OrbItProcs
                 
                 float nearest = float.MaxValue;
                 Node nearNode = null;
-                foreach (Node n in room.groups.playerGroup.entities)
+                foreach (Node n in room.groups.player.entities)
                 {
                     float dist = Vector2.Distance(parent.body.pos, n.body.pos);
                     if (dist < nearest)
@@ -252,7 +252,7 @@ namespace OrbItProcs
                 n.Comp<ColorChanger>().colormode = ColorChanger.ColorMode.none;
                 n.SetColor(parent.player.pColor);
             }
-            room.spawnNode(n, g: room.groups.bulletGroup);
+            room.spawnNode(n, g: room.groups.bullets);
             Action<Node, Node> bulletHit = (n1, n2) =>
             {
                 Node bullet, them;

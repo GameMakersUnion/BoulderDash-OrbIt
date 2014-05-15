@@ -14,9 +14,8 @@ namespace OrbItProcs {
 
     public class Room
     {
-        //////Collision
-        //Move to own class Later
-        public CollisionManager collisionManager;
+
+        
 
         ////Room
         //consts
@@ -24,13 +23,8 @@ namespace OrbItProcs {
 
         //Fields
         public static long totalElapsedMilliseconds = 0;
-        public int timertimer = 0;
-        public int timermax = 60;
         public Node targetNodeGraphic = null;
-        private bool resizeRoomSignal = false;
 
-        //props
-        
 
         //Components
         public ProcessManager processManager { get; set; }
@@ -39,6 +33,7 @@ namespace OrbItProcs {
         public RenderTarget2D roomRenderTarget { get; set; }
         public ThreadedCamera camera { get; set; }
         public Scheduler scheduler { get; set; }
+        public CollisionManager collisionManager { get; set; }
 
 
         //Entities
@@ -65,6 +60,7 @@ namespace OrbItProcs {
 
         //Events
         public event EventHandler AfterIteration;
+        private Action PendingRoomResize;
 
         public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true)
         {
@@ -75,8 +71,6 @@ namespace OrbItProcs {
             this.worldWidth = worldWidth;
             this.worldHeight = worldHeight;
 
-            
-            
             
             scheduler = new Scheduler();
             borderColor = Color.DarkGray;
@@ -127,7 +121,7 @@ namespace OrbItProcs {
                 new Group(this, defaultNode, masterGroup, "Link Groups", false);
                 new Group(this, defaultNode.CreateClone(this), masterGroup, "Bullet Group", true);
                 new Group(this, defaultNode, masterGroup, "Wall Group", true);
-                new Group(this, firstdefault, groups.generalGroups, "Group1");
+                new Group(this, firstdefault, groups.general, "Group1");
             }
 
             Dictionary<dynamic, dynamic> userPropsTarget = new Dictionary<dynamic, dynamic>() {
@@ -171,7 +165,7 @@ namespace OrbItProcs {
                 nodeDef.addComponent(t, true);
                 nodeDef.addComponent(typeof(Rune), true);
                 nodeDef.Comp<Rune>().runeTexture = (textures)runenum++;
-                Group presetgroup = new Group(this, nodeDef, groups.presetGroups, t.ToString().LastWord('.') + " Group");
+                Group presetgroup = new Group(this, nodeDef, groups.preset, t.ToString().LastWord('.') + " Group");
             }
         }
 
@@ -192,7 +186,7 @@ namespace OrbItProcs {
                 //nodeDef.addComponent(t, true);
                 Component c = Node.MakeComponent(t, true, nodeDef);
                 nodeDef.Comp<ItemPayload>().AddComponentItem(c);
-                new Group(this, nodeDef, groups.itemGroup, t.ToString().LastWord('.') + " Item");
+                new Group(this, nodeDef, groups.items, t.ToString().LastWord('.') + " Item");
             }
         }
         
@@ -281,7 +275,11 @@ namespace OrbItProcs {
 
             scheduler.AffectSelf();
 
-            CheckForRoomResize();
+            if (PendingRoomResize != null)
+            {
+                PendingRoomResize();
+                PendingRoomResize = null;
+            }
 
             Draw();
             camera.CatchUp();
@@ -294,14 +292,6 @@ namespace OrbItProcs {
             linesToDraw.Add(new Rectangle(0, 0, 0, worldHeight));
             linesToDraw.Add(new Rectangle(0, worldHeight, worldWidth, worldHeight));
             linesToDraw.Add(new Rectangle(worldWidth, 0, worldWidth, worldHeight));
-        }
-        private void CheckForRoomResize()
-        {
-            if (resizeRoomSignal)
-            {
-                triggerResizeRoom();
-                resizeRoomSignal = false;
-            }
         }
 
 
@@ -494,13 +484,7 @@ namespace OrbItProcs {
             return newNode;
         }
 
-        public Node spawnNode()
-        {
-            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
-                                { nodeE.position, UserInterface.WorldMousePos },
-            };
-            return spawnNode(userP);
-        }
+
 
         public Node spawnNode(int worldMouseX, int worldMouseY)
         {
@@ -510,51 +494,36 @@ namespace OrbItProcs {
             return spawnNode(userP);
         }
 
-        bool fillWithGrid = false;
-        internal void resize(Vector2 vector2, bool fillWithGrid = false)
+        internal void resize(Vector2 resizeVect, bool fillWithGrid = false)
         {
-            resizeVect = vector2;
-            resizeRoomSignal = true;
-            this.fillWithGrid = fillWithGrid;
-        }
-        private void triggerResizeRoom()
-        {
-            worldWidth = (int)resizeVect.X;
-            worldHeight = (int)resizeVect.Y;
-            int newCellsX = worldWidth / gridsystemAffect.cellWidth;
-            int gridHeight = fillWithGrid ? worldHeight : OrbIt.ScreenHeight;
-            gridsystemAffect = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - gridHeight), worldWidth, gridHeight);
-            level = new Level(this, newCellsX, newCellsX, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
-            //roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
-            collisionManager.gridsystemCollision = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - gridHeight), worldWidth, gridHeight);
-            fillWithGrid = false;
 
-            camera.pos = new Vector2(worldWidth / 2, worldHeight / 2);
-        }
-
-        private Vector2 resizeVect; //in the land down under
-        public bool loading;
-        public bool gameStarted = false;
-        internal void boulderize(Action afterFilling)
-        {
-            int heightCounter = OrbIt.ScreenHeight/2;
-
-            FloodFill.afterFilling += afterFilling;
-            while (heightCounter < worldHeight - OrbIt.ScreenHeight)
+            PendingRoomResize = delegate
             {
-                FloodFill.startFill(new Vector2(worldWidth / 2, heightCounter));
-                heightCounter += OrbIt.ScreenHeight;
-            }
+
+                worldWidth = (int)resizeVect.X;
+                worldHeight = (int)resizeVect.Y;
+                int newCellsX = worldWidth / gridsystemAffect.cellWidth;
+                int gridHeight = fillWithGrid ? worldHeight : OrbIt.ScreenHeight;
+                gridsystemAffect = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - gridHeight), worldWidth, gridHeight);
+                level = new Level(this, newCellsX, newCellsX, gridsystemAffect.cellWidth, gridsystemAffect.cellHeight);
+                //roomRenderTarget = new RenderTarget2D(game.GraphicsDevice, worldWidth, worldHeight);
+                collisionManager.gridsystemCollision = new GridSystem(this, newCellsX, new Vector2(0, worldHeight - gridHeight), worldWidth, gridHeight);
+                fillWithGrid = false;
+
+                camera.pos = new Vector2(worldWidth / 2, worldHeight / 2);
+            };
         }
+
+
         public class RoomGroups
         {
             private Room room;
-            public Group generalGroups { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["General Groups"]; } }
-            public Group presetGroups { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Preset Groups"]; } }
-            public Group playerGroup { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Player Group"]; } }
-            public Group itemGroup { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Item Group"]; } }
-            public Group bulletGroup { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Bullet Group"]; } }
-            public Group wallGroup { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Wall Group"]; } }
+            public Group general { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["General Groups"]; } }
+            public Group preset { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Preset Groups"]; } }
+            public Group player { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Player Group"]; } }
+            public Group items { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Item Group"]; } }
+            public Group bullets { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Bullet Group"]; } }
+            public Group walls { get { if (room.masterGroup == null) return null; return room.masterGroup.childGroups["Wall Group"]; } }
             public RoomGroups(Room room) { this.room = room; }
         }
 

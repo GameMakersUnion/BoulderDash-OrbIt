@@ -276,7 +276,7 @@ namespace OrbItProcs
             else
                 return new Color(v, p, q, alpha);
         }
-        private void managedUpdate(Node n, DataStore d){
+        private void managedUpdate(Node n){
 
             //schedulerModerated = true;
             AffectSelf();

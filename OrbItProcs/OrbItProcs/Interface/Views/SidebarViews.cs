@@ -78,7 +78,7 @@ namespace OrbItProcs
 
             tbcGroups.AddPage("Custom");
             TabPage customPage = tbcGroups.TabPages[0];
-            groupsView = new GroupsView(this, customPage, 0, -20, room.groups.generalGroups);
+            groupsView = new GroupsView(this, customPage, 0, -20, room.groups.general);
             groupsView.btnCreateGroup.Text = "     Create \nCustom  Group";
             groupsView.lblGroupLabel.Text = "Custom Groups";
             groupsView.UpdateGroups();
@@ -87,7 +87,7 @@ namespace OrbItProcs
             tbcGroups.AddPage("Presets");
             tbcGroups.SelectedIndex = 1;
             TabPage presetsPage = tbcGroups.TabPages[1];
-            presetsView = new GroupsView(this, presetsPage, 0, -20, room.groups.presetGroups);
+            presetsView = new GroupsView(this, presetsPage, 0, -20, room.groups.preset);
             presetsView.btnCreateGroup.Text = "     Create \nPreset  Group";
             presetsView.lblGroupLabel.Text = "Preset Groups";
             presetsView.UpdateGroups();
@@ -197,7 +197,7 @@ namespace OrbItProcs
 
         void btnSaveLevel_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            Group g = room.groups.wallGroup;
+            Group g = room.groups.walls;
 
             if (g.fullSet.Count == 0)
                 PopUp.Toast("Unable to save: there are no walls.");
@@ -249,7 +249,7 @@ namespace OrbItProcs
 
             TitlePanel titlePanelItems = new TitlePanel(this, itemsTab, "Items", false);
 
-            itemsView = new GroupsView(this, itemsTab, 0, titlePanelItems.Height, room.groups.itemGroup);
+            itemsView = new GroupsView(this, itemsTab, 0, titlePanelItems.Height, room.groups.items);
             
             itemsView.UpdateGroups();
 

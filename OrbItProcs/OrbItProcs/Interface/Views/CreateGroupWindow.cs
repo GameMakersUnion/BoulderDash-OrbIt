@@ -117,7 +117,7 @@ namespace OrbItProcs
             cbExisting.Top = HeightCounter;
             cbExisting.Width = width;
             cbExisting.Left = offset;
-            foreach(Group gg in sidebar.game.room.groups.generalGroups.childGroups.Values)
+            foreach(Group gg in sidebar.game.room.groups.general.childGroups.Values)
             {
                 cbExisting.Items.Add(gg);
             }
@@ -197,7 +197,7 @@ namespace OrbItProcs
             {
                 if (String.IsNullOrWhiteSpace(txtName.Text))
                     PopUp.Toast("Please enter a group name.");
-                else if(sidebar.game.room.groups.generalGroups.childGroups.Keys.Contains(txtName.Text))
+                else if(sidebar.game.room.groups.general.childGroups.Keys.Contains(txtName.Text))
                     PopUp.Toast("Group already exists.");
                 else{                   
                     
@@ -205,7 +205,7 @@ namespace OrbItProcs
                     Node newNode = tempgroup.defaultNode.CreateClone(sidebar.game.room);
                     newNode.body.color = ColorChanger.randomColorHue();
                     newNode.basicdraw.UpdateColor();
-                    Group newGroup = new Group(sidebar.game.room, newNode, sidebar.game.room.groups.generalGroups, txtName.Text.Trim());
+                    Group newGroup = new Group(sidebar.game.room, newNode, sidebar.game.room.groups.general, txtName.Text.Trim());
                     newNode.name = txtName.Text.Trim();
                     newNode.group = newGroup;
                     sidebar.groupsView.UpdateGroups();

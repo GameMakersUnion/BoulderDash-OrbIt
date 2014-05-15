@@ -42,7 +42,7 @@ namespace OrbItProcs
         Group currentGroup;
         public override void OnSpawn()
         {
-            currentGroup = room.groups.generalGroups.childGroups.ElementAt(0).Value;
+            currentGroup = room.groups.general.childGroups.ElementAt(0).Value;
         }
         Node lastFired = null;
         public override void PlayerControl(Controller controller)
@@ -78,9 +78,9 @@ namespace OrbItProcs
                 if (fc.newGamePadState.Buttons.RightShoulder == Microsoft.Xna.Framework.Input.ButtonState.Pressed
                     && fc.oldGamePadState.Buttons.RightShoulder == Microsoft.Xna.Framework.Input.ButtonState.Released)
                 {
-                    if (room.groups.generalGroups.childGroups.Values.Count < 2) return;
+                    if (room.groups.general.childGroups.Values.Count < 2) return;
                     bool next = false;
-                    var tempGroup = room.groups.generalGroups.childGroups;
+                    var tempGroup = room.groups.general.childGroups;
                     for (int i = 0; i < tempGroup.Values.Count; i++)
                     {
                         Group g = tempGroup.Values.ElementAt(i);

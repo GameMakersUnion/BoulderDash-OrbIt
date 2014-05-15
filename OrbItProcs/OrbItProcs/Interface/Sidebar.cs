@@ -74,7 +74,7 @@ namespace OrbItProcs
             {
                 if (groupsView == null || presetsView == null)// groupsView.selectedItem == null)
                 {
-                    return room.groups.generalGroups.childGroups.ElementAt(0).Value;
+                    return room.groups.general.childGroups.ElementAt(0).Value;
                 }
                 else
                 {
@@ -98,7 +98,7 @@ namespace OrbItProcs
             {
                 if (itemsView == null || itemsView.selectedItem == null)
                 {
-                    return room.groups.itemGroup.childGroups.ElementAt(0).Value;
+                    return room.groups.items.childGroups.ElementAt(0).Value;
                 }
                 else
                 {

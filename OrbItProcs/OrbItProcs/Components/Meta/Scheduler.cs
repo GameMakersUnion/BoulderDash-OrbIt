@@ -46,7 +46,6 @@ namespace OrbItProcs
         public ResumeType resumeType = ResumeType.Forget;
         public List<Appointment> appointments = new List<Appointment>();
 
-        public Scheduler() : this(null) { }
         public Scheduler(Node parent = null)
         {
             start = OrbIt.game.Content.Load<SoundEffect>("croc");
@@ -58,11 +57,6 @@ namespace OrbItProcs
         public override void OnSpawn()
         {
             Utils.Infect(parent);
-            /*Appointment appt = new Appointment(null, Utils.random.Next(10000), 10);
-            AppointmentDelegate a = (n, d) => { n.body.color = Utils.randomColor(); appt.interval = Utils.random.Next(10000); };
-            appt += a;
-            AddAppointment(appt);
-            appt.SetTimer();*/
         }
 
         public void CheckAppointments()
@@ -99,7 +93,7 @@ namespace OrbItProcs
         public void doAfterXMilliseconds(Action<Node> action, int X, bool playSound = false)
         {
             if (playSound) start.Play();
-            AppointmentDelegate a = delegate(Node n, DataStore d) { action(n); };
+            Action<Node> a = delegate(Node n) { action(n); };
             Appointment appt = new Appointment(a, X, playSound: playSound);
             appt.SetTimer();
             AddAppointment(appt);
@@ -108,7 +102,7 @@ namespace OrbItProcs
         public void doEveryXMilliseconds(Action<Node> action, int X, bool playSound = false)
         {
             if (playSound) start.Play();
-            AppointmentDelegate a = delegate(Node n, DataStore d) { action(n); };
+            Action<Node> a = delegate(Node n) { action(n); };
             Appointment appt = new Appointment(a, X, infinite: true, playSound: playSound);
             appt.SetTimer();
             AddAppointment(appt);
@@ -145,25 +139,23 @@ namespace OrbItProcs
 
     }
 
-    public delegate void AppointmentDelegate(Node n, DataStore d);
+    //public delegate void AppointmentDelegate(Node n, DataStore d);
 
     public class Appointment /*: IComparer<Appointment>*/
     {
-        public List<AppointmentDelegate> actions { get; set; }
+        public List<Action<Node>> actions { get; set; }
         public bool infinite { get; set; }
         public bool playSound { get; set; }
         public int repetitions { get; set; }
         public int interval { get; set; }
-        public DataStore dataStore { get; set; }
         public long scheduledTime { get; set; }
 
-        public Appointment(AppointmentDelegate action, int interval, int repetitions = 1, bool infinite = false, DataStore dataStore = null, bool playSound = false)
+        public Appointment(Action<Node> action, int interval, int repetitions = 1, bool infinite = false, bool playSound = false)
         {
-            actions = new List<AppointmentDelegate>();
+            actions = new List<Action<Node>>();
             if (action != null) actions.Add(action);
             this.repetitions = repetitions;
             this.infinite = infinite;
-            this.dataStore = dataStore;
             this.interval = interval;
             this.scheduledTime = -1;
             this.playSound = playSound;
@@ -175,13 +167,13 @@ namespace OrbItProcs
                 Scheduler.end.Play(); }
             foreach(var a in actions)
             {
-                a(n, dataStore);
+                a(n);
             }
             SetTimer();
 
         }
 
-        public static Appointment operator +(Appointment appt, AppointmentDelegate a)
+        public static Appointment operator +(Appointment appt, Action<Node> a)
         {
             appt.AddAction(a);
             return appt;
@@ -199,13 +191,13 @@ namespace OrbItProcs
             scheduledTime = Room.totalElapsedMilliseconds + interval;
         }
 
-        public void AddAction(AppointmentDelegate action)
+        public void AddAction(Action<Node> action)
         {
             if (actions.Contains(action))
                 Console.WriteLine("Warning: adding duplicate action.");
             actions.Add(action);
         }
-        public void RemoveAction(AppointmentDelegate action)
+        public void RemoveAction(Action<Node> action)
         {
             if (actions.Contains(action)) actions.Remove(action);
         }

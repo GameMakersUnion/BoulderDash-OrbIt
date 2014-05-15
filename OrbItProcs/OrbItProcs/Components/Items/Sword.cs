@@ -120,7 +120,7 @@ namespace OrbItProcs
             swordNode.basicdraw.active = false;
             ///room.spawnNode(sword);
 
-            room.groups.itemGroup.IncludeEntity(swordNode);
+            room.groups.items.IncludeEntity(swordNode);
             swordNode.OnSpawn();
             swordNode.body.AddExclusionCheck(parent.body);
             swordNode.body.ExclusionCheck += delegate(Collider p, Collider o) { return !movingStick; };

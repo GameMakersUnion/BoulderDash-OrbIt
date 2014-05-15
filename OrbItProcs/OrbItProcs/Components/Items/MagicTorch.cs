@@ -141,7 +141,7 @@ namespace OrbItProcs
 
             torchNode.AffectExclusionCheck += (node) => node == parent;
 
-            room.groups.itemGroup.IncludeEntity(torchNode);
+            room.groups.items.IncludeEntity(torchNode);
             torchNode.OnSpawn();
             torchNode.body.AddExclusionCheck(parent.body);
             torchNode.body.OnCollisionEnter += (p, o) =>
