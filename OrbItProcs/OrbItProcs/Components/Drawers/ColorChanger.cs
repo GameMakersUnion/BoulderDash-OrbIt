@@ -59,7 +59,8 @@ namespace OrbItProcs
                 appt.interval = value.value;
                 _msInterval = value;
 
-            } }
+            }
+        }
         /// <summary>
         /// Changes the degree by which the node shifts hue. Used by HueShifter ColorMode
         /// </summary>

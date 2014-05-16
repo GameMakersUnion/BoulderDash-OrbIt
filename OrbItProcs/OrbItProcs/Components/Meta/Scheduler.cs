@@ -95,7 +95,6 @@ namespace OrbItProcs
             if (playSound) start.Play();
             Action<Node> a = delegate(Node n) { action(n); };
             Appointment appt = new Appointment(a, X, playSound: playSound);
-            appt.SetTimer();
             AddAppointment(appt);
             
         }
@@ -104,7 +103,7 @@ namespace OrbItProcs
             if (playSound) start.Play();
             Action<Node> a = delegate(Node n) { action(n); };
             Appointment appt = new Appointment(a, X, infinite: true, playSound: playSound);
-            appt.SetTimer();
+            
             AddAppointment(appt);
         }
         public void SortAppointments()
@@ -114,6 +113,7 @@ namespace OrbItProcs
 
         public void AddAppointment(Appointment app)
         {
+            app.SetTimer();
             appointments.Add(app);
             SortAppointments();
         }

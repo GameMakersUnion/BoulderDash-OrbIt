@@ -276,14 +276,12 @@ namespace OrbItProcs
 
         public void UpdateProcessView()
         {
-            
             foreach(Process p in room.processManager.activeProcesses)
             {
                 processesView.AddObject(p);
             }
             //processesView.ClearView();
         }
-
         /*
         public void InitializeBulletsPage()
         {

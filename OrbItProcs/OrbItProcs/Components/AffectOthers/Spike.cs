@@ -54,7 +54,7 @@ namespace OrbItProcs
             spikeActivated = true;
             damageMultiplier = 1f;
             pushBack = new Toggle<float>(10f, true);
-            stunSeconds = new Toggle<float>(2f, true);
+            stunSeconds = new Toggle<float>(1f, true);
             damageMode = DamanageMode.Players;
         }
         public override void OnSpawn()
@@ -79,7 +79,10 @@ namespace OrbItProcs
                         if (t.movement.active)
                         {
                             t.movement.active = false;
-                            Action<Node> ad = (n) => t.movement.active = true;
+                            Action<Node> ad = (n) =>
+                                {
+                                    t.movement.active = true;
+                                };
                             room.scheduler.AddAppointment(new Appointment(ad, (int)(stunSeconds.value * 1000)));
                         }
                     }
@@ -103,7 +106,7 @@ namespace OrbItProcs
                         {
                             t.movement.active = false;
                             Action<Node> ad = (n) => t.movement.active = true;
-                            room.scheduler.AddAppointment(new Appointment(ad, (int)(stunSeconds.value * 1000)));
+                            t.scheduler.AddAppointment(new Appointment(ad, (int)(stunSeconds.value * 1000)));
                         }
                     }
                 }
