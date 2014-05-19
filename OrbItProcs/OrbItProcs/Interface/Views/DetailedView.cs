@@ -19,8 +19,8 @@ namespace OrbItProcs
         public bool ColorChangeOnSelect = true;
         public Action<UserLevel> OnUserLevelChanged;
 
-        public DetailedView(Sidebar sidebar, Control parent, int Left, int Top, bool Init = true)
-            : base(sidebar, parent, Left, Top, Init)
+        public DetailedView(Sidebar sidebar, Control parent, int Left, int Top, bool Init = true, int? Height = null)
+            : base(sidebar, parent, Left, Top, Init, Height)
         {
             viewItems = new List<DetailedItem>();
             sidebar.ui.detailedViews.Add(this);

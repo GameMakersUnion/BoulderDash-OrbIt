@@ -35,8 +35,8 @@ namespace OrbItProcs
         private bool _GroupSync = false;
         public bool GroupSync { get { return _GroupSync && activeGroup != null; } set { _GroupSync = value; } }
 
-        public InspectorView(Sidebar sidebar, Control parent, int Left, int Top, bool Init = true)
-            : base(sidebar, parent, Left, Top, Init)
+        public InspectorView(Sidebar sidebar, Control parent, int Left, int Top, bool Init = true, int? Height = null)
+            : base(sidebar, parent, Left, Top, Init, Height)
         {
             //backPanel.Height = 120;
             Setup(ItemCreatorDelegate, OnEvent);
@@ -172,9 +172,18 @@ namespace OrbItProcs
                     }
                     if (this is ComponentView) (this as ComponentView).RefreshComponents();
                 }
+                else if (control.Name.Equals("method_button_invoke"))
+                {
+                    if (ins.methodInfo != null)
+                    {
+                        ins.methodInfo.Invoke(ins.parentobj, null);
+                        if (GroupSync)
+                        {
+                            ins.ApplyToAllNodes(activeGroup);
+                        }
+                    }
+                }
             }
-
-            
         }
 
         private void ItemCreatorDelegate(DetailedItem item, object obj)
@@ -182,14 +191,30 @@ namespace OrbItProcs
             //editGroupWindow = new EditNodeWindow(sidebar, "All Players", room.groups.playerGroup.Name);
             //editGroupWindow.componentView.SwitchGroup(room.groups.playerGroup);
             //editGroupWindow.componentView.SwitchNode(n, false);
-
             if (obj == null) return;
             if (obj is InspectorInfo)
             {
                 InspectorInfo inspectorItem = (InspectorInfo)obj;
+
+                if (inspectorItem.methodInfo != null)
+                {
+                    Button btnInvoke = new Button(manager);
+                    btnInvoke.Init();
+                    btnInvoke.Parent = item.panel;
+                    btnInvoke.TextColor = Color.Blue;
+                    btnInvoke.Width = 50;
+                    btnInvoke.Left = item.panel.Width - btnInvoke.Width - btnInvoke.Width - 5;
+                    btnInvoke.Height = item.buttonHeight;
+                    btnInvoke.ToolTip.Text = "Invoke Method";
+                    btnInvoke.Name = "method_button_invoke";
+                    btnInvoke.Text = "Do";
+                    item.AddControl(btnInvoke);
+                }
+
                 if (inspectorItem.obj == null) return;
                 object o = inspectorItem.obj;
                 bool isToggle = Utils.isToggle(o);
+                
                 if (o != null)
                 {
                     if (o is Node)

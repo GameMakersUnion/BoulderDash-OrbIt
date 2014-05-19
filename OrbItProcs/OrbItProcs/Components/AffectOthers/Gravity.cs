@@ -225,15 +225,20 @@ namespace OrbItProcs {
         }
         public void DrawOutwards()
         {
-            room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.2f, drawscale / 50f, Layers.Under2);
+            DrawCircle();
             drawscale -= 2f;
             if (drawscale < 10) drawscale = radius / 10;
         }
         public void DrawInwards()
         {
-            room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.2f, drawscale / 50f, Layers.Under2);
+            DrawCircle();
             drawscale += 2f;
             if (drawscale > radius / 10) drawscale = 5f;
+        }
+        public void DrawCircle()
+        {
+            //room.camera.Draw(textures.ring, parent.body.pos, parent.body.color * 0.2f, drawscale / 50f, Layers.Under2);
+            room.camera.AddPermanentDraw(textures.ring, parent.body.pos, parent.body.color * 0.2f, drawscale / 50f, 0, 50);
         }
     }
 }

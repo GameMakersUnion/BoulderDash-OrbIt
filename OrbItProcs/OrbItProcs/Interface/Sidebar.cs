@@ -70,7 +70,7 @@ namespace OrbItProcs
                 return room.masterGroup;
             }
 
-            if (tbcViews.SelectedIndex == 0) //groups
+            if (tbcViews.SelectedIndex == 0 || tbcViews.SelectedIndex == 1 || tbcViews.SelectedIndex == 3) //groups (or players or processes, for now)
             {
                 if (groupsView == null || presetsView == null)// groupsView.selectedItem == null)
                 {
@@ -78,12 +78,12 @@ namespace OrbItProcs
                 }
                 else
                 {
-                    if (tbcGroups.SelectedIndex == 0)
+                    if (tbcGroups.SelectedIndex == 0) //custom groups
                     {
                         if (!(groupsView.selectedItem.obj is Group)) return null;
                         return (Group)groupsView.selectedItem.obj;
                     }
-                    else if (tbcGroups.SelectedIndex == 1)
+                    else if (tbcGroups.SelectedIndex == 1) //preset groups
                     {
                         if (!(presetsView.selectedItem.obj is Group)) return null;
                         return (Group)presetsView.selectedItem.obj;
@@ -106,7 +106,7 @@ namespace OrbItProcs
                     return (Group)itemsView.selectedItem.obj;
                 }
             }
-            else if (tbcViews.SelectedIndex == 3) //bullets
+            else if (tbcViews.SelectedIndex == 3) //processes
             {
                 return null;
             }

@@ -857,7 +857,6 @@ namespace OrbItProcs
         {
             if (p == null) throw new SystemException("Process parameter was null"); //well ya see kids...
             if (p.processKeyActions == null) throw new SystemException("Process parameter had no keyactions");
-
             p.active = true;
             if (Temporary)
             {
@@ -895,6 +894,7 @@ namespace OrbItProcs
                     }
                 }
             }
+            if (ui.sidebar != null) ui.sidebar.UpdateProcessView();
         }
 
         public void RemoveTemporaryProcess(ProcessManager pm)

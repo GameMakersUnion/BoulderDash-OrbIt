@@ -97,7 +97,7 @@ namespace OrbItProcs
                 //n.Comp<Laser>().laserLength = 200;
 
                 n.addComponent<Waver>(true);
-                n.Comp<Waver>().waveLength = 200;
+                n.Comp<Waver>().Length = 200;
                 n.Comp<Waver>().reflective = true;
 
                 n.addComponent<ColorChanger>(true);

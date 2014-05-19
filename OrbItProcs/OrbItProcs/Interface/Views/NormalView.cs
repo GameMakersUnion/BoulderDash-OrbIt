@@ -25,11 +25,11 @@ namespace OrbItProcs
         public void ClearView()
         {
             selectedItem = null;
-            viewItems = new List<ViewItem>();
-            foreach(Control c in backPanel.Controls.ToList())
+            foreach(var item in viewItems)
             {
-                //backPanel.Remove(c);
+                backPanel.Remove(item.panel);
             }
+            viewItems = new List<ViewItem>();
         }
         public void AddObject(object o)
         {

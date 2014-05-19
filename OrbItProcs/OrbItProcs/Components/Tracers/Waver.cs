@@ -24,8 +24,8 @@ namespace OrbItProcs
         /// <summary>
         /// Sets the length of the wave.
         /// </summary>
-        [Info(UserLevel.User, "Sets the length of the wave. ")]
-        public int waveLength { get; set; }
+        [Info(UserLevel.User, "Sets the length of the wave.")]
+        public int Length { get; set; }
         /// <summary>
         /// Sets the scale of the circles left by the wave trail
         /// </summary>
@@ -51,7 +51,8 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.Advanced, "The composite level of the sine wave. Google 'Composite Sine Wave'  to understand this.")]
         public int composite{get; set;}
-        public bool drawCurveLine { get; set; }
+        public bool drawLines { get; set; }
+        public bool drawSpin { get; set; }
 
         private float vshift = 0f;
         private float yval = 0f;
@@ -66,8 +67,10 @@ namespace OrbItProcs
             period = 1000;
             composite = 1;
             waveScale = 0.3f;
-            waveLength = 50;
-            drawCurveLine = true;
+            Length = 50;
+            reflective = true;
+            drawLines = true;
+            drawSpin = true;
         }
 
         public override void AfterCloning()
@@ -98,20 +101,25 @@ namespace OrbItProcs
             Vector2 metaposfinal = parent.body.pos + metapos;
             Vector2 reflectfinal = parent.body.pos - metapos;
 
-            if (drawCurveLine)
+            if (drawLines)
             {
                 if (previousMetaPos != Vector2.Zero)
                 {
-                    room.camera.DrawLinePermanent(previousMetaPos, metaposfinal, 2f, parent.body.color, waveLength);
+                    room.camera.DrawLinePermanent(previousMetaPos, metaposfinal, 2f, parent.body.color, Length);
                 }
                 previousMetaPos = metaposfinal;
                 //previousRelectPos = metaposfinal;
                 if (reflective)
                 {
-                    
                     if (previousRelectPos != Vector2.Zero)
                     {
-                        room.camera.DrawLinePermanent(previousRelectPos, reflectfinal, 2f, parent.body.color, waveLength);
+                        room.camera.DrawLinePermanent(previousRelectPos, reflectfinal, 2f, parent.body.color, Length);
+
+                        if (drawSpin)
+                        {
+                            room.camera.DrawLinePermanent(previousMetaPos, reflectfinal, 2f, parent.body.color, Length);
+                            room.camera.DrawLinePermanent(previousRelectPos, metaposfinal, 2f, parent.body.color, Length);
+                        }
                     }
                     previousRelectPos = reflectfinal;
                     //previousMetaPos = reflectfinal; //whoa make this a flag
@@ -119,10 +127,10 @@ namespace OrbItProcs
             }
             else
             {
-                room.camera.AddPermanentDraw(parent.texture, metaposfinal, parent.body.color, parent.body.scale * waveScale, 0, waveLength);
+                room.camera.AddPermanentDraw(parent.texture, metaposfinal, parent.body.color, parent.body.scale * waveScale, 0, Length);
                 if (reflective)
                 {
-                    room.camera.AddPermanentDraw(parent.texture, reflectfinal, parent.body.color, parent.body.scale * waveScale, 0, waveLength);
+                    room.camera.AddPermanentDraw(parent.texture, reflectfinal, parent.body.color, parent.body.scale * waveScale, 0, Length);
                 }
             }
         }

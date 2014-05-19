@@ -8,25 +8,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace OrbItProcs
 {
-    //public enum proc
-    //{
-    //    spawnnodes,
-    //    singleselect,
-    //    groupselect,
-    //    randomizer,
-    //    axismovement,
-    //    polygonspawner,
-    //    mapeditor,
-    //    graphdata,
-    //    cameracontrol,
-    //    directedspawn,
-    //    removenodes,
-    //    gridspawn,
-    //    roomResize,
-    //    floodFill,
-    //    diodeSpawner,
-    //}
-
     public class ProcessManager
     {
         public Dictionary<Type, Process> processDict { get; set; }

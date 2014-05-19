@@ -266,21 +266,31 @@ namespace OrbItProcs
 
             TitlePanel titlePanelProcesses = new TitlePanel(this, processTab, "Processes", false);
 
-            processesView = new NormalView(this, processTab, 0, titlePanelProcesses.Height, Height: 400);
-            //UpdateProcessView();
-            processesView.AddObject("hey");
-            
+            processesView = new NormalView(this, processTab, 0, titlePanelProcesses.Height, Height: 150);
 
+            processInsView = new InspectorView(this, processTab, 0, processesView.Top + processesView.Height + 20, Height: 150);
+
+            processesView.OnSelectionChanged += processesView_OnSelectionChanged;
             tbcViews.SelectedIndex = 0;
+        }
+        InspectorView processInsView;
+        void processesView_OnSelectionChanged(ViewItem viewItem)
+        {
+            if (viewItem.obj is Process)
+            {
+                Process p = (Process)viewItem.obj;
+                processInsView.SetRootObject(p);
+            }
         }
 
         public void UpdateProcessView()
         {
-            foreach(Process p in room.processManager.activeProcesses)
+            processesView.ClearView();
+            processInsView.ClearView();
+            foreach (Process p in room.processManager.activeProcesses)
             {
                 processesView.AddObject(p);
             }
-            //processesView.ClearView();
         }
         /*
         public void InitializeBulletsPage()

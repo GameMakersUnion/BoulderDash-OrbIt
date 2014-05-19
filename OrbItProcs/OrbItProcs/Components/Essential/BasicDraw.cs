@@ -96,7 +96,6 @@ namespace OrbItProcs
                 Deviate();
             }
         }
-
         public void SetColor()
         {
             if (parent != null)
@@ -105,7 +104,7 @@ namespace OrbItProcs
                 parent.body.permaColor = parent.body.color;
             }
         }
-        
+        [Clickable]
         public void RandomizeColor()
         {
             if (parent != null)

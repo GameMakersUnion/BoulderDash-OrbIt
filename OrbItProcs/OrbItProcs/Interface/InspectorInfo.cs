@@ -23,6 +23,7 @@ namespace OrbItProcs {
         dictentry,
         collectionentry,
         previouslevel,
+        method,
         unimplemented,
         
     };
@@ -40,6 +41,7 @@ namespace OrbItProcs {
         single,
         tbyte,
         str,
+        method,
     };
 
     public class InspectorInfo {
@@ -72,21 +74,16 @@ namespace OrbItProcs {
             typeof(Enum),
             typeof(byte),
         };
-        //public InspectorArea inspectorArea;
         public Sidebar sidebar;
-        //public treeitem itemtype;
         public int depth = 1;
-        //public FieldInfo fieldInfo;
-        //public PropertyInfo propertyInfo;
         public FPInfo fpinfo;
-        //public comp component;
+        public MethodInfo methodInfo;
 
         public bool extended = false;
         public bool showValueToString = false;
         
         public List<InspectorInfo> children;
         
-        //public int childCount = 0;
         public object key;
         public String prefix;
         public String whitespace = "";
@@ -94,14 +91,13 @@ namespace OrbItProcs {
         public string ToolTip = "";
 
         public object obj;
-        public object parentobj;
+        public object parentobj { get { return parentItem.obj; } }
         private InspectorInfo _parentItem;
         public InspectorInfo parentItem { get { return _parentItem; } set { _parentItem = value; if (value != null) showValueToString = parentItem.showValueToString; } }
         public member_type membertype;
         public data_type datatype;
 
         public IList<object> masterList;
-
         //root item
         public InspectorInfo(IList<object> masterList, object obj, Sidebar sidebar, bool showValueToString = false)
         {
@@ -148,7 +144,6 @@ namespace OrbItProcs {
             //this.inspectorArea = parentItem.inspectorArea;
             this.sidebar = parentItem.sidebar;
         }
-
         //a dictionary entry
         public InspectorInfo(IList<object> masterList, InspectorInfo parentItem, object obj, object key) //obj = null
         {
@@ -207,7 +202,23 @@ namespace OrbItProcs {
                 membertype = member_type.unimplemented;
             }
         }
-
+        //method
+        public InspectorInfo(IList<object> masterList, InspectorInfo parentItem, MethodInfo methodInfo)
+        {
+            this.membertype = member_type.method;
+            this.methodInfo = methodInfo;
+            this.whitespace = "|";
+            if (parentItem != null) this.whitespace += parentItem.whitespace;
+            this.obj = null;
+            this.parentItem = parentItem;
+            this.masterList = masterList;
+            this.children = new List<InspectorInfo>();
+            this.showValueToString = parentItem.showValueToString;
+            CheckItemType();
+            prefix = "" + ((char)164);
+            //this.inspectorArea = parentItem.inspectorArea;
+            this.sidebar = parentItem.sidebar;
+        }
         public bool ReferenceExists(InspectorInfo parent, object reference)
         {
             if (parent == null)
@@ -306,8 +317,6 @@ namespace OrbItProcs {
                     propertyInfos = parent.GetType().GetProperties().ToList();
                 }
 
-                
-
                 foreach (PropertyInfo pinfo in propertyInfos)
                 {
                     string tooltip = "";
@@ -331,33 +340,56 @@ namespace OrbItProcs {
                     InsertItemSorted(list, iitem);
                 }
                 ////// FIELDS
-                    List<FieldInfo> fieldInfos;
-                    //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                    if (!(parent is Component || parent is Player || parent is Process))
-                    {
-                        fieldInfos = parent.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
-                    }
-                    else
-                    {
-                        fieldInfos = parent.GetType().GetFields().ToList();
-                    }
+                List<FieldInfo> fieldInfos;
+                //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
+                if (!(parent is Component || parent is Player || parent is Process))
+                {
+                    fieldInfos = parent.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
+                }
+                else
+                {
+                    fieldInfos = parent.GetType().GetFields().ToList();
+                }
 
-                    foreach (FieldInfo finfo in fieldInfos)
+                foreach (FieldInfo finfo in fieldInfos)
+                {
+                    //if (finfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
+                    var abstractions = finfo.GetCustomAttributes(typeof(Info), false);
+                    if (abstractions.Length > 0)
                     {
-                        //if (finfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
-                        var abstractions = finfo.GetCustomAttributes(typeof(Info), false);
-                        if (abstractions.Length > 0)
-                        {
-                            if ((int)(abstractions[0] as Info).userLevel > (int)userlevel) continue;
-                        }
-                        else if (userlevel != UserLevel.Debug)
-                        {
-                            continue;
-                        }
-                        InspectorInfo iitem = new InspectorInfo(parentItem.masterList, parentItem, finfo.GetValue(parent), finfo);
-                        if (iitem.CheckForChildren()) iitem.prefix = "+";
-                        InsertItemSorted(list, iitem);
+                        if ((int)(abstractions[0] as Info).userLevel > (int)userlevel) continue;
                     }
+                    else if (userlevel != UserLevel.Debug)
+                    {
+                        continue;
+                    }
+                    InspectorInfo iitem = new InspectorInfo(parentItem.masterList, parentItem, finfo.GetValue(parent), finfo);
+                    if (iitem.CheckForChildren()) iitem.prefix = "+";
+                    InsertItemSorted(list, iitem);
+                }
+                ////METHODS
+                List<MethodInfo> methodInfos;
+                //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
+                if (!(parent is Component || parent is Player || parent is Process))
+                {
+                    methodInfos = parent.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
+                }
+                else
+                {
+                    methodInfos = parent.GetType().GetMethods().ToList();
+                }
+
+                foreach (MethodInfo minfo in methodInfos)
+                {
+                    //if (finfo.GetCustomAttributes(typeof(DoNotInspect), false).Length > 0) continue;
+                    var abstractions = minfo.GetCustomAttributes(typeof(Clickable), false);
+                    if (abstractions.Length == 0)
+                    {
+                        continue;
+                    }
+                    InspectorInfo iitem = new InspectorInfo(parentItem.masterList, parentItem, minfo);
+                    InsertItemSorted(list, iitem);
+                }
                 
             }
             //if it's just a normal primitive, it will return an empty list
@@ -476,6 +508,11 @@ namespace OrbItProcs {
                 }
                 return result + key + ":" + obj;
             }
+            if (membertype == member_type.method)
+            {
+                return result + methodInfo.Name;
+            }
+
             if (fpinfo != null)
             {
                 if (datatype == data_type.dict)
@@ -648,11 +685,14 @@ namespace OrbItProcs {
                 }
             }
         }
-
         public void CheckItemType()
         {
-            //Type t = fpinfo.FPType();
-            //Type t = obj.GetType();
+            if (methodInfo != null)
+            {
+                datatype = data_type.method;
+                return;
+            }
+
             data_type dt = data_type.none;
 
             if (obj == null)
@@ -905,6 +945,11 @@ namespace OrbItProcs {
                 int count = 0;
                 foreach (InspectorInfo pathitem in itemspath)
                 {
+                    if (temp.methodInfo != null)
+                    {
+                        temp.methodInfo.Invoke(temp.parentobj, null);
+                        break;
+                    }
                     if (temp.obj.GetType() != pathitem.obj.GetType())
                     {
                         Console.WriteLine("The paths did not match while applying to all. {0} != {1}", temp.obj.GetType(), pathitem.obj.GetType());
@@ -952,6 +997,10 @@ namespace OrbItProcs {
                             dynamic key = next.key;
                             if (!dict.ContainsKey(key)) break;
                             temp = new InspectorInfo(null, temp, dict[key], key);
+                        }
+                        else if (next.membertype == member_type.method)
+                        {
+                            temp = new InspectorInfo(null, temp, temp.obj.GetType().GetMethod(next.methodInfo.Name));
                         }
                         else
                         {
