@@ -202,7 +202,7 @@ namespace OrbItProcs
         {
             if (state == GunState.inactive)
             {
-                if (input.JustPressed(InputButtons.RightTrigger_Mouse1))
+                if (input.BtnClicked(InputButtons.RightTrigger_Mouse1))
                 {
                     state = GunState.extending;
                     Vector2 dir = input.GetRightStick().NormalizeSafe() * shootNodeSpeed + parent.body.velocity;
@@ -218,7 +218,7 @@ namespace OrbItProcs
             }
             else if (state == GunState.extending)
             {
-                if (input.JustReleased(InputButtons.RightTrigger_Mouse1))
+                if (input.BtnReleased(InputButtons.RightTrigger_Mouse1))
                 {
                     state = GunState.retracting;
                     grav.active = true;
@@ -237,7 +237,7 @@ namespace OrbItProcs
                 }
             }
 
-            if (input.JustPressed(InputButtons.RightBumper_E))
+            if (input.BtnClicked(InputButtons.RightBumper_E))
             {
                 if (attachedNodesQueue.Count > 0)
                 {
@@ -262,7 +262,7 @@ namespace OrbItProcs
                 }
             }
 
-            if (input.JustPressed(InputButtons.LeftBumper_Q))
+            if (input.BtnClicked(InputButtons.LeftBumper_Q))
             {
                 if (attachedNodesQueue.Count > 0)
                 {

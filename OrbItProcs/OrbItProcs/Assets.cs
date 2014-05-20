@@ -65,6 +65,7 @@ namespace OrbItProcs
         ridgesL,
         boulderShine,
         endLight,
+        leaf,
     }
 
     static class Assets
@@ -104,20 +105,20 @@ namespace OrbItProcs
             { textures.itemWhisper, content.Load<Texture2D>("Textures/itemWhisper"          )},
             { textures.cage, content.Load<Texture2D>("Textures/cage"                        )},
             { textures.fist, content.Load<Texture2D>("Textures/fist"                        )},
-            { textures.goat, content.Load<Texture2D>("Textures/Boulder_3"                        )},
+            { textures.goat, content.Load<Texture2D>("Textures/Boulder_3"                   )},
             { textures.robot1, content.Load<Texture2D>("Textures/Robot1"                    )},
             { textures.shoveltip, content.Load<Texture2D>("Textures/ShovelTip"              )},
             { textures.spiderhead, content.Load<Texture2D>("Textures/SpiderHead"            )},
             { textures.spiderleg1, content.Load<Texture2D>("Textures/SpiderLeg1"            )},
             { textures.rock1, content.Load<Texture2D>("Textures/RockTexture1"               )},
-            { textures.boulder1, content.Load<Texture2D>("Textures/Bolders"                )},
-            { textures.gradient1, content.Load<Texture2D>("Textures/gradient"                )},
-            { textures.gradient2, content.Load<Texture2D>("Textures/gradient2"                )},
-            { textures.ridgesL, content.Load<Texture2D>("Textures/RidgesL"                )},
-            { textures.ridgesR, content.Load<Texture2D>("Textures/RidgesR"                )},
-            { textures.boulderShine, content.Load<Texture2D>("Textures/boulderShine"                )},
+            { textures.boulder1, content.Load<Texture2D>("Textures/Bolders"                 )},
+            { textures.gradient1, content.Load<Texture2D>("Textures/gradient"               )},
+            { textures.gradient2, content.Load<Texture2D>("Textures/gradient2"              )},
+            { textures.ridgesL, content.Load<Texture2D>("Textures/RidgesL"                  )},
+            { textures.ridgesR, content.Load<Texture2D>("Textures/RidgesR"                  )},
+            { textures.boulderShine, content.Load<Texture2D>("Textures/boulderShine"        )},
             { textures.endLight, content.Load<Texture2D>("Textures/endLight"                )},
-            
+            { textures.leaf, content.Load<Texture2D>("Textures/leaf"                        )},
             };
 
 

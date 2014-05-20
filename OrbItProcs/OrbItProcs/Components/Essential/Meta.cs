@@ -139,10 +139,10 @@ namespace OrbItProcs
         {
             if (itemSwitching)
             {
-                if (input.JustPressed(InputButtons.A_1)) parent.player.currentItem = ItemSlots.A_Green;
-                if (input.JustPressed(InputButtons.B_3)) parent.player.currentItem = ItemSlots.B_Red;
-                if (input.JustPressed(InputButtons.X_2)) parent.player.currentItem = ItemSlots.X_Blue;
-                if (input.JustPressed(InputButtons.Y_4)) parent.player.currentItem = ItemSlots.Y_Yellow;
+                if (input.BtnClicked(InputButtons.A_1)) parent.player.currentItem = ItemSlots.A_Green;
+                if (input.BtnClicked(InputButtons.B_3)) parent.player.currentItem = ItemSlots.B_Red;
+                if (input.BtnClicked(InputButtons.X_2)) parent.player.currentItem = ItemSlots.X_Blue;
+                if (input.BtnClicked(InputButtons.Y_4)) parent.player.currentItem = ItemSlots.Y_Yellow;
             }
         }
         public void CalculateDamage(Node other, float damage)

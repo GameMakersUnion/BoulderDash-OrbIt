@@ -11,7 +11,13 @@ using System.Collections.Specialized;
 namespace OrbItProcs {
 
     public static class Utils {
-
+        public static Color ContrastColor(this Color c)
+        {
+            int r = (c.R + 128) % 255;
+            int g = (c.G + 128) % 255;
+            int b = (c.B + 128) % 255;
+            return new Color(r, g, b);
+        }
         public static bool AsBool(this int i)
         {
             return i == 0 ? false : true;

@@ -9,9 +9,6 @@ namespace OrbItProcs
 {
     public enum ControlSide { left, right }
     public enum FullPadMode { mirrorMode, spellMode }
-  
-    
-
     public struct HalfPadState
     {
         /// <summary>
@@ -45,11 +42,9 @@ namespace OrbItProcs
         public ButtonState BtnStart;
 
         public static HalfPadState NullPadState = new HalfPadState();
-
-
         public HalfPadState(ControlSide side, PlayerIndex controllerIndex)
         {
-            GamePadState gamePadState = GamePad.GetState(controllerIndex); //I've replaced every call to GamePad.GetState with this object. test
+            GamePadState gamePadState = GamePad.GetState(controllerIndex);
             if (side == ControlSide.left)
             {
                 stick1 = new Stick(gamePadState.ThumbSticks.Left);
@@ -198,11 +193,13 @@ namespace OrbItProcs
         }
 
         public static Dictionary<int, PlayerIndex> intToPlayerIndex =
-            new Dictionary<int, PlayerIndex>(){
+            new Dictionary<int, PlayerIndex>()
+            {
             {1, PlayerIndex.One},
             {2, PlayerIndex.Two},
             {3, PlayerIndex.Three},
-            {4, PlayerIndex.Four}};
+            {4, PlayerIndex.Four}
+            };
         public abstract Vector2 GetLeftStick();
         public abstract Vector2 GetRightStick();
         public static int connectedControllers()

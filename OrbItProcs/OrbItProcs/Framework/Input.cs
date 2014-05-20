@@ -149,19 +149,19 @@ namespace OrbItProcs
         {
             oldInputState = newInputState;
         }
-        public bool IsDown(InputButtons button)
+        public bool BtnDown(InputButtons button)
         {
             return newInputState.IsButtonDown(button);
         }
-        public bool IsUp(InputButtons button)
+        public bool BtnUp(InputButtons button)
         {
             return !newInputState.IsButtonDown(button);
         }
-        public bool JustPressed(InputButtons button)
+        public bool BtnClicked(InputButtons button)
         {
             return newInputState.IsButtonDown(button) && !oldInputState.IsButtonDown(button);
         }
-        public bool JustReleased(InputButtons button)
+        public bool BtnReleased(InputButtons button)
         {
             return !newInputState.IsButtonDown(button) && oldInputState.IsButtonDown(button);
         }
@@ -246,6 +246,8 @@ namespace OrbItProcs
         public ButtonState down;
         public ButtonState left;
         public ButtonState right;
+        public float AsRadians { get { return VMath.VectorToAngle(v2); } }
+        public int AsDegrees { get { return (int)(AsRadians * (180 / GMath.PI)); } }
 
         public Stick(Vector2 sourceStick)
         {

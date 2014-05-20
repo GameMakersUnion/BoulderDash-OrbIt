@@ -43,22 +43,34 @@ namespace OrbItProcs
         [Info(UserLevel.User, "Determines how to change to the node's color: \nAngle: Hue changes acording to angle of travel. \nPosition: Hue changes according to position. \nVelocity: Nodes darken as they slow. \nScale: Hue Changes according to their Scale. \nHueShifter: Hue constantly shifts;")]
         public ColorMode colormode { get; set; }
 
-        private Toggle<int> _msInterval = new Toggle<int>(20, false);
+        private int _msInterval;
         /// <summary>
         /// If enabled, the color changes only this many milliseconds, otherwise, it changes every frame.
         /// </summary>
         [Info(UserLevel.User, "If enabled, the color changes only this many milliseconds, otherwise, it changes every frame.")]
-        public Toggle<int> msInterval {
+        public int msInterval {
             get { return _msInterval; } 
             set 
             {
-                appt.interval = msInterval;
-                if (!_msInterval.enabled && value.enabled) parent.scheduler.AddAppointment(appt);
-                if (_msInterval.enabled && !value.enabled) parent.scheduler.RemoveAppointment(appt);
-
-                appt.interval = value.value;
                 _msInterval = value;
-
+                if (appt != null) appt.interval = value;
+            }
+        }
+        private bool _useMsInterval;
+        public bool useMsInterval
+        {
+            get { return _useMsInterval; }
+            set
+            {
+                if (appt != null)
+                {
+                    appt.interval = _msInterval;
+                    if (!_useMsInterval && value) 
+                        parent.scheduler.AddAppointment(appt);
+                    if (_useMsInterval && !value) 
+                        parent.scheduler.RemoveAppointment(appt);
+                }
+                _useMsInterval = value;
             }
         }
         /// <summary>
@@ -84,7 +96,7 @@ namespace OrbItProcs
         //private int pos = 1, sign = 1;
         private float hue = 0;
         private float permaHue = 0;
-        //private bool schedulerModerated;
+        private bool schedulerModerated;
         private Appointment appt;
         //public bool smartshifting { get; set; }
         private float currentLerpPos = 0f;
@@ -103,13 +115,16 @@ namespace OrbItProcs
         public ColorChanger() : this(null) { }
         public ColorChanger(Node parent = null)
         {
-            appt = new Appointment(managedUpdate, msInterval.value);
             //smartshifting = true;
             if (parent != null) this.parent = parent;
             colormode = ColorMode.hueShifter;
             inc = 1;
             phaseSpeed = 10;
             phasePercent = 100;
+            schedulerModerated = false;
+            msInterval = 20;
+            useMsInterval = false;
+            appt = new Appointment(managedUpdate, msInterval, infinite: true);
         }
 
         public override void OnSpawn()
@@ -127,108 +142,111 @@ namespace OrbItProcs
             hue = ColorGravity.HueFromColor(parent.body.permaColor);
             permaHue = hue;
         }
+        private void managedUpdate(Node n)
+        {
+            schedulerModerated = true;
+            AffectSelf();
+            schedulerModerated = false;
+        }
         public override void AffectSelf()
         {
-            if (!msInterval.enabled)// && !schedulerModerated)
+            if (useMsInterval && !schedulerModerated) return;
+
+            bool black, white;
+            if (colormode == ColorMode.angle)
             {
-                bool black, white;
-                if (colormode == ColorMode.angle)
+                float angle = (float)((Math.Atan2(parent.body.effvelocity.Y, parent.body.effvelocity.X) + Math.PI) * (180 / Math.PI));
+                parent.body.color = getColorFromHSV(angle, saturation, value);
+            }
+            else if (colormode == ColorMode.position)
+            {
+                float r = parent.body.pos.X / (float)room.worldWidth;
+                float g = parent.body.pos.Y / (float)room.worldHeight;
+                float b = (parent.body.pos.X / parent.body.pos.Y) / ((float)room.worldWidth / (float)room.worldHeight);
+                parent.body.color = new Color(r, g, b);
+            }
+            else if (colormode == ColorMode.velocity)
+            {
+                float len = Vector2.Distance(parent.body.velocity, Vector2.Zero) / 25;
+                parent.body.color = new Color((parent.body.permaColor.R / 255f) * len, (parent.body.permaColor.G / 255f) * len, (parent.body.permaColor.B / 255f) * len);
+                //parent.body.color = getColorFromHSV((float)Math.Min(1.0, len / 20) * 360f, (float)Math.Min(1.0, len / 20), (float)Math.Min(1.0, len / 20));
+            }
+            else if (colormode == ColorMode.hueShifter)
+            {
+                float range = 20;
+                float tempinc = inc;
+                if (hue % 120 > 60 - range && hue % 120 < 60 + range)
                 {
-                    float angle = (float)((Math.Atan2(parent.body.effvelocity.Y, parent.body.effvelocity.X) + Math.PI) * (180 / Math.PI));
-                    parent.body.color = getColorFromHSV(angle, saturation, value);
+                    tempinc /= 2f;
                 }
-                else if (colormode == ColorMode.position)
+                parent.body.color = getColorFromHSV(hue, saturation, value);
+                hue = (hue + tempinc) % 360;
+            }
+            else if ((black = colormode == ColorMode.phaseBlack) || (white = colormode == ColorMode.phaseWhite))
+            {
+                Vector3 perma = parent.body.permaColor.ToVector3();
+                Vector3 dest = Vector3.Zero;
+                if (black)
                 {
-                    float r = parent.body.pos.X / (float)room.worldWidth;
-                    float g = parent.body.pos.Y / (float)room.worldHeight;
-                    float b = (parent.body.pos.X / parent.body.pos.Y) / ((float)room.worldWidth / (float)room.worldHeight);
-                    parent.body.color = new Color(r, g, b);
+                    dest = Vector3.Zero;
                 }
-                else if (colormode == ColorMode.velocity)
+                else
                 {
-                    float len = Vector2.Distance(parent.body.velocity, Vector2.Zero) / 25;
-                    parent.body.color = new Color((parent.body.permaColor.R / 255f) * len, (parent.body.permaColor.G / 255f) * len, (parent.body.permaColor.B / 255f) * len);
-                    //parent.body.color = getColorFromHSV((float)Math.Min(1.0, len / 20) * 360f, (float)Math.Min(1.0, len / 20), (float)Math.Min(1.0, len / 20));
+                    dest = Vector3.One;
                 }
-                else if (colormode == ColorMode.hueShifter)
+                dest = Vector3.Lerp(perma, dest, phasePercent / 100f);
+                currentLerpPos += (phaseSpeed / 1000f) * lerpSign;
+                if (currentLerpPos > 1)
                 {
-                    float range = 20;
-                    float tempinc = inc;
-                    if (hue % 120 > 60 - range && hue % 120 < 60 + range)
-                    {
-                        tempinc /= 2f;
-                    }
-                    parent.body.color = getColorFromHSV(hue, saturation, value);
-                    hue = (hue + tempinc) % 360;
+                    currentLerpPos = 1f;
+                    lerpSign *= -1;
                 }
-                else if ((black = colormode == ColorMode.phaseBlack) || (white = colormode == ColorMode.phaseWhite))
+                else if (currentLerpPos < 0)
                 {
-                    Vector3 perma = parent.body.permaColor.ToVector3();
-                    Vector3 dest = Vector3.Zero;
-                    if (black)
-                    {
-                        dest = Vector3.Zero;
-                    }
-                    else
-                    {
-                        dest = Vector3.One;
-                    }
-                    dest = Vector3.Lerp(perma, dest, phasePercent / 100f);
-                    currentLerpPos += (phaseSpeed / 1000f) * lerpSign;
-                    if (currentLerpPos > 1)
-                    {
-                        currentLerpPos = 1f;
-                        lerpSign *= -1;
-                    }
-                    else if (currentLerpPos < 0)
-                    {
-                        currentLerpPos = 0;
-                        lerpSign *= -1;
-                    }
-                    parent.body.color = Vector3.Lerp(perma, dest, currentLerpPos).ToColor(parent.body.color.A);
+                    currentLerpPos = 0;
+                    lerpSign *= -1;
                 }
-                else if (colormode == ColorMode.phaseAround)
+                parent.body.color = Vector3.Lerp(perma, dest, currentLerpPos).ToColor(parent.body.color.A);
+            }
+            else if (colormode == ColorMode.phaseAround)
+            {
+                Vector3 perma = parent.body.permaColor.ToVector3();
+                Vector3 down = Vector3.Zero;
+                Vector3 up = Vector3.One;
+                down = Vector3.Lerp(perma, down, phasePercent / 100f);
+                up = Vector3.Lerp(perma, up, phasePercent / 100f);
+                currentLerpPos += (phaseSpeed / 1000f) * lerpSign;
+                if (currentLerpPos > 1)
                 {
-                    Vector3 perma = parent.body.permaColor.ToVector3();
-                    Vector3 down = Vector3.Zero;
-                    Vector3 up = Vector3.One;
-                    down = Vector3.Lerp(perma, down, phasePercent / 100f);
-                    up = Vector3.Lerp(perma, up, phasePercent / 100f);
-                    currentLerpPos += (phaseSpeed / 1000f) * lerpSign;
-                    if (currentLerpPos > 1)
-                    {
-                        currentLerpPos = 1f;
-                        lerpSign *= -1;
-                    }
-                    else if (currentLerpPos < 0)
-                    {
-                        currentLerpPos = 0;
-                        lerpSign *= -1;
-                    }
-                    parent.body.color = Vector3.Lerp(down, up, currentLerpPos).ToColor(parent.body.color.A);
+                    currentLerpPos = 1f;
+                    lerpSign *= -1;
                 }
-                else if (colormode == ColorMode.phaseHue)
+                else if (currentLerpPos < 0)
                 {
-                    huedest = permaHue - (phasePercent / 100f * 360 * huesign);
-                    float range = 20;
-                    float tempinc = inc / 100f;
-                    if (hue % 120 > 60 - range && hue % 120 < 60 + range)
-                    {
-                        tempinc /= 2f;
-                    }
-                    float dist = GMath.CircularDistance(hue, permaHue);
-                    //todo:finish algorithm
-
-
-
-
-
-
-
-                    parent.body.color = getColorFromHSV(hue, saturation, value);
-                    hue = (hue + tempinc) % 360;
-                    
+                    currentLerpPos = 0;
+                    lerpSign *= -1;
                 }
+                parent.body.color = Vector3.Lerp(down, up, currentLerpPos).ToColor(parent.body.color.A);
+            }
+            else if (colormode == ColorMode.phaseHue)
+            {
+                huedest = permaHue - (phasePercent / 100f * 90 * huesign);
+                huedest = GMath.Sawtooth(huedest, 360);
+                float range = 20;
+                float tempinc = inc / 10f;
+                if (hue % 120 > 60 - range && hue % 120 < 60 + range)
+                {
+                    tempinc /= 2f;
+                }
+                float dist = GMath.CircularDistance(hue, huedest, 360);
+                tempinc *= Math.Sign(dist);
+                hue = GMath.Sawtooth(hue + tempinc, 360);
+                if (Math.Abs(hue - huedest) < Math.Abs(tempinc))
+                {
+                    huesign *= -1;
+                }
+                //Console.WriteLine(dist + "  " + huesign);
+                parent.body.color = getColorFromHSV(hue, saturation, value);
             }
         }
 
@@ -277,12 +295,7 @@ namespace OrbItProcs
             else
                 return new Color(v, p, q, alpha);
         }
-        private void managedUpdate(Node n){
-
-            //schedulerModerated = true;
-            AffectSelf();
-            //schedulerModerated = false;
-        }
+        
 
     }
 }

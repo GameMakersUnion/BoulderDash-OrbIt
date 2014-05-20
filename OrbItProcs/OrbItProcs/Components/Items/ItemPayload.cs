@@ -198,7 +198,6 @@ namespace OrbItProcs
             this.texture = texture;
             this.scaleMax = scaleMax;
             this.alpha = alpha;
-
             this.scale = (float)Utils.random.NextDouble();
             this.scaleRate = (float)Utils.random.NextDouble() * 0.10f + 0.05f; //#magic
             this.rotation = (float)(Utils.random.NextDouble() * Math.PI * 2.0);

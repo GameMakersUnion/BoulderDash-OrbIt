@@ -74,7 +74,7 @@ namespace OrbItProcs
             double k_biasAbsolute = 0.01;
             return a >= b * k_biasRelative + a * k_biasAbsolute;
         }
-        public static float CircularDistance(float x, float v, int t = 360)
+        public static float CircularDistance(float x, float v, int t)
         {
             int half = t / 2;
             if (x == v) return 0;

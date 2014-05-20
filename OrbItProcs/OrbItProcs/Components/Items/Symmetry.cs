@@ -22,18 +22,18 @@ namespace OrbItProcs
         }
         public override void PlayerControl(Input input)
         {
-            if (input.JustPressed(InputButtons.RightTrigger_Mouse1))
+            if (input.BtnClicked(InputButtons.RightTrigger_Mouse1))
             {
                 RandomizeSymmetry();
             }
-            else if (input.JustPressed(InputButtons.RightBumper_E))
+            else if (input.BtnClicked(InputButtons.RightBumper_E))
             {
                 if (links.Count != 0)
                 {
                     DestroyLink(links.Dequeue());
                 }
             }
-            else if (input.JustPressed(InputButtons.LeftBumper_Q))
+            else if (input.BtnClicked(InputButtons.LeftBumper_Q))
             {
                 int count = links.Count;
                 for (int i = 0; i < count; i++)
@@ -48,7 +48,8 @@ namespace OrbItProcs
             //link.sourceNode.group.DiscludeEntity(link.sourceNode);
             foreach (Node n in link.targets)
             {
-                n.group.DiscludeEntity(n);
+                if (n.group != null)
+                    n.group.DiscludeEntity(n);
             }
         }
 

@@ -49,7 +49,7 @@ namespace OrbItProcs
         {
             if (fireMode == mode.SingleFire)
             {
-                if (input.IsDown(InputButtons.RightTrigger_Mouse1))
+                if (input.BtnDown(InputButtons.RightTrigger_Mouse1))
                 {
                     if (!input.oldInputState.IsButtonDown(InputButtons.RightTrigger_Mouse1))
                     {
@@ -63,7 +63,7 @@ namespace OrbItProcs
             }
             else if (fireMode == mode.AutoFire)
             {
-                if (input.IsDown(InputButtons.RightTrigger_Mouse1))
+                if (input.BtnDown(InputButtons.RightTrigger_Mouse1))
                 {
                     if (shootingDelayCount++ % shootingDelay == 0)
                     {
@@ -72,7 +72,7 @@ namespace OrbItProcs
                 }
             }
 
-            if (input.JustPressed(InputButtons.RightBumper_E))
+            if (input.BtnClicked(InputButtons.RightBumper_E))
             {
                 if (room.groups.general.childGroups.Values.Count < 2) return;
                 bool next = false;

@@ -150,7 +150,7 @@ namespace OrbItProcs
         {
             if (shootMode == ShootMode.Rapid)
             {
-                if (input.IsDown(InputButtons.RightTrigger_Mouse1))
+                if (input.BtnDown(InputButtons.RightTrigger_Mouse1))
                 {
                     if (shootingRateCount++ % shootingDelay == 0)
                     {
@@ -165,7 +165,7 @@ namespace OrbItProcs
             else if (shootMode == ShootMode.Single)
             {
                 //if (fc.newGamePadState.IsButtonDown(Buttons.RightTrigger) && fc.oldGamePadState.IsButtonUp(Buttons.RightTrigger))
-                if (input.JustPressed(InputButtons.RightTrigger_Mouse1))
+                if (input.BtnClicked(InputButtons.RightTrigger_Mouse1))
                 {
                     if (shootingRateCount++ % shootingDelay == 0)
                     {

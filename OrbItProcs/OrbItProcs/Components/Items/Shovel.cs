@@ -212,7 +212,7 @@ namespace OrbItProcs
             if (shovelling)
             {
                 //if (fc.newGamePadState.Triggers.Right < deadzone && fc.oldGamePadState.Triggers.Right > deadzone)
-                if (input.JustReleased(InputButtons.RightTrigger_Mouse1))
+                if (input.BtnReleased(InputButtons.RightTrigger_Mouse1))
                 {
                     shovelling = false;
                     foreach(Node n in shovelLink.targets.ToList())
@@ -241,7 +241,7 @@ namespace OrbItProcs
             }
             else
             {
-                if (input.JustPressed(InputButtons.RightTrigger_Mouse1))
+                if (input.BtnClicked(InputButtons.RightTrigger_Mouse1))
                 {
                     shovelling = true;
                     ObservableHashSet<Node> capturedNodes = new ObservableHashSet<Node>();

@@ -42,12 +42,8 @@ namespace OrbItProcs
         }
         public override void Draw()
         {
-            int r = (parent.body.color.R + 128) % 255;
-            int g = (parent.body.color.G + 128) % 255;
-            int b = (parent.body.color.B + 128) % 255;
-            Color col = new Color(r, g, b);
+            Color col = parent.body.color.ContrastColor();
             room.camera.Draw(runeTexture, parent.body.pos, col, parent.body.scale, parent.body.orient,Layers.Over1);
         }
-
     }
 }

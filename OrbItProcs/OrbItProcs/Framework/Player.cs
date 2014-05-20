@@ -144,6 +144,10 @@ namespace OrbItProcs
                 case 3: pColor = Color.Red; ColorName = "Red"; break;
                 case 4: pColor = Color.Yellow; ColorName = "Yellow"; break;
             }
+            byte min = 40;
+            if (pColor.R == 0) pColor.R = min;
+            if (pColor.G == 0) pColor.G = min;
+            if (pColor.B == 0) pColor.B = min;
         }
         //
         public static void ResetPlayers(Room room)//todo:fix
