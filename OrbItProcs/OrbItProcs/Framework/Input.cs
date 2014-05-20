@@ -7,6 +7,14 @@ using Microsoft.Xna.Framework.Input;
 
 namespace OrbItProcs
 {
+    public enum InputButtons
+    {
+        A_1, X_2, B_3, Y_4,
+        Dpad_UpArrow, Dpad_DownArrow, Dpad_RightArrow, Dpad_LeftArrow,
+        Select_TAB, Start_ESC,
+        LeftBumper_Q, RightBumper_E,
+        LeftTrigger_Mouse2, RightTrigger_Mouse1,
+    }
     public struct InputState
     {
         public readonly Stick LeftStick_WASD, RightStick_Mouse;
@@ -96,7 +104,27 @@ namespace OrbItProcs
             this.LeftTriggerAnalog = state.Triggers.Left;
             this.RightTriggerAnalog = state.Triggers.Right;
         }
-
+        public bool IsButtonDown(InputButtons button)
+        {
+            switch(button)
+            {
+                case InputButtons.A_1: return A_1 == ButtonState.Pressed;
+                case InputButtons.X_2: return X_2 == ButtonState.Pressed;
+                case InputButtons.B_3: return B_3 == ButtonState.Pressed;
+                case InputButtons.Y_4: return Y_4 == ButtonState.Pressed;
+                case InputButtons.Dpad_UpArrow: return Dpad_UpArrow == ButtonState.Pressed;
+                case InputButtons.Dpad_DownArrow: return Dpad_DownArrow == ButtonState.Pressed;
+                case InputButtons.Dpad_RightArrow: return Dpad_RightArrow == ButtonState.Pressed;
+                case InputButtons.Dpad_LeftArrow: return Dpad_LeftArrow == ButtonState.Pressed;
+                case InputButtons.Select_TAB: return Select_TAB == ButtonState.Pressed;
+                case InputButtons.Start_ESC: return Start_ESC == ButtonState.Pressed;
+                case InputButtons.LeftBumper_Q: return LeftBumper_Q == ButtonState.Pressed;
+                case InputButtons.RightBumper_E: return RightBumper_E == ButtonState.Pressed;
+                case InputButtons.LeftTrigger_Mouse2: return LeftTrigger_Mouse2 == ButtonState.Pressed;
+                case InputButtons.RightTrigger_Mouse1: return RightTrigger_Mouse1 == ButtonState.Pressed;
+                default: return false;
+            }
+        }
     }
 
 
@@ -113,9 +141,29 @@ namespace OrbItProcs
         {
             return newInputState.RightStick_Mouse.v2;
         }
+        public virtual void SetNewState()
+        {
+            newInputState = GetState();
+        }
         public virtual void SetOldState()
         {
             oldInputState = newInputState;
+        }
+        public bool IsDown(InputButtons button)
+        {
+            return newInputState.IsButtonDown(button);
+        }
+        public bool IsUp(InputButtons button)
+        {
+            return !newInputState.IsButtonDown(button);
+        }
+        public bool JustPressed(InputButtons button)
+        {
+            return newInputState.IsButtonDown(button) && !oldInputState.IsButtonDown(button);
+        }
+        public bool JustReleased(InputButtons button)
+        {
+            return !newInputState.IsButtonDown(button) && oldInputState.IsButtonDown(button);
         }
     }
     public class PcFullInput : Input
@@ -125,10 +173,10 @@ namespace OrbItProcs
         
         public float mouseStickRadius;
 
-        public PcFullInput(Player player, float mouseStickRadius)
+        public PcFullInput(Player player)//, float mouseStickRadius)
         {
             this.player = player;
-            this.mouseStickRadius = mouseStickRadius;
+            this.mouseStickRadius = 150f;//mouseStickRadius;
         }
         public override InputState GetState()
         {
@@ -168,8 +216,15 @@ namespace OrbItProcs
     public class ControllerFullInput : Input
     {
         public GamePadState newGamePadState, oldGamePadState;
-        public PlayerIndex playerIndex = 0;
-        public float triggerDeadZone = 0.5f;
+        public PlayerIndex playerIndex;
+        public float triggerDeadZone;
+        public ControllerFullInput(Player player, PlayerIndex playerIndex)//, float triggerDeadZone)
+        {
+            this.player = player;
+            this.playerIndex = playerIndex;
+            this.triggerDeadZone = 0.5f;
+        }
+
         public override InputState GetState()
         {
             newGamePadState = GamePad.GetState(playerIndex, GamePadDeadZone.Circular);
@@ -181,6 +236,92 @@ namespace OrbItProcs
         {
             base.SetOldState();
             oldGamePadState = newGamePadState;
+        }
+    }
+
+    public struct Stick
+    {
+        public Vector2 v2;
+        public ButtonState up;
+        public ButtonState down;
+        public ButtonState left;
+        public ButtonState right;
+
+        public Stick(Vector2 sourceStick)
+        {
+            //v2 = Vector2.Zero;
+            up = ButtonState.Released;
+            down = ButtonState.Released;
+            left = ButtonState.Released;
+            right = ButtonState.Released;
+
+            v2 = sourceStick;//multiply by -1?
+            if (v2.LengthSquared() < Controller.deadZone * Controller.deadZone) return;
+
+            double angle = Math.Atan2(sourceStick.Y, sourceStick.X);
+            int octant = ((int)Math.Round(8 * angle / (2 * Math.PI) + 9)) % 8; // TODO: test & clarify
+
+            switch (octant)
+            {
+                case 0: up = ButtonState.Pressed; right = ButtonState.Pressed; break;
+                case 1: up = ButtonState.Pressed; break;
+                case 2: left = ButtonState.Pressed; up = ButtonState.Pressed; break;
+                case 3: left = ButtonState.Pressed; break;
+                case 4: down = ButtonState.Pressed; left = ButtonState.Pressed; break;
+                case 5: down = ButtonState.Pressed; break;
+                case 6: right = ButtonState.Pressed; down = ButtonState.Pressed; break;
+                case 7: right = ButtonState.Pressed; break;
+            }
+        }
+        public Stick(bool up, bool down, bool left, bool right)
+        {
+            float x = 0, y = 0;
+            if (up)
+            {
+                y -= 1;
+                this.up = ButtonState.Pressed;
+            }
+            else this.up = ButtonState.Released;
+            if (down)
+            {
+                y += 1;
+                this.down = ButtonState.Pressed;
+            }
+            else this.down = ButtonState.Released;
+            if (left)
+            {
+                x -= 1;
+                this.left = ButtonState.Pressed;
+            }
+            else this.left = ButtonState.Released;
+            if (right)
+            {
+                x += 1;
+                this.right = ButtonState.Pressed;
+            }
+            else this.right = ButtonState.Released;
+
+            Vector2 v = new Vector2(x, y);
+
+            if (x != 0 && y != 0)
+            {
+                v *= GMath.invRootOfTwo;
+            }
+            this.v2 = v;
+
+        }
+        public Stick(ButtonState up, ButtonState down, ButtonState left, ButtonState right)
+            : this(up == ButtonState.Pressed, down == ButtonState.Pressed,
+                    left == ButtonState.Pressed, right == ButtonState.Pressed) { }
+
+        public static implicit operator Vector2(Stick s) { return s.v2; }
+        public bool isCentered() //account for v2?
+        {
+            if (up == ButtonState.Released &&
+                down == ButtonState.Released &&
+                left == ButtonState.Released &&
+                right == ButtonState.Released) return true;
+            else return false;
         }
     }
 }

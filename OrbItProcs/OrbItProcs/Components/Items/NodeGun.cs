@@ -45,59 +45,54 @@ namespace OrbItProcs
             currentGroup = room.groups.general.childGroups.ElementAt(0).Value;
         }
         Node lastFired = null;
-        public override void PlayerControl(Controller controller)
+        public override void PlayerControl(Input input)
         {
-            if (controller is FullController)
+            if (fireMode == mode.SingleFire)
             {
-                FullController fc = (FullController)controller;
-                if (fireMode == mode.SingleFire)
+                if (input.IsDown(InputButtons.RightTrigger_Mouse1))
                 {
-                    if (fc.newGamePadState.Triggers.Right > deadZone)// && fc.oldGamePadState.Triggers.Right < deadZone)
+                    if (!input.oldInputState.IsButtonDown(InputButtons.RightTrigger_Mouse1))
                     {
-                        if (fc.oldGamePadState.Triggers.Right < deadZone)
-                        {
-                            FireNode(fc.GetRightStick());
-                        }
-                        else if (steerNode && lastFired != null)
-                        {
-                            lastFired.body.velocity = VMath.VectorRotateLerp(lastFired.body.velocity, fc.GetRightStick(), 0.02f);
-                        }
+                        FireNode(input.GetRightStick());
+                    }
+                    else if (steerNode && lastFired != null)
+                    {
+                        lastFired.body.velocity = VMath.VectorRotateLerp(lastFired.body.velocity, input.GetRightStick(), 0.02f);
                     }
                 }
-                else if (fireMode == mode.AutoFire)
+            }
+            else if (fireMode == mode.AutoFire)
+            {
+                if (input.IsDown(InputButtons.RightTrigger_Mouse1))
                 {
-                    if (fc.newGamePadState.Triggers.Right > deadZone)
+                    if (shootingDelayCount++ % shootingDelay == 0)
                     {
-                        if (shootingDelayCount++ % shootingDelay == 0)
-                        {
-                            FireNode(fc.GetRightStick());
-                        }
+                        FireNode(input.GetRightStick());
                     }
                 }
+            }
 
-                if (fc.newGamePadState.Buttons.RightShoulder == Microsoft.Xna.Framework.Input.ButtonState.Pressed
-                    && fc.oldGamePadState.Buttons.RightShoulder == Microsoft.Xna.Framework.Input.ButtonState.Released)
+            if (input.JustPressed(InputButtons.RightBumper_E))
+            {
+                if (room.groups.general.childGroups.Values.Count < 2) return;
+                bool next = false;
+                var tempGroup = room.groups.general.childGroups;
+                for (int i = 0; i < tempGroup.Values.Count; i++)
                 {
-                    if (room.groups.general.childGroups.Values.Count < 2) return;
-                    bool next = false;
-                    var tempGroup = room.groups.general.childGroups;
-                    for (int i = 0; i < tempGroup.Values.Count; i++)
+                    Group g = tempGroup.Values.ElementAt(i);
+                    if (next)
                     {
-                        Group g = tempGroup.Values.ElementAt(i);
-                        if (next)
+                        currentGroup = g;
+                        break;
+                    }
+                    if (g == currentGroup)
+                    {
+                        if (i == tempGroup.Values.Count - 1)
                         {
-                            currentGroup = g;
+                            currentGroup = tempGroup.Values.ElementAt(0);
                             break;
                         }
-                        if (g == currentGroup)
-                        {
-                            if (i == tempGroup.Values.Count - 1)
-                            {
-                                currentGroup = tempGroup.Values.ElementAt(0);
-                                break;
-                            }
-                            next = true;
-                        }
+                        next = true;
                     }
                 }
             }

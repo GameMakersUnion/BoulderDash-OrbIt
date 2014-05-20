@@ -163,139 +163,120 @@ namespace OrbItProcs
         Link rangeLink;
         Link shovelLink;
         bool shovelling = false;
-        float deadzone = 0.5f;
         public float physicsDivisor { get; set; }
         //Func<Collider, Collider, bool> exclusionDel;
         float compoundedMass = 0f;
-        public override void PlayerControl(Controller controller)
+        public override void PlayerControl(Input input)
         {
-            if (controller is FullController)
+            Vector2 newstickpos = input.GetRightStick();
+            Vector2 pos = newstickpos * shovelReach;
+            Vector2 worldStickPos = parent.body.pos + pos;
+            Vector2 diff = worldStickPos - shovelNode.body.pos;
+            //float angle = Utils.VectorToAngle(shovelNode.body.pos - parent.body.pos) + VMath.PIbyTwo % VMath.twoPI;
+            Vector2 shovelDir = shovelNode.body.pos - parent.body.pos;
+            shovelDir = new Vector2(shovelDir.Y, -shovelDir.X);
+            shovelNode.body.SetOrientV2(shovelDir);
+
+            if (modeShovelPosition == ModeShovelPosition.AbsoluteStickPos)
             {
-                FullController fc = (FullController)controller;
-                Vector2 newstickpos = fc.newGamePadState.ThumbSticks.Right;
-                newstickpos.Y *= -1;
-                Vector2 pos = newstickpos * shovelReach;
-                Vector2 worldStickPos = parent.body.pos + pos;
-                Vector2 diff = worldStickPos - shovelNode.body.pos;
-                //float angle = Utils.VectorToAngle(shovelNode.body.pos - parent.body.pos) + VMath.PIbyTwo % VMath.twoPI;
-                Vector2 shovelDir = shovelNode.body.pos - parent.body.pos;
-                shovelDir = new Vector2(shovelDir.Y, -shovelDir.X);
-                shovelNode.body.SetOrientV2(shovelDir);
-
-                if (modeShovelPosition == ModeShovelPosition.AbsoluteStickPos)
+                shovelNode.body.pos = worldStickPos;
+            }
+            else if (modeShovelPosition == ModeShovelPosition.PhysicsBased)
+            {
+                float len = diff.Length();
+                if (len < 1)
                 {
-                    shovelNode.body.pos = worldStickPos;
-                }
-                else if (modeShovelPosition == ModeShovelPosition.PhysicsBased)
-                {
-                    float len = diff.Length();
-                    if (len < 1)
-                    {
-                        shovelNode.body.velocity = Vector2.Zero;
-                    }
-                    else
-                    {
-                        float velLen = shovelNode.body.velocity.Length();
-
-                        Vector2 diffcopy = diff;
-                        VMath.NormalizeSafe(ref diffcopy);
-
-                        Vector2 normalizedVel = shovelNode.body.velocity;
-                        VMath.NormalizeSafe(ref normalizedVel);
-
-                        float result = 0;
-                        Vector2.Dot(ref diffcopy, ref normalizedVel, out result);
-
-                        diffcopy *= result;
-                        Vector2 force = (diff / physicsDivisor);
-                        if (shovelling && compoundedMass >= 1) force /= compoundedMass * 1;
-                        shovelNode.body.velocity = diffcopy + force;
-                        //shovelNode.body.ApplyForce(force);
-                    }
-                }
-
-                if (shovelling)
-                {
-                    //if (fc.newGamePadState.Triggers.Right < deadzone && fc.oldGamePadState.Triggers.Right > deadzone)
-                    if (CheckForButtonRelease(fc))
-                    {
-                        shovelling = false;
-                        foreach(Node n in shovelLink.targets.ToList())
-                        {
-                            if (physicsThrow)
-                            {
-                                n.body.velocity = n.body.effvelocity;
-                            }
-                            else
-                            {
-                                Vector2 stickdirection = newstickpos;
-                                VMath.NormalizeSafe(ref stickdirection);
-
-                                n.body.velocity = stickdirection * throwSpeed;
-                            }
-                            n.collision.active = true;
-                            shovelLink.targets.Remove(n);
-                            n.body.ClearExclusionChecks();
-                            n.body.color = n.body.permaColor;
-                        }
-                        shovelLink.formation.UpdateFormation();
-                        shovelLink.active = false;
-                        shovelNode.room.AllActiveLinks.Remove(shovelLink);
-                        compoundedMass = 0f;
-                    }
+                    shovelNode.body.velocity = Vector2.Zero;
                 }
                 else
                 {
-                    //if (fc.newGamePadState.Triggers.Right > deadzone && fc.oldGamePadState.Triggers.Right < deadzone)
-                    if (CheckForButtonPress(fc))
-                    {
-                        shovelling = true;
-                        ObservableHashSet<Node> capturedNodes = new ObservableHashSet<Node>();
-                        int count = 0;
-                        Action<Collider, Collider> del = delegate(Collider c1, Collider c2){
-                            if (count >= maxShovelCapacity) return;
-                            if (c2.parent.dataStore.ContainsKey("shovelnodeparent"))return;
-                            if (c2.parent.HasComp<Diode>()) return;
-                            if (modePlayers != ModePlayers.GrabBoth && c2.parent.IsPlayer)
-                            {
-                                if (modePlayers == ModePlayers.GrabNone) return;
-                                if (modePlayers == ModePlayers.GrabSelf && c2.parent != parent) return;
-                                if (modePlayers == ModePlayers.GrabOtherPlayers && c2.parent == parent) return;
-                            }
-                            float dist = Vector2.Distance(c1.pos, c2.pos);
-                            if (dist <= scoopReach)
-                            {
-                                count++;
-                                capturedNodes.Add(c2.parent);
-                                c2.parent.body.color = parent.body.color;
-                            }
-                        };
-                        shovelNode.room.gridsystemAffect.retrieveOffsetArraysAffect(shovelNode.body, del, scoopReach * 2);
-                        shovelLink.targets = capturedNodes;
-                        shovelLink.formation.UpdateFormation();
-                        shovelLink.active = true;
-                        shovelNode.room.AllActiveLinks.Add(shovelLink);
-                        compoundedMass = 0f;
-                        foreach(Node n in capturedNodes)
-                        {
-                            n.collision.active = false;
-                            compoundedMass += n.body.mass;
-                        }
-                    }
-                }
+                    float velLen = shovelNode.body.velocity.Length();
 
+                    Vector2 diffcopy = diff;
+                    VMath.NormalizeSafe(ref diffcopy);
+
+                    Vector2 normalizedVel = shovelNode.body.velocity;
+                    VMath.NormalizeSafe(ref normalizedVel);
+
+                    float result = 0;
+                    Vector2.Dot(ref diffcopy, ref normalizedVel, out result);
+
+                    diffcopy *= result;
+                    Vector2 force = (diff / physicsDivisor);
+                    if (shovelling && compoundedMass >= 1) force /= compoundedMass * 1;
+                    shovelNode.body.velocity = diffcopy + force;
+                    //shovelNode.body.ApplyForce(force);
+                }
             }
 
-        }
-        bool CheckForButtonPress(FullController fc)
-        {
-            return (fc.newGamePadState.Triggers.Right > deadzone && fc.oldGamePadState.Triggers.Right < deadzone)
-                || (fc.newGamePadState.Buttons.RightStick == ButtonState.Pressed && fc.oldGamePadState.Buttons.RightStick == ButtonState.Released);
-        }
-        bool CheckForButtonRelease(FullController fc)
-        {
-            return (fc.oldGamePadState.Triggers.Right > deadzone && fc.newGamePadState.Triggers.Right < deadzone)
-                || (fc.oldGamePadState.Buttons.RightStick == ButtonState.Pressed && fc.newGamePadState.Buttons.RightStick == ButtonState.Released);
+            if (shovelling)
+            {
+                //if (fc.newGamePadState.Triggers.Right < deadzone && fc.oldGamePadState.Triggers.Right > deadzone)
+                if (input.JustReleased(InputButtons.RightTrigger_Mouse1))
+                {
+                    shovelling = false;
+                    foreach(Node n in shovelLink.targets.ToList())
+                    {
+                        if (physicsThrow)
+                        {
+                            n.body.velocity = n.body.effvelocity;
+                        }
+                        else
+                        {
+                            Vector2 stickdirection = newstickpos;
+                            VMath.NormalizeSafe(ref stickdirection);
+
+                            n.body.velocity = stickdirection * throwSpeed;
+                        }
+                        n.collision.active = true;
+                        shovelLink.targets.Remove(n);
+                        n.body.ClearExclusionChecks();
+                        n.body.color = n.body.permaColor;
+                    }
+                    shovelLink.formation.UpdateFormation();
+                    shovelLink.active = false;
+                    shovelNode.room.AllActiveLinks.Remove(shovelLink);
+                    compoundedMass = 0f;
+                }
+            }
+            else
+            {
+                if (input.JustPressed(InputButtons.RightTrigger_Mouse1))
+                {
+                    shovelling = true;
+                    ObservableHashSet<Node> capturedNodes = new ObservableHashSet<Node>();
+                    int count = 0;
+                    Action<Collider, Collider> del = delegate(Collider c1, Collider c2){
+                        if (count >= maxShovelCapacity) return;
+                        if (c2.parent.dataStore.ContainsKey("shovelnodeparent"))return;
+                        if (c2.parent.HasComp<Diode>()) return;
+                        if (modePlayers != ModePlayers.GrabBoth && c2.parent.IsPlayer)
+                        {
+                            if (modePlayers == ModePlayers.GrabNone) return;
+                            if (modePlayers == ModePlayers.GrabSelf && c2.parent != parent) return;
+                            if (modePlayers == ModePlayers.GrabOtherPlayers && c2.parent == parent) return;
+                        }
+                        float dist = Vector2.Distance(c1.pos, c2.pos);
+                        if (dist <= scoopReach)
+                        {
+                            count++;
+                            capturedNodes.Add(c2.parent);
+                            c2.parent.body.color = parent.body.color;
+                        }
+                    };
+                    shovelNode.room.gridsystemAffect.retrieveOffsetArraysAffect(shovelNode.body, del, scoopReach * 2);
+                    shovelLink.targets = capturedNodes;
+                    shovelLink.formation.UpdateFormation();
+                    shovelLink.active = true;
+                    shovelNode.room.AllActiveLinks.Add(shovelLink);
+                    compoundedMass = 0f;
+                    foreach(Node n in capturedNodes)
+                    {
+                        n.collision.active = false;
+                        compoundedMass += n.body.mass;
+                    }
+                }
+            }
         }
         public override void Draw()
         {

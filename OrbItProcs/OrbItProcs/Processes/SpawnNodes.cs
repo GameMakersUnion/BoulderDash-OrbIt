@@ -13,9 +13,14 @@ namespace OrbItProcs
         int rightClickMax = 1;//
         public int batchSpawnNum { get; set; }
 
+        public Toggle<float> radiusRange { get; set; }
+        public float radiusCenter { get; set; }
+
         public SpawnNodes() : base()
         {
             batchSpawnNum = 2;
+            radiusRange = new Toggle<float>(10f, true);
+            radiusCenter = 15f;
 
             addProcessKeyAction("SpawnNode", KeyCodes.LeftClick, OnPress: SpawnNode);
             //addProcessKeyAction("SetSpawnPosition", KeyCodes.LeftShift, OnPress: SetSpawnPosition);
@@ -24,10 +29,19 @@ namespace OrbItProcs
             
             addProcessKeyAction("testing", KeyCodes.OemPipe, OnPress: TestingStuff);
         }
+
+        public void SetRadius(Node n)
+        {
+            n.body.radius = radiusCenter;
+            if (radiusRange.enabled)
+            {
+                n.body.radius = (float)Utils.random.NextDouble() * radiusRange.value - (radiusRange.value / 2) + radiusCenter;
+            }
+        }
+
         public void SpawnNode()
         {
-            ///
-            room.spawnNode((int)UserInterface.WorldMousePos.X, (int)UserInterface.WorldMousePos.Y);
+            SetRadius(room.spawnNode((int)UserInterface.WorldMousePos.X, (int)UserInterface.WorldMousePos.Y));
         }
         #region Testing Region
         public void TestingStuff()
@@ -78,7 +92,7 @@ namespace OrbItProcs
             {
                 int rx = Utils.random.Next(rad * 2) - rad;
                 int ry = Utils.random.Next(rad * 2) - rad;
-                room.spawnNode((int)UserInterface.WorldMousePos.X + rx, (int)UserInterface.WorldMousePos.Y + ry);
+                SetRadius(room.spawnNode((int)UserInterface.WorldMousePos.X + rx, (int)UserInterface.WorldMousePos.Y + ry));
             }
         }
 
@@ -111,11 +125,11 @@ namespace OrbItProcs
                         if (n.body.velocity.IsFucked()) System.Diagnostics.Debugger.Break();
                     
                     }; 
-                    room.spawnNode(userP, after);
+                    SetRadius(room.spawnNode(userP, after));
                 }
                 else
                 {
-                    room.spawnNode(userP);
+                    SetRadius(room.spawnNode(userP));
                 }
                 rightClickCount = 0;
             }

@@ -20,24 +20,20 @@ namespace OrbItProcs
         {
             this.parent = parent;
         }
-        public override void PlayerControl(Controller controller)
+        public override void PlayerControl(Input input)
         {
-            if (!(controller is FullController)) return;
-            FullController fc = (FullController)controller;
-            if (fc.newGamePadState.Triggers.Right > 0.5f && fc.oldGamePadState.Triggers.Right < 0.5f)
+            if (input.JustPressed(InputButtons.RightTrigger_Mouse1))
             {
                 RandomizeSymmetry();
             }
-            else if (fc.newGamePadState.Buttons.RightShoulder == Microsoft.Xna.Framework.Input.ButtonState.Pressed
-                && fc.oldGamePadState.Buttons.RightShoulder == Microsoft.Xna.Framework.Input.ButtonState.Released)
+            else if (input.JustPressed(InputButtons.RightBumper_E))
             {
                 if (links.Count != 0)
                 {
                     DestroyLink(links.Dequeue());
                 }
             }
-            else if (fc.newGamePadState.Buttons.LeftShoulder == Microsoft.Xna.Framework.Input.ButtonState.Pressed
-                && fc.oldGamePadState.Buttons.LeftShoulder == Microsoft.Xna.Framework.Input.ButtonState.Released)
+            else if (input.JustPressed(InputButtons.LeftBumper_Q))
             {
                 int count = links.Count;
                 for (int i = 0; i < count; i++)
@@ -49,7 +45,7 @@ namespace OrbItProcs
         private void DestroyLink(Link link)
         {
             link.active = false;
-            link.sourceNode.group.DiscludeEntity(link.sourceNode);
+            //link.sourceNode.group.DiscludeEntity(link.sourceNode);
             foreach (Node n in link.targets)
             {
                 n.group.DiscludeEntity(n);
@@ -113,11 +109,13 @@ namespace OrbItProcs
             spring.restdist = 100;
             spring.radius = float.MaxValue;
 
-            Link link = new Link(centerNode, outerNodes, grav);
+            RelativeMotion rel = new RelativeMotion();
+
+            Link link = new Link(parent, outerNodes, grav);
+            link.AddLinkComponent(rel, true);
             link.active = true;
             link.DrawLinkLines = false;
             links.Enqueue(link);
         }
-
     }
 }

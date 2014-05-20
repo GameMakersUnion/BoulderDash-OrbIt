@@ -170,11 +170,11 @@ namespace OrbItProcs
         public float friction = 0.01f;
         private float v = 0.0f;
 
-        public override void PlayerControl(Controller controller)
+        public override void PlayerControl(Input input)
         {
 
-            Vector2 stick = controller.GetLeftStick();
-            Vector2 stick2 = controller.GetRightStick();
+            Vector2 stick = input.GetLeftStick();
+            Vector2 stick2 = input.GetRightStick();
             
                 //if (node != bigtony) node.collision.colliders["trigger"].radius = body.radius * 1.5f;
                 //else node.collision.colliders["trigger"].radius = body.radius * 1.2f;

@@ -27,27 +27,22 @@ namespace OrbItProcs
         /// </summary>
         [Info(UserLevel.Developer, "How many milliseconds have passed since this node was spawned")]
         public int lifetime { get; set; }
-
-
         public Lifetime() : this(null) { }
         public Lifetime(Node parent = null)
         {
             if (parent != null) this.parent = parent;
             timeUntilDeath = new Toggle<int>(5000, false);
-
+            lifetime = 0;
         }
-
         public override void OnSpawn()
         {
- 	         base.OnSpawn();
-             lifetime = 0;
+            lifetime = 0;
         }
-
         public override void AffectSelf()
         {
             int mill = OrbIt.gametime.ElapsedGameTime.Milliseconds;
             lifetime += mill;
-            if (timeUntilDeath.enabled && lifetime > timeUntilDeath)
+            if (timeUntilDeath.enabled)// && lifetime > timeUntilDeath)
             {
                 lifeLived += mill;
                 if (lifeLived > timeUntilDeath)

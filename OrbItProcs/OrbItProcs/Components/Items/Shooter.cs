@@ -146,54 +146,50 @@ namespace OrbItProcs
             
             
         }
-        public override void PlayerControl(Controller controller)
+        public override void PlayerControl(Input input)
         {
-            if (controller is FullController)
+            if (shootMode == ShootMode.Rapid)
             {
-                FullController fc = (FullController)controller;
-                if (shootMode == ShootMode.Rapid)
+                if (input.IsDown(InputButtons.RightTrigger_Mouse1))
                 {
-                    if (fc.newGamePadState.IsButtonDown(Buttons.RightTrigger))
+                    if (shootingRateCount++ % shootingDelay == 0)
                     {
-                        if (shootingRateCount++ % shootingDelay == 0)
-                        {
-                            FireNode(fc.newGamePadState.ThumbSticks.Right);
-                        }
-                    }
-                    else
-                    {
-                        shootingRateCount = 0;
+                        FireNode(input.GetRightStick());
                     }
                 }
-                else if (shootMode == ShootMode.Single)
+                else
                 {
-                    //if (fc.newGamePadState.IsButtonDown(Buttons.RightTrigger) && fc.oldGamePadState.IsButtonUp(Buttons.RightTrigger))
-                    if (fc.newGamePadState.Triggers.Right > 0.5 && fc.oldGamePadState.Triggers.Right < 0.5)
+                    shootingRateCount = 0;
+                }
+            }
+            else if (shootMode == ShootMode.Single)
+            {
+                //if (fc.newGamePadState.IsButtonDown(Buttons.RightTrigger) && fc.oldGamePadState.IsButtonUp(Buttons.RightTrigger))
+                if (input.JustPressed(InputButtons.RightTrigger_Mouse1))
+                {
+                    if (shootingRateCount++ % shootingDelay == 0)
                     {
-                        if (shootingRateCount++ % shootingDelay == 0)
-                        {
-                            FireNode(fc.newGamePadState.ThumbSticks.Right);
-                        }
-                    }
-                    else
-                    {
-                        shootingRateCount = 0;
+                        FireNode(input.GetRightStick());
                     }
                 }
-                else if (shootMode == ShootMode.Auto)
+                else
                 {
-                    //if (fc.newGamePadState.IsButtonDown(Buttons.RightTrigger) && fc.oldGamePadState.IsButtonUp(Buttons.RightTrigger))
-                    if (fc.newGamePadState.ThumbSticks.Right != Vector2.Zero)
+                    shootingRateCount = 0;
+                }
+            }
+            else if (shootMode == ShootMode.Auto)
+            {
+                Vector2 rightstick = input.GetRightStick();
+                if (rightstick != Vector2.Zero)
+                {
+                    if (shootingRateCount++ % shootingDelay == 0)
                     {
-                        if (shootingRateCount++ % shootingDelay == 0)
-                        {
-                            FireNode(fc.newGamePadState.ThumbSticks.Right);
-                        }
+                        FireNode(rightstick);
                     }
-                    else
-                    {
-                        shootingRateCount = 0;
-                    }
+                }
+                else
+                {
+                    shootingRateCount = 0;
                 }
             }
         }
@@ -236,7 +232,6 @@ namespace OrbItProcs
             if (!useStickVelocity) VMath.NormalizeSafe(ref dir);
             Node n = bulletNode.CreateClone(room);
             n.Comp<Lifetime>().timeUntilDeath.value = bulletLife;
-            dir.Y *= -1;
             n.body.velocity = dir * speed;
             n.body.pos = parent.body.pos;
             n.body.AddExclusionCheck(parent.body);

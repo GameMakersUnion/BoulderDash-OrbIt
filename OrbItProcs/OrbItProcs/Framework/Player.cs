@@ -25,7 +25,8 @@ namespace OrbItProcs
         public Color pColor;
         public string ColorName;
 
-        public Controller controller;
+        //public Controller controller;
+        public Input input;
 
         public Dictionary<Type, PlayerData> playerDatas = new Dictionary<Type, PlayerData>();
 
@@ -106,6 +107,7 @@ namespace OrbItProcs
         {
             return playerDatas.ContainsKey(typeof(T));
         }
+        /*
         public static Player GetNew(int playerIndex)
         {
             bool success = false;
@@ -123,7 +125,18 @@ namespace OrbItProcs
             sucess = true;
             room = OrbIt.game.room;
             this.playerIndex = playerIndex;
-            
+            SetPlayerColor();
+        }
+        */
+        public Player(int playerIndex)
+        {
+            this.playerIndex = playerIndex;
+            this.input = new ControllerFullInput(this, (PlayerIndex)(playerIndex - 1));
+            this.room = OrbIt.game.room;
+            SetPlayerColor();
+        }
+        public void SetPlayerColor()
+        {
             switch (playerIndex)
             {
                 case 1: pColor = Color.Blue; ColorName = "Blue"; break;
@@ -133,7 +146,7 @@ namespace OrbItProcs
             }
         }
         //
-        public static void ResetPlayers(Room room)
+        public static void ResetPlayers(Room room)//todo:fix
         {
             room.groups.player.EmptyGroup();
             Controller.ResetControllers();
@@ -174,7 +187,8 @@ namespace OrbItProcs
             GamePadState gamePadState = GamePad.GetState((PlayerIndex)(playerIndex - 1));
             if (!gamePadState.IsConnected || gamePadState.Buttons.Back == ButtonState.Released) return;
 
-            Player p = Player.GetNew(playerIndex);
+            //Player p = Player.GetNew(playerIndex);
+            Player p = new Player(playerIndex);
             players[playerIndex] = p;
             if (p == null) return;
             double angle = Utils.random.NextDouble() * Math.PI * 2;

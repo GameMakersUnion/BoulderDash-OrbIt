@@ -84,7 +84,7 @@ namespace OrbItProcs
         public virtual void AffectOther(Node other) {  }
         public virtual void AffectSelf() { }
         public virtual void Draw() { }
-        public virtual void PlayerControl(Controller controller) { }
+        public virtual void PlayerControl(Input input) { }
         public virtual void AIControl(AIMode aiMode) { }
         public virtual void OnRemove(Node other) { }
         public virtual void InitializeLists() { }

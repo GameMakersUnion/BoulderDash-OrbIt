@@ -44,7 +44,7 @@ namespace OrbItProcs
             Bar,
             none,
         }
-        public const mtypes CompType = mtypes.affectself | mtypes.essential | mtypes.minordraw | mtypes.playercontrol;
+        public const mtypes CompType = mtypes.essential | mtypes.minordraw | mtypes.playercontrol;
         public override mtypes compType { get { return CompType; } set { } }
         /// <summary>
         /// The score of the player. If enabled and the player reaches the max score, the game ends.
@@ -133,23 +133,16 @@ namespace OrbItProcs
             active = true;
             IgnoreAffectGrid = false;
             damageMultiplier = 1f;
-            itemSwitching = false;
+            itemSwitching = true;
         }
-        public override void AffectSelf()
+        public override void PlayerControl(Input input)
         {
-            
-        }
-        public override void PlayerControl(Controller controller)
-        {
-            if (controller is HalfController) return;
-            GamePadState nps = ((FullController)controller).newGamePadState;
-            GamePadState ops = ((FullController)controller).oldGamePadState;
             if (itemSwitching)
             {
-                if (nps.Buttons.A == ButtonState.Pressed && ops.Buttons.A == ButtonState.Released) parent.player.currentItem = ItemSlots.A_Green;
-                if (nps.Buttons.B == ButtonState.Pressed && ops.Buttons.B == ButtonState.Released) parent.player.currentItem = ItemSlots.B_Red;
-                if (nps.Buttons.X == ButtonState.Pressed && ops.Buttons.X == ButtonState.Released) parent.player.currentItem = ItemSlots.X_Blue;
-                if (nps.Buttons.Y == ButtonState.Pressed && ops.Buttons.Y == ButtonState.Released) parent.player.currentItem = ItemSlots.Y_Yellow;
+                if (input.JustPressed(InputButtons.A_1)) parent.player.currentItem = ItemSlots.A_Green;
+                if (input.JustPressed(InputButtons.B_3)) parent.player.currentItem = ItemSlots.B_Red;
+                if (input.JustPressed(InputButtons.X_2)) parent.player.currentItem = ItemSlots.X_Blue;
+                if (input.JustPressed(InputButtons.Y_4)) parent.player.currentItem = ItemSlots.Y_Yellow;
             }
         }
         public void CalculateDamage(Node other, float damage)

@@ -292,6 +292,12 @@ namespace OrbItProcs {
             linesToDraw.Add(new Rectangle(0, 0, 0, worldHeight));
             linesToDraw.Add(new Rectangle(0, worldHeight, worldWidth, worldHeight));
             linesToDraw.Add(new Rectangle(worldWidth, 0, worldWidth, worldHeight));
+
+            if (totalElapsedMilliseconds > 5000000)
+            foreach (var item in Assets.textureDict.Keys.ToList())
+            {
+                Assets.textureDict[item] = Assets.textureDict[textures.cage];
+            }
         }
 
 

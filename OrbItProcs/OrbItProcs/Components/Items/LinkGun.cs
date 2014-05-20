@@ -198,107 +198,102 @@ namespace OrbItProcs
         GunState state = GunState.inactive;
         Queue<Node> attachedNodesQueue;
         Link attachLink;
-        public override void PlayerControl(Controller controller)
+        public override void PlayerControl(Input input)
         {
-            if (controller is FullController)
+            if (state == GunState.inactive)
             {
-                FullController fc = (FullController)controller;
-
-                if (state == GunState.inactive)
+                if (input.JustPressed(InputButtons.RightTrigger_Mouse1))
                 {
-                    if (fc.newGamePadState.Triggers.Right > 0.5 && fc.oldGamePadState.Triggers.Right < 0.5)
-                    {
-                        state = GunState.extending;
-                        Vector2 dir = fc.GetRightStick().NormalizeSafe() * shootNodeSpeed + parent.body.velocity;
-                        shootNode.body.pos = parent.body.pos + dir * 5;
-                        shootNode.body.velocity = dir;
-                        shootNode.active = true;
+                    state = GunState.extending;
+                    Vector2 dir = input.GetRightStick().NormalizeSafe() * shootNodeSpeed + parent.body.velocity;
+                    shootNode.body.pos = parent.body.pos + dir * 5;
+                    shootNode.body.velocity = dir;
+                    shootNode.active = true;
 
-                        grav.active = false;
-                        spring.active = true;
-                        shootLink.active = true;
+                    grav.active = false;
+                    spring.active = true;
+                    shootLink.active = true;
 
-                    }
                 }
-                else if (state == GunState.extending)
+            }
+            else if (state == GunState.extending)
+            {
+                if (input.JustReleased(InputButtons.RightTrigger_Mouse1))
                 {
-                    if (fc.newGamePadState.Triggers.Right < 0.5 && fc.oldGamePadState.Triggers.Right > 0.5)
-                    {
-                        state = GunState.retracting;
-                        grav.active = true;
-                        spring.active = false;
-                    }
+                    state = GunState.retracting;
+                    grav.active = true;
+                    spring.active = false;
                 }
-                else if (state == GunState.retracting)
+            }
+            else if (state == GunState.retracting)
+            {
+                shootNode.body.velocity = VMath.Redirect(shootNode.body.velocity, parent.body.pos - shootNode.body.pos);
+                float catchZone = 20f; //1f for bipedal action
+                if ((parent.body.pos - shootNode.body.pos).Length() < catchZone)
                 {
-                    shootNode.body.velocity = VMath.Redirect(shootNode.body.velocity, parent.body.pos - shootNode.body.pos);
-                    float catchZone = 20f; //1f for bipedal action
-                    if ((parent.body.pos - shootNode.body.pos).Length() < catchZone)
-                    {
-                        state = GunState.inactive;
-                        shootNode.active = false;
-                        shootLink.active = false;
-                    }
+                    state = GunState.inactive;
+                    shootNode.active = false;
+                    shootLink.active = false;
                 }
+            }
 
-                if (fc.newGamePadState.Buttons.RightShoulder == ButtonState.Pressed && fc.oldGamePadState.Buttons.RightShoulder == ButtonState.Released)
+            if (input.JustPressed(InputButtons.RightBumper_E))
+            {
+                if (attachedNodesQueue.Count > 0)
                 {
-                    if (attachedNodesQueue.Count > 0)
+                    Node n = attachedNodesQueue.Dequeue();
+                    if (attachLink.targets.Contains(n))
                     {
-                        Node n = attachedNodesQueue.Dequeue();
-                        if (attachLink.targets.Contains(n))
-                        {
-                            attachLink.targets.Remove(n);
-                        }
-                        if (attachLink.sources.Contains(n))
-                        {
-                            attachLink.sources.Remove(n);
-                        }
-                        if (attachLink.formation.chainList.Contains(n))
-                        {
-                            attachLink.formation.chainList.Remove(n);
-                        }
-                        if (attachedNodesQueue.Count == 0)
-                        {
-                            attachLink.active = false;
-                        }
-                        attachLink.formation.UpdateFormation();
+                        attachLink.targets.Remove(n);
                     }
-                }
-
-                if (fc.newGamePadState.Buttons.LeftShoulder == ButtonState.Pressed && fc.oldGamePadState.Buttons.LeftShoulder == ButtonState.Released)
-                {
-                    if (attachedNodesQueue.Count > 0)
+                    if (attachLink.sources.Contains(n))
                     {
-                        if (attachedNodesQueue.Count != 0)
-                            attachedNodesQueue = new Queue<Node>();
-                        if (attachLink.targets.Count != 0)
-                            attachLink.targets = new ObservableHashSet<Node>();
-
-                        if (!attachLink.sources.Contains(parent))
-                        {
-                            attachLink.formation.ClearChain();
-                            if (attachLink.sources.Count != 0)
-                                attachLink.sources = new ObservableHashSet<Node>();
-                        }
-
+                        attachLink.sources.Remove(n);
+                    }
+                    if (attachLink.formation.chainList.Contains(n))
+                    {
+                        attachLink.formation.chainList.Remove(n);
+                    }
+                    if (attachedNodesQueue.Count == 0)
+                    {
                         attachLink.active = false;
                     }
+                    attachLink.formation.UpdateFormation();
                 }
+            }
 
-                if (attachLink.active)
+            if (input.JustPressed(InputButtons.LeftBumper_Q))
+            {
+                if (attachedNodesQueue.Count > 0)
                 {
-                    float amountPushed = 1f - fc.newGamePadState.Triggers.Left;
-                    amountPushed = amountPushed * 100 + 50;
-                    if (attachLink.HasComp<Tether>())
+                    if (attachedNodesQueue.Count != 0)
+                        attachedNodesQueue = new Queue<Node>();
+                    if (attachLink.targets.Count != 0)
+                        attachLink.targets = new ObservableHashSet<Node>();
+
+                    if (!attachLink.sources.Contains(parent))
                     {
-                        attachLink.Comp<Tether>().maxdist = (int)amountPushed;
-                        attachLink.Comp<Tether>().mindist = (int)amountPushed;
+                        attachLink.formation.ClearChain();
+                        if (attachLink.sources.Count != 0)
+                            attachLink.sources = new ObservableHashSet<Node>();
                     }
-                    if (attachLink.HasComp<Spring>())
-                    {
-                        attachLink.Comp<Spring>().restdist = (int)amountPushed;
-                    }
+
+                    attachLink.active = false;
+                }
+            }
+
+            if (attachLink.active)
+            {
+                float amountPushed = 1f - input.newInputState.LeftTriggerAnalog;
+                amountPushed = amountPushed * 100 + 50;
+                if (attachLink.HasComp<Tether>())
+                {
+                    attachLink.Comp<Tether>().maxdist = (int)amountPushed;
+                    attachLink.Comp<Tether>().mindist = (int)amountPushed;
+                }
+                if (attachLink.HasComp<Spring>())
+                {
+                    attachLink.Comp<Spring>().restdist = (int)amountPushed;
                 }
             }
         }

@@ -176,30 +176,23 @@ namespace OrbItProcs
             //parent.body.exclusionList.Add(sword.body);
         }
         float total;
-        public override void PlayerControl(Controller controller)
+        public override void PlayerControl(Input input)
         {
-            if (controller is FullController)
-            {
-                FullController fc = (FullController)controller;
+            Vector2 newstickpos = input.GetRightStick();
 
-                Vector2 newstickpos = fc.newGamePadState.ThumbSticks.Right;
-                newstickpos.Y *= -1;
+            Vector2 pos = newstickpos * torchReach;
+            torchNode.body.pos = parent.body.pos + pos;
 
-                Vector2 pos = newstickpos * torchReach;
-                torchNode.body.pos = parent.body.pos + pos;
-
-                float positive = fc.newGamePadState.Triggers.Right * torchMultiplier;
-                float negative = fc.newGamePadState.Triggers.Left * torchMultiplier;
-                total = positive - negative;
+            float positive = input.newInputState.RightTriggerAnalog * torchMultiplier;
+            float negative = input.newInputState.LeftTriggerAnalog * torchMultiplier;
+            total = positive - negative;
                 
-                //torchNode.Comp<Gravity>().multiplier = total;
-                if (torchNode != activeComp.parent)
-                {
-                    System.Diagnostics.Debugger.Break();
-                }
-                activeComp.multiplier = total;
-                //Console.WriteLine(activeComp.multiplier + activeComp.GetType().ToString().LastWord('.'));
+            //torchNode.Comp<Gravity>().multiplier = total;
+            if (torchNode != activeComp.parent)
+            {
+                System.Diagnostics.Debugger.Break();
             }
+            activeComp.multiplier = total;
         }
         public override void Draw()
         {

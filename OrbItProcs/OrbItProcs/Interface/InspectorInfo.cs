@@ -308,7 +308,7 @@ namespace OrbItProcs {
                 ///// PROPERTIES
                 List<PropertyInfo> propertyInfos;
                 //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                if (!(parent is Component || parent is Player || parent is Process))
+                if (!(parent is Component || parent is Player))// || parent is Process))
                 {
                     propertyInfos = parent.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
                 }
@@ -342,7 +342,7 @@ namespace OrbItProcs {
                 ////// FIELDS
                 List<FieldInfo> fieldInfos;
                 //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                if (!(parent is Component || parent is Player || parent is Process))
+                if (!(parent is Component || parent is Player))// || parent is Process))
                 {
                     fieldInfos = parent.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
                 }
@@ -370,7 +370,7 @@ namespace OrbItProcs {
                 ////METHODS
                 List<MethodInfo> methodInfos;
                 //if the object isn't a component, then we only want to see the 'declared' properties (not inherited)
-                if (!(parent is Component || parent is Player || parent is Process))
+                if (!(parent is Component || parent is Player))// || parent is Process))
                 {
                     methodInfos = parent.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).ToList();
                 }
@@ -804,7 +804,7 @@ namespace OrbItProcs {
 
             if (fpinfo == null)
             {
-                System.Console.WriteLine("parent object is null");
+                //System.Console.WriteLine("parent object is null");
                 return null;
             }
 

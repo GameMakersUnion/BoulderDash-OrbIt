@@ -146,42 +146,35 @@ namespace OrbItProcs
         public override void AffectSelf()
         {
         }
-        public override void PlayerControl(Controller controller)
+        public override void PlayerControl(Input input)
         {
-            if (controller is FullController)
+            swordNode.movement.active = false;
+            //sword.body.velocity = Utils.AngleToVector(sword.body.orient + (float)Math.PI/2) * 100;
+            swordNode.body.velocity = swordNode.body.effvelocity * nodeKnockback;
+            Vector2 rightstick = input.GetRightStick();
+            if (rightstick.LengthSquared() > 0.9 * 0.9)
             {
-                FullController fc = (FullController)controller;
-                swordNode.movement.active = false;
-                //sword.body.velocity = Utils.AngleToVector(sword.body.orient + (float)Math.PI/2) * 100;
-                swordNode.body.velocity = swordNode.body.effvelocity * nodeKnockback;
-
-                if (fc.newGamePadState.ThumbSticks.Right.LengthSquared() > 0.9 * 0.9)
-                {
-                    movingStick = true;
-                    target = fc.newGamePadState.ThumbSticks.Right;
-                    //enabled = true;
-                    target.Normalize();
-                    target *= distance;
-                    target *= new Vector2(1, -1);
-                    target += parent.body.pos;
-                    swordNode.body.pos = Vector2.Lerp(swordNode.body.pos, target, 0.1f);
-                    //sword.body.pos = target + parent.body.pos;
-                    Vector2 result = swordNode.body.pos - parent.body.pos;
-                    swordNode.body.SetOrientV2(result);
+                movingStick = true;
+                target = rightstick;
+                //enabled = true;
+                target.Normalize();
+                target *= distance;
+                target += parent.body.pos;
+                swordNode.body.pos = Vector2.Lerp(swordNode.body.pos, target, 0.1f);
+                //sword.body.pos = target + parent.body.pos;
+                Vector2 result = swordNode.body.pos - parent.body.pos;
+                swordNode.body.SetOrientV2(result);
                     
-                }
-                else
-                {
-                    movingStick = false;
-                    //enabled = false;
-                    Vector2 restPos = new Vector2(parent.body.radius, 0).Rotate(parent.body.orient) + parent.body.pos;
-                    swordNode.body.pos = Vector2.Lerp(swordNode.body.pos, restPos, 0.1f);
-                    swordNode.body.orient = GMath.AngleLerp(swordNode.body.orient, parent.body.orient, 0.1f);
-                }
-
-                //sword.body.pos = position;
-                
             }
+            else
+            {
+                movingStick = false;
+                //enabled = false;
+                Vector2 restPos = new Vector2(parent.body.radius, 0).Rotate(parent.body.orient) + parent.body.pos;
+                swordNode.body.pos = Vector2.Lerp(swordNode.body.pos, restPos, 0.1f);
+                swordNode.body.orient = GMath.AngleLerp(swordNode.body.orient, parent.body.orient, 0.1f);
+            }
+            //sword.body.pos = position;
         }
 
         public override void Draw()

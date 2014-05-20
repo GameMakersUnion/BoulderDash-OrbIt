@@ -513,12 +513,14 @@ namespace OrbItProcs {
 
             if (IsPlayer)
             {
-                player.controller.UpdateNewState();
+                //player.controller.UpdateNewState();
+                player.input.SetNewState();
                 foreach (Type c in playerProps)
                 {
-                    comps[c].PlayerControl(player.controller);
+                    comps[c].PlayerControl(player.input);
                 }
-                player.controller.UpdateOldState();
+                //player.controller.UpdateOldState();
+                player.input.SetOldState();
             }
             //AI execution
             if (IsAI)
