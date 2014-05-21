@@ -176,22 +176,25 @@ namespace OrbItProcs
         public PcFullInput(Player player)//, float mouseStickRadius)
         {
             this.player = player;
-            this.mouseStickRadius = 150f;//mouseStickRadius;
+            this.mouseStickRadius = 50f;//mouseStickRadius;
         }
         public override InputState GetState()
         {
             newKeyState = Keyboard.GetState();
             newMouseState = Mouse.GetState();
-            Stick LeftStick_WASD = new Stick(newKeyState.IsKeyDown(Keys.Up), newKeyState.IsKeyDown(Keys.Down), newKeyState.IsKeyDown(Keys.Left), newKeyState.IsKeyDown(Keys.Right));
+            Stick LeftStick_WASD = new Stick(newKeyState.IsKeyDown(Keys.W), newKeyState.IsKeyDown(Keys.S), newKeyState.IsKeyDown(Keys.A), newKeyState.IsKeyDown(Keys.D));
             
             Vector2 mousePos = new Vector2(newMouseState.X, newMouseState.Y);
-            Vector2 playerPos = player.node.body.pos * player.room.camera.zoom; // divide?
+            Vector2 playerPos = (player.node.body.pos - player.room.camera.virtualTopLeft) * player.room.camera.zoom + player.room.camera.CameraOffsetVect; // divide?
+
+            //OrbIt.game.room.camera.Draw(textures.leaf, playerPos, Color.White, 2f, 0f, Layers.Over5);
+
             Vector2 dir = mousePos - playerPos;
             float lensqr = dir.LengthSquared();
             if (lensqr > mouseStickRadius * mouseStickRadius)
             {
                 VMath.NormalizeSafe(ref dir);
-                dir *= mouseStickRadius;
+                //dir *= mouseStickRadius;
             }
             else
             {

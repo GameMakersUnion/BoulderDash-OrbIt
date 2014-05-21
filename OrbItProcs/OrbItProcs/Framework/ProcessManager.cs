@@ -70,7 +70,8 @@ namespace OrbItProcs
 
             toolbar.AddButton("forceSpawn", enableKeyBinds<DirectedSpawn>(), "Spawn nodes in a direction using left and right click.");
             toolbar.AddButton("forcePush", enableKeyBinds<FloodFill>(), "Take a hike.");
-            toolbar.AddButton("control", enableKeyBinds<DiodeSpawner>(), "Spawn things in a confusing way");
+            //toolbar.AddButton("control", enableKeyBinds<DiodeSpawner>(), "Spawn things in a confusing way");
+            toolbar.AddButton("control", enableKeyBinds<PlayerProcess>(), "Create a player who will use the keyboard and mouse.");
             toolbar.AddButton("static", enableKeyBinds<GridSpawn>(), "Spawn nodes statically to the grid.");
             toolbar.AddButton("resize", enableKeyBinds<ResizeRoom>(), "Change the size of the Room");
             

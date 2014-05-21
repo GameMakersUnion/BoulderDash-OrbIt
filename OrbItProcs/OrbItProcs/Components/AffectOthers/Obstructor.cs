@@ -9,7 +9,7 @@ namespace OrbItProcs
     /// <summary>
     /// The Obstructor will create walls in the direction of surrounding nodes (Obstructor by default.)
     /// </summary>
-    [Info(UserLevel.User, "The Obstructor will create walls in the direction of surrounding nodes (Obstructor by default.)")]
+    [Info(UserLevel.User, "The Obstructor will create walls in the direction of surrounding nodes (Obstructor by default.)", CompType)]
     public class Obstructor : Component
     {
         public const mtypes CompType = mtypes.affectother | mtypes.affectself;

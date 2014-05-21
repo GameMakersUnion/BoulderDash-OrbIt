@@ -130,9 +130,17 @@ namespace OrbItProcs
         */
         public Player(int playerIndex)
         {
-            this.playerIndex = playerIndex;
-            this.input = new ControllerFullInput(this, (PlayerIndex)(playerIndex - 1));
             this.room = OrbIt.game.room;
+            this.playerIndex = playerIndex;
+            if (playerIndex == 0)
+            {
+                this.input = new PcFullInput(this);
+            }
+            else
+            {
+                this.input = new ControllerFullInput(this, (PlayerIndex)(playerIndex - 1));
+            }
+            
             SetPlayerColor();
         }
         public void SetPlayerColor()
@@ -185,12 +193,21 @@ namespace OrbItProcs
                 }
             }
         }
+        public static void TryCreatePcPlayer()
+        {
+            if (players[0] == null)
+            {
+                TryCreatePlayer(OrbIt.game.room, OrbIt.game.room.groups.player.defaultNode, 0, true);
+            }
+        }
 
         private static void TryCreatePlayer(Room room, Node defaultNode, int playerIndex, bool updateUI)
         {
-            GamePadState gamePadState = GamePad.GetState((PlayerIndex)(playerIndex - 1));
-            if (!gamePadState.IsConnected || gamePadState.Buttons.Back == ButtonState.Released) return;
-
+            if (playerIndex != 0)
+            {
+                GamePadState gamePadState = GamePad.GetState((PlayerIndex)(playerIndex - 1));
+                if (!gamePadState.IsConnected || gamePadState.Buttons.Back == ButtonState.Released) return;
+            }
             //Player p = Player.GetNew(playerIndex);
             Player p = new Player(playerIndex);
             players[playerIndex] = p;
@@ -202,22 +219,24 @@ namespace OrbItProcs
             float y = dist * (float)Math.Sin(angle);
             Vector2 spawnPos = new Vector2((room.worldWidth / 4) * playerIndex - (room.worldWidth / 8), room.worldHeight - 600);// -new Vector2(x, y);
             Node node = defaultNode.CreateClone(room);
+            p.node = node;
+            
             node.body.pos = spawnPos;
-
             node.name = "player" + p.ColorName;
             node.SetColor(p.pColor);
             //node.addComponent(comp.shooter, true);
             //node.addComponent(comp.sword, true);
             //node.Comp<Sword>().sword.collision.DrawRing = false;
-            p.node = node;
-            room.groups.player.IncludeEntity(node);
+            
+            //room.groups.player.IncludeEntity(node);
             node.meta.healthBar = Meta.HealthBarMode.Bar;
             //node.OnSpawn();
             node.body.velocity = Vector2.Zero;
             //node.body.mass = 0.1f;
             node.movement.maxVelocity.value = 6f;
             //node.addComponent<LinkGun>(true);
-            node.OnSpawn();
+            room.spawnNode(node, g: room.groups.player);
+            //node.OnSpawn();
             node.texture = textures.robot1;
 
             if (updateUI)

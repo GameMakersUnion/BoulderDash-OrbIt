@@ -111,16 +111,16 @@ namespace OrbItProcs
             shootingDelay = 50;
             speed = 15f;
             damage = 10f;
-            shootMode = ShootMode.Auto;
+            shootMode = ShootMode.Single;
             useStickVelocity = false;
-            maxAmmo = new Toggle<int>(50, true);
+            maxAmmo = new Toggle<int>(50, false);
             TurretTimerSeconds = 1;
         }
         public override void OnSpawn()
         {
             Action<Node> ap = (n) => 
                 {
-                    if (ammo < maxAmmo) ammo++;
+                    if (maxAmmo.enabled && ammo < maxAmmo) ammo++;
                 };
             parent.scheduler.AddAppointment(new Appointment(ap, 5000, infinite: true));
         }
@@ -228,7 +228,7 @@ namespace OrbItProcs
         }
         public void FireNode(Vector2 dir)
         {
-            ammo--;
+            if (maxAmmo.enabled) ammo--;
             if (!useStickVelocity) VMath.NormalizeSafe(ref dir);
             Node n = bulletNode.CreateClone(room);
             n.Comp<Lifetime>().timeUntilDeath.value = bulletLife;
@@ -281,7 +281,7 @@ namespace OrbItProcs
             };
             n.body.OnCollisionEnter += bulletHit;
             //n.body.isSolid = false;
-            if (ammo <= 0)
+            if (maxAmmo.enabled && ammo <= 0)
             {
                 parent.RemoveComponent(typeof(Shooter));
             }

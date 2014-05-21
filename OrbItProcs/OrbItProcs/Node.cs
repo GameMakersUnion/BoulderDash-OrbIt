@@ -44,6 +44,7 @@ namespace OrbItProcs {
         public static int nodeCounter = 0;
         private Vector2 tempPosition = new Vector2(0, 0);
         public List<string> nodeHistory = new List<string>();
+        public bool spawned = false;
 
         private bool triggerSortComponentsUpdate = false, triggerSortComponentsDraw = false, triggerRemoveComponent = false;
         private Dictionary<Type, bool> tempCompActiveValues = new Dictionary<Type, bool>();
@@ -655,6 +656,7 @@ namespace OrbItProcs {
             {
                 player.AddItem(component);
             }
+            if (spawned) component.OnSpawn();
         }
 
         public bool fetchComponent(Type t, bool active, bool overwrite = false)
@@ -679,10 +681,8 @@ namespace OrbItProcs {
                 meta.active = active;
                 return false;
             }
-            
             if (overwrite)
             {
-
                 Component component = MakeComponent(t, active, this);
                 if (HasComp(t))
                 {
@@ -693,7 +693,7 @@ namespace OrbItProcs {
                 {
                     player.AddItem(component);
                 }
-
+                if (spawned) component.OnSpawn();
             }
             else
             {
@@ -705,6 +705,7 @@ namespace OrbItProcs {
                     {
                         player.AddItem(component);
                     }
+                    if (spawned) component.OnSpawn();
                 }
                 else
                 {

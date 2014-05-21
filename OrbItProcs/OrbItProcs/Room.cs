@@ -14,18 +14,12 @@ namespace OrbItProcs {
 
     public class Room
     {
-
-        
-
         ////Room
         //consts
         public const float WallWidth = 10;
-
         //Fields
         public static long totalElapsedMilliseconds = 0;
         public Node targetNodeGraphic = null;
-
-
         //Components
         public ProcessManager processManager { get; set; }
         public GridSystem gridsystemAffect { get; set; }
@@ -34,10 +28,7 @@ namespace OrbItProcs {
         public ThreadedCamera camera { get; set; }
         public Scheduler scheduler { get; set; }
         public CollisionManager collisionManager { get; set; }
-
-
         //Entities
-
         public Group masterGroup { get; set; }
         public RoomGroups groups { get; private set; }
         public Node defaultNode { get; set; }
@@ -46,9 +37,7 @@ namespace OrbItProcs {
         public HashSet<Node> playerNodes { get { return players.Select(p => p.node).ToHashSet(); } }
         public ObservableHashSet<Link> AllActiveLinks { get; set; }
         public ObservableHashSet<Link> AllInactiveLinks { get; set; }
-
         public List<Rectangle> linesToDraw = new List<Rectangle>();
-
         //Values
         public int worldWidth { get; set; }
         public int worldHeight { get; set; }
@@ -57,11 +46,9 @@ namespace OrbItProcs {
         public Color borderColor { get; set; }
         public bool DrawAffectGrid { get; set; }
         public bool DrawCollisionGrid { get; set; }
-
         //Events
         public event EventHandler AfterIteration;
         private Action PendingRoomResize;
-
         public Room(OrbIt game, int worldWidth, int worldHeight, bool Groups = true)
         {
             groups = new RoomGroups(this);
@@ -116,7 +103,7 @@ namespace OrbItProcs {
             {
                 new Group(this, defaultNode, masterGroup, "General Groups", false);
                 new Group(this, defaultNode, masterGroup, "Preset Groups", false);
-                new Group(this, defaultNode.CreateClone(this), masterGroup, "Player Group", false);
+                new Group(this, defaultNode.CreateClone(this), masterGroup, "Player Group", true);
                 new Group(this, defaultNode, masterGroup, "Item Group", false);
                 new Group(this, defaultNode, masterGroup, "Link Groups", false);
                 new Group(this, defaultNode.CreateClone(this), masterGroup, "Bullet Group", true);
@@ -436,17 +423,18 @@ namespace OrbItProcs {
             }
             return found;
         }
-
+        public Node spawnNode(int worldMouseX, int worldMouseY)
+        {
+            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
+                                { nodeE.position, new Vector2(worldMouseX,worldMouseY) },
+            };
+            return spawnNode(userP);
+        }
         public Node spawnNode(Node newNode, Action<Node> afterSpawnAction = null, int lifetime = -1, Group g = null)
         {
             Group spawngroup = g ?? OrbIt.ui.sidebar.GetActiveGroup();
             if (spawngroup == null || !spawngroup.Spawnable) return null;
-            if (g != null)
-            {
-                spawngroup = g;
-            }
-            newNode.name = "bullet" + Node.nodeCounter;
-
+            //newNode.name = "bullet" + Node.nodeCounter;
             return SpawnNodeHelper(newNode, afterSpawnAction, spawngroup, lifetime);
         }
         public Node spawnNode(Dictionary<dynamic, dynamic> userProperties, Action<Node> afterSpawnAction = null, bool blank = false, int lifetime = -1)
@@ -487,19 +475,9 @@ namespace OrbItProcs {
             }
             
             g.IncludeEntity(newNode);
+            newNode.spawned = true;
             return newNode;
         }
-
-
-
-        public Node spawnNode(int worldMouseX, int worldMouseY)
-        {
-            Dictionary<dynamic, dynamic> userP = new Dictionary<dynamic, dynamic>() {
-                                { nodeE.position, new Vector2(worldMouseX,worldMouseY) },
-            };
-            return spawnNode(userP);
-        }
-
         internal void resize(Vector2 resizeVect, bool fillWithGrid = false)
         {
 

@@ -74,7 +74,6 @@ namespace OrbItProcs
                 }
             }
         }
-        
         Queue<SpinningLine> spinningLines = new Queue<SpinningLine>();
         public void RandomizeSpinningLines()
         {

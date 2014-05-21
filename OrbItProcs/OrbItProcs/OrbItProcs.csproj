@@ -154,6 +154,7 @@
     <Compile Include="Components\Drawers\Light.cs" />
     <Compile Include="Components\Drawers\Runer.cs" />
     <Compile Include="Components\Essential\Meta.cs" />
+    <Compile Include="Components\Items\BeamGun.cs" />
     <Compile Include="Components\Items\Fist.cs" />
     <Compile Include="Components\Items\LinkGun.cs" />
     <Compile Include="Components\Items\MagicTorch.cs" />
@@ -265,6 +266,7 @@
     <Compile Include="Processes\GridSpawn.cs" />
     <Compile Include="Processes\GroupSelect.cs" />
     <Compile Include="Processes\MapEditor.cs" />
+    <Compile Include="Processes\PlayerProcess.cs" />
     <Compile Include="Processes\PolygonSpawner.cs" />
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Framework\ProcessManager.cs" />

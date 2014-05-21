@@ -16,7 +16,8 @@ namespace OrbItProcs
     public class Process
     {
         public Room room { get { return OrbIt.game.room; } }
-        public bool active { get; set; }
+        protected bool _active = false;
+        public virtual bool active { get { return _active; } set { _active = value; if (value) OnActivate(); } }
 
         //public event Action OnUpdate;
         //public event Action OnDraw;
@@ -54,6 +55,7 @@ namespace OrbItProcs
 
             processKeyActions.Add(keyAction, keyBundle);
         }
+        protected virtual void OnActivate() { }
         protected virtual void Create() { }
         public virtual void Update() { }
         public virtual void Draw() { }
