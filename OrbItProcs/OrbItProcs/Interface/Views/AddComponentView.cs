@@ -43,9 +43,6 @@ namespace OrbItProcs
             lblDescription.Left = 10;
             lblDescription.Height = 70;
             lblDescription.Text = "l";
-
-            
-
         }
         public void InitNode(Node node)
         {
@@ -71,7 +68,33 @@ namespace OrbItProcs
                 CreateItem(ditem);
                 heightcounter += ditem.panel.Height;
             }
+            backPanel.Refresh();
+        }
+        public void InitLink(Link link)
+        {
+            int heightcounter = 0;
+            List<Type> compTypes = new List<Type>();
+            foreach (Type ctype in Component.compTypes)
+            {
+                Info info = Utils.GetInfoType(ctype);
+                if (info == null || (int)sidebar.userLevel < (int)info.userLevel) continue;
+                if (link.components.ContainsKey(ctype)) continue;
+                //if ((Utils.GetCompTypes(ctype) & mtypes.exclusiveLinker) != mtypes.exclusiveLinker) continue;
+                if (ctype.GetInterface(typeof(ILinkable).Name, true) == null) continue;
+                compTypes.Add(ctype);
+            }
 
+            compTypes.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+
+            foreach (Type ctype in compTypes)
+            {
+                DetailedItem ditem = new DetailedItem(manager, this, ctype, backPanel, heightcounter, 0);
+                SetupScroll(ditem);
+                ditem.label.Text = ditem.label.Text;
+                ditem.label.Left += 30;
+                CreateItem(ditem);
+                heightcounter += ditem.panel.Height;
+            }
             backPanel.Refresh();
         }
         public void Creator(DetailedItem item, object obj)

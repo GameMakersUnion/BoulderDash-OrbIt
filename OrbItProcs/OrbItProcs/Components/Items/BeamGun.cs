@@ -43,11 +43,10 @@ namespace OrbItProcs
             beamNode.body.isSolid = false;
             room.groups.walls.IncludeEntity(beamNode);
             beamNode.body.OnCollisionStay += OnBeamCollision;
+            beamNode.active = false;
         }
         Vector2 stick = Vector2.Zero;
         Queue<Node> currentlyColliding = new Queue<Node>();
-
-        
         public override void PlayerControl(Input input)
         {
             stick = input.GetRightStick();

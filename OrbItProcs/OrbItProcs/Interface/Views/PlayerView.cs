@@ -33,13 +33,6 @@ namespace OrbItProcs
                 insView.AdjustWidth();
             }
         }
-
-        //public new List<ComponentViewItem> viewItems;
-        //public new ComponentViewItem selectedItem { get; set; }
-
-        //public ComboBox cbActiveGroup;
-
-        //public InspectorArea insArea;
         public EditNodeWindow editGroupWindow;
 
         public PlayerView(Sidebar sidebar, Control parent, int Left, int Top)
@@ -57,7 +50,7 @@ namespace OrbItProcs
             HeightCounter +=  btnEditAllPlayers.Height * 2;
             btnEditAllPlayers.Click += (s, e) =>
             {
-                editGroupWindow = new EditNodeWindow(sidebar, "All Players", room.groups.player.Name);
+                editGroupWindow = new EditNodeWindow(sidebar, "All Players", room.groups.player.Name, ViewType.Group);
                 editGroupWindow.componentView.SwitchGroup(room.groups.player);
                 //editGroupWindow.componentView.SwitchNode(n, false);
 
@@ -80,11 +73,8 @@ namespace OrbItProcs
             insView.GroupSync = true;
             insView.Height = 120;
             insView.Width = Width;
-            Setup(ItemCreatorDelegate, OnEvent2);
-            //OnItemEvent += OnEvent2;
+            this.ItemCreator += ItemCreatorDelegate;
 
-            //UpdateGroupComboBox();
-            //cbActiveGroup.ItemIndex = 0;
             InitializePlayers();
         }
         private void ItemCreatorDelegate(DetailedItem item, object obj)
@@ -107,15 +97,19 @@ namespace OrbItProcs
                 btnEdit.ToolTip.Text = "Edit";
                 btnEdit.Name = "Player Edit";
                 btnEdit.TextColor = UserInterface.TomShanePuke;
-                btnEdit.Click += (s, e) =>
+
+                EventHandler editplayer = (s, e) =>
                 {
                     item.isSelected = true;
                     //editGroupWindow = new EditGroupWindow(sidebar);
                     //editGroupWindow.componentView.SwitchGroup(g);
-                    editGroupWindow = new EditNodeWindow(sidebar, "Player", n.name);
+                    editGroupWindow = new EditNodeWindow(sidebar, "Player", n.name, ViewType.Node);
                     //editGroupWindow.componentView.SwitchGroup(g);
                     editGroupWindow.componentView.SwitchNode(n, false);
                 };
+
+                btnEdit.Click += editplayer;
+                item.panel.DoubleClick += editplayer;
 
                 Button btnEnabled = new Button(manager);
                 btnEnabled.Init();
@@ -135,17 +129,6 @@ namespace OrbItProcs
                     n.active = GetButtonBool(btnEnabled);
                     SetButtonBool(btnEnabled, n.active);
                 };
-            }
-        }
-
-        public void OnEvent2(Control control, DetailedItem item, EventArgs e)
-        {
-            if (control == null || item == null) return;
-            if (!(item.obj is InspectorInfo)) return;
-            //InspectorInfo ins = (InspectorInfo)item.obj;
-            if (control.Text.Equals("component_button_remove"))
-            {
-                
             }
         }
 

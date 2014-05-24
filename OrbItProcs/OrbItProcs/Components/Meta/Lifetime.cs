@@ -19,9 +19,10 @@ namespace OrbItProcs
         /// If enabled, this node will be deleted when it's lifetime has reached or surpassed this number.
         /// </summary>
         [Info(UserLevel.User, "If enabled, this node will be deleted when it's lifetime has reached or surpassed this number.")]
-        public Toggle<int> timeUntilDeath { get { return _timeUntilDeath; } set { _timeUntilDeath = value; if (value.enabled) lifeLived = 0; } }
+        public Toggle<int> timeUntilDeath { get { return _timeUntilDeath; } set { _timeUntilDeath = value; if (value.enabled) lifeLeft = 0; } }
         private Toggle<int> _timeUntilDeath;
-        private int lifeLived = 0;
+        //amount of 'dying time' contributed to the timeUntilDead, before the node dies. (if timeUntildead is not enabled, this stays at 0.)
+        private int lifeLeft = 0;
         /// <summary>
         /// How many milliseconds this node has been alive
         /// </summary>
@@ -37,15 +38,16 @@ namespace OrbItProcs
         public override void OnSpawn()
         {
             lifetime = 0;
+            lifeLeft = 0;
         }
         public override void AffectSelf()
         {
             int mill = OrbIt.gametime.ElapsedGameTime.Milliseconds;
             lifetime += mill;
-            if (timeUntilDeath.enabled)// && lifetime > timeUntilDeath)
+            if (timeUntilDeath.enabled)
             {
-                lifeLived += mill;
-                if (lifeLived > timeUntilDeath)
+                lifeLeft += mill;
+                if (lifeLeft > timeUntilDeath)
                     parent.OnDeath(null);
             }
         }

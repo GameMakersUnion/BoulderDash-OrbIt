@@ -55,14 +55,11 @@ namespace OrbItProcs
             multiplier = 100f;
             lowerbound = 20;
             radius = 800f;
-
         }
-
         public override void AffectOther(Node other)
         {
             if (!active) { return; }
             if (exclusions.Contains(other)) return;
-
 
             float distVects = Vector2.Distance(other.body.pos, parent.body.pos);
 
@@ -73,9 +70,6 @@ namespace OrbItProcs
                 //float counterforce = 100 / distVects;
                 //float gravForce = multiplier / (distVects * distVects * counterforce);
                 //Console.WriteLine(angle);
-
-                
-
                 //float gravForce = (multiplier * parent.transform.mass * other.transform.mass) / (distVects * distVects * counterforce);
                 float gravForce;
                 if (!ConstantPush) gravForce = multiplier / 10f;// * 10;
@@ -90,16 +84,8 @@ namespace OrbItProcs
                 Vector2 delta = new Vector2(velX, velY);
 
                 if (!ConstantPush) delta *= other.body.invmass;
-
                 other.body.pos -= delta;
-
             }
-        }
-        public override void AffectSelf()
-        {
-        }
-        public override void Draw()
-        {
         }
     }
 }

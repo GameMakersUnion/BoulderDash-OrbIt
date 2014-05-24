@@ -110,10 +110,14 @@ namespace OrbItProcs
             spring.restdist = 100;
             spring.radius = float.MaxValue;
 
+            Follow follow = new Follow();
+
             RelativeMotion rel = new RelativeMotion();
 
             Link link = new Link(parent, outerNodes, grav);
-            link.AddLinkComponent(rel, true);
+            //Link link = new Link(outerNodes, parent, follow);
+            //link.AddLinkComponent(rel, true);
+            //link.AddLinkComponent(follow, true);
             link.active = true;
             link.DrawLinkLines = false;
             links.Enqueue(link);

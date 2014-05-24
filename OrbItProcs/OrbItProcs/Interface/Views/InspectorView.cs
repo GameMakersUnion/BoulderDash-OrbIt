@@ -161,12 +161,20 @@ namespace OrbItProcs
                     if (ins.obj is Component)
                     {
                         Component component = (Component)ins.obj;
-                        component.parent.RemoveComponent(component.GetType());
-                        if (GroupSync)
+                        if (this is ComponentView && (this as ComponentView).viewType == ViewType.Link)
                         {
-                            foreach (Node n in activeGroup.fullSet)
+                            ComponentView cv = (ComponentView)this;
+                            cv.rootLink.components.Remove(component.GetType());
+                        }
+                        else
+                        {
+                            component.parent.RemoveComponent(component.GetType());
+                            if (GroupSync)
                             {
-                                n.RemoveComponent(component.GetType());
+                                foreach (Node n in activeGroup.fullSet)
+                                {
+                                    n.RemoveComponent(component.GetType());
+                                }
                             }
                         }
                     }
@@ -232,9 +240,8 @@ namespace OrbItProcs
                         EventHandler editnode = (s, e) =>
                         {
                             //item.isSelected = true;
-                            EditNodeWindow editNodeWindow = new EditNodeWindow(sidebar, inspectorItem.Name(), n.name);
+                            EditNodeWindow editNodeWindow = new EditNodeWindow(sidebar, inspectorItem.Name(), n.name, ViewType.Node);
                             editNodeWindow.componentView.SwitchNode(n, false);
-
                         };
 
                         btnEdit.Text = "Edit";
@@ -242,6 +249,26 @@ namespace OrbItProcs
                         btnEdit.TextColor = UserInterface.TomShanePuke;
 
                         btnEdit.Click += editnode;
+                    }
+                    else if (o is Link)
+                    {
+                        Link link = (Link)o;
+                        Button btnEdit = new Button(manager);
+                        btnEdit.Init();
+                        btnEdit.Parent = item.panel;
+                        btnEdit.Width = 30;
+                        btnEdit.Left = item.panel.Width - btnEdit.Width - 10;
+                        btnEdit.Top = 2;
+                        btnEdit.Height = item.buttonHeight;
+                        EventHandler editlink = (s, e) =>
+                        {
+                            EditLinkWindow editLinkWindow = new EditLinkWindow(sidebar, link, inspectorItem.Name());
+                        };
+                        btnEdit.Text = "Edit";
+                        btnEdit.ToolTip.Text = "Edit";
+                        btnEdit.TextColor = UserInterface.TomShanePuke;
+
+                        btnEdit.Click += editlink;
                     }
                     else if (o is Body || o is Component)
                     {

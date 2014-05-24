@@ -74,18 +74,12 @@ namespace OrbItProcs
                 }
             }
         }
-        
         public Room room { get; set; }
         #endregion
 
-
-
         #region ///////////////////// EVENTS ///////////////////
         public static Action OnUpdate;
-        
         #endregion
-
-
 
         #region ///////////////////// INITIALIZATION ///////////////////
         private OrbIt() : base(true)
@@ -110,11 +104,7 @@ namespace OrbItProcs
             setResolution(prefWindowedResolution, false);
 
             globalGameMode = new GlobalGameMode(this);
-            
-            
-
             frameRateCounter = new FrameRateCounter(this);
-            
             
             Player.CreatePlayers(room);
             ui = UserInterface.Start();

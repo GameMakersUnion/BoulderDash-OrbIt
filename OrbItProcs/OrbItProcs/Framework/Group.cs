@@ -364,7 +364,8 @@ namespace OrbItProcs
         {
             if (childGroups.ContainsKey(name))
             {
-                throw new SystemException("Error: One of the childGroups with the same key was already present in this Group.");
+                return;
+                //throw new SystemException("Error: One of the childGroups with the same key was already present in this Group.");
             }
             childGroups.Add(name, group);
             group.parentGroup = this;

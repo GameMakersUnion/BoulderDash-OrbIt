@@ -184,6 +184,7 @@
     <Compile Include="Interface\Views\AddComponentWindow.cs" />
     <Compile Include="Interface\Views\CreateGroupWindow.cs" />
     <Compile Include="Framework\ThreadedCamera.cs" />
+    <Compile Include="Interface\Views\EditLinkWindow.cs" />
     <Compile Include="Interface\Views\EditNodeWindow.cs" />
     <Compile Include="Interface\Views\GamemodeWindow.cs" />
     <Compile Include="Interface\Views\LoadLevelWindow.cs" />

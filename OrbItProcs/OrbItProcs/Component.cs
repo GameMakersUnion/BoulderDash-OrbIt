@@ -46,7 +46,7 @@ namespace OrbItProcs
             }
         }
         public virtual Node parent { get; set; }
-        public Room room { get { return parent.room; } }
+        public Room room { get { if (parent != null) return parent.room; return null; } }
         private bool _CallDraw = true;
         public bool CallDraw { get { return _CallDraw; } set { _CallDraw = value; } }
 

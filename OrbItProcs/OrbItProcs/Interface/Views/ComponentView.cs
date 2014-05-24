@@ -12,26 +12,41 @@ using System.Collections.ObjectModel;
 
 namespace OrbItProcs
 {
+    public enum ViewType
+    {
+        Group,
+        Node,
+        Link,
+    }
     public class ComponentView : InspectorView
     {
         public Label lblComponents, lblCurrentComp;
         public Button btnAddComponent;
         public TabControl bottomArea;
         public InspectorView insView;
-        //public RoomPanel roomPanel;
+        public Link rootLink;
+        private ViewType _viewType = ViewType.Group;
+        public ViewType viewType { get { return _viewType; } 
+            set { 
+                _viewType = value; 
+                if (value != ViewType.Group)
+                {
+                    GroupSync = false;
+                    insView.GroupSync = false;
+                }
+            } 
+        }
+
+
         public override int Height { get { return base.Height; } 
             set 
             {  
                 int offset = base.Height - value;
                 if (bottomArea!= null) bottomArea.Top -= offset;
-                //if (lblCurrentComp != null) lblCurrentComp.Top -= offset;
                 if (btnAddComponent != null) btnAddComponent.Top -= offset;
-                //if (bottomArea != null) bottomArea.Height -= offset;
-
-
                 base.Height = value;
-
-            } }
+            }
+        }
         public override int Width
         {
             get
@@ -47,9 +62,7 @@ namespace OrbItProcs
                 insView.AdjustWidth();
             }
         }
-
-       
-        public ComponentView(Sidebar sidebar, Control parent, int Left, int Top)
+        public ComponentView(Sidebar sidebar, Control parent, int Left, int Top, ViewType viewType)
             : base(sidebar, parent, Left, Top, false)
         {
             this.parent = parent;
@@ -75,16 +88,12 @@ namespace OrbItProcs
             btnAddComponent.Click += btnAddComponent_Click;
             HeightCounter += btnAddComponent.Height + VertPadding;
 
-            
-
-
             bottomArea = new TabControl(manager);
             bottomArea.Init();
             bottomArea.Parent = parent;
             bottomArea.Left = 0;
             bottomArea.Top = HeightCounter;
             bottomArea.Width = sidebar.Width - 5;
-            //bottomArea.Height = OrbIt.game.tempRoom.worldHeight + 40;
             bottomArea.Height = 500;
 
             bottomArea.AddPage();
@@ -96,11 +105,10 @@ namespace OrbItProcs
             lblCurrentComp.Init();
             lblCurrentComp.Parent = editTab;
             lblCurrentComp.Width = 150;
-            lblCurrentComp.Top = 5;// HeightCounter + VertPadding;
+            lblCurrentComp.Top = 5;
             lblCurrentComp.Left = LeftPadding;
             lblCurrentComp.Text = "";
             lblCurrentComp.TextColor = Color.Black;
-            //HeightCounter += lblCurrentComp.Height;
 
             insView = new InspectorView(sidebar, editTab, Left, lblComponents.Height + 10);
             insView.GroupSync = true;
@@ -112,19 +120,15 @@ namespace OrbItProcs
             bottomArea.TabPages[1].Text = "Preview";
             TabPage previewTab = bottomArea.TabPages[1];
             previewTab.Margins = new Margins(0, 0, 0, 0);
-            //previewTab.Height = insView.Height + 80;
             bottomArea.Height = insView.Height + 140;
-            //roomPanel = new RoomPanel(sidebar, previewTab, OrbIt.game.tempRoom, true, 10, 15);
 
-            //UpdateGroupComboBox();
-            //cbActiveGroup.ItemIndex = 0;
+            this.viewType = viewType;
         }
 
         public void OnEvent2(Control control, DetailedItem item, EventArgs e)
         {
             if (control == null || item == null) return;
             if (!(item.obj is InspectorInfo)) return;
-            //InspectorInfo ins = (InspectorInfo)item.obj;
             if (control.Text.Equals("component_button_remove"))
             {
                 RefreshComponents();
@@ -192,9 +196,26 @@ namespace OrbItProcs
         }
         public void RefreshComponents()
         {
-            if (activeGroup != null)
+            if (viewType == ViewType.Group)
             {
-                SwitchGroup(activeGroup);
+                if (activeGroup != null)
+                {
+                    SwitchGroup(activeGroup);
+                }
+            }
+            else if (viewType == ViewType.Node)
+            {
+                if (rootNode != null)
+                {
+                    SwitchNode(rootNode, false);
+                }
+            }
+            else if (viewType == ViewType.Link)
+            {
+                if (rootLink != null)
+                {
+                    SwitchLink(rootLink);
+                }
             }
         }
         public void SwitchGroup(Group g)
@@ -202,8 +223,45 @@ namespace OrbItProcs
             if (g == null) return;
             activeGroup = g;
             if (insView != null) insView.activeGroup = g;
-            //lblGroup.Text = "Group: " + activeGroup.Name;
             SwitchNode(g.defaultNode, true);
+        }
+
+        public void SwitchLink(Link link)
+        {
+            ClearView();
+            if (link == null) return;
+            this.rootLink = link;
+            this.GroupSync = false;
+            insView.GroupSync = false;
+            this.activeGroup = null;
+            int heightCount = 0, height = 0;
+            int itemCount = link.components.Count;
+            InspectorInfo rootItem = new InspectorInfo(null, link, sidebar);
+            CreateItem(new DetailedItem(manager, this, rootItem, backPanel, heightCount, LeftPadding));
+            height = viewItems[0].itemHeight - 2;
+            heightCount += height;
+            InspectorInfo formationItem = new InspectorInfo(null, rootItem, link.formation, link.GetType().GetProperty("formation"));
+            CreateItem(new DetailedItem(manager, this, formationItem, backPanel, heightCount, LeftPadding));
+            InspectorInfo dictItem = new InspectorInfo(null, rootItem, link.components, link.GetType().GetProperty("components"));
+            foreach (Type t in link.components.Keys)
+            {
+                string tooltip = "";
+                Info info = Utils.GetInfoClass(link.components[t]);
+                if (info != null)
+                {
+                    if ((int)info.userLevel > (int)sidebar.userLevel) continue;
+                    tooltip = info.summary;
+                }
+                heightCount += height;
+                InspectorInfo cItem = new InspectorInfo(null, dictItem, link.components[t], t);
+                DetailedItem di = new DetailedItem(manager, this, cItem, backPanel, heightCount, LeftPadding);
+                di.toolTip = tooltip;
+                CreateItem(di);
+            }
+            ScrollPosition = 0;
+            backPanel.ScrollTo(backPanel.ScrollBarValue.Horizontal, 0);
+            SetVisible(false);
+            backPanel.Refresh();
         }
         public void SwitchNode(Node node, bool group)
         {
@@ -213,42 +271,27 @@ namespace OrbItProcs
             this.rootNode = node;
             if (!group)
             {
-                //lblGroup.Text = "Node: " + node.name;
-                //activeGroup = null;
                 GroupSync = false;
                 insView.GroupSync = false;
                 this.activeGroup = null;
             }
-            int selected = sidebar.tbcMain.SelectedIndex;
-            if (selected != 3) sidebar.tbcMain.SelectedIndex = 3;
-
+            //int selected = sidebar.tbcMain.SelectedIndex;
+            //if (selected != 3) sidebar.tbcMain.SelectedIndex = 3;
             int heightCount = 0;
-            if (viewItems != null)
-            {
-                foreach (DetailedItem item in viewItems)
-                {
-                    backPanel.Remove(item.panel);
-                }
-            }
-
-            viewItems = new List<DetailedItem>();
             int itemCount = node.comps.Count + 2;
             InspectorInfo rootItem = new InspectorInfo(null, node, sidebar);
             int height = 0;
             if (sidebar.userLevel == UserLevel.Debug)
             {
                 CreateItem(new DetailedItem(manager, this, rootItem, backPanel, heightCount, LeftPadding));
-                height = (viewItems[0].itemHeight - 2);
-                heightCount += height;
+                heightCount += viewItems[0].itemHeight - 2;
             }
             InspectorInfo bodyItem = new InspectorInfo(null, rootItem, node.body, node.GetType().GetProperty("body"));
             CreateItem(new DetailedItem(manager, this, bodyItem, backPanel, heightCount, LeftPadding));
             Info inf = Utils.GetInfoClass(node.body);
             if (inf != null) viewItems[0].toolTip = inf.summary;
 
-            if (height == 0) height = (viewItems[0].itemHeight - 2);
-
-            //heightCount += height;
+            height = (viewItems[0].itemHeight - 2);
 
             InspectorInfo dictItem = new InspectorInfo(null, rootItem, node.comps, node.GetType().GetProperty("comps"));
             foreach (Type c in node.comps.Keys)
@@ -265,51 +308,32 @@ namespace OrbItProcs
                 DetailedItem di = new DetailedItem(manager, this, cItem, backPanel, heightCount, LeftPadding);
                 di.toolTip = tooltip;
                 CreateItem(di);
-
             }
-            //heightCount += compItems[0].label.Height;
-            //compItems.Add(new ComponentItem(manager, this, null, compsBackPanel, heightCount, LeftPadding));
             ScrollPosition = 0;
             backPanel.ScrollTo(backPanel.ScrollBarValue.Horizontal, 0);
             SetVisible(false);
             backPanel.Refresh();
-
-            
-
-            if (selected != 3) sidebar.tbcMain.SelectedIndex = selected;
-
-        }
-
-        public int SelectComponent(Type t)
-        {
-            string name = t.ToString().LastWord('.');
-            int count = 0;
-            foreach (ViewItem item in viewItems)
-            {
-                if (item.label.Text.Equals(name))
-                {
-                    item.OnSelect();
-                    item.isSelected = true;
-                    return count;
-                }
-                count++;
-            }
-            return -1;
+            //if (selected != 3) sidebar.tbcMain.SelectedIndex = selected;
         }
 
         void btnAddComponent_Click(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
-            if (GroupSync)
+            if (viewType == ViewType.Link)
             {
-                if (activeGroup == null)
-                {
-
-                    PopUp.Toast("You haven't selected a Group.");
-                    return;
-                }
+                if (rootLink != null) new AddComponentWindow(sidebar, parent, rootLink, this, false);
             }
-            if (rootNode != null) new AddComponentWindow(sidebar, parent, rootNode, this);
-            
+            else
+            {
+                if (GroupSync)
+                {
+                    if (activeGroup == null)
+                    {
+                        PopUp.Toast("You haven't selected a Group.");
+                        return;
+                    }
+                }
+                if (rootNode != null) new AddComponentWindow(sidebar, parent, rootNode, this);
+            }
         }
 
     }

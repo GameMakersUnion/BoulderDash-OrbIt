@@ -17,7 +17,8 @@ namespace OrbItProcs
     public class Randomizer : Process
     {
         public Queue<Group> savedGroups = new Queue<Group>();
-        public Queue<Dictionary<dynamic, dynamic>> savedDicts = new Queue<Dictionary<dynamic, dynamic>>();
+        //public Queue<Dictionary<dynamic, dynamic>> savedDicts = new Queue<Dictionary<dynamic, dynamic>>();
+        public Queue<Node> savedNodes = new Queue<Node>();
         int queuePos = 0;
 
         public Randomizer()
@@ -32,37 +33,15 @@ namespace OrbItProcs
 
         public void SpawnFromQueue()
         {
-            //System.Console.WriteLine(queuePos + " " + savedDicts.Count);
-            if (queuePos >= savedDicts.Count) return;
-
-            Dictionary<dynamic, dynamic> dict = savedDicts.ElementAt(savedDicts.Count - queuePos - 1);
-            Group g = savedGroups.ElementAt(savedDicts.Count - queuePos - 1);
-
-            dict[nodeE.position] = UserInterface.WorldMousePos;
-
-            Node n = room.spawnNode(dict, blank: true, lifetime: 5000);
-            if (n != null) g.entities.Add(n);
+            if (queuePos >= savedNodes.Count) return;
+            Node saved = savedNodes.ElementAt(savedNodes.Count - queuePos - 1);
+            Group g = savedGroups.ElementAt(savedNodes.Count - queuePos - 1);
+            Node n = room.spawnNode(saved.CreateClone(saved.room), lifetime: 5000, g: g);
+            n.body.pos = UserInterface.WorldMousePos;
         }
 
-        public void Plus() { queuePos = Math.Min(savedDicts.Count - 1, queuePos + 1); }
+        public void Plus() { queuePos = Math.Min(savedNodes.Count - 1, queuePos + 1); }
         public void Minus() { queuePos = Math.Max(0, queuePos - 1); }
-        //public void Enter() { }
-
-
-        /*
-        public void KeyEv()
-        {
-            if (DetectKeyPress(Keys.OemPlus))
-            {
-                queuePos = Math.Min(savedDicts.Count - 1, queuePos + 1);
-            }
-            else if (DetectKeyPress(Keys.OemMinus))
-            {
-                queuePos = Math.Max(0, queuePos - 1);
-            }
-        }
-        */
-
         public void SpawnSemiRandom()
         {
             CreateNode();
@@ -72,13 +51,15 @@ namespace OrbItProcs
             Node n = CreateNode();
             if (n != null)
             {
-                foreach (var c in n.comps.Values)
+                foreach (var c in n.comps.Values.ToList())
                 {
                     if (c.GetType() == typeof(Delegator)) continue;
                     if (c.GetType() == typeof(Modifier)) continue;
                     RandomizeObject(c);
                 }
             }
+            RandomizeObject(n.body);
+            n.body.pos = UserInterface.WorldMousePos;
         }
 
 
@@ -135,7 +116,8 @@ namespace OrbItProcs
             Node n = room.spawnNode(userP, blank: true, lifetime: 5000);
             if (n != null)
             {
-                savedDicts.Enqueue(userP);
+                //savedDicts.Enqueue(userP);
+                savedNodes.Enqueue(n);
                 Group p = room.masterGroup.childGroups["Link Groups"];
                 Group g = new Group(room, n, p, n.name);
                 //p.AddGroup(g.Name, g);

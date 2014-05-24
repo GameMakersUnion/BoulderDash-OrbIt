@@ -70,7 +70,7 @@ namespace OrbItProcs
             Length = 50;
             reflective = true;
             drawLines = true;
-            drawSpin = true;
+            drawSpin = false;
         }
 
         public override void AfterCloning()

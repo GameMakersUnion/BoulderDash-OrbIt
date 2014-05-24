@@ -17,13 +17,11 @@ namespace OrbItProcs
         GroupToGroup,
 
     }
-
     public enum updatetime
     {
         SourceUpdate,
         RoomUpdate,
     }
-
     public class Link
     {
         private bool _active = true;

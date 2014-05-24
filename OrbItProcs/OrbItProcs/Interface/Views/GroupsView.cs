@@ -93,16 +93,6 @@ namespace OrbItProcs
                 g.EmptyGroup();
             }
         }
-
-        public override void SelectItem(DetailedItem item)
-        {
-            base.SelectItem(item);
-            if (item.obj == null) return;
-            if (item.obj is Group)
-            {
-                //editGroupWindow.componentView.SwitchGroup((Group)item.obj);
-            }
-        }
         public void UpdateGroups()
         {
             if (parentGroup == null) return;
@@ -162,7 +152,7 @@ namespace OrbItProcs
                     item.isSelected = true;
                     if (parentGroup == room.groups.items)
                     {
-                        editGroupWindow = new EditNodeWindow(sidebar, "Item Group", g.Name);
+                        editGroupWindow = new EditNodeWindow(sidebar, "Item Group", g.Name, ViewType.Group);
                     }
                     else
                     {

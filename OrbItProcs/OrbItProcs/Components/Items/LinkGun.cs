@@ -43,7 +43,8 @@ namespace OrbItProcs
         public float shootNodeRadius { get; set; }
         public float shootNodeSpeed { get; set; }
         public bool linkToPlayers { get; set; }
-        private Link shootLink, parentLink;
+        private Link shootLink;
+        public Link attachLink { get; set; }
         public enum LinkMode
         {
             TargetsToSelf,
@@ -197,7 +198,7 @@ namespace OrbItProcs
         Spring spring;
         GunState state = GunState.inactive;
         Queue<Node> attachedNodesQueue;
-        Link attachLink;
+        
         public override void PlayerControl(Input input)
         {
             if (state == GunState.inactive)
