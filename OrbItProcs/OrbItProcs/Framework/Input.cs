@@ -141,6 +141,11 @@ namespace OrbItProcs
         {
             return newInputState.RightStick_Mouse.v2;
         }
+        /// <summary> Returns a non-unit vector up to the radius specified.</summary>
+        public virtual Vector2 GetRightStick(float range, bool drawRing = false)
+        {
+            return newInputState.RightStick_Mouse.v2;
+        }
         public virtual void SetNewState()
         {
             newInputState = GetState();
@@ -183,24 +188,7 @@ namespace OrbItProcs
             newKeyState = Keyboard.GetState();
             newMouseState = Mouse.GetState();
             Stick LeftStick_WASD = new Stick(newKeyState.IsKeyDown(Keys.W), newKeyState.IsKeyDown(Keys.S), newKeyState.IsKeyDown(Keys.A), newKeyState.IsKeyDown(Keys.D));
-            
-            Vector2 mousePos = new Vector2(newMouseState.X, newMouseState.Y);
-            Vector2 playerPos = (player.node.body.pos - player.room.camera.virtualTopLeft) * player.room.camera.zoom + player.room.camera.CameraOffsetVect; // divide?
-
-            //OrbIt.game.room.camera.Draw(textures.leaf, playerPos, Color.White, 2f, 0f, Layers.Over5);
-
-            Vector2 dir = mousePos - playerPos;
-            float lensqr = dir.LengthSquared();
-            if (lensqr > mouseStickRadius * mouseStickRadius)
-            {
-                VMath.NormalizeSafe(ref dir);
-                //dir *= mouseStickRadius;
-            }
-            else
-            {
-                dir /= mouseStickRadius;
-            }
-            Stick RightStick_Mouse = new Stick(dir);
+            Stick RightStick_Mouse = new Stick(GetRightStick(mouseStickRadius));
             newInputState = new InputState(LeftStick_WASD, RightStick_Mouse, newMouseState.RightButton, newMouseState.LeftButton,
                                            newKeyState.IsKeyDown(Keys.D1), newKeyState.IsKeyDown(Keys.D2), newKeyState.IsKeyDown(Keys.D3), newKeyState.IsKeyDown(Keys.D4),
                                            newKeyState.IsKeyDown(Keys.Up), newKeyState.IsKeyDown(Keys.Down), newKeyState.IsKeyDown(Keys.Right), newKeyState.IsKeyDown(Keys.Left),
@@ -213,6 +201,31 @@ namespace OrbItProcs
             oldKeyState = newKeyState;
             oldMouseState = newMouseState;
         }
+        /// <summary> Returns a non-unit vector up to the radius specified.</summary>
+        public override Vector2 GetRightStick(float radius, bool drawRing = false)
+        {
+            Vector2 mousePos = new Vector2(newMouseState.X, newMouseState.Y);
+            Vector2 playerPos = (player.node.body.pos - player.room.camera.virtualTopLeft) * player.room.camera.zoom + player.room.camera.CameraOffsetVect;
+            Vector2 dir = mousePos - playerPos;
+            float lensqr = dir.LengthSquared();
+            if (lensqr > radius * radius)
+            {
+                VMath.NormalizeSafe(ref dir);
+                //dir = dir.NormalizeSafe() * radius;
+            }
+            else
+            {
+                dir /= radius;
+            }
+            if (drawRing)
+            {
+                float scale = (radius * 2f) / Assets.textureDict[textures.ring].Width;
+                float alpha = (((float)Math.Sin(OrbIt.gametime.TotalGameTime.TotalMilliseconds / 300f) + 1f) / 4f) + 0.25f;
+                player.room.camera.Draw(textures.ring, player.node.body.pos, player.pColor * alpha, scale, Layers.Under2);
+            }
+            return dir;
+        }
+        
     }
 
 
@@ -227,7 +240,6 @@ namespace OrbItProcs
             this.playerIndex = playerIndex;
             this.triggerDeadZone = 0.5f;
         }
-
         public override InputState GetState()
         {
             newGamePadState = GamePad.GetState(playerIndex, GamePadDeadZone.Circular);

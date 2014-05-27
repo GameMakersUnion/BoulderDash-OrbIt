@@ -27,7 +27,6 @@ namespace OrbItProcs
                 }
             }
         }
-
         private bool _ResolveCollision = true;
         /// <summary>
         /// Controls whether the node will collide and bounce off other nodes.

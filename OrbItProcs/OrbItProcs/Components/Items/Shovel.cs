@@ -168,7 +168,8 @@ namespace OrbItProcs
         float compoundedMass = 0f;
         public override void PlayerControl(Input input)
         {
-            Vector2 newstickpos = input.GetRightStick();
+
+            Vector2 newstickpos = input.GetRightStick(shovelReach, true);//input.GetRightStick();
             Vector2 pos = newstickpos * shovelReach;
             Vector2 worldStickPos = parent.body.pos + pos;
             Vector2 diff = worldStickPos - shovelNode.body.pos;

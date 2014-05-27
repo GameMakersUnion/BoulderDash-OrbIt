@@ -33,9 +33,9 @@ namespace OrbItProcs {
             this.cellsX = cellsX;
             
             //this.cellReach = cellReach;
-            cellWidth = gridWidth / cellsX;
+            cellWidth = (int)Math.Ceiling((double)gridWidth / (double)cellsX);
             cellHeight = cellWidth;
-            this.cellsY = gridHeight / cellHeight;
+            this.cellsY = (gridHeight - 1)/ cellHeight + 1;
             //cellheight = gridheight / cellsY;
             grid = new List<Collider>[cellsX, cellsY];
             for (int i = 0; i < cellsX; i++)
@@ -100,7 +100,7 @@ namespace OrbItProcs {
             if (x < 0 || x >= cellsX || y < 0 || y >= cellsY) return null;
             return bucketBags[x][y];
         }
-        public void insertToBuckets(Collider collider, bool forceIntoGrid = false)
+        public void insertToBuckets(Collider collider, bool forceIntoGrid = true)
         {
             int effectiveX = (int)(collider.pos.X - position.X);
             int effectiveY = (int)(collider.pos.Y - position.Y);
@@ -111,22 +111,26 @@ namespace OrbItProcs {
             if (x < 0)
             {
                 if (forceIntoGrid) x = 0;
-                else return;
+                else 
+                    return;
             }
             else if (x >= cellsX)
             {
                 if (forceIntoGrid) x = cellsX - 1;
-                else return;
+                else 
+                    return;
             }
             if (y < 0)
             {
                 if (forceIntoGrid) y = 0;
-                else return;
+                else 
+                    return;
             }
             else if (y >= cellsY)
             {
                 if (forceIntoGrid) y = cellsY - 1;
-                else return;
+                else 
+                    return;
             }
             arrayGrid[x][y].AddItem(collider);
         }

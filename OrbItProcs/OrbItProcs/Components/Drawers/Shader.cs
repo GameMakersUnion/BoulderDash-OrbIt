@@ -50,11 +50,7 @@ namespace OrbItProcs
         /// </summary>
         /// 
         [Info(UserLevel.User, "If enabled, the color's diffuse changes to this value (0-255).")]
-        public Toggle<int> diffuse
-        {
-            get;
-            set;
-        }
+        public Toggle<int> diffuse { get; set; }
 
         //public static float startx;
         //public static float endx;
@@ -67,13 +63,6 @@ namespace OrbItProcs
             if (parent != null) this.parent = parent;
             // On creation, shader is enabled
             diffuse = new Toggle<int>(128, false);
-        }
-
-        public override void OnSpawn()
-        {
-        }
-        public override void AffectSelf()
-        {
         }
         public override void Draw()
         {

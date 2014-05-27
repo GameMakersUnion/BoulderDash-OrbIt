@@ -66,6 +66,7 @@ namespace OrbItProcs
         boulderShine,
         endLight,
         leaf,
+        whiteorb2,
     }
 
     static class Assets
@@ -119,6 +120,7 @@ namespace OrbItProcs
             { textures.boulderShine, content.Load<Texture2D>("Textures/boulderShine"        )},
             { textures.endLight, content.Load<Texture2D>("Textures/endLight"                )},
             { textures.leaf, content.Load<Texture2D>("Textures/leaf"                        )},
+            { textures.whiteorb2, content.Load<Texture2D>("Textures/whiteorb2"              )},
             };
 
 

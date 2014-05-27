@@ -178,7 +178,7 @@ namespace OrbItProcs
         float total;
         public override void PlayerControl(Input input)
         {
-            Vector2 newstickpos = input.GetRightStick();
+            Vector2 newstickpos = input.GetRightStick(torchReach, true);
 
             Vector2 pos = newstickpos * torchReach;
             torchNode.body.pos = parent.body.pos + pos;
