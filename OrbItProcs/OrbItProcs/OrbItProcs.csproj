@@ -17,12 +17,11 @@
     <XnaProfile>HiDef</XnaProfile>
     <XnaCrossPlatformGroupID>08a7349e-e949-4b1b-98e1-86e5e53a94ca</XnaCrossPlatformGroupID>
     <XnaOutputType>Game</XnaOutputType>
-    <ApplicationIcon>
-    </ApplicationIcon>
+    <ApplicationIcon>ShovelTip.ico</ApplicationIcon>
     <Thumbnail>
     </Thumbnail>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>C:\Users\Zack\Desktop\Orbit\</PublishUrl>
+    <PublishUrl>C:\Users\Zack\Desktop\BoulderDash\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -32,7 +31,10 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>2</ApplicationRevision>
+    <SupportUrl>http://madewithorbit.com/</SupportUrl>
+    <ProductName>BoulderDash</ProductName>
+    <PublisherName>TeamOrbIt</PublisherName>
+    <ApplicationRevision>9</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -284,6 +286,10 @@
     <Content Include="Includes\C3.XNA.Primitives2D.dll" />
     <Content Include="Includes\Polenter.SharpSerializer.dll" />
     <Content Include="Includes\TomShane.Neoforce.Controls.dll" />
+    <Content Include="ShovelTip.ico" />
+    <Resource Include="Test.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <None Include="snippets\ctyp.snippet" />
     <None Include="snippets\usrd.snippet" />
     <None Include="snippets\usra.snippet" />
