@@ -1,0 +1,381 @@
+﻿<Complex name="Root" type="OrbItProcs.LevelSave, OrbItProcs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+  <Properties>
+    <Simple name="levelHeight" value="6144" />
+    <Simple name="levelWidth" value="1024" />
+    <Collection name="polygonVertices">
+      <Properties>
+        <Simple name="Capacity" value="16" />
+      </Properties>
+      <Items>
+        <SingleArray>
+          <Items>
+            <Simple value="141.667" />
+            <Simple value="-116.6646" />
+            <Simple value="141.667" />
+            <Simple value="133.3354" />
+            <Simple value="-283.333" />
+            <Simple value="-16.66455" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="-99.99994" />
+            <Simple value="-141.6665" />
+            <Simple value="200.0001" />
+            <Simple value="8.333496" />
+            <Simple value="-99.99994" />
+            <Simple value="133.3335" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="-238.095" />
+            <Simple value="-88.09277" />
+            <Simple value="261.905" />
+            <Simple value="-88.09277" />
+            <Simple value="261.905" />
+            <Simple value="61.90723" />
+            <Simple value="-238.095" />
+            <Simple value="111.9072" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="24.99969" />
+            <Simple value="-91.67041" />
+            <Simple value="74.99969" />
+            <Simple value="58.32959" />
+            <Simple value="-100.0003" />
+            <Simple value="33.32959" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="110.2567" />
+            <Simple value="-90.2251" />
+            <Simple value="85.25665" />
+            <Simple value="84.7749" />
+            <Simple value="-89.74335" />
+            <Simple value="84.7749" />
+            <Simple value="-114.7433" />
+            <Simple value="-65.2251" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="-28.34326" />
+            <Simple value="-236.876" />
+            <Simple value="96.65674" />
+            <Simple value="-236.876" />
+            <Simple value="-3.343262" />
+            <Simple value="288.124" />
+            <Simple value="-78.34326" />
+            <Simple value="263.124" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="-66.66666" />
+            <Simple value="-125.0005" />
+            <Simple value="108.3333" />
+            <Simple value="49.99951" />
+            <Simple value="-41.66666" />
+            <Simple value="74.99951" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="266.6667" />
+            <Simple value="-250.0002" />
+            <Simple value="216.6667" />
+            <Simple value="124.9998" />
+            <Simple value="-483.3333" />
+            <Simple value="124.9998" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="-112.5" />
+            <Simple value="-74.99988" />
+            <Simple value="112.5" />
+            <Simple value="-74.99988" />
+            <Simple value="112.5" />
+            <Simple value="75.00012" />
+            <Simple value="-112.5" />
+            <Simple value="75.00012" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="133.3337" />
+            <Simple value="-81.06116" />
+            <Simple value="133.3337" />
+            <Simple value="68.93884" />
+            <Simple value="-141.6663" />
+            <Simple value="68.93884" />
+            <Simple value="-141.6663" />
+            <Simple value="-56.06116" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="75" />
+            <Simple value="-125.0004" />
+            <Simple value="50" />
+            <Simple value="124.9996" />
+            <Simple value="-125" />
+            <Simple value="-0.0003662109" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="-58.33334" />
+            <Simple value="-125.0002" />
+            <Simple value="91.66666" />
+            <Simple value="-0.0002441406" />
+            <Simple value="-33.33334" />
+            <Simple value="124.9998" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="-243.5897" />
+            <Simple value="-81.41016" />
+            <Simple value="256.4103" />
+            <Simple value="-81.41016" />
+            <Simple value="256.4103" />
+            <Simple value="68.58984" />
+            <Simple value="-243.5897" />
+            <Simple value="93.58984" />
+          </Items>
+        </SingleArray>
+      </Items>
+    </Collection>
+    <Collection name="polygonPositions">
+      <Properties>
+        <Simple name="Capacity" value="16" />
+      </Properties>
+      <Items>
+        <SingleArray>
+          <Items>
+            <Simple value="883.333" />
+            <Simple value="5191.665" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="99.99994" />
+            <Simple value="5216.667" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="538.095" />
+            <Simple value="4638.093" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="725.0003" />
+            <Simple value="3816.67" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="564.7433" />
+            <Simple value="3940.225" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="778.3433" />
+            <Simple value="3511.876" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="66.66666" />
+            <Simple value="2500" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="808.3333" />
+            <Simple value="2975" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="112.5" />
+            <Simple value="1950" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="891.6663" />
+            <Simple value="1931.061" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="800" />
+            <Simple value="1450" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="308.3333" />
+            <Simple value="1500" />
+          </Items>
+        </SingleArray>
+        <SingleArray>
+          <Items>
+            <Simple value="543.5897" />
+            <Simple value="1006.41" />
+          </Items>
+        </SingleArray>
+      </Items>
+    </Collection>
+    <Simple name="name" value="Test" />
+    <Collection name="Diodes">
+      <Properties>
+        <Simple name="Capacity" value="8" />
+      </Properties>
+      <Items>
+        <Complex>
+          <Properties>
+            <SingleArray name="start">
+              <Items>
+                <Simple value="148.2994" />
+                <Simple value="1955.323" />
+              </Items>
+            </SingleArray>
+            <SingleArray name="end">
+              <Items>
+                <Simple value="836.6129" />
+                <Simple value="1933.017" />
+              </Items>
+            </SingleArray>
+            <Simple name="orientation" value="4.679993" />
+            <Simple name="tickets" value="3" />
+            <Simple name="isSemaphore" value="True" />
+          </Properties>
+        </Complex>
+        <Complex>
+          <Properties>
+            <SingleArray name="start">
+              <Items>
+                <Simple value="537.0691" />
+                <Simple value="3975.445" />
+              </Items>
+            </SingleArray>
+            <SingleArray name="end">
+              <Items>
+                <Simple value="-55.64532" />
+                <Simple value="3956.325" />
+              </Items>
+            </SingleArray>
+            <Simple name="orientation" value="4.744636" />
+            <Simple name="tickets" value="2" />
+            <Simple name="isSemaphore" value="True" />
+          </Properties>
+        </Complex>
+        <Complex>
+          <Properties>
+            <SingleArray name="start">
+              <Items>
+                <Simple value="603.9884" />
+                <Simple value="3975.445" />
+              </Items>
+            </SingleArray>
+            <SingleArray name="end">
+              <Items>
+                <Simple value="1034.184" />
+                <Simple value="3981.818" />
+              </Items>
+            </SingleArray>
+            <Simple name="orientation" value="4.727202" />
+            <Simple name="tickets" value="2" />
+            <Simple name="isSemaphore" value="True" />
+          </Properties>
+        </Complex>
+        <Complex>
+          <Properties>
+            <SingleArray name="start">
+              <Items>
+                <Simple value="-49.27203" />
+                <Simple value="312.3806" />
+              </Items>
+            </SingleArray>
+            <SingleArray name="end">
+              <Items>
+                <Simple value="1113.85" />
+                <Simple value="325.1271" />
+              </Items>
+            </SingleArray>
+            <Simple name="orientation" value="4.723348" />
+            <Simple name="tickets" value="1" />
+            <Simple name="isSemaphore" value="True" />
+          </Properties>
+        </Complex>
+        <Complex>
+          <Properties>
+            <SingleArray name="start">
+              <Items>
+                <Simple value="342.6842" />
+                <Simple value="1004.459" />
+              </Items>
+            </SingleArray>
+            <SingleArray name="end">
+              <Items>
+                <Simple value="-33.33887" />
+                <Simple value="1033.139" />
+              </Items>
+            </SingleArray>
+            <Simple name="orientation" value="4.636265" />
+            <Simple name="tickets" value="1" />
+            <Simple name="isSemaphore" value="True" />
+          </Properties>
+        </Complex>
+        <Complex>
+          <Properties>
+            <SingleArray name="start">
+              <Items>
+                <Simple value="1078.797" />
+                <Simple value="1036.325" />
+              </Items>
+            </SingleArray>
+            <SingleArray name="end">
+              <Items>
+                <Simple value="744.2004" />
+                <Simple value="988.5257" />
+              </Items>
+            </SingleArray>
+            <Simple name="orientation" value="4.854286" />
+            <Simple name="tickets" value="1" />
+            <Simple name="isSemaphore" value="True" />
+          </Properties>
+        </Complex>
+        <Complex>
+          <Properties>
+            <SingleArray name="start">
+              <Items>
+                <Simple value="744.2004" />
+                <Simple value="1001.272" />
+              </Items>
+            </SingleArray>
+            <SingleArray name="end">
+              <Items>
+                <Simple value="772.8801" />
+                <Simple value="994.899" />
+              </Items>
+            </SingleArray>
+            <Simple name="orientation" value="4.493719" />
+            <Simple name="tickets" value="4" />
+            <Simple name="isSemaphore" value="False" />
+          </Properties>
+        </Complex>
+      </Items>
+    </Collection>
+  </Properties>
+</Complex>

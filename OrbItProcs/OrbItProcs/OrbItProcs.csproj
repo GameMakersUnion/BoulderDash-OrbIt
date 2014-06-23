@@ -287,9 +287,6 @@
     <Content Include="Includes\Polenter.SharpSerializer.dll" />
     <Content Include="Includes\TomShane.Neoforce.Controls.dll" />
     <Content Include="ShovelTip.ico" />
-    <Resource Include="Test.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
     <None Include="snippets\ctyp.snippet" />
     <None Include="snippets\usrd.snippet" />
     <None Include="snippets\usra.snippet" />
